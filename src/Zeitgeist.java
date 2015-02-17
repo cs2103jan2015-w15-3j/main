@@ -12,7 +12,12 @@ public class Zeitgeist {
     public static DeleteHandler mDeleteHandler;
     public static MarkHandler mMarkHandler;
     public static UndoHandler mUndoHandler;
+    public static SearchHandler mSearchHandler;
+    public static EditHandler mEditHandler;
+    public static ErrorHandler mErrorHandler;
+    public static DisplayHandler mDisplayHandler;
     public static MessagePrinter printer;
+   
     public static Scanner scn;
     
     public static void main(String[] args) {
@@ -43,18 +48,32 @@ public class Zeitgeist {
                 
             case MARK :
             	mMarkHandler = new MarkHandler();
-            	mMarkHandler.process(c);      
+            	processSignal = mMarkHandler.process(c);      
             	printer.printProcessStateMessage(processSignal);
             	break;
             
             case UNDO :
             	mUndoHandler = new UndoHandler();
-            	mUndoHandler.process(c);      
+            	processSignal = mUndoHandler.process(c);      
             	printer.printProcessStateMessage(processSignal);
             	break;
             	
-            default :
-            	//make new Signal and pass to messagePrinter;
+            case EDIT :
+            	mSearchHandler = new SearchHandler();
+            	processSignal = mSearchHandler.process(c);
+            	printer.printProcessStateMessage(processSignal);
+            	break;
+            
+            case DISPLAY : 
+            	mDisplayHandler = new DisplayHandler();
+            	processSignal = mDisplayHandler.process(c);
+            	printer.printProcessStateMessage(processSignal);
+            	break;
+            	
+            case ERROR :
+            	mErrorHandler = new ErrorHandler();
+            	processSignal = mErrorHandler.process(c);
+            	printer.printProcessStateMessage(processSignal);
                 break;
         }
 
