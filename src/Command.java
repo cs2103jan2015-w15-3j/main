@@ -1,7 +1,7 @@
 
 public class Command {
     public enum TYPE {
-        ADD, MARK, DELETE;
+        ADD, MARK, DELETE, SEARCH, EDIT, DISPLAY, UNDO;
     }
 
     public TYPE type;
