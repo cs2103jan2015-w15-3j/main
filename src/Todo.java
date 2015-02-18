@@ -1,5 +1,9 @@
 import java.util.GregorianCalendar;
 
+/**
+ * @author Ikarus
+ *
+ */
 public class Todo {
 
 	public String title;
