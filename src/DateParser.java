@@ -20,6 +20,10 @@ public class DateParser {
 	Parser parser;
 	List<DateGroup> dateGroupList;
 
+	public DateParser (){
+		parser = new Parser(TimeZone.getDefault());
+	}
+	
 	/**
 	 * @param input Initial String to be parsed
 	 */
@@ -27,7 +31,6 @@ public class DateParser {
 		// Creates a parser object according to host timezone
 		parser = new Parser(TimeZone.getDefault());
 		dateGroupList = parser.parse(input);
-
 	}
 
 	public void acceptInput(String input) {
@@ -40,10 +43,17 @@ public class DateParser {
 	 * @return The first date encountered in the string.
 	 */
 	public GregorianCalendar parseDate() {
-		Date date = dateGroupList.get(dateGroupList.size() - 1).getDates()
-				.get(0);
 		GregorianCalendar gregDate = new GregorianCalendar();
-		gregDate.setTime(date);
+		try {
+			Date date = dateGroupList.get(dateGroupList.size() - 1).getDates()
+					.get(0);
+			gregDate.setTime(date);
+
+		} catch (NullPointerException e) {
+			System.out.println("Input string is not defined.");
+			e.printStackTrace();
+			System.exit(-1);
+		}
 		return gregDate;
 	}
 
@@ -55,10 +65,22 @@ public class DateParser {
 	 * @return The nth date processed in the string.
 	 */
 	public GregorianCalendar parseDate(int dateNumber) {
-		Date date = dateGroupList.get(dateGroupList.size() - 1).getDates()
-				.get(dateNumber - 1);
 		GregorianCalendar gregDate = new GregorianCalendar();
-		gregDate.setTime(date);
+		try {
+			Date date = dateGroupList.get(dateGroupList.size() - 1).getDates()
+					.get(dateNumber - 1);
+			
+			gregDate.setTime(date);
+		} catch (IndexOutOfBoundsException e) {
+			System.out.println("Referenced date number exceeds number of date entries detected.");
+			e.printStackTrace();
+			System.exit(-1);
+		} catch (NullPointerException e) {
+			System.out.println("Input string is not defined.");
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		
 		return gregDate;
 	}
 
