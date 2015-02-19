@@ -1,8 +1,7 @@
 
-public class MarkHandler implements CommandHandler {
+public class MarkHandler {
 
-	@Override
-	public Signal process(Command c) {
+	public static Signal process(Command c, Memory memory) {
         KeyParamPair[] pairs = c.getParamPairArray();
 
         // Ensure that there is only pair of key and params

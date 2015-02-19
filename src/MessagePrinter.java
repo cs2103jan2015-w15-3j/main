@@ -1,7 +1,7 @@
 
 public class MessagePrinter {
 
-	public void printProcessStateMessage(Signal processState){
+	public static void printProcessStateMessage(Signal processState){
 		
 		
 	}
