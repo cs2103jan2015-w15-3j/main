@@ -1,7 +1,7 @@
 import java.util.HashMap;
 
 
-public class CommandKeyword {
+public class InputStringKeyword {
 
     public static final String KEY_ADD = "add";
     public static final String KEY_DELETE = "delete";
@@ -15,7 +15,8 @@ public class CommandKeyword {
 
     public static HashMap<String, KEYWORDS> keywords;
 
-    public CommandKeyword() {
+    static {
+        keywords = new HashMap<String, InputStringKeyword.KEYWORDS>();
         keywords.put(KEY_ADD, KEYWORDS.ADD);
         keywords.put(KEY_DELETE, KEYWORDS.DELETE);
         keywords.put(KEY_ON, KEYWORDS.ON);
@@ -23,11 +24,14 @@ public class CommandKeyword {
         keywords.put(KEY_MARK, KEYWORDS.MARK);
     }
 
-    public boolean isKeyword(String s) {
+    public InputStringKeyword() {
+    }
+
+    public static boolean isKeyword(String s) {
         return keywords.containsKey(s);
     }
 
-    public KEYWORDS getKeyword(String s) {
+    public static KEYWORDS getKeyword(String s) {
         return keywords.get(s);
     }
 }

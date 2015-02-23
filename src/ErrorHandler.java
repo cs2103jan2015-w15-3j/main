@@ -1,8 +1,7 @@
 
-public class ErrorHandler implements CommandHandler {
+public class ErrorHandler {
 
-	@Override
-	public Signal process(Command c) {
+	public static Signal process(Command c, Memory memory) {
 		// TODO Auto-generated method stub
 		return null;
 	}

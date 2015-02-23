@@ -1,9 +1,8 @@
 import java.util.GregorianCalendar;
 
-public class AddHandler implements CommandHandler {
+public class AddHandler {
 
-    @Override
-    public Signal process(Command c) {
+    public static Signal process(Command c, Memory memory) {
         KeyParamPair[] commandArray = c.getParamPairArray();
         int numberOfElements = commandArray.length;
         

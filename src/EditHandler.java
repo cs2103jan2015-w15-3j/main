@@ -1,8 +1,7 @@
 
-public class EditHandler implements CommandHandler {
+public class EditHandler {
 
-	@Override
-	public Signal process(Command c) {
+	public static Signal process(Command c, Memory memory) {
 		// TODO Auto-generated method stub
 		return null;
 	}

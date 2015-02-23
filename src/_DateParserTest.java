@@ -10,8 +10,7 @@ public class _DateParserTest {
 	@Test
 	public void testOneDate() {
 		GregorianCalendar expectedFirstDate = new GregorianCalendar(2015, 7, 26, 12, 59, 0);
-		DateParser dateParser = new DateParser("26 August at 1259pm");
-		GregorianCalendar actualFirstDate = dateParser.parseDate();
+		GregorianCalendar actualFirstDate = DateParser.parseDate("26 August at 1259pm");
 		assertEquals("Year", expectedFirstDate.get(GregorianCalendar.YEAR), actualFirstDate.get(GregorianCalendar.YEAR));
 		assertEquals("Month", expectedFirstDate.get(GregorianCalendar.MONTH), actualFirstDate.get(GregorianCalendar.MONTH));
 		assertEquals("Date", expectedFirstDate.get(GregorianCalendar.DATE), actualFirstDate.get(GregorianCalendar.DATE));
@@ -26,8 +25,8 @@ public class _DateParserTest {
 	public void testTwoDates() {
 		
 		GregorianCalendar expectedFirstDate = new GregorianCalendar(2015, 10, 10, 18, 59, 0);
-		DateParser dateParser = new DateParser("10 November at 0659pm to 29 September midnight");
-		GregorianCalendar actualFirstDate = dateParser.parseDate(1);
+		String date = "10 November at 0659pm to 29 September midnight";
+		GregorianCalendar actualFirstDate = DateParser.parseDate(date,1);
 		assertEquals("Year 1", expectedFirstDate.get(GregorianCalendar.YEAR), actualFirstDate.get(GregorianCalendar.YEAR));
 		assertEquals("Month 1", expectedFirstDate.get(GregorianCalendar.MONTH), actualFirstDate.get(GregorianCalendar.MONTH));
 		assertEquals("Date 1", expectedFirstDate.get(GregorianCalendar.DATE), actualFirstDate.get(GregorianCalendar.DATE));
@@ -38,7 +37,7 @@ public class _DateParserTest {
 		assertEquals("Object 1", expectedFirstDate, actualFirstDate);
 		
 		GregorianCalendar expectedSecondDate = new GregorianCalendar(2015, 8, 29, 00, 00, 0);
-		GregorianCalendar actualSecondDate = dateParser.parseDate(2);
+		GregorianCalendar actualSecondDate = DateParser.parseDate(date, 2);
 		assertEquals("Year 2", expectedSecondDate.get(GregorianCalendar.YEAR), actualSecondDate.get(GregorianCalendar.YEAR));
 		assertEquals("Month 2", expectedSecondDate.get(GregorianCalendar.MONTH), actualSecondDate.get(GregorianCalendar.MONTH));
 		assertEquals("Date 2", expectedSecondDate.get(GregorianCalendar.DATE), actualSecondDate.get(GregorianCalendar.DATE));
