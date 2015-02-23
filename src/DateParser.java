@@ -44,7 +44,7 @@ public class DateParser {
 	 *            contains multiple dates.
 	 * @return The nth date processed in the string.
 	 */
-	public GregorianCalendar parseDate(String dateString, int dateNumber) {
+	public static GregorianCalendar parseDate(String dateString, int dateNumber) {
 		GregorianCalendar gregDate = new GregorianCalendar();
 		Parser parser = new Parser(TimeZone.getDefault());
 		try {
