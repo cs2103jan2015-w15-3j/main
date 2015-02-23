@@ -16,12 +16,12 @@ public class Zeitgeist {
     	
         while(scn.hasNextLine()){
 	        String input = scn.nextLine();
-	        Command c = CommandParser.parse(input);
+	        ParsedInput c = InputStringParser.parse(input);
 	        dispatchCommand(c, memory);
     	}
     }
 
-    private static void dispatchCommand(Command userCommand, Memory memory) {
+    private static void dispatchCommand(ParsedInput userCommand, Memory memory) {
     	Signal processSignal = null;
     	
         switch (userCommand.type) {
