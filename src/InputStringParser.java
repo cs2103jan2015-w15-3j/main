@@ -1,5 +1,5 @@
 
-public class CommandParser {
+public class InputStringParser {
 
     private static final String COMMAND_DISPLAY = "display";
 	private static final String COMMAND_SEARCH = "search";
@@ -10,11 +10,11 @@ public class CommandParser {
 	private static final String COMMAND_ADD = "add";
 	private static final String REGEX_SPACE = " ";
 
-	public static Command parse(String input) {
+	public static ParsedInput parse(String input) {
     	String[] commandArray = processInput(input);
-    	Command.TYPE cType = getCommandType(commandArray);
+    	ParsedInput.TYPE cType = getCommandType(commandArray);
     	KeyParamPair[] pairArray = extractParam(commandArray);
-        return new Command(cType, pairArray);
+        return new ParsedInput(cType, pairArray);
     }
 
 	private static String[] processInput(String input) {
@@ -34,7 +34,7 @@ public class CommandParser {
 	 * @param commandArray
 	 * @return
 	 */
-	private static Command.TYPE getCommandType(String[] commandArray) {
+	private static ParsedInput.TYPE getCommandType(String[] commandArray) {
 		String typeString = commandArray[0];
 		return determineCommandType(typeString);
 	}
@@ -46,23 +46,23 @@ public class CommandParser {
 	 * @param typeString
 	 * @return
 	 */
-	private static Command.TYPE determineCommandType(String typeString) {
+	private static ParsedInput.TYPE determineCommandType(String typeString) {
 		if(typeString.equals(COMMAND_ADD)) {
-			return Command.TYPE.ADD;
+			return ParsedInput.TYPE.ADD;
 		} else if(typeString.equals(COMMAND_DELETE)) {
-			return Command.TYPE.DELETE;
+			return ParsedInput.TYPE.DELETE;
 		} else if (typeString.equals(COMMAND_UNDO)) {
-			return Command.TYPE.UNDO;
+			return ParsedInput.TYPE.UNDO;
 		} else if (typeString.equals(COMMAND_EDIT)) {
-			return Command.TYPE.EDIT;
+			return ParsedInput.TYPE.EDIT;
 		} else if (typeString.equals(COMMAND_MARK)) {
-			return Command.TYPE.MARK;
+			return ParsedInput.TYPE.MARK;
 		} else if (typeString.equals(COMMAND_SEARCH)) {
-			return Command.TYPE.SEARCH;
+			return ParsedInput.TYPE.SEARCH;
 		} else if (typeString.equals(COMMAND_DISPLAY)) {
-			return Command.TYPE.DISPLAY;
+			return ParsedInput.TYPE.DISPLAY;
 		} else {
-			return Command.TYPE.ERROR;
+			return ParsedInput.TYPE.ERROR;
 		}
 	}
 

@@ -2,7 +2,7 @@ import java.util.GregorianCalendar;
 
 public class AddHandler {
 
-    public static Signal process(Command c, Memory memory) {
+    public static Signal process(ParsedInput c, Memory memory) {
         KeyParamPair[] commandArray = c.getParamPairArray();
         int numberOfElements = commandArray.length;
         
@@ -17,17 +17,17 @@ public class AddHandler {
         	//Deadline
         	case 2 :
         	String deadlineName = commandArray[0].getParam();
-        	GregorianCalendar deadlineTime =  dateParser(commandArray[1].getParam());
-        	Todo deadline = new Todo(new GregorianCalendar(), deadlineName, deadlineTime );
+        	//GregorianCalendar deadlineTime =  dateParser(commandArray[1].getParam());
+        	//Todo deadline = new Todo(new GregorianCalendar(), deadlineName, deadlineTime );
         	//Memory.add(deadline);
         	break;
         	
         	//Event
         	case 3 :
         	String eventName = commandArray[0].getParam();
-            GregorianCalendar eventStartTime =  dateParser(commandArray[1].getParam());
-            GregorianCalendar eventEndTime = dateParser(commandArray[2].getParam());
-            Todo event = new Todo(new GregorianCalendar(), eventName, eventStartTime, eventEndTime);
+            //GregorianCalendar eventStartTime =  dateParser(commandArray[1].getParam());
+            //GregorianCalendar eventEndTime = dateParser(commandArray[2].getParam());
+            //Todo event = new Todo(new GregorianCalendar(), eventName, eventStartTime, eventEndTime);
         	//Memory.add(todo);
         	break;
         }
