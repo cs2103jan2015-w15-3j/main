@@ -8,72 +8,55 @@
 import java.util.Scanner;
 
 public class Zeitgeist {
-    public static AddHandler mAddHandler;
-    public static DeleteHandler mDeleteHandler;
-    public static MarkHandler mMarkHandler;
-    public static UndoHandler mUndoHandler;
-    public static SearchHandler mSearchHandler;
-    public static EditHandler mEditHandler;
-    public static ErrorHandler mErrorHandler;
-    public static DisplayHandler mDisplayHandler;
-    public static MessagePrinter printer;
-   
     public static Scanner scn;
     
     public static void main(String[] args) {
         scn = new Scanner(System.in);
+        Memory memory = new Memory();
     	
         while(scn.hasNextLine()){
 	        String input = scn.nextLine();
 	        Command c = CommandParser.parse(input);
-	        dispatchCommand(c);
+	        dispatchCommand(c, memory);
     	}
     }
 
-    private static void dispatchCommand(Command c) {
+    private static void dispatchCommand(Command userCommand, Memory memory) {
     	Signal processSignal = null;
     	
-    	printer = new MessagePrinter();
-        switch (c.type) {
+        switch (userCommand.type) {
             case ADD :
-                mAddHandler = new AddHandler();
-                processSignal = mAddHandler.process(c);
-                printer.printProcessStateMessage(processSignal);
+                processSignal = AddHandler.process(userCommand, memory);
+                MessagePrinter.printProcessStateMessage(processSignal);
                 break;
             case DELETE :
-            	mDeleteHandler = new DeleteHandler();
-            	processSignal = mDeleteHandler.process(c);
-            	printer.printProcessStateMessage(processSignal);
+            	processSignal = DeleteHandler.process(userCommand, memory);
+            	MessagePrinter.printProcessStateMessage(processSignal);
                 break;
                 
             case MARK :
-            	mMarkHandler = new MarkHandler();
-            	processSignal = mMarkHandler.process(c);      
-            	printer.printProcessStateMessage(processSignal);
+            	processSignal = MarkHandler.process(userCommand, memory);      
+            	MessagePrinter.printProcessStateMessage(processSignal);
             	break;
             
             case UNDO :
-            	mUndoHandler = new UndoHandler();
-            	processSignal = mUndoHandler.process(c);      
-            	printer.printProcessStateMessage(processSignal);
+            	processSignal = UndoHandler.process(userCommand, memory);      
+            	MessagePrinter.printProcessStateMessage(processSignal);
             	break;
             	
             case EDIT :
-            	mSearchHandler = new SearchHandler();
-            	processSignal = mSearchHandler.process(c);
-            	printer.printProcessStateMessage(processSignal);
+            	processSignal = SearchHandler.process(userCommand, memory);
+            	MessagePrinter.printProcessStateMessage(processSignal);
             	break;
             
-            case DISPLAY : 
-            	mDisplayHandler = new DisplayHandler();
-            	processSignal = mDisplayHandler.process(c);
-            	printer.printProcessStateMessage(processSignal);
+            case DISPLAY :
+            	processSignal = DisplayHandler.process(userCommand, memory);
+            	MessagePrinter.printProcessStateMessage(processSignal);
             	break;
             	
             case ERROR :
-            	mErrorHandler = new ErrorHandler();
-            	processSignal = mErrorHandler.process(c);
-            	printer.printProcessStateMessage(processSignal);
+            	processSignal = ErrorHandler.process(userCommand, memory);
+            	MessagePrinter.printProcessStateMessage(processSignal);
                 break;
         }
 
