@@ -1,7 +1,7 @@
 
 public class MarkHandler {
 
-	public static Signal process(Command c, Memory memory) {
+	public static Signal process(ParsedInput c, Memory memory) {
         KeyParamPair[] pairs = c.getParamPairArray();
 
         // Ensure that there is only pair of key and params

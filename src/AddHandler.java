@@ -2,7 +2,7 @@ import java.util.GregorianCalendar;
 
 public class AddHandler {
 
-    public static Signal process(Command c, Memory memory) {
+    public static Signal process(ParsedInput c, Memory memory) {
         KeyParamPair[] commandArray = c.getParamPairArray();
         int numberOfElements = commandArray.length;
         
