@@ -1,5 +1,5 @@
 
-public class Command {
+public class ParsedInput {
 	
 	public TYPE type;
 	public KeyParamPair[] paramPairArray;
@@ -9,7 +9,7 @@ public class Command {
 
     }
     
-    public Command(TYPE cType, KeyParamPair[] pairArray) {
+    public ParsedInput(TYPE cType, KeyParamPair[] pairArray) {
     	type = cType;
     	paramPairArray = pairArray;
 	}
