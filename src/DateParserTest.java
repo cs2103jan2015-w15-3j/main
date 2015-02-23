@@ -5,7 +5,7 @@ import java.util.GregorianCalendar;
 import org.junit.Test;
 
 
-public class _DateParserTest {
+public class DateParserTest {
 
 	@Test
 	public void testOneDate() {

@@ -1,5 +1,5 @@
 
-public class CommandParser {
+public class InputStringParser {
 
     private static final String COMMAND_DISPLAY = "display";
 	private static final String COMMAND_SEARCH = "search";
