@@ -19,6 +19,11 @@ import java.util.ArrayList;
 public class AddHandler {
 
     public static Signal process(ParsedInput input, Memory memory) {
+    	//Check for valid number of keywords
+    	int numberOfKeywords = input.getParamPairList().size();
+    	if(numberOfKeywords < 1 || numberOfKeywords > 3){
+    		return new Signal(Signal.SIGNAL_INVALID_PARAMS);
+    	}
     	
     	try{
 	        ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
@@ -60,9 +65,9 @@ public class AddHandler {
 	        	break;
 	        }
     	} catch(Exception e) {
-    		return new Signal(-1);
+    		return new Signal(Signal.SIGNAL_ERROR);
     	}
-        return new Signal(1);
+        return new Signal(Signal.SIGNAL_SUCCESS);
     }
 
 }
