@@ -14,14 +14,15 @@
  */
 
 import org.joda.time.DateTime;
+import java.util.ArrayList;
 
 public class AddHandler {
 
     public static Signal process(ParsedInput input, Memory memory) {
     	
     	try{
-	        KeyParamPair[] keyParamPairArray = input.getParamPairArray();
-	        int numberOfElements = keyParamPairArray.length;
+	        ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
+	        int numberOfElements = keyParamPairList.size();
 	        DateTime currentTime = DateTime.now();
 	        
 	        switch(numberOfElements){
@@ -29,7 +30,7 @@ public class AddHandler {
 	        	//Example:
 	        	//KeyParamPair 0: add <task>
 	        	case 1 :
-	        	String floatingTaskName = keyParamPairArray[0].getParam();
+	        	String floatingTaskName = keyParamPairList.get(0).getParam();
 	        	Todo floatingTask = new Todo(currentTime , floatingTaskName);
 	        	memory.add(floatingTask);
 	        	break;
@@ -39,8 +40,8 @@ public class AddHandler {
 	        	//KeyParamPair 0: add <task>
 	        	//KeyParamPair 1: by <date>
 	        	case 2 :
-	        	String deadlineName = keyParamPairArray[0].getParam();
-	        	DateTime deadlineTime = DateParser.parseDate(keyParamPairArray[1].getParam());
+	        	String deadlineName = keyParamPairList.get(0).getParam();
+	        	DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(0).getParam());
 	        	Todo deadline = new Todo(currentTime, deadlineName, deadlineTime );
 	        	memory.add(deadline);
 	        	break;
@@ -51,9 +52,9 @@ public class AddHandler {
 	        	//KeyParamPair 1: from <date>
 	        	//KeyParamPair 2: to <date>
 	        	case 3 :
-	        	String eventName = keyParamPairArray[0].getParam();
-	            DateTime eventStartTime = DateParser.parseDate(keyParamPairArray[1].getParam());
-	            DateTime eventEndTime = DateParser.parseDate(keyParamPairArray[2].getParam());
+	        	String eventName = keyParamPairList.get(0).getParam();
+	            DateTime eventStartTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
+	            DateTime eventEndTime = DateParser.parseDate(keyParamPairList.get(2).getParam());
 	            Todo event = new Todo(currentTime, eventName, eventStartTime, eventEndTime);
 	        	memory.add(event);
 	        	break;
