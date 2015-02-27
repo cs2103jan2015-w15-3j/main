@@ -1,6 +1,6 @@
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import org.joda.time.DateTime;
 
 import com.joestelmach.natty.Parser;
 
@@ -19,37 +19,37 @@ public class DateParser {
 	/**
 	 * Parses a single date String provided to the DateParser.
 	 * 
-	 * @return The first date encountered in the string.
+	 * @return The immutable first date encountered in the string.
 	 */
-	public static GregorianCalendar parseDate(String dateString) {
-		GregorianCalendar gregDate = new GregorianCalendar();
+	public static DateTime parseDate(String dateString) {
+		DateTime returnDateTime = null;
 		Parser parser = new Parser(TimeZone.getDefault());
 		try {
-			Date date = parser.parse(dateString).get(0).getDates()
+			Date parsedDate = parser.parse(dateString).get(0).getDates()
 					.get(0);
-			gregDate.setTime(date);
+			returnDateTime = new DateTime(parsedDate);
 		} catch (NullPointerException e) {
 			System.out.println("Input string is not defined.");
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		return gregDate;
+		return returnDateTime;
 	}
 
 	/**
-	 * Parses the latest String provided to the DateParser.
+	 * Parses a String with multiple dates provided to the DateParser, and returns the nth date.
 	 * 
 	 * @param dateNumber Specify which date to return in the event string
 	 *            contains multiple dates.
-	 * @return The nth date processed in the string.
+	 * @return The immutable nth date processed in the string.
 	 */
-	public static GregorianCalendar parseDate(String dateString, int dateNumber) {
-		GregorianCalendar gregDate = new GregorianCalendar();
+	public static DateTime parseDate(String dateString, int dateNumber) {
+		DateTime returnDateTime = null;
 		Parser parser = new Parser(TimeZone.getDefault());
 		try {
-			Date date = parser.parse(dateString).get(0).getDates()
+			Date parsedDate = parser.parse(dateString).get(0).getDates()
 					.get(dateNumber - 1);
-			gregDate.setTime(date);
+			returnDateTime = new DateTime(parsedDate);
 		} catch (IndexOutOfBoundsException e) {
 			System.out.println("Referenced date number exceeds number of date entries detected.");
 			e.printStackTrace();
@@ -59,7 +59,7 @@ public class DateParser {
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		return gregDate;
+		return returnDateTime;
 	}
 
 }
