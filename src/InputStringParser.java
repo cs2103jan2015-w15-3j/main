@@ -15,9 +15,12 @@ public class InputStringParser {
 	public static ParsedInput parse(String input) {
     	String[] commandArray = processInput(input);
     	ParsedInput.TYPE cType = getCommandType(commandArray);
+    	
+    	//if command type is error
     	if(cType == ParsedInput.TYPE.ERROR) {
     		return new ParsedInput(cType, null);
     	}
+    	
     	KeyParamPair[] pairArray = extractParam(commandArray);
         return new ParsedInput(cType, pairArray);
     }
@@ -41,6 +44,9 @@ public class InputStringParser {
 		int tableIndex = 0;
 		String tempParam = STRING_EMPTY;
 		String currentParam;
+		
+		//traverses the commandArray. tempParam concats until a keyword is recognised
+		//Then, a KeyParamPair is created with the previous keyword and the tempParam.
 		for(int i = 1; i < commandArray.length; i++) {
 			currentParam = commandArray[i];
 			if(InputStringKeyword.isKeyword(currentParam)) {
