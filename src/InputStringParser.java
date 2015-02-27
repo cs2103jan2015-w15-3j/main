@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class InputStringParser {
 
@@ -13,53 +14,70 @@ public class InputStringParser {
 
 	
 	public static ParsedInput parse(String input) {
-    	String[] commandArray = processInput(input);
-    	ParsedInput.TYPE cType = getCommandType(commandArray);
+    	String[] inputArray = processInput(input);
+    	ParsedInput.TYPE cType = getCommandType(inputArray);
     	
     	//if command type is error
     	if(cType == ParsedInput.TYPE.ERROR) {
     		return new ParsedInput(cType, null);
     	}
     	
-    	KeyParamPair[] pairArray = extractParam(commandArray);
+    	ArrayList<KeyParamPair> pairArray = extractParam(inputArray);
         return new ParsedInput(cType, pairArray);
     }
 
+	/**
+	 * Takes in a user input string and puts individual words into elements in a String array. 
+	 *
+	 * @param input Input string from Zeitgeist class
+	 * @return A String array where each element is a word from the original string
+	 */
 	public static String[] processInput(String input) {
 		input = input.trim();
 		input = input.toLowerCase();
 		return input.split(REGEX_SPACE);
 	}
 
-	public static KeyParamPair[] extractParam(String[] commandArray) {
-		String key = commandArray[0];
-		int length = getNoOfKeywords(commandArray);
-		KeyParamPair[] resultTable = new KeyParamPair[length];
-		resultTable = fillUpPairArray(commandArray, key, length, resultTable);
-		return resultTable;
+	public static ArrayList<KeyParamPair> extractParam(String[] inputArray) {
+		String key = inputArray[0];
+		int length = getNoOfKeywords(inputArray);
+		ArrayList<KeyParamPair> resultList = fillUpPairArray(inputArray, key, length);
+		return resultList;
 	}
-
-	public static KeyParamPair[] fillUpPairArray(String[] commandArray, String key,
-			int length, KeyParamPair[] resultTable) {
-		int tableIndex = 0;
+	
+	/**
+	 * Processes the inputArray to fill up the ArrayList with KeyParamPair objects
+	 * 
+	 * @param inputArray A string array with the user input split into individual words.
+	 * @param key The command key (first keyword) in the user input string.
+	 * @param length The total number of keywords in the user input string.
+	 * @return A ArrayList<KeyParamPair> object with KeyParamPair objects
+	 */
+	public static ArrayList<KeyParamPair> fillUpPairArray(String[] inputArray, String key,
+			int length) {
+		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
 		String tempParam = STRING_EMPTY;
 		String currentParam;
 		
-		//traverses the commandArray. tempParam concats until a keyword is recognised
-		//Then, a KeyParamPair is created with the previous keyword and the tempParam.
-		for(int i = 1; i < commandArray.length; i++) {
-			currentParam = commandArray[i];
+		for(int i = 1; i < inputArray.length; i++) {
+			currentParam = inputArray[i];
+			
+			//inputArray[i] is a keyword. Create a KeyParamPair with previous keyword 
+			//and tempParam and add to ArrayList. Update key and tempParam.
 			if(InputStringKeyword.isKeyword(currentParam)) {
-				resultTable[tableIndex] = new KeyParamPair(key, tempParam);
-				tableIndex++;
+				resultList.add(new KeyParamPair(key, tempParam));
 				key = currentParam;
 				tempParam = STRING_EMPTY;
+			
+				//inputArray[i] is not a keyword; concat with tempParam.
 			} else {
 				tempParam = combineParamString(tempParam, currentParam);
 			}
 		}
-		resultTable[length -1] = new KeyParamPair(key, tempParam);
-		return resultTable;
+		//last KeyParamPair to be added to ArrayList
+		resultList.add(new KeyParamPair(key, tempParam));
+		
+		return resultList;
 	}
 
 	public static String combineParamString(String tempParam,
@@ -71,11 +89,11 @@ public class InputStringParser {
 		}
 	}
 
-	public static int getNoOfKeywords(String[] commandArray) {
+	public static int getNoOfKeywords(String[] inputArray) {
 		int count = 0;
 		String param;
-		for(int i = 0; i < commandArray.length; i++) {
-			param = commandArray[i];
+		for(int i = 0; i < inputArray.length; i++) {
+			param = inputArray[i];
 			if(InputStringKeyword.isKeyword(param)) {
 				count++;
 			}
@@ -87,11 +105,11 @@ public class InputStringParser {
 	 * This operation gets the type of command of the user input assuming
 	 * that the keyword of command type is input by the user as the 
 	 * first word.
-	 * @param commandArray
+	 * @param inputArray
 	 * @return
 	 */
-	public static ParsedInput.TYPE getCommandType(String[] commandArray) {
-		String typeString = commandArray[0];
+	public static ParsedInput.TYPE getCommandType(String[] inputArray) {
+		String typeString = inputArray[0];
 		return determineCommandType(typeString);
 	}
 

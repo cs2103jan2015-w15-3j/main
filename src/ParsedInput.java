@@ -1,17 +1,18 @@
+import java.util.ArrayList;
 
 public class ParsedInput {
 	
 	public TYPE type;
-	public KeyParamPair[] paramPairArray;
+	public ArrayList<KeyParamPair> paramPairList;
 	
 	public enum TYPE {
         ADD, MARK, DELETE, SEARCH, EDIT, DISPLAY, UNDO, ERROR;
 
     }
     
-    public ParsedInput(TYPE cType, KeyParamPair[] pairArray) {
+    public ParsedInput(TYPE cType, ArrayList<KeyParamPair> pairList) {
     	type = cType;
-    	paramPairArray = pairArray;
+    	paramPairList= pairList;
 	}
     
     public TYPE getType() {
@@ -22,8 +23,8 @@ public class ParsedInput {
 		this.type = type;
 	}
 
-	public KeyParamPair[] getParamPairArray() {
-		return paramPairArray;
+	public ArrayList<KeyParamPair> getParamPairList() {
+		return paramPairList;
 	}
 	
 	public void execute() {
