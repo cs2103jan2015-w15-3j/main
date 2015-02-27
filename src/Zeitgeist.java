@@ -27,36 +27,36 @@ public class Zeitgeist {
         switch (userCommand.type) {
             case ADD :
                 processSignal = AddHandler.process(userCommand, memory);
-                MessagePrinter.printProcessStateMessage(processSignal);
+                SignalHandler.printProcessStateMessage(processSignal);
                 break;
             case DELETE :
             	processSignal = DeleteHandler.process(userCommand, memory);
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
                 break;
                 
             case MARK :
             	processSignal = MarkHandler.process(userCommand, memory);      
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             
             case UNDO :
             	processSignal = UndoHandler.process(userCommand, memory);      
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             	
             case EDIT :
             	processSignal = SearchHandler.process(userCommand, memory);
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             
             case DISPLAY :
             	processSignal = DisplayHandler.process(userCommand, memory);
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             	
             case ERROR :
             	processSignal = ErrorHandler.process(userCommand, memory);
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
                 break;
         }
 

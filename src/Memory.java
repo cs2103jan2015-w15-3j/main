@@ -27,7 +27,11 @@ public class Memory {
 	}
 
 	public void saveCurrentState() {
-		stateHistory.add(currentState);
+		ArrayList<Todo> currentStateCopy = new ArrayList<Todo>();
+		for(Todo todo: currentState) {
+			currentStateCopy.add(new Todo(todo));
+		}
+		stateHistory.add(currentStateCopy);
 	}
 
 	public void restoreLastState() {
