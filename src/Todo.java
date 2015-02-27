@@ -1,4 +1,4 @@
-import java.util.GregorianCalendar;
+import org.joda.time.DateTime;
 
 /**
  * @author Ikarus
@@ -7,11 +7,11 @@ import java.util.GregorianCalendar;
 public class Todo {
 
 	public String title;
-	public GregorianCalendar createdOn, modifiedOn, startTime, endTime;
+	public DateTime createdOn, modifiedOn, startTime, endTime;
 	public boolean isDone;
 	
 	// Floating task
-	public Todo(GregorianCalendar currentTime, String userTitle) {
+	public Todo(DateTime currentTime, String userTitle) {
 		title = userTitle;
 		createdOn = currentTime;
 		modifiedOn = null;
@@ -21,7 +21,7 @@ public class Todo {
 	}
 	
 	// Deadline
-	public Todo(GregorianCalendar currentTime, String userTitle, GregorianCalendar deadline) {
+	public Todo(DateTime currentTime, String userTitle, DateTime deadline) {
 		title = userTitle;
 		createdOn = currentTime;
 		modifiedOn = null;
@@ -31,7 +31,7 @@ public class Todo {
 	}
 	
 	// Event
-	public Todo(GregorianCalendar currentTime, String userTitle, GregorianCalendar start, GregorianCalendar end) {
+	public Todo(DateTime currentTime, String userTitle, DateTime start, DateTime end) {
 		title = userTitle;
 		createdOn = currentTime;
 		modifiedOn = null;
