@@ -40,4 +40,12 @@ public class Memory {
 		currentState = stateHistory.remove(stateHistory.size() - 1);
 	}
 
+    /**
+     * Method to get all the todos for displaying purposes
+     * 
+     * @return all todos as ArrayList<Todo>
+     */
+    public ArrayList<Todo> getAllTodos() {
+        return currentState;
+    }
 }
