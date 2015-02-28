@@ -17,7 +17,7 @@ public class ParsedInput {
     
     public TYPE getType() {
 		return type;
-	}
+		}
 
 	public void setType(TYPE type) {
 		this.type = type;
