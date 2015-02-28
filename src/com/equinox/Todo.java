@@ -54,4 +54,28 @@ public class Todo {
 	public String toString() {
 		return (modifiedOn.toString() + " " + createdOn.toString() + " " + title + " " + startTime.toString() + " " + endTime.toString() + " " + isDone);
 	}
+
+    /**
+     * Method to return a DateTime of the todo for ordering them chronologically
+     * 
+     * The order of preference: start time > end time > null
+     * 
+     * For events, start time will be returned
+     * 
+     * For deadlines, end time will be returned
+     * 
+     * For floating todos, null will be returned
+     * 
+     * @return DateTime object
+     */
+    public DateTime getDateTime() {
+        if (this.startTime != null) {
+            return this.startTime;
+        } else if (this.endTime != null) {
+            return this.endTime;
+        } else {
+            return null;
+        }
+
+    }
 }
