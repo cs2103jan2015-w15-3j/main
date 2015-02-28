@@ -11,6 +11,7 @@ public class Memory {
 
 	public Memory() {
 		currentState = new ArrayList<Todo>();
+		stateHistory = new ArrayList<ArrayList<Todo>>();
 	}
 
 	public void add(Todo todo) {
