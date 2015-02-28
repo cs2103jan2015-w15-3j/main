@@ -1,6 +1,8 @@
 package com.equinox;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 
 import org.joda.time.DateTime;
@@ -27,12 +29,27 @@ public class DisplayHandler {
             return new Signal(Signal.SIGNAL_EMPTY_TODO);
         }
 
-        displayString = getDisplayString(todos);
+        displayString = getDisplayChrono(todos);
         System.out.println(displayString);
         return new Signal(Signal.SIGNAL_SUCCESS);
-	}
+    }
 
-    public static String getDisplayString(ArrayList<Todo> todos) {
+    public static String getDisplayChrono(ArrayList<Todo> todos) {
+        ArrayList<Todo> clonedTodos = cloneSortChrono(todos);
+        return getDisplayDefault(clonedTodos);
+    }
+
+    private static ArrayList<Todo> cloneSortChrono(ArrayList<Todo> todos) {
+        ArrayList<Todo> clonedTodos = new ArrayList<Todo>(todos.size());
+        for (Todo todo : todos) {
+            clonedTodos.add(new Todo(todo));
+        }
+        // By default, we order the todos in chronological order
+        Collections.sort(clonedTodos, new ChronoComparator());
+        return clonedTodos;
+    }
+
+    public static String getDisplayDefault(ArrayList<Todo> todos) {
         Iterator<Todo> iterator = todos.iterator();
         StringBuilder sBuilder = new StringBuilder();
         while (iterator.hasNext()) {
@@ -76,6 +93,29 @@ public class DisplayHandler {
         return String.format(eventFormat, title, startDateString,
                 startTimeString, endTimeString)
                 + System.lineSeparator();
+    }
+
+    static class ChronoComparator implements Comparator<Todo> {
+
+        @Override
+        public int compare(Todo o1, Todo o2) {
+            // Floating tasks with no time will be sorted in lexicographical
+            // order
+            if (o1.getDateTime() == null && o2.getDateTime() == null) {
+                return o1.title.compareTo(o2.title);
+            }
+            // If only one todo has time, the other with no time will be sorted
+            // to the back
+            if (o1.getDateTime() == null) {
+                return 1;
+            } else if (o2.getDateTime() == null) {
+                return -1;
+            } else {
+                // Both have time, compare directly
+                return o1.getDateTime().compareTo(o2.getDateTime());
+            }
+        }
+
     }
 
 }
