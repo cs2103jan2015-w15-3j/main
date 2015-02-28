@@ -34,6 +34,10 @@ public class Memory {
 		}
 		stateHistory.add(currentStateCopy);
 	}
+	
+	public int getStateHistorySize(){
+		return stateHistory.size();
+	}
 
 	public void restoreLastState() {
 		// Discard previous state
