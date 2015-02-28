@@ -41,5 +41,50 @@ public class Signal {
     public String[] getParams() {
         return this.params;
     }
-
-}
+    
+    public static boolean areParamsEqual(String[] params1, String[] params2){
+    	//check if params1 and params2 are null
+    	if(params1 == null && params2 == null){
+    		return true;
+    	} else if(params1 == null && params2 !=null) {
+    		return false;
+    	} else if(params1 != null && params2 == null){
+    		return false;
+    	}
+    	
+    	//Neither params1 nor params2 are null.
+    	//Check for equal length
+    	if(params1.length != params2.length){
+    		return false;
+    	}
+    	//Every string in params1 is equal to every corresponding string in params2
+    	int index = 0;
+    	for(String str : params1){
+    		if(!str.equals(params2[index])){
+    			return false;
+    		}
+    		index++;
+    	}
+    	return true;
+    }
+    
+    @Override
+    //for unit testing purposes
+    public boolean equals(Object obj){
+    	if(this == obj){
+    		return true;
+    	}
+    	if(obj == null){
+    		return false;
+    	}
+    	if(this.getClass() != obj.getClass()){
+    		return false;
+    	}
+    	final Signal other = (Signal) obj;
+    	
+    	if(!(this.type == other.type) || !(Signal.areParamsEqual(this.params, other.params))){
+    		return false;
+    	}
+    	return true;	
+    }
+ }
