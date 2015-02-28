@@ -14,11 +14,11 @@ public class Zeitgeist {
     public static void main(String[] args) {
         scn = new Scanner(System.in);
         Memory memory = new Memory();
-    	
-        while(scn.hasNextLine()){
-	        String input = scn.nextLine();
+        String input = scn.nextLine();
+        while (true) {
 	        ParsedInput c = InputStringParser.parse(input);
 	        dispatchCommand(c, memory);
+            input = scn.nextLine();
     	}
     }
 
