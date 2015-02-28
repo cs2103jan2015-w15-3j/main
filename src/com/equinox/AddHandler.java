@@ -9,7 +9,8 @@ package com.equinox;
  * 
  * @param input A ParsedInput object that contains the command TYPE and a keyParamPair array
  * @param memory A Memory object that stores Todo objects
- * @return A Signal object whose type is 1 if AddHandler is successful, -1 if unsuccessful.
+ * @return A Signal object whose type is SIGNAL_SUCCESS if AddHandler is successful,
+ * SIGNAL_ERROR if unsuccessful.
  * 
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  */

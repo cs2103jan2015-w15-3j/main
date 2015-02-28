@@ -19,6 +19,7 @@ public class Signal {
     public static final int SIGNAL_NOT_FOUND = 404;
     public static final int SIGNAL_INVALID_COMMAND = -2;
     public static final int SIGNAL_INVALID_PARAMS = -3;
+    public static final int SIGNAL_NO_PREVIOUS_STATE = -4;
 
     private int type;
     private String[] params;
