@@ -1,3 +1,4 @@
+package com.equinox;
 /**
  * The Signal Class is used for constructing a signal as a feedback mechanism
  * for interactions between different processes

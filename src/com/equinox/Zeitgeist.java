@@ -1,3 +1,4 @@
+package com.equinox;
 
 /**
  * This is where it all begins.

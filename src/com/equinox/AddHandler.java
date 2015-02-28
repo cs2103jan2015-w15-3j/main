@@ -1,3 +1,4 @@
+package com.equinox;
 /**
  * The AddHandler class handles all user commands with "add" as the first keyword.
  * 

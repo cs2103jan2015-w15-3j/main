@@ -1,3 +1,4 @@
+package com.equinox;
 import org.joda.time.DateTime;
 
 /**
