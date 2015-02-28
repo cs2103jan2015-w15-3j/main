@@ -10,9 +10,15 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public class DisplayHandler {
+    // Signals for whether to display pending or completed todos
+    private static final int showPending = 0;
+    private static final int showCompleted = 1;
+    private static final int showAll = 2;
+
     private static final String eventFormat = "%1$s %2$s %3$s - %4$s";
     private static final String deadLineFormat = "%1$s by %2$s";
     private static final String floatingFormat = "%1$s";
+
     private static final DateTimeFormatter deadlineTimeFormatter = DateTimeFormat
             .forPattern("dd MMMM HH:mm");
     private static final DateTimeFormatter floatingTimeFormatter = DateTimeFormat
@@ -29,14 +35,15 @@ public class DisplayHandler {
             return new Signal(Signal.SIGNAL_EMPTY_TODO);
         }
 
-        displayString = getDisplayChrono(todos);
+        // By default we show pending tasks, in chronological order
+        displayString = getDisplayChrono(todos, showPending);
         System.out.println(displayString);
         return new Signal(Signal.SIGNAL_SUCCESS);
     }
 
-    public static String getDisplayChrono(ArrayList<Todo> todos) {
+    public static String getDisplayChrono(ArrayList<Todo> todos, int signal) {
         ArrayList<Todo> clonedTodos = cloneSortChrono(todos);
-        return getDisplayDefault(clonedTodos);
+        return getDisplayDefault(clonedTodos, signal);
     }
 
     private static ArrayList<Todo> cloneSortChrono(ArrayList<Todo> todos) {
@@ -49,15 +56,21 @@ public class DisplayHandler {
         return clonedTodos;
     }
 
-    public static String getDisplayDefault(ArrayList<Todo> todos) {
+    public static String getDisplayDefault(ArrayList<Todo> todos, int signal) {
         Iterator<Todo> iterator = todos.iterator();
         StringBuilder sBuilder = new StringBuilder();
         while (iterator.hasNext()) {
             Todo todo = iterator.next();
-            // Skip the finished tasks
-            if (todo.isDone) {
+            // Show pending, skip the completed tasks
+            if (signal == showPending && todo.isDone) {
                 continue;
             }
+
+            // Show completed, skip the pending tasks
+            if (signal == showCompleted && !todo.isDone) {
+                continue;
+            }
+
             if (todo.startTime != null && todo.endTime != null) {
                 sBuilder.append(formatEvent(todo));
             } else if (todo.endTime != null) {

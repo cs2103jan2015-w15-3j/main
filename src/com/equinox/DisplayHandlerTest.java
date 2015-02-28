@@ -56,13 +56,13 @@ public class DisplayHandlerTest {
 
     @Test
     public void testDisplayDefaultCompleted() {
-        String expected = "CIP event 03 March 10:00 - 00:00";
+        String expected = "CIP event 03 March 10:00 - 00:00" + "\n";
         assertEquals(expected, DisplayHandler.getDisplayDefault(todos, 1));
     }
 
     @Test
     public void testDisplayChronoCompleted() {
-        String expected = "CIP event 03 March 10:00 - 00:00";
+        String expected = "CIP event 03 March 10:00 - 00:00" + "\n";
         assertEquals(expected, DisplayHandler.getDisplayChrono(todos, 1));
     }
 
