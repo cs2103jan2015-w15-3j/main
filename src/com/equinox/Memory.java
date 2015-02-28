@@ -1,3 +1,4 @@
+package com.equinox;
 import java.util.ArrayList;
 
 public class Memory {
@@ -27,7 +28,11 @@ public class Memory {
 	}
 
 	public void saveCurrentState() {
-		stateHistory.add(currentState);
+		ArrayList<Todo> currentStateCopy = new ArrayList<Todo>();
+		for(Todo todo: currentState) {
+			currentStateCopy.add(new Todo(todo));
+		}
+		stateHistory.add(currentStateCopy);
 	}
 
 	public void restoreLastState() {
@@ -35,4 +40,12 @@ public class Memory {
 		currentState = stateHistory.remove(stateHistory.size() - 1);
 	}
 
+    /**
+     * Method to get all the todos for displaying purposes
+     * 
+     * @return all todos as ArrayList<Todo>
+     */
+    public ArrayList<Todo> getAllTodos() {
+        return currentState;
+    }
 }
