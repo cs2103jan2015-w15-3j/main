@@ -3,8 +3,8 @@ import java.util.ArrayList;
 
 public class ParsedInput {
 	
-	public TYPE type;
-	public ArrayList<KeyParamPair> paramPairList;
+	private TYPE type;
+	private ArrayList<KeyParamPair> paramPairList;
 	
 	public enum TYPE {
         ADD, MARK, DELETE, SEARCH, EDIT, DISPLAY, UNDO, ERROR;

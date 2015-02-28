@@ -9,7 +9,7 @@ public class UndoHandler {
 
 	public static Signal process(ParsedInput input, Memory memory) {
 		//check if the number of parameters is correct
-		int numberOfKeywords = input.paramPairList.size();
+		int numberOfKeywords = input.getParamPairList().size();
 		if(numberOfKeywords != 1){
 			return new Signal(Signal.SIGNAL_INVALID_PARAMS);
 		}
