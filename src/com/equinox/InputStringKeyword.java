@@ -1,3 +1,4 @@
+package com.equinox;
 import java.util.HashMap;
 
 

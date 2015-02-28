@@ -1,3 +1,4 @@
+package com.equinox;
 
 public class SignalHandler {
 

@@ -1,3 +1,4 @@
+package com.equinox;
 import java.util.Date;
 import java.util.TimeZone;
 import org.joda.time.DateTime;
