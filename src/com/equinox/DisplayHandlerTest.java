@@ -37,6 +37,11 @@ public class DisplayHandlerTest {
         todo_done_1.isDone = true;
         todos.add(todo_done_1);
 
+        Todo todo_done_2 = new Todo(DateTime.now(), "CS1010 deadline",
+                DateParser.parseDate("3 Feb at 10pm"));
+        todo_done_2.isDone = true;
+        todos.add(todo_done_2);
+
         todos.add(new Todo(DateTime.now(), "read floating books"));
 
         todos.add(new Todo(DateTime.now(), "CS3243 project deadline",
@@ -50,33 +55,39 @@ public class DisplayHandlerTest {
 
     @Test
     public void testDisplayDefaultPending() {
-        String expected = "floating task"
-                + "\nCS3230 deadline by 06 March 21:00"
-                + "\nread floating books"
-                + "\nCS3243 project deadline by 07 March 09:00" + "\n";
+        String expected = "         floating task            "
+                + "\n06 Mar   CS3230 deadline           21:00"
+                + "\n         read floating b          "
+                + "\n07 Mar   CS3243 project            09:00" + "\n";
         assertEquals(expected, DisplayHandler.getDisplayDefault(todos, 0));
     }
 
     @Test
     public void testDisplayChronoPending() {
-        String expected = "CS3230 deadline by 06 March 21:00"
-                + "\nCS3243 project deadline by 07 March 09:00"
-                + "\nfloating task" + "\nread floating books" + "\n";
+        String expected = "06 Mar   CS3230 deadline           21:00"
+                + "\n07 Mar   CS3243 project            09:00"
+                + "\n         floating task            "
+                + "\n         read floating b          " + "\n";
         assertEquals(expected, DisplayHandler.getDisplayChrono(todos, 0));
     }
 
     @Test
     public void testDisplayDefaultCompleted() {
-        String expected = "eat more" + "\nCIP event 03 March 10:00 - 12:00"
-                + "\nnew year 01 January 10:00 - 11:00"
+        String expected = "         eat more                 "
+                + "\n03 Mar   CIP event                 10:00 - 12:00"
+                + "\n01 Jan   new year                  10:00 - 11:00"
+                + "\n03 Feb   CS1010 deadline           22:00"
                 + "\n";
         assertEquals(expected, DisplayHandler.getDisplayDefault(todos, 1));
     }
 
     @Test
     public void testDisplayChronoCompleted() {
-        String expected = "new year 01 January 10:00 - 11:00"
-                + "\nCIP event 03 March 10:00 - 12:00" + "\neat more" + "\n";
+        String expected = "01 Jan   new year                  10:00 - 11:00"
+                + "\n03 Feb   CS1010 deadline           22:00"
+                + "\n03 Mar   CIP event                 10:00 - 12:00"
+                + "\n         eat more                 " + "\n";
+
         assertEquals(expected, DisplayHandler.getDisplayChrono(todos, 1));
     }
 
