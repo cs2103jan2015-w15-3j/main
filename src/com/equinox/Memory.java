@@ -21,6 +21,10 @@ public class Memory {
 	public Todo get(int userIndex) {
 		return currentState.get(--userIndex);
 	}
+	
+	public int getCurrentSize() {
+		return currentState.size();
+	}
 
 	public void set(int userIndex, Todo todo) {
 		saveCurrentState();
