@@ -1,3 +1,4 @@
+package com.equinox;
 
 /**
  * This is where it all begins.
@@ -13,11 +14,11 @@ public class Zeitgeist {
     public static void main(String[] args) {
         scn = new Scanner(System.in);
         Memory memory = new Memory();
-    	
-        while(scn.hasNextLine()){
-	        String input = scn.nextLine();
+        String input = scn.nextLine();
+        while (true) {
 	        ParsedInput c = InputStringParser.parse(input);
 	        dispatchCommand(c, memory);
+            input = scn.nextLine();
     	}
     }
 
@@ -27,36 +28,36 @@ public class Zeitgeist {
         switch (userCommand.type) {
             case ADD :
                 processSignal = AddHandler.process(userCommand, memory);
-                MessagePrinter.printProcessStateMessage(processSignal);
+                SignalHandler.printProcessStateMessage(processSignal);
                 break;
             case DELETE :
             	processSignal = DeleteHandler.process(userCommand, memory);
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
                 break;
                 
             case MARK :
             	processSignal = MarkHandler.process(userCommand, memory);      
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             
             case UNDO :
             	processSignal = UndoHandler.process(userCommand, memory);      
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             	
             case EDIT :
             	processSignal = SearchHandler.process(userCommand, memory);
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             
             case DISPLAY :
             	processSignal = DisplayHandler.process(userCommand, memory);
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             	
             case ERROR :
             	processSignal = ErrorHandler.process(userCommand, memory);
-            	MessagePrinter.printProcessStateMessage(processSignal);
+            	SignalHandler.printProcessStateMessage(processSignal);
                 break;
         }
 

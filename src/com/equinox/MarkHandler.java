@@ -1,3 +1,4 @@
+package com.equinox;
 /**
  * This class handles all user input with "mark" as the first keyword with the format of mark <index>.
  * It retrieves a Todo object from memory at the given index, marks the Todo as done and replaces the 
