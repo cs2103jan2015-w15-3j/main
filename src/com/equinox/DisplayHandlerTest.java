@@ -17,14 +17,25 @@ public class DisplayHandlerTest {
         // Add different types of todos
         todos.add(new Todo(DateTime.now(), "floating task"));
 
+        // Completed tasks
         todos.add(new Todo(DateTime.now(), "CS3230 deadline", DateParser
                 .parseDate("6 March at 9pm")));
 
+        Todo todo_done_0 = new Todo(DateTime.now(), "eat more");
+        todo_done_0.isDone = true;
+        todos.add(todo_done_0);
+
         Todo todo_done = new Todo(DateTime.now(), "CIP event",
                 DateParser.parseDate("3 March at 10am"),
-                DateParser.parseDate("3 March at 12am"));
+                DateParser.parseDate("3 March at 12pm"));
         todo_done.isDone = true;
         todos.add(todo_done);
+        
+        Todo todo_done_1 = new Todo(DateTime.now(), "new year",
+                DateParser.parseDate("1 January at 10am"),
+                DateParser.parseDate("1 January at 11am"));
+        todo_done_1.isDone = true;
+        todos.add(todo_done_1);
 
         todos.add(new Todo(DateTime.now(), "read floating books"));
 
@@ -56,13 +67,16 @@ public class DisplayHandlerTest {
 
     @Test
     public void testDisplayDefaultCompleted() {
-        String expected = "CIP event 03 March 10:00 - 00:00" + "\n";
+        String expected = "eat more" + "\nCIP event 03 March 10:00 - 12:00"
+                + "\nnew year 01 January 10:00 - 11:00"
+                + "\n";
         assertEquals(expected, DisplayHandler.getDisplayDefault(todos, 1));
     }
 
     @Test
     public void testDisplayChronoCompleted() {
-        String expected = "CIP event 03 March 10:00 - 00:00" + "\n";
+        String expected = "new year 01 January 10:00 - 11:00"
+                + "\nCIP event 03 March 10:00 - 12:00" + "\neat more" + "\n";
         assertEquals(expected, DisplayHandler.getDisplayChrono(todos, 1));
     }
 
