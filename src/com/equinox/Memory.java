@@ -26,6 +26,11 @@ public class Memory {
 		saveCurrentState();
 		currentState.set(--userIndex, todo);
 	}
+	
+	public void remove(int userIndex) {
+		saveCurrentState();
+		currentState.remove(--userIndex);
+	}
 
 	public void saveCurrentState() {
 		ArrayList<Todo> currentStateCopy = new ArrayList<Todo>();
