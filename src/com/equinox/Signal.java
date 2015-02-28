@@ -15,6 +15,7 @@ public class Signal {
 	
     public static final int SIGNAL_ERROR = -1;
     public static final int SIGNAL_SUCCESS = 1;
+    public static final int SIGNAL_EMPTY_TODO = 2;
     public static final int SIGNAL_NOT_FOUND = 404;
     public static final int SIGNAL_INVALID_COMMAND = -2;
     public static final int SIGNAL_INVALID_PARAMS = -3;
