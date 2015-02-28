@@ -7,9 +7,9 @@ import org.joda.time.DateTime;
  */
 public class Todo {
 
-	public String title;
-	public DateTime createdOn, modifiedOn, startTime, endTime;
-	public boolean isDone;
+	protected String title;
+	protected DateTime createdOn, modifiedOn, startTime, endTime;
+	protected boolean isDone;
 	
 	// Floating task
 	public Todo(DateTime currentTime, String userTitle) {
@@ -42,7 +42,7 @@ public class Todo {
 	}
 	
 	// Copy of todo
-	public Todo(Todo todo) {
+	protected Todo(Todo todo) {
 		this.title = todo.title;
 		this.createdOn = todo.createdOn;
 		this.modifiedOn = todo.modifiedOn;

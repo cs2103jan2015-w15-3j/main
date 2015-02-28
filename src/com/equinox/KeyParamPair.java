@@ -1,8 +1,8 @@
 package com.equinox;
 
 public class KeyParamPair {
-	String keyword;
-	String param;
+	private String keyword;
+	private String param;
 	
 	KeyParamPair(String commandKeyword, String commandParam) {
 		keyword = commandKeyword;
