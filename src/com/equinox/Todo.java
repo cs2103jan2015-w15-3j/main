@@ -59,7 +59,7 @@ public class Todo {
 	
 	/**
 	 * Overriding the equals method. 
-	 * Compares the title, startTime, endTimme and isDone parameters between this Todo object
+	 * Compares the title, startTime, endTime and isDone parameters between this Todo object
 	 * and the other Todo object being compared to.
 	 * 
 	 * Returns true if the parameters being compared to are equal, false otherwise.
