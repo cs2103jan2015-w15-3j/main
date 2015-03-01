@@ -19,6 +19,7 @@ public class AddHandlerTest {
 	ParsedInput input;
 	ParsedInput.TYPE addCommand = ParsedInput.TYPE.ADD;
 	
+	private static final DateTime currentTime = DateTime.now();
 	private static final String addCommandString = "add";
 	private static final String userInputFloatingTask1 = "add study CS2105";
 	
@@ -47,12 +48,18 @@ public class AddHandlerTest {
 		//Test for equivalence in Signal object
 		assertEquals(invalidParamSignal, AddHandler.process(input, memory));
 	}
+	
+	@Test
+	public void testTodoPrint(){
+		Todo td1 = new Todo(currentTime, "do CS2103T TextBuddy CE2");
+		System.out.println(td1.toString());
+	}
+	
 	@Test
 	public void testFloatingTask(){
 		//Hard-coded parameters for AddHandler.process method
 		ParsedInput input = InputStringParser.parse(userInputFloatingTask1);
 		String taskTitle = "study CS2105";
-		DateTime currentTime = DateTime.now();
 		
 		//Add hard-coded input into memory using AddHandler's process method
 		AddHandler.process(input, memory);
