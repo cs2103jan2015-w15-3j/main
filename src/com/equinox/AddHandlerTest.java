@@ -47,23 +47,35 @@ public class AddHandlerTest {
 		//Test for equivalence in Signal object
 		assertEquals(invalidParamSignal, AddHandler.process(input, memory));
 	}
-	
+	@Test
 	public void testFloatingTask(){
 		//Hard-coded parameters for AddHandler.process method
 		ParsedInput input = InputStringParser.parse(userInputFloatingTask1);
 		String taskTitle = "study CS2105";
 		DateTime currentTime = DateTime.now();
-		/*		
-		ArrayList<KeyParamPair> list = new ArrayList<KeyParamPair>();
-		list.add(new KeyParamPair(addCommandString, taskTitle));
-	
-		input = new ParsedInput(addCommand, list);
-		*/
 		
+		//Add hard-coded input into memory using AddHandler's process method
 		AddHandler.process(input, memory);
-		
-		//Test for equivalence in Todo object
+
+		//Test for equivalence between Todo object in memory and testTodo
 		Todo testTodo = new Todo(currentTime, taskTitle);
+		Todo fromMemory = memory.get(1);
+
+		if(testTodo.equals(fromMemory)){
+			System.out.println("Success");
+		} else {
+			System.out.println("Failure");
+		}
+		
+		assertEquals(testTodo, fromMemory);
+
+		/*
+		ParsedInput input2 = InputStringParser.parse("add one");
+		testTodo = new Todo(currentTime, "two");
+		AddHandler.process(input2, memory);
 		assertEquals(testTodo, memory.get(memory.getCurrentSize()));
+		 */
 	}
+	
+	
 }

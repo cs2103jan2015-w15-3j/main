@@ -53,7 +53,7 @@ public class InputStringParserTest {
 		assertEquals(2, InputStringParser.getNoOfKeywords(a3));
 		assertEquals(1, InputStringParser.getNoOfKeywords(a4));
 	}
-	
+	/*
 	@Test
 	public void testExtractParam() {
 		assertArrayEquals(p1, InputStringParser.extractParam(a1));
@@ -61,4 +61,5 @@ public class InputStringParserTest {
 		assertArrayEquals(p3, InputStringParser.extractParam(a3));
 		assertArrayEquals(p4, InputStringParser.extractParam(a4));
 	}
+	*/
 }
