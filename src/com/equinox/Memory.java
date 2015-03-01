@@ -11,6 +11,7 @@ public class Memory {
 
 	public Memory() {
 		currentState = new ArrayList<Todo>();
+		stateHistory = new ArrayList<ArrayList<Todo>>();
 	}
 
 	public void add(Todo todo) {
@@ -21,10 +22,19 @@ public class Memory {
 	public Todo get(int userIndex) {
 		return currentState.get(--userIndex);
 	}
+	
+	public int getCurrentSize() {
+		return currentState.size();
+	}
 
 	public void set(int userIndex, Todo todo) {
 		saveCurrentState();
 		currentState.set(--userIndex, todo);
+	}
+	
+	public void remove(int userIndex) {
+		saveCurrentState();
+		currentState.remove(--userIndex);
 	}
 
 	public void saveCurrentState() {
@@ -33,6 +43,10 @@ public class Memory {
 			currentStateCopy.add(new Todo(todo));
 		}
 		stateHistory.add(currentStateCopy);
+	}
+	
+	public int getStateHistorySize(){
+		return stateHistory.size();
 	}
 
 	public void restoreLastState() {

@@ -25,7 +25,7 @@ public class Zeitgeist {
     private static void dispatchCommand(ParsedInput userCommand, Memory memory) {
     	Signal processSignal = null;
     	
-        switch (userCommand.type) {
+        switch (userCommand.getType()) {
             case ADD :
                 processSignal = AddHandler.process(userCommand, memory);
                 SignalHandler.printProcessStateMessage(processSignal);
