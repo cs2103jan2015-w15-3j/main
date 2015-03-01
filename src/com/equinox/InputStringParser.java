@@ -11,7 +11,7 @@ public class InputStringParser {
 	private static final String COMMAND_UNDO = "undo";
 	private static final String COMMAND_DELETE = "delete";
 	private static final String COMMAND_ADD = "add";
-	private static final String REGEX_SPACE = " ";
+	private static final String REGEX_SPACE = "\\s";
 
 	
 	public static ParsedInput parse(String input) {
