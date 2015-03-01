@@ -8,11 +8,16 @@ import org.joda.time.DateTimeFieldType;
  *
  */
 public class Todo {
+	
+	private enum TYPE {
+		TASK, DEADLINE, EVENT;
+	}
 
 	protected String title;
 	protected DateTime createdOn, modifiedOn, startTime, endTime;
 	protected boolean isDone;
-	
+	protected TYPE type;
+
 	// Floating task
 	public Todo(DateTime currentTime, String userTitle) {
 		this.title = userTitle;
@@ -21,6 +26,7 @@ public class Todo {
 		this.startTime = null;
 		this.endTime = null;
 		this.isDone = false;
+		this.type = TYPE.TASK;
 	}
 	
 	// Deadline
@@ -31,6 +37,7 @@ public class Todo {
 		this.startTime = null;
 		this.endTime = deadline;
 		this.isDone = false;
+		this.type = TYPE.DEADLINE;
 	}
 	
 	// Event
@@ -41,6 +48,7 @@ public class Todo {
 		this.startTime = start;
 		this.endTime = end;
 		this.isDone = false;
+		this.type = TYPE.EVENT;
 	}
 	
 	// Copy of todo
@@ -51,9 +59,22 @@ public class Todo {
 		this.startTime = todo.startTime;
 		this.endTime = todo.endTime;
 		this.isDone = todo.isDone;
+		this.type = todo.type;
 	}
 
 	public String toString() {
+		StringBuilder taskStringBuilder = new StringBuilder(modifiedOn.toString() + " " + createdOn.toString() + " " + title);
+		
+		switch(type) {
+		case TASK:
+			return taskStringBuilder.toString();
+		case DEADLINE:
+			taskStringBuilder.append(" " + endTime);
+			return taskStringBuilder.toString();
+		case EVENT:
+			taskStringBuilder.append(" " + startTime + " " + endTime);
+			return taskStringBuilder.toString();
+		}
 		return (modifiedOn.toString() + " " + createdOn.toString() + " " + title + " " + startTime.toString() + " " + endTime.toString() + " " + isDone);
 	}
 

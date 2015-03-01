@@ -13,7 +13,7 @@ public class DeleteHandler {
 		ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
 		//Check for valid number of keywords
     	int numberOfKeywords = input.getParamPairList().size();
-    	if(numberOfKeywords != 1){
+    	if(numberOfKeywords > 1){
     		return new Signal(Signal.SIGNAL_INVALID_PARAMS);
     	}
     	
