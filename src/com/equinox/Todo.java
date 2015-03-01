@@ -115,6 +115,11 @@ public class Todo {
 					return false;
 				}
 				
+		//Comparing isDone
+				if(this.isDone != other.isDone){
+					return false;
+				}
+				
 		return true;
 	}
 }
