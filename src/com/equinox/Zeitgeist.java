@@ -55,10 +55,16 @@ public class Zeitgeist {
             	SignalHandler.printProcessStateMessage(processSignal);
             	break;
             	
+            case SEARCH:
+            	processSignal = SearchHandler.process(userCommand, memory);
+            	SignalHandler.printProcessStateMessage(processSignal);
+            	break;	
+            	
             case ERROR :
             	processSignal = ErrorHandler.process(userCommand, memory);
             	SignalHandler.printProcessStateMessage(processSignal);
                 break;
+            
         }
 
     }
