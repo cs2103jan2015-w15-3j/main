@@ -1,6 +1,8 @@
 package com.equinox;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 public class InputStringParserTest {
@@ -18,14 +20,6 @@ public class InputStringParserTest {
 	String[] a3 = {"delete", "task", "3", "on", "list"};
 	String[] a4 = {"mark"};
 	String[] a5 = {"test", "error"};
-	
-	KeyParamPair[] p1 = {new KeyParamPair("add", "task 1"), 
-			new KeyParamPair("at", "computing level 1"), 
-			new KeyParamPair("on", "12 december")};
-	KeyParamPair[] p2 = {new KeyParamPair("delete", "task 2")};
-	KeyParamPair[] p3 = {new KeyParamPair("delete", "task 3"), 
-			new KeyParamPair("on", "list")};
-	KeyParamPair[] p4 = {new KeyParamPair("mark", "")};
 	
 	@Test
 	public void testProcessInput() {
@@ -53,13 +47,24 @@ public class InputStringParserTest {
 		assertEquals(2, InputStringParser.getNoOfKeywords(a3));
 		assertEquals(1, InputStringParser.getNoOfKeywords(a4));
 	}
-	/*
+	
 	@Test
 	public void testExtractParam() {
-		assertArrayEquals(p1, InputStringParser.extractParam(a1));
-		assertArrayEquals(p2, InputStringParser.extractParam(a2));
-		assertArrayEquals(p3, InputStringParser.extractParam(a3));
-		assertArrayEquals(p4, InputStringParser.extractParam(a4));
+		ArrayList<KeyParamPair> p1 = new ArrayList<KeyParamPair>(3);
+		p1.add(new KeyParamPair("add", "task 1"));
+		p1.add(new KeyParamPair("at", "computing level 1"));
+		p1.add(new KeyParamPair("on", "12 december"));
+		ArrayList<KeyParamPair> p2 = new ArrayList<KeyParamPair>(1);
+		p2.add(new KeyParamPair("delete", "task 2"));
+		ArrayList<KeyParamPair> p3 = new ArrayList<KeyParamPair>(2);
+		p3.add(new KeyParamPair("delete", "task 3")); 
+		p3.add(new KeyParamPair("on", "list"));
+		ArrayList<KeyParamPair> p4 = new ArrayList<KeyParamPair>(1);
+		p4.add(new KeyParamPair("mark", ""));
+		assertEquals(p1, InputStringParser.extractParam(a1));
+		assertEquals(p2, InputStringParser.extractParam(a2));
+		assertEquals(p3, InputStringParser.extractParam(a3));
+		assertEquals(p4, InputStringParser.extractParam(a4));
 	}
-	*/
+	
 }

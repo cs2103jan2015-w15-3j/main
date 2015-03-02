@@ -28,9 +28,16 @@ public class ParsedInput {
 		return paramPairList;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		if(o.getClass().equals(this.getClass())) {
+			return this.getType().equals(((ParsedInput) o).getType()) &&
+					this.getParamPairList().equals(((ParsedInput) o).getParamPairList());
+		}
+		return false;
+	}
 	public void execute() {
         // TODO Auto-generated method stub
 
     }
-
 }

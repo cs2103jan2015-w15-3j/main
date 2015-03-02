@@ -86,7 +86,7 @@ public class InputStringParser {
 		if(tempParam.length() == 0) {
 			return currentParam;
 		} else {
-			return tempParam.concat(REGEX_SPACE.concat(currentParam));
+			return tempParam.concat(" ".concat(currentParam));
 		}
 	}
 
