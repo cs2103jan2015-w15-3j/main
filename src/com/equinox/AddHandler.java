@@ -39,6 +39,7 @@ public class AddHandler {
 	        	case 1 :
 	        	String floatingTaskName = keyParamPairList.get(0).getParam();
 	        	Todo floatingTask = new Todo(currentTime , floatingTaskName);
+	        	memory.saveCurrentState();
 	        	memory.add(floatingTask);
 	        	break;
 	        	
@@ -50,6 +51,7 @@ public class AddHandler {
 	        	String deadlineName = keyParamPairList.get(0).getParam();
 	        	DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
 	        	Todo deadline = new Todo(currentTime, deadlineName, deadlineTime );
+	        	memory.saveCurrentState();
 	        	memory.add(deadline);
 	        	break;
 	        	
@@ -63,6 +65,7 @@ public class AddHandler {
 	            DateTime eventStartTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
 	            DateTime eventEndTime = DateParser.parseDate(keyParamPairList.get(2).getParam());
 	            Todo event = new Todo(currentTime, eventName, eventStartTime, eventEndTime);
+	            memory.saveCurrentState();
 	        	memory.add(event);
 	        	break;
 	        }
