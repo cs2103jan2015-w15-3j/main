@@ -48,7 +48,7 @@ public class AddHandler {
 	        	//KeyParamPair 1: by <date>
 	        	case 2 :
 	        	String deadlineName = keyParamPairList.get(0).getParam();
-	        	DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(0).getParam());
+	        	DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
 	        	Todo deadline = new Todo(currentTime, deadlineName, deadlineTime );
 	        	memory.add(deadline);
 	        	break;
@@ -67,6 +67,7 @@ public class AddHandler {
 	        	break;
 	        }
     	} catch(Exception e) {
+    		e.printStackTrace();
     		return new Signal(Signal.SIGNAL_ERROR);
     	}
         return new Signal(Signal.SIGNAL_SUCCESS);
