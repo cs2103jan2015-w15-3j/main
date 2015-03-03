@@ -20,7 +20,6 @@ public class AddHandlerTest {
 	KEYWORDS addCommand = KEYWORDS.ADD;
 	
 	private static final DateTime currentTime = DateTime.now();
-	private static final String addCommandString = "add";
 	private static final String userInputFloatingTask1 = "add study CS2105";
 	
 	public enum TYPE{
