@@ -41,14 +41,6 @@ public class InputStringParserTest {
 	}
 	
 	@Test
-	public void testGetNoOfKeywords() {
-		assertEquals(3, InputStringParser.getNoOfKeywords(a1));
-		assertEquals(1, InputStringParser.getNoOfKeywords(a2));
-		assertEquals(2, InputStringParser.getNoOfKeywords(a3));
-		assertEquals(1, InputStringParser.getNoOfKeywords(a4));
-	}
-	
-	@Test
 	public void testExtractParam() {
 		ArrayList<KeyParamPair> p1 = new ArrayList<KeyParamPair>(3);
 		p1.add(new KeyParamPair("add", "task 1"));

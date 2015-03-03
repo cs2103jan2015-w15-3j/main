@@ -50,7 +50,6 @@ public class InputStringParser {
 	 * 
 	 * @param inputArray A string array with the user input split into individual words.
 	 * @param key The command key (first keyword) in the user input string.
-	 * @param length The total number of keywords in the user input string.
 	 * @return A ArrayList<KeyParamPair> object with KeyParamPair objects
 	 */
 	public static ArrayList<KeyParamPair> fillUpPairArray(String[] inputArray, String key) {
