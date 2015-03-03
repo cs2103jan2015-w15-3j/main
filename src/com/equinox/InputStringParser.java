@@ -41,8 +41,7 @@ public class InputStringParser {
 
 	public static ArrayList<KeyParamPair> extractParam(String[] inputArray) {
 		String key = inputArray[0];
-		int length = getNoOfKeywords(inputArray);
-		ArrayList<KeyParamPair> resultList = fillUpPairArray(inputArray, key, length);
+		ArrayList<KeyParamPair> resultList = fillUpPairArray(inputArray, key);
 		return resultList;
 	}
 	
@@ -54,8 +53,7 @@ public class InputStringParser {
 	 * @param length The total number of keywords in the user input string.
 	 * @return A ArrayList<KeyParamPair> object with KeyParamPair objects
 	 */
-	public static ArrayList<KeyParamPair> fillUpPairArray(String[] inputArray, String key,
-			int length) {
+	public static ArrayList<KeyParamPair> fillUpPairArray(String[] inputArray, String key) {
 		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
 		String tempParam = STRING_EMPTY;
 		String currentParam;
@@ -88,18 +86,6 @@ public class InputStringParser {
 		} else {
 			return tempParam.concat(" ".concat(currentParam));
 		}
-	}
-
-	public static int getNoOfKeywords(String[] inputArray) {
-		int count = 0;
-		String param;
-		for(int i = 0; i < inputArray.length; i++) {
-			param = inputArray[i];
-			if(InputStringKeyword.isKeyword(param)) {
-				count++;
-			}
-		}
-		return count;
 	}
 
 	/**
