@@ -31,6 +31,7 @@ public class EditHandlerTest {
 	public void test() {
 		memory.add(new Todo(new DateTime(), "Project meeting", startDate, endDate));
 		ArrayList<KeyParamPair> paramList = new ArrayList<KeyParamPair>();
+		paramList.add(new KeyParamPair("", "1"));
 		paramList.add(new KeyParamPair("title", title));
 		paramList.add(new KeyParamPair("start", start));
 		paramList.add(new KeyParamPair("end", end));
