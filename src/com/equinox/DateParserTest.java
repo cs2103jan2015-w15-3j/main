@@ -1,7 +1,7 @@
 package com.equinox;
 import static org.junit.Assert.*;
 
-import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -15,37 +15,48 @@ public class DateParserTest {
 
 	@Test
 	public void testOneDate() {
-		DateTime actualSingleDate = DateParser.parseDate("26 August at 1259pm");
-		assertEquals("Year", expectedSingleDate.year(), actualSingleDate.year());
-		assertEquals("Month", expectedSingleDate.monthOfYear(), actualSingleDate.monthOfYear());
-		assertEquals("Day", expectedSingleDate.dayOfMonth(), actualSingleDate.dayOfMonth());
-		assertEquals("Hour", expectedSingleDate.hourOfDay(), actualSingleDate.hourOfDay());
-		assertEquals("Minute", expectedSingleDate.minuteOfHour(), actualSingleDate.minuteOfHour());
-		assertEquals("Second", expectedSingleDate.secondOfMinute(), actualSingleDate.secondOfMinute());
-		assertEquals("Object", expectedSingleDate, actualSingleDate);
+		try {
+			DateTime actualSingleDate = DateParser.parseDate("26 August at 1259pm");
+			assertEquals("Year", expectedSingleDate.year(), actualSingleDate.year());
+			assertEquals("Month", expectedSingleDate.monthOfYear(), actualSingleDate.monthOfYear());
+			assertEquals("Day", expectedSingleDate.dayOfMonth(), actualSingleDate.dayOfMonth());
+			assertEquals("Hour", expectedSingleDate.hourOfDay(), actualSingleDate.hourOfDay());
+			assertEquals("Minute", expectedSingleDate.minuteOfHour(), actualSingleDate.minuteOfHour());
+			assertEquals("Second", expectedSingleDate.secondOfMinute(), actualSingleDate.secondOfMinute());
+			assertEquals("Object", expectedSingleDate, actualSingleDate);
+		} catch (DateUndefinedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
 	public void testTwoDates() {
+		String date = "lol";
+		List<DateTime> actualDates;
+		try {
+			actualDates = DateParser.parseDates(date);
+			DateTime actualFirstDate = actualDates.get(0);
+			
+			assertEquals("Year 1", expectedFirstDate.year(), actualFirstDate.year());
+			assertEquals("Month 1", expectedFirstDate.monthOfYear(), actualFirstDate.monthOfYear());
+			assertEquals("Day 1", expectedFirstDate.dayOfMonth(), actualFirstDate.dayOfMonth());
+			assertEquals("Hour 1", expectedFirstDate.hourOfDay(), actualFirstDate.hourOfDay());
+			assertEquals("Minute 1", expectedFirstDate.minuteOfHour(), actualFirstDate.minuteOfHour());
+			assertEquals("Second 1", expectedFirstDate.secondOfMinute(), actualFirstDate.secondOfMinute());
+			assertEquals("Object 1", expectedFirstDate, actualFirstDate);
+			
+			DateTime actualSecondDate = actualDates.get(1);
+			assertEquals("Year 2", expectedSecondDate.year(), actualSecondDate.year());
+			assertEquals("Month 2", expectedSecondDate.monthOfYear(), actualSecondDate.monthOfYear());
+			assertEquals("Day 2", expectedSecondDate.dayOfMonth(), actualSecondDate.dayOfMonth());
+			assertEquals("Hour 2", expectedSecondDate.hourOfDay(), actualSecondDate.hourOfDay());
+			assertEquals("Minute 2", expectedSecondDate.minuteOfHour(), actualSecondDate.minuteOfHour());
+			assertEquals("Second 2", expectedSecondDate.secondOfMinute(), actualSecondDate.secondOfMinute());
+			assertEquals("Object 2", expectedSecondDate, actualSecondDate);
+		} catch (DateUndefinedException e) {
+			e.printStackTrace();
+		}
 		
-		String date = "10 November at 0659pm to 29 September midnight";
-		DateTime actualFirstDate = DateParser.parseDate(date,1);
-		assertEquals("Year 1", expectedFirstDate.year(), actualFirstDate.year());
-		assertEquals("Month 1", expectedFirstDate.monthOfYear(), actualFirstDate.monthOfYear());
-		assertEquals("Day 1", expectedFirstDate.dayOfMonth(), actualFirstDate.dayOfMonth());
-		assertEquals("Hour 1", expectedFirstDate.hourOfDay(), actualFirstDate.hourOfDay());
-		assertEquals("Minute 1", expectedFirstDate.minuteOfHour(), actualFirstDate.minuteOfHour());
-		assertEquals("Second 1", expectedFirstDate.secondOfMinute(), actualFirstDate.secondOfMinute());
-		assertEquals("Object 1", expectedFirstDate, actualFirstDate);
-		
-		DateTime actualSecondDate = DateParser.parseDate(date, 2);
-		assertEquals("Year 2", expectedSecondDate.year(), actualSecondDate.year());
-		assertEquals("Month 2", expectedSecondDate.monthOfYear(), actualSecondDate.monthOfYear());
-		assertEquals("Day 2", expectedSecondDate.dayOfMonth(), actualSecondDate.dayOfMonth());
-		assertEquals("Hour 2", expectedSecondDate.hourOfDay(), actualSecondDate.hourOfDay());
-		assertEquals("Minute 2", expectedSecondDate.minuteOfHour(), actualSecondDate.minuteOfHour());
-		assertEquals("Second 2", expectedSecondDate.secondOfMinute(), actualSecondDate.secondOfMinute());
-		assertEquals("Object 2", expectedSecondDate, actualSecondDate);
 		
 	}
 

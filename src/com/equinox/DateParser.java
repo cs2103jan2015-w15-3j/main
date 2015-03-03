@@ -26,8 +26,9 @@ public class DateParser {
 	 * 
 	 * @param dateString String containing the date to be parsed
 	 * @return The immutable DateTime object representing the first date encountered in the string.
+	 * @throws DateUndefinedException if dateString does not contain a valid date, is empty, or null
 	 */
-	public static DateTime parseDate(String dateString) {
+	public static DateTime parseDate(String dateString) throws DateUndefinedException {
 		DateTime returnDateTime = null;
 		Parser parser = new Parser(TimeZone.getDefault());
 		try {
@@ -35,10 +36,10 @@ public class DateParser {
 			List<Date> dateList = parsedDate.getDates();
 			Date firstDate = dateList.get(0);
 			returnDateTime = new DateTime(firstDate);
+		} catch (IndexOutOfBoundsException e) {
+			throw new DateUndefinedException("Date String is empty or does not contain dates.");
 		} catch (NullPointerException e) {
-			System.out.println("Input string is not defined.");
-			e.printStackTrace();
-			System.exit(-1);
+			throw new DateUndefinedException("Date String is null.");
 		}
 		return returnDateTime;
 	}
@@ -48,8 +49,9 @@ public class DateParser {
 	 * 
 	 * @param dateString String containing the date to be parsed
 	 * @return A list of all immutable DateTime objects representing dates processed in the string.
+	 * @throws DateUndefinedException if dateString does not contain a valid date, is empty, or null
 	 */
-	public static List<DateTime> parseDates(String dateString) {
+	public static List<DateTime> parseDates(String dateString) throws DateUndefinedException {
 		List<DateTime> dateTimeList = new ArrayList<DateTime>();
 		Parser parser = new Parser(TimeZone.getDefault());
 		try {
@@ -59,15 +61,10 @@ public class DateParser {
 				dateTimeList.add(new DateTime(date));
 			}
 		} catch (IndexOutOfBoundsException e) {
-			System.out.println("Referenced date number exceeds number of date entries detected.");
-			e.printStackTrace();
-			System.exit(-1);
+			throw new DateUndefinedException("Date String is empty or does not contain dates.");
 		} catch (NullPointerException e) {
-			System.out.println("Input string is not defined.");
-			e.printStackTrace();
-			System.exit(-1);
+			throw new DateUndefinedException("Date String is null.");
 		}
 		return dateTimeList;
 	}
-
 }
