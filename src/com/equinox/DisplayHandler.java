@@ -67,20 +67,20 @@ public class DisplayHandler {
         while (iterator.hasNext()) {
             Todo todo = iterator.next();
             // Show pending, skip the completed tasks
-            if (signal == showPending && todo.isDone) {
+            if (signal == showPending && todo.isDone()) {
                 continue;
             }
 
             // Show completed, skip the pending tasks
-            if (signal == showCompleted && !todo.isDone) {
+            if (signal == showCompleted && !todo.isDone()) {
                 continue;
             }
 
-            if (todo.startTime != null && todo.endTime != null) {
+            if (todo.getStartTime() != null && todo.getEndTime() != null) {
                 sBuilder.append(formatEvent(todo));
-            } else if (todo.endTime != null) {
+            } else if (todo.getEndTime() != null) {
                 sBuilder.append(formatDeadline(todo));
-            } else if (todo.startTime == null && todo.endTime == null) {
+            } else if (todo.getStartTime() == null && todo.getEndTime() == null) {
                 sBuilder.append(formatFloatingTask(todo));
             }
         }
@@ -88,17 +88,17 @@ public class DisplayHandler {
     }
 
     private static String formatFloatingTask(Todo todo) {
-        String title = todo.title;
+        String title = todo.getTitle();
         title = shortenTitle(title);
         return String.format(floatingFormat, "", title)
                 + System.lineSeparator();
     }
 
     private static String formatDeadline(Todo todo) {
-        String title = todo.title;
+        String title = todo.getTitle();
         title = shortenTitle(title);
         int maxLength = (title.length() < MAX_CHAR) ? title.length() : MAX_CHAR;
-        DateTime endTime = todo.endTime;
+        DateTime endTime = todo.getEndTime();
         String endDateString = deadlineDateFormatter.print(endTime);
         String endTimeString = deadlineTimeFormatter.print(endTime);
         return String.format(deadLineFormat, endDateString, title,
@@ -107,11 +107,11 @@ public class DisplayHandler {
     }
 
     private static String formatEvent(Todo todo) {
-        String title = todo.title;
+        String title = todo.getTitle();
         title = shortenTitle(title);
         int maxLength = (title.length() < MAX_CHAR) ? title.length() : MAX_CHAR;
-        DateTime startTime = todo.startTime;
-        DateTime endTime = todo.endTime;
+        DateTime startTime = todo.getStartTime();
+        DateTime endTime = todo.getEndTime();
         // TODO: Handle start and end on different dates
         String startDateString = eventDateFormatter.print(startTime);
         String startTimeString = eventTimeFormatter.print(startTime);
@@ -128,7 +128,7 @@ public class DisplayHandler {
             // Floating tasks with no time will be sorted in lexicographical
             // order
             if (o1.getDateTime() == null && o2.getDateTime() == null) {
-                return o1.title.compareTo(o2.title);
+                return o1.getTitle().compareTo(o2.getTitle());
             }
             // If only one todo has time, the other with no time will be sorted
             // to the back
@@ -152,38 +152,43 @@ public class DisplayHandler {
     public static void main(String[] args) {
         ArrayList<Todo> todos = new ArrayList<Todo>();
 
-        // Add different types of todos
-        todos.add(new Todo(DateTime.now(), "floating task"));
+        try {
+			// Add different types of todos
+			todos.add(new Todo(DateTime.now(), "floating task"));
 
-        // Completed tasks
-        todos.add(new Todo(DateTime.now(), "CS3230 deadline", DateParser
-                .parseDate("6 March at 9pm")));
+			// Completed tasks
+			todos.add(new Todo(DateTime.now(), "CS3230 deadline", DateParser
+			        .parseDate("6 March at 9pm")));
 
-        Todo todo_done_0 = new Todo(DateTime.now(), "eat more");
-        todo_done_0.isDone = true;
-        todos.add(todo_done_0);
+			Todo todo_done_0 = new Todo(DateTime.now(), "eat more");
+			todo_done_0.setDone(true);
+			todos.add(todo_done_0);
 
-        Todo todo_done = new Todo(DateTime.now(), "CIP event",
-                DateParser.parseDate("3 March at 10am"),
-                DateParser.parseDate("3 March at 12pm"));
-        todo_done.isDone = true;
-        todos.add(todo_done);
+			Todo todo_done = new Todo(DateTime.now(), "CIP event",
+			        DateParser.parseDate("3 March at 10am"),
+			        DateParser.parseDate("3 March at 12pm"));
+			todo_done.setDone(true);
+			todos.add(todo_done);
 
-        Todo todo_done_1 = new Todo(DateTime.now(), "new year",
-                DateParser.parseDate("1 January at 10am"),
-                DateParser.parseDate("1 January at 11am"));
-        todo_done_1.isDone = true;
-        todos.add(todo_done_1);
+			Todo todo_done_1 = new Todo(DateTime.now(), "new year",
+			        DateParser.parseDate("1 January at 10am"),
+			        DateParser.parseDate("1 January at 11am"));
+			todo_done_1.setDone(true);
+			todos.add(todo_done_1);
 
-        Todo todo_done_2 = new Todo(DateTime.now(), "CS1010 deadline",
-                DateParser.parseDate("3 Feb at 10pm"));
-        todo_done_2.isDone = true;
-        todos.add(todo_done_2);
+			Todo todo_done_2 = new Todo(DateTime.now(), "CS1010 deadline",
+			        DateParser.parseDate("3 Feb at 10pm"));
+			todo_done_2.setDone(true);
+			todos.add(todo_done_2);
 
-        todos.add(new Todo(DateTime.now(), "read floating books"));
+			todos.add(new Todo(DateTime.now(), "read floating books"));
 
-        todos.add(new Todo(DateTime.now(), "CS3243 project deadline",
-                DateParser.parseDate("7 March at 9am")));
+			todos.add(new Todo(DateTime.now(), "CS3243 project deadline",
+			        DateParser.parseDate("7 March at 9am")));
+		} catch (DateUndefinedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
         System.out.println("pending:");
         System.out.println(DisplayHandler.getDisplayChrono(todos, 0));
