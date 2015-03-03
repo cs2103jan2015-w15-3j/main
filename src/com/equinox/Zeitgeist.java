@@ -29,47 +29,47 @@ public class Zeitgeist {
 		if (commandType == null) {
 			SignalHandler.printProcessStateMessage(new Signal(
 					Signal.SIGNAL_INVALID_COMMAND));
+		} else {
+
+			switch (commandType) {
+			case ADD:
+				processSignal = AddHandler.process(userInput, memory);
+				SignalHandler.printProcessStateMessage(processSignal);
+				break;
+			case DELETE:
+				processSignal = DeleteHandler.process(userInput, memory);
+				SignalHandler.printProcessStateMessage(processSignal);
+				break;
+
+			case MARK:
+				processSignal = MarkHandler.process(userInput, memory);
+				SignalHandler.printProcessStateMessage(processSignal);
+				break;
+
+			case UNDO:
+				processSignal = UndoHandler.process(userInput, memory);
+				SignalHandler.printProcessStateMessage(processSignal);
+				break;
+
+			case EDIT:
+				processSignal = EditHandler.process(userInput, memory);
+				SignalHandler.printProcessStateMessage(processSignal);
+				break;
+
+			case DISPLAY:
+				processSignal = DisplayHandler.process(userInput, memory);
+				SignalHandler.printProcessStateMessage(processSignal);
+				break;
+
+			case SEARCH:
+				processSignal = SearchHandler.process(userInput, memory);
+				SignalHandler.printProcessStateMessage(processSignal);
+				break;
+			default:
+				SignalHandler.printProcessStateMessage(new Signal(
+						Signal.SIGNAL_INVALID_COMMAND));
+				break;
+			}
 		}
-
-		switch (commandType) {
-		case ADD:
-			processSignal = AddHandler.process(userInput, memory);
-			SignalHandler.printProcessStateMessage(processSignal);
-			break;
-		case DELETE:
-			processSignal = DeleteHandler.process(userInput, memory);
-			SignalHandler.printProcessStateMessage(processSignal);
-			break;
-
-		case MARK:
-			processSignal = MarkHandler.process(userInput, memory);
-			SignalHandler.printProcessStateMessage(processSignal);
-			break;
-
-		case UNDO:
-			processSignal = UndoHandler.process(userInput, memory);
-			SignalHandler.printProcessStateMessage(processSignal);
-			break;
-
-		case EDIT:
-			processSignal = EditHandler.process(userInput, memory);
-			SignalHandler.printProcessStateMessage(processSignal);
-			break;
-
-		case DISPLAY:
-			processSignal = DisplayHandler.process(userInput, memory);
-			SignalHandler.printProcessStateMessage(processSignal);
-			break;
-
-		case SEARCH:
-			processSignal = SearchHandler.process(userInput, memory);
-			SignalHandler.printProcessStateMessage(processSignal);
-			break;
-		default:
-			SignalHandler.printProcessStateMessage(new Signal(
-					Signal.SIGNAL_INVALID_COMMAND));
-			break;
-		}
-
 	}
 }
