@@ -23,7 +23,7 @@ public class AddHandler {
     public static Signal process(ParsedInput input, Memory memory) {
     	//Check for valid number of keywords
     	int numberOfKeywords = input.getParamPairList().size();
-    	if(numberOfKeywords < 1 || numberOfKeywords > 3){
+    	if(numberOfKeywords > 3){
     		return new Signal(Signal.SIGNAL_INVALID_PARAMS);
     	}
     	
