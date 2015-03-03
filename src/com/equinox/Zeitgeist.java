@@ -52,7 +52,7 @@ public class Zeitgeist {
 			break;
 
 		case EDIT:
-			processSignal = SearchHandler.process(userInput, memory);
+			processSignal = EditHandler.process(userInput, memory);
 			SignalHandler.printProcessStateMessage(processSignal);
 			break;
 
