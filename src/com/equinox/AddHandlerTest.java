@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class AddHandlerTest {
 	Memory memory;
 	ParsedInput input;
-	ParsedInput.TYPE addCommand = ParsedInput.TYPE.ADD;
+	KEYWORDS addCommand = KEYWORDS.ADD;
 	
 	private static final DateTime currentTime = DateTime.now();
 	private static final String addCommandString = "add";

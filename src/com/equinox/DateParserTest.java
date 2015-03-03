@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.omg.PortableInterceptor.SUCCESSFUL;
 
 
 public class DateParserTest {
