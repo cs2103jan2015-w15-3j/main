@@ -50,6 +50,11 @@ public class Zeitgeist {
 				processSignal = UndoHandler.process(userInput, memory);
 				SignalHandler.printProcessStateMessage(processSignal);
 				break;
+				
+			case REDO:
+				processSignal = RedoHandler.process(userInput, memory);
+				SignalHandler.printProcessStateMessage(processSignal);
+				break;
 
 			case EDIT:
 				processSignal = EditHandler.process(userInput, memory);
