@@ -13,10 +13,10 @@ public class Todo {
 		TASK, DEADLINE, EVENT;
 	}
 
-	protected String title;
-	protected DateTime createdOn, modifiedOn, startTime, endTime;
-	protected boolean isDone;
-	protected TYPE type;
+	private String title;
+	private DateTime createdOn, modifiedOn, startTime, endTime;
+	private boolean isDone;
+	private TYPE type;
 
 	// Floating task
 	public Todo(DateTime currentTime, String userTitle) {
@@ -60,6 +60,56 @@ public class Todo {
 		this.endTime = todo.endTime;
 		this.isDone = todo.isDone;
 		this.type = todo.type;
+	}
+	
+	
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+		modifiedOn = new DateTime();
+	}
+
+	public DateTime getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(DateTime startTime) {
+		this.startTime = startTime;
+		modifiedOn = new DateTime();
+	}
+
+	public DateTime getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(DateTime endTime) {
+		this.endTime = endTime;
+		modifiedOn = new DateTime();
+	}
+
+	public boolean isDone() {
+		return isDone;
+	}
+
+	public void setDone(boolean isDone) {
+		this.isDone = isDone;
+		modifiedOn = new DateTime();
+	}
+
+	public DateTime getCreatedOn() {
+		return createdOn;
+	}
+
+	public DateTime getModifiedOn() {
+		return modifiedOn;
+	}
+
+	public TYPE getType() {
+		return type;
 	}
 
 	public String toString() {
