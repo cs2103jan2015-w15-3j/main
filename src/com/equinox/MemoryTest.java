@@ -26,36 +26,38 @@ public class MemoryTest {
 	
 	@Test
 	public void testAddGet() {
-		assertEquals("Task 1 Add (Title)", TASK_1, memory.get(1).title);
-		assertEquals("Task 2 Add (Title)", TASK_2, memory.get(2).title);
-		assertEquals("Task 3 Add (Title)", TASK_3, memory.get(3).title);
+		assertEquals("Task 1 Add (Title)", TASK_1, memory.get(1).getTitle());
+		assertEquals("Task 2 Add (Title)", TASK_2, memory.get(2).getTitle());
+		assertEquals("Task 3 Add (Title)", TASK_3, memory.get(3).getTitle());
 	}
 	
 	@Test
 	public void testSetGet() {
-		Todo todo1 = new Todo(new DateTime(), TASK_1);
-		todo1.isDone = true;
-		memory.set(1, todo1);
-		assertEquals("Task 1 Mark (isDone)", true, memory.get(1).isDone);
-		assertEquals("Task 2 (isDone)", false, memory.get(2).isDone);
-		assertEquals("Task 3 (isDone)", false, memory.get(3).isDone);
+		memory.saveCurrentState();
+		Todo todo1 = memory.get(1);
+		todo1.setDone(true);
+		assertEquals("Task 1 Mark (isDone)", true, memory.get(1).isDone());
+		assertEquals("Task 2 (isDone)", false, memory.get(2).isDone());
+		assertEquals("Task 3 (isDone)", false, memory.get(3).isDone());
 	}
 	
 	@Test
 	public void testRemove() {
+		memory.saveCurrentState();
 		memory.remove(2);
-		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).title);
-		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2).title);
+		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
+		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2).getTitle());
 	}
 	
 	@Test
 	public void testSaveRestore() {
+		memory.saveCurrentState();
 		memory.remove(2);
-		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).title);
-		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2).title);
+		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
+		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2).getTitle());
 		memory.restoreLastState();
-		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).title);
-		assertEquals("Task 2 Restored (Title)", TASK_2, memory.get(2).title);
-		assertEquals("Task 3 (Title)", TASK_3, memory.get(3).title);
+		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
+		assertEquals("Task 2 Restored (Title)", TASK_2, memory.get(2).getTitle());
+		assertEquals("Task 3 (Title)", TASK_3, memory.get(3).getTitle());
 	}
 }
