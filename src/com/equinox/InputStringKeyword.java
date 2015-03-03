@@ -17,6 +17,9 @@ public class InputStringKeyword {
 	private static final String KEY_TO = "to";
 	private static final String KEY_ON = "on";
 	private static final String KEY_AT = "at";
+	private static final String KEY_TITLE = "title";
+	private static final String KEY_START = "start";
+	private static final String KEY_END = "end";
 
     private static Map<String, KEYWORDS> keywords;
     private static Map<String, KEYWORDS> commands;
@@ -37,6 +40,9 @@ public class InputStringKeyword {
         keywords.put(KEY_TO, KEYWORDS.TO);
         keywords.put(KEY_ON, KEYWORDS.ON);
         keywords.put(KEY_AT, KEYWORDS.AT);
+        keywords.put(KEY_TITLE, KEYWORDS.TITLE);
+        keywords.put(KEY_START, KEYWORDS.START);
+        keywords.put(KEY_END, KEYWORDS.END);
     }
 
     public static boolean isKeyword(String s) {

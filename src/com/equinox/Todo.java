@@ -9,7 +9,7 @@ import org.joda.time.DateTimeFieldType;
  */
 public class Todo {
 	
-	private enum TYPE {
+	public enum TYPE {
 		TASK, DEADLINE, EVENT;
 	}
 
@@ -110,6 +110,20 @@ public class Todo {
 
 	public TYPE getType() {
 		return type;
+	}
+	
+	public boolean isValid() {
+		if(startTime != null && endTime != null) {
+			type = TYPE.EVENT;
+			if(startTime.isBefore(endTime)) {
+				return false;
+			}
+		} else if(startTime == null && endTime != null) {
+			type = TYPE.DEADLINE;
+		} else if(startTime == null && endTime == null) {
+			type = TYPE.TASK;
+		}
+		return true;
 	}
 
 	public String toString() {
