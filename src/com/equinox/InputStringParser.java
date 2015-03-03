@@ -100,7 +100,10 @@ public class InputStringParser {
 	 * @return KEYWORDS specifying the type, null if typeString does not contain command.
 	 */
 	public static KEYWORDS determineCommandType(String typeString) {
-		KEYWORDS type = InputStringKeyword.getCommand(typeString);
+		KEYWORDS type = null;
+		if (InputStringKeyword.isCommand(typeString)) {
+			type = InputStringKeyword.getCommand(typeString);
+		}
 		return type;
 	}
 }
