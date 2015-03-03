@@ -7,12 +7,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class MemoryTest {
-	
+
 	private static final String TASK_1 = "Read book";
 	private static final String TASK_2 = "Do laundry";
 	private static final String TASK_3 = "Do homework";
 	Memory memory;
-	
+
 	@Before
 	public void setUp() {
 		memory = new Memory();
@@ -23,14 +23,14 @@ public class MemoryTest {
 		Todo todo3 = new Todo(new DateTime(), TASK_3);
 		memory.add(todo3);
 	}
-	
+
 	@Test
 	public void testAddGet() {
 		assertEquals("Task 1 Add (Title)", TASK_1, memory.get(1).getTitle());
 		assertEquals("Task 2 Add (Title)", TASK_2, memory.get(2).getTitle());
 		assertEquals("Task 3 Add (Title)", TASK_3, memory.get(3).getTitle());
 	}
-	
+
 	@Test
 	public void testSetGet() {
 		memory.saveCurrentState();
@@ -40,29 +40,32 @@ public class MemoryTest {
 		assertEquals("Task 2 (isDone)", false, memory.get(2).isDone());
 		assertEquals("Task 3 (isDone)", false, memory.get(3).isDone());
 	}
-	
+
 	@Test
 	public void testRemove() {
 		memory.saveCurrentState();
 		memory.remove(2);
 		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
-		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2).getTitle());
+		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2)
+				.getTitle());
 	}
-	
+
 	@Test
-	public void testSaveRestore() {
+	public void testSaveRestore() throws StateUndefinedException {
 		memory.saveCurrentState();
 		memory.remove(2);
 		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
-		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2).getTitle());
+		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2)
+				.getTitle());
 		memory.restoreHistoryState();
 		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
-		assertEquals("Task 2 Restored (Title)", TASK_2, memory.get(2).getTitle());
+		assertEquals("Task 2 Restored (Title)", TASK_2, memory.get(2)
+				.getTitle());
 		assertEquals("Task 3 (Title)", TASK_3, memory.get(3).getTitle());
 	}
-	
+
 	@Test
-	public void testUndoRedo() {
+	public void testUndoRedo() throws StateUndefinedException {
 		memory.saveCurrentState();
 		memory.remove(2);
 		memory.saveCurrentState();

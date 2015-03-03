@@ -14,16 +14,10 @@ public class UndoHandler {
 			return new Signal(Signal.SIGNAL_INVALID_PARAMS);
 		}
 		
-		//check if stateHistory has at least one stored state
-		if(memory.stackSize() < 1){
-			return new Signal(Signal.SIGNAL_NO_PREVIOUS_STATE);
-		}
-		
 		try{
 			memory.restoreHistoryState();
-			
-		} catch (Exception e) {
-			return new Signal(Signal.SIGNAL_ERROR);
+		} catch (StateUndefinedException e) {
+			return new Signal(Signal.SIGNAL_NO_PREVIOUS_STATE);
 		}
 		
 		return new Signal(Signal.SIGNAL_SUCCESS);
