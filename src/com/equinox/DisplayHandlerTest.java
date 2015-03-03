@@ -13,7 +13,7 @@ public class DisplayHandlerTest {
     ArrayList<Todo> todos = new ArrayList<Todo>();
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception{
         // Add different types of todos
         todos.add(new Todo(DateTime.now(), "floating task"));
 
@@ -22,24 +22,24 @@ public class DisplayHandlerTest {
                 .parseDate("6 March at 9pm")));
 
         Todo todo_done_0 = new Todo(DateTime.now(), "eat more");
-        todo_done_0.isDone = true;
+        todo_done_0.setDone(true);
         todos.add(todo_done_0);
 
         Todo todo_done = new Todo(DateTime.now(), "CIP event",
                 DateParser.parseDate("3 March at 10am"),
                 DateParser.parseDate("3 March at 12pm"));
-        todo_done.isDone = true;
+        todo_done.setDone(true);
         todos.add(todo_done);
         
         Todo todo_done_1 = new Todo(DateTime.now(), "new year",
                 DateParser.parseDate("1 January at 10am"),
                 DateParser.parseDate("1 January at 11am"));
-        todo_done_1.isDone = true;
+        todo_done_1.setDone(true);
         todos.add(todo_done_1);
 
         Todo todo_done_2 = new Todo(DateTime.now(), "CS1010 deadline",
                 DateParser.parseDate("3 Feb at 10pm"));
-        todo_done_2.isDone = true;
+        todo_done_2.setDone(true);
         todos.add(todo_done_2);
 
         todos.add(new Todo(DateTime.now(), "read floating books"));
