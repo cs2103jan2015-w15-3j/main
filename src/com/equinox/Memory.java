@@ -2,16 +2,19 @@ package com.equinox;
 import java.util.ArrayList;
 
 public class Memory {
-	// Accessible by members of the same package
+	private static int STACK_MAX_SIZE = 5;
 	private ArrayList<Todo> currentState;
-	private ArrayList<ArrayList<Todo>> stateHistory;
-
-	// For Redo
-	// private ArrayList<ArrayList<Todo>> stateFuture;
+	private ArrayList<ArrayList<Todo>> undoStack;
+	private ArrayList<ArrayList<Todo>> redoStack;
+	private int undoStackIndex;
+	private int redoStackIndex;
 
 	public Memory() {
-		currentState = new ArrayList<Todo>();
-		stateHistory = new ArrayList<ArrayList<Todo>>();
+		this.currentState = new ArrayList<Todo>();
+		this.undoStack = new ArrayList<ArrayList<Todo>>();
+		this.redoStack = new ArrayList<ArrayList<Todo>>();
+		this.undoStackIndex = 0;
+		this.redoStackIndex = 0;
 	}
 
 	public void add(Todo todo) {
@@ -22,8 +25,12 @@ public class Memory {
 		return currentState.get(--userIndex);
 	}
 	
-	public int getCurrentSize() {
+	public int size() {
 		return currentState.size();
+	}
+	
+	public int stackSize(){
+		return undoStack.size();
 	}
 	
 	public void remove(int userIndex) {
@@ -31,20 +38,43 @@ public class Memory {
 	}
 
 	public void saveCurrentState() {
+		ArrayList<Todo> currentStateCopy = deepCopyCurrentState();
+		if(undoStack.size() <= STACK_MAX_SIZE) {
+			undoStack.add(currentStateCopy);
+		} else {
+			undoStack.set(undoStackIndex, currentStateCopy);
+		}	
+		undoStackIndex = incrementModulo(undoStackIndex);
+	}
+
+	/**
+	 * @return
+	 */
+	private ArrayList<Todo> deepCopyCurrentState() {
 		ArrayList<Todo> currentStateCopy = new ArrayList<Todo>();
 		for(Todo todo: currentState) {
 			currentStateCopy.add(new Todo(todo));
 		}
-		stateHistory.add(currentStateCopy);
-	}
-	
-	public int getStateHistorySize(){
-		return stateHistory.size();
+		return currentStateCopy;
 	}
 
-	public void restoreLastState() {
-		// Discard previous state
-		currentState = stateHistory.remove(stateHistory.size() - 1);
+	public void restoreHistoryState() {
+		ArrayList<Todo> currentStateCopy = deepCopyCurrentState();
+		if(redoStack.size() <= STACK_MAX_SIZE) {
+			redoStack.add(currentStateCopy);
+		} else {
+			redoStack.set(redoStackIndex, currentStateCopy);
+		}
+		redoStackIndex = incrementModulo(redoStackIndex);
+		undoStackIndex = decrementModulo(undoStackIndex);
+		
+		currentState = undoStack.get(undoStackIndex);
+	}
+	
+	public void restoreFutureState() {
+		saveCurrentState();
+		redoStackIndex = decrementModulo(redoStackIndex);
+		currentState = redoStack.get(redoStackIndex);
 	}
 
     /**
@@ -54,5 +84,19 @@ public class Memory {
      */
     public ArrayList<Todo> getAllTodos() {
         return currentState;
+    }
+    
+    private static int incrementModulo(int value) {
+    	value++;
+    	value %= STACK_MAX_SIZE;
+    	return value;
+    }
+    
+    private static int decrementModulo(int value) {
+    	value--;
+    	if(value < 0) {
+    		value += STACK_MAX_SIZE;
+    	}
+    	return value;
     }
 }

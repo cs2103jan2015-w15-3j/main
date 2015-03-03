@@ -31,7 +31,7 @@ public class EditHandler {
 				}
 			}
 			if(!editing.isValid()) {
-				memory.restoreLastState();
+				memory.restoreHistoryState();
 				return new Signal(Signal.SIGNAL_INVALID_PARAMS);
 			}
 			

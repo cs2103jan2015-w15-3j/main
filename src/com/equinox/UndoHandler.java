@@ -15,12 +15,12 @@ public class UndoHandler {
 		}
 		
 		//check if stateHistory has at least one stored state
-		if(memory.getStateHistorySize() < 1){
+		if(memory.stackSize() < 1){
 			return new Signal(Signal.SIGNAL_NO_PREVIOUS_STATE);
 		}
 		
 		try{
-			memory.restoreLastState();
+			memory.restoreHistoryState();
 			
 		} catch (Exception e) {
 			return new Signal(Signal.SIGNAL_ERROR);
