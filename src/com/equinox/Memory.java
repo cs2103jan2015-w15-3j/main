@@ -15,7 +15,6 @@ public class Memory {
 	}
 
 	public void add(Todo todo) {
-		saveCurrentState();
 		currentState.add(todo);
 	}
 
@@ -26,14 +25,8 @@ public class Memory {
 	public int getCurrentSize() {
 		return currentState.size();
 	}
-
-	public void set(int userIndex, Todo todo) {
-		saveCurrentState();
-		currentState.set(--userIndex, todo);
-	}
 	
 	public void remove(int userIndex) {
-		saveCurrentState();
 		currentState.remove(--userIndex);
 	}
 
