@@ -2,8 +2,11 @@ package com.equinox;
 
 import java.util.ArrayList;
 
+import org.joda.time.DateTime;
+
 public class EditHandler {
 
+	@SuppressWarnings("unused")
 	public static Signal process(ParsedInput input, Memory memory) {
 		ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
 		int userIndex = Integer.parseInt(paramPairList.get(0).getParam());
@@ -27,8 +30,15 @@ public class EditHandler {
 					break;
 				case "done":
 					editing.setDone(Boolean.parseBoolean(param));
+					break;
 				}
 			}
+			if(!editing.isValid()) {
+				memory.restoreLastState();
+				return new Signal(Signal.SIGNAL_INVALID_PARAMS);
+			}
+			
+			
 		} catch (DateUndefinedException e) {
 			return new Signal(Signal.SIGNAL_INVALID_PARAMS);
 		}
