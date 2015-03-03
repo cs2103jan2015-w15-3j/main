@@ -22,7 +22,7 @@ public class Todo {
 	public Todo(DateTime currentTime, String userTitle) {
 		this.title = userTitle;
 		this.createdOn = currentTime;
-		this.modifiedOn = null;
+		this.modifiedOn = currentTime;
 		this.startTime = null;
 		this.endTime = null;
 		this.isDone = false;
@@ -33,7 +33,7 @@ public class Todo {
 	public Todo(DateTime currentTime, String userTitle, DateTime deadline) {
 		this.title = userTitle;
 		this.createdOn = currentTime;
-		this.modifiedOn = null;
+		this.modifiedOn = currentTime;
 		this.startTime = null;
 		this.endTime = deadline;
 		this.isDone = false;
@@ -44,7 +44,7 @@ public class Todo {
 	public Todo(DateTime currentTime, String userTitle, DateTime start, DateTime end) {
 		this.title = userTitle;
 		this.createdOn = currentTime;
-		this.modifiedOn = null;
+		this.modifiedOn = currentTime;
 		this.startTime = start;
 		this.endTime = end;
 		this.isDone = false;
