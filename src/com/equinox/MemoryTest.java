@@ -55,9 +55,20 @@ public class MemoryTest {
 		memory.remove(2);
 		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
 		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2).getTitle());
-		memory.restoreLastState();
+		memory.restoreHistoryState();
 		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
 		assertEquals("Task 2 Restored (Title)", TASK_2, memory.get(2).getTitle());
 		assertEquals("Task 3 (Title)", TASK_3, memory.get(3).getTitle());
+	}
+	
+	@Test
+	public void testUndoRedo() {
+		memory.saveCurrentState();
+		memory.remove(2);
+		memory.saveCurrentState();
+		memory.remove(1);
+		memory.restoreHistoryState();
+		memory.restoreFutureState();
+		assertEquals("Task 3 (Title)", TASK_3, memory.get(1).getTitle());
 	}
 }
