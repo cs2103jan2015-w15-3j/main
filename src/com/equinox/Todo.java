@@ -115,7 +115,7 @@ public class Todo {
 	public boolean isValid() {
 		if(startTime != null && endTime != null) {
 			type = TYPE.EVENT;
-			if(startTime.isBefore(endTime)) {
+			if(endTime.isBefore(startTime)) {
 				return false;
 			}
 		} else if(startTime == null && endTime != null) {

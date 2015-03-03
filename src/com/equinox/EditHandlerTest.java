@@ -41,7 +41,7 @@ public class EditHandlerTest {
 		Todo expectedTodo;
 		try {
 			expectedTodo = new Todo(new DateTime(), title, DateParser.parseDate(start), DateParser.parseDate(end));
-			assertEquals(memory.get(1), expectedTodo);
+			assertEquals(expectedTodo, memory.get(1));
 		} catch (DateUndefinedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
