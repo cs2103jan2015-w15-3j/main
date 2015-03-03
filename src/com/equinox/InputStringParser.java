@@ -4,23 +4,16 @@ import java.util.ArrayList;
 public class InputStringParser {
 
     private static final String STRING_EMPTY = "";
-	private static final String COMMAND_DISPLAY = "display";
-	private static final String COMMAND_SEARCH = "search";
-	private static final String COMMAND_MARK = "mark";
-	private static final String COMMAND_EDIT = "edit";
-	private static final String COMMAND_UNDO = "undo";
-	private static final String COMMAND_DELETE = "delete";
-	private static final String COMMAND_ADD = "add";
 	private static final String REGEX_SPACE = "\\s";
 
 	
 	public static ParsedInput parse(String input) {
     	String[] inputArray = processInput(input);
-    	ParsedInput.TYPE cType = getCommandType(inputArray);
+    	KEYWORDS cType = getCommandType(inputArray);
     	
     	//if command type is error
-    	if(cType == ParsedInput.TYPE.ERROR) {
-    		return new ParsedInput(cType, null);
+    	if(cType == null) {
+    		return new ParsedInput(null, null);
     	}
     	
     	ArrayList<KeyParamPair> pairArray = extractParam(inputArray);
@@ -94,7 +87,7 @@ public class InputStringParser {
 	 * @param inputArray
 	 * @return
 	 */
-	public static ParsedInput.TYPE getCommandType(String[] inputArray) {
+	public static KEYWORDS getCommandType(String[] inputArray) {
 		String typeString = inputArray[0];
 		return determineCommandType(typeString);
 	}
@@ -104,25 +97,10 @@ public class InputStringParser {
 	 * command types. Returns the command type or type error if 
 	 * the command type is not listed. 
 	 * @param typeString
-	 * @return
+	 * @return KEYWORDS specifying the type, null if typeString does not contain command.
 	 */
-	public static ParsedInput.TYPE determineCommandType(String typeString) {
-		if(typeString.equals(COMMAND_ADD)) {
-			return ParsedInput.TYPE.ADD;
-		} else if(typeString.equals(COMMAND_DELETE)) {
-			return ParsedInput.TYPE.DELETE;
-		} else if (typeString.equals(COMMAND_UNDO)) {
-			return ParsedInput.TYPE.UNDO;
-		} else if (typeString.equals(COMMAND_EDIT)) {
-			return ParsedInput.TYPE.EDIT;
-		} else if (typeString.equals(COMMAND_MARK)) {
-			return ParsedInput.TYPE.MARK;
-		} else if (typeString.equals(COMMAND_SEARCH)) {
-			return ParsedInput.TYPE.SEARCH;
-		} else if (typeString.equals(COMMAND_DISPLAY)) {
-			return ParsedInput.TYPE.DISPLAY;
-		} else {
-			return ParsedInput.TYPE.ERROR;
-		}
+	public static KEYWORDS determineCommandType(String typeString) {
+		KEYWORDS type = InputStringKeyword.getCommand(typeString);
+		return type;
 	}
 }

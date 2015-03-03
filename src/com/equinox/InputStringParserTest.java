@@ -32,12 +32,12 @@ public class InputStringParserTest {
 	
 	@Test
 	public void testGetCommandType() {
-		assertEquals(ParsedInput.TYPE.ERROR, InputStringParser.getCommandType(a0));
-		assertEquals(ParsedInput.TYPE.ADD, InputStringParser.getCommandType(a1));
-		assertEquals(ParsedInput.TYPE.DELETE, InputStringParser.getCommandType(a2));
-		assertEquals(ParsedInput.TYPE.DELETE, InputStringParser.getCommandType(a3));
-		assertEquals(ParsedInput.TYPE.MARK, InputStringParser.getCommandType(a4));
-		assertEquals(ParsedInput.TYPE.ERROR, InputStringParser.getCommandType(a5));
+		assertEquals(null, InputStringParser.getCommandType(a0));
+		assertEquals(KEYWORDS.ADD, InputStringParser.getCommandType(a1));
+		assertEquals(KEYWORDS.DELETE, InputStringParser.getCommandType(a2));
+		assertEquals(KEYWORDS.DELETE, InputStringParser.getCommandType(a3));
+		assertEquals(KEYWORDS.MARK, InputStringParser.getCommandType(a4));
+		assertEquals(null, InputStringParser.getCommandType(a5));
 	}
 	
 	@Test
