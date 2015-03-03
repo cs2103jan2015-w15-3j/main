@@ -24,13 +24,10 @@ public class MarkHandler {
 			// -1 discrepancy between user input index and index in memory is
 			// handled in Memory class
 			int index = Integer.parseInt(inputList.get(0).getParam());
-
+			memory.saveCurrentState();
 			Todo todoToMark = memory.get(index);
-			todoToMark.isDone = true;
-
-			// replace Todo in memory with marked Todo
-			memory.set(index, todoToMark);
-
+			todoToMark.setDone(true);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new Signal(Signal.SIGNAL_ERROR);
