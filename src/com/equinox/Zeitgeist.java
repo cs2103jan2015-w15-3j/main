@@ -43,6 +43,10 @@ public class Zeitgeist {
                 case MARK :
                     processSignal = MarkHandler.process(userInput, memory);
                     break;
+				
+                case REDO :
+                    processSignal = RedoHandler.process(userInput, memory);
+                    break;
 
                 case UNDO :
                     processSignal = UndoHandler.process(userInput, memory);
