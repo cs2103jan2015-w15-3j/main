@@ -29,7 +29,7 @@ public class EditHandlerTest {
 
 	@Test
 	public void test() {
-		memory.add(new Todo(new DateTime(), "Project meeting", startDate, endDate));
+		memory.add(new Todo("Project meeting", startDate, endDate));
 		ArrayList<KeyParamPair> paramList = new ArrayList<KeyParamPair>();
 		paramList.add(new KeyParamPair("", "1"));
 		paramList.add(new KeyParamPair("title", title));
@@ -40,7 +40,7 @@ public class EditHandlerTest {
 		
 		Todo expectedTodo;
 		try {
-			expectedTodo = new Todo(new DateTime(), title, DateParser.parseDate(start), DateParser.parseDate(end));
+			expectedTodo = new Todo(title, DateParser.parseDate(start), DateParser.parseDate(end));
 			assertEquals(expectedTodo, memory.get(1));
 		} catch (DateUndefinedException e) {
 			// TODO Auto-generated catch block

@@ -1,8 +1,6 @@
 package com.equinox;
 
 import static org.junit.Assert.*;
-
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,11 +15,11 @@ public class MemoryTest {
 	@Before
 	public void setUp() {
 		memory = new Memory();
-		todo1 = new Todo(new DateTime(), TASK_1);
+		todo1 = new Todo(TASK_1);
 		memory.add(todo1);
-		todo2 = new Todo(new DateTime(), TASK_2);
+		todo2 = new Todo(TASK_2);
 		memory.add(todo2);
-		todo3 = new Todo(new DateTime(), TASK_3);
+		todo3 = new Todo(TASK_3);
 		memory.add(todo3);
 	}
 

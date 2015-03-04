@@ -7,8 +7,7 @@ public class EditHandler {
 	public static Signal process(ParsedInput input, Memory memory) {
 		ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
 		int userIndex = Integer.parseInt(paramPairList.get(0).getParam());
-		memory.save();
-		Todo editing = memory.get(userIndex);
+		Todo editing = memory.setterGet(userIndex);
 		
 		try {
 			for (int i = 1; i < paramPairList.size(); i++) {
