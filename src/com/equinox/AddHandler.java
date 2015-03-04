@@ -15,8 +15,9 @@ package com.equinox;
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  */
 
-import org.joda.time.DateTime;
 import java.util.ArrayList;
+
+import org.joda.time.DateTime;
 
 public class AddHandler {
 
@@ -41,7 +42,8 @@ public class AddHandler {
 	        	Todo floatingTask = new Todo(currentTime , floatingTaskName);
 	        	memory.saveCurrentState();
 	        	memory.add(floatingTask);
-	        	break;
+                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
+                            "add", floatingTaskName });
 	        	
 	        	//Deadline 
 	        	//Example: 
@@ -53,7 +55,8 @@ public class AddHandler {
 	        	Todo deadline = new Todo(currentTime, deadlineName, deadlineTime );
 	        	memory.saveCurrentState();
 	        	memory.add(deadline);
-	        	break;
+                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
+                            "add", deadlineName });
 	        	
 	        	//Event
 	        	//Example:
@@ -67,7 +70,8 @@ public class AddHandler {
 	            Todo event = new Todo(currentTime, eventName, eventStartTime, eventEndTime);
 	            memory.saveCurrentState();
 	        	memory.add(event);
-	        	break;
+                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
+                            "add", eventName });
 	        }
     	} catch(Exception e) {
     		e.printStackTrace();
