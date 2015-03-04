@@ -16,6 +16,7 @@ package com.equinox;
  */
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 
@@ -47,34 +48,43 @@ public class AddHandler {
 	        	
 	        	//Deadline 
 	        	//Example: 
-	        	//KeyParamPair 0: add <task>
-	        	//KeyParamPair 1: by <date>
+                //KeyParamPair 0: add <task>, KeyParamPair 1: by <date>
+                    
+                //Event
+    	        //Example:
+    	        //KeyParamPair 0: add <event>, KeyParamPair 1: from <startDate to endDate>
+                    
 	        	case 2 :
-	        	String deadlineName = keyParamPairList.get(0).getParam();
-	        	DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
-	        	Todo deadline = new Todo(currentTime, deadlineName, deadlineTime );
-	        	memory.saveCurrentState();
-	        	memory.add(deadline);
-                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
-                            "add", deadlineName });
+	        	
+	        	String todoName = keyParamPairList.get(0).getParam();
+	        	String secondKeyword = keyParamPairList.get(1).getParam();
+	        	
+	        	//Deadline
+	        	if(secondKeyword.equals("by") || secondKeyword.equals("on") || secondKeyword.equals("at")){
+	        		DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
+		        	Todo deadline = new Todo(currentTime, todoName, deadlineTime );
+		        	memory.saveCurrentState();
+		        	memory.add(deadline);
+	                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
+	                            "add", todoName });
+	        	}
 	        	
 	        	//Event
-	        	//Example:
-	        	//KeyParamPair 0: add <event>
-	        	//KeyParamPair 1: from <date>
-	        	//KeyParamPair 2: to <date>
-	        	case 3 :
-	        	String eventName = keyParamPairList.get(0).getParam();
-	            DateTime eventStartTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
-	            DateTime eventEndTime = DateParser.parseDate(keyParamPairList.get(2).getParam());
-	            Todo event = new Todo(currentTime, eventName, eventStartTime, eventEndTime);
-	            memory.saveCurrentState();
-	        	memory.add(event);
-                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
-                            "add", eventName });
+	        	else if(secondKeyword.equals("from")){
+	        		List<DateTime> dateTimeList = DateParser.parseDates(keyParamPairList.get(1).getParam());
+		            DateTime eventStartTime = dateTimeList.get(0);
+		            DateTime eventEndTime = dateTimeList.get(1);
+	        		Todo event = new Todo(currentTime, todoName, eventStartTime, eventEndTime);
+		            memory.saveCurrentState();
+		        	memory.add(event);
+	                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
+	                            "add", todoName });
+	        	}
 	        }
-    	} catch(Exception e) {
+    	} catch(DateUndefinedException e) {
     		e.printStackTrace();
+    		String exceptionMessage = e.getMessage();
+    		
     		return new Signal(Signal.SIGNAL_ERROR);
     	}
         return new Signal(Signal.SIGNAL_SUCCESS);
