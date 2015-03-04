@@ -24,7 +24,7 @@ public class MarkHandler {
 			// -1 discrepancy between user input index and index in memory is
 			// handled in Memory class
 			int index = Integer.parseInt(inputList.get(0).getParam());
-			memory.saveCurrentState();
+			memory.save();
 			Todo todoToMark = memory.get(index);
 			todoToMark.setDone(true);
 			
