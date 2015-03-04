@@ -10,13 +10,10 @@ import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
 
 /**
- * DateParser.parseDate(dateString) parses the last string into a GregorianCalendar object using parseDate() and returns a date according to the host Time Zone.
- * Multiple dates may be processed per string, in which case the parser can accept an index to determine which date to return, else the first date is returned.
+ * Houses methods which parse a String containing dates and time into their
+ * corresponding DateTime objects.
  * 
- */
-
-/**
- * @author Ikarus
+ * @author Ho Wei Li || IkarusWill
  *
  */
 public class DateParser {
