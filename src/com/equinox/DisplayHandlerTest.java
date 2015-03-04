@@ -55,7 +55,7 @@ public class DisplayHandlerTest {
 
     @Test
     public void testDisplayDefaultPending() {
-        String expected = "         floating task            "
+        String expected = "Pending:\n" + "         floating task            "
                 + "\n06 Mar   CS3230 deadline           21:00"
                 + "\n         read floating b          "
                 + "\n07 Mar   CS3243 project            09:00" + "\n";
@@ -64,7 +64,8 @@ public class DisplayHandlerTest {
 
     @Test
     public void testDisplayChronoPending() {
-        String expected = "06 Mar   CS3230 deadline           21:00"
+        String expected = "Pending:\n"
+                + "06 Mar   CS3230 deadline           21:00"
                 + "\n07 Mar   CS3243 project            09:00"
                 + "\n         floating task            "
                 + "\n         read floating b          " + "\n";
@@ -73,7 +74,7 @@ public class DisplayHandlerTest {
 
     @Test
     public void testDisplayDefaultCompleted() {
-        String expected = "         eat more                 "
+        String expected = "Completed:\n" + "         eat more                 "
                 + "\n03 Mar   CIP event                 10:00 - 12:00"
                 + "\n01 Jan   new year                  10:00 - 11:00"
                 + "\n03 Feb   CS1010 deadline           22:00"
@@ -83,7 +84,8 @@ public class DisplayHandlerTest {
 
     @Test
     public void testDisplayChronoCompleted() {
-        String expected = "01 Jan   new year                  10:00 - 11:00"
+        String expected = "Completed:\n"
+                + "01 Jan   new year                  10:00 - 11:00"
                 + "\n03 Feb   CS1010 deadline           22:00"
                 + "\n03 Mar   CIP event                 10:00 - 12:00"
                 + "\n         eat more                 " + "\n";
