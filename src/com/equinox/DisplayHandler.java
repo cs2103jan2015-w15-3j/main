@@ -15,6 +15,11 @@ public class DisplayHandler {
     private static final int showCompleted = 1;
     private static final int showAll = 2;
 
+    // Messages for different categories based on completeness
+    private static final String messagePending = "Pending:";
+    private static final String messageCompleted = "Completed:";
+    private static final String messageAll = "All:";
+
     // Max length for the title of todo to be displayed
     private static final int MAX_CHAR = 15;
 
@@ -39,10 +44,19 @@ public class DisplayHandler {
         if (todos.size() == 0) {
             return new Signal(Signal.SIGNAL_EMPTY_TODO);
         }
-
-        // By default we show pending tasks, in chronological order
-        displayString = getDisplayChrono(todos, showPending);
-        System.out.println(displayString);
+        String param = c.getParamPairList().get(0).getParam();
+        if (param.equals("completed") || param.equals("complete")
+                || param.equals("c")) {
+            displayString = getDisplayChrono(todos, showCompleted);
+            System.out.println(displayString);
+        } else if (param.equals("all") || param.equals("a")) {
+            displayString = getDisplayChrono(todos, showAll);
+            System.out.println(displayString);
+        } else {
+            // By default we show pending tasks, in chronological order
+            displayString = getDisplayChrono(todos, showPending);
+            System.out.println(displayString);
+        }
         return new Signal(Signal.SIGNAL_DISPLAY_SUCCESS);
     }
 
@@ -64,6 +78,15 @@ public class DisplayHandler {
     public static String getDisplayDefault(ArrayList<Todo> todos, int signal) {
         Iterator<Todo> iterator = todos.iterator();
         StringBuilder sBuilder = new StringBuilder();
+        
+        if (signal == showAll) {
+            sBuilder.append(messageAll + System.lineSeparator());
+        } else if (signal == showCompleted) {
+            sBuilder.append(messageCompleted + System.lineSeparator());
+        } else if (signal == showPending) {
+            sBuilder.append(messagePending + System.lineSeparator());
+        }
+        
         while (iterator.hasNext()) {
             Todo todo = iterator.next();
             // Show pending, skip the completed tasks
@@ -190,9 +213,9 @@ public class DisplayHandler {
 			e.printStackTrace();
 		}
 
-        System.out.println("pending:");
+        // System.out.println("pending:");
         System.out.println(DisplayHandler.getDisplayChrono(todos, 0));
-        System.out.println("completed:");
+        // System.out.println("completed:");
         System.out.println(DisplayHandler.getDisplayChrono(todos, 1));
 
     }
