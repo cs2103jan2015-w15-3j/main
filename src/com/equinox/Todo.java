@@ -4,6 +4,16 @@ import org.joda.time.DateTimeComparator;
 import org.joda.time.DateTimeFieldType;
 
 /**
+ * Stores parameters of a Todo using org.joda.time.DateTime objects. A Todo can
+ * be subdivided into 3 different subtypes namely Task, Deadline, or Event,
+ * which is uniquely determined at construction by the availability of
+ * parameters. Todos are uniquely specified identifier known as index until
+ * their deletion, upon which the index may be reused.
+ * 
+ * @author Ho Wei Li || IkarusWill
+ *
+ */
+/**
  * @author Ikarus
  *
  */
@@ -20,7 +30,11 @@ public class Todo {
 	private boolean isDone;
 	private TYPE type;
 
-	// Floating task
+	/**
+	 * Constructs a Todo of type: TASK. Tasks are Todos that are not time sensitive.
+	 * 
+	 * @param userTitle title of the task.
+	 */
 	public Todo(String userTitle) {
 		this.index = indexCounter;
 		this.title = userTitle;
@@ -33,7 +47,12 @@ public class Todo {
 		indexCounter++;
 	}
 	
-	// Deadline
+	/**
+	 * Constructs a Todo of type: DEADLINE. Deadlines are Todos that have a end time.
+	 * 
+	 * @param userTitle	title of deadline.
+	 * @param deadline	time when deadline elapses.
+	 */
 	public Todo(String userTitle, DateTime deadline) {
 		this.index = indexCounter;
 		this.title = userTitle;
@@ -46,7 +65,13 @@ public class Todo {
 		indexCounter++;
 	}
 	
-	// Event
+	/**
+	 * Constructs a Todo of type: EVENT. Events are Todos that have a start and end time.
+	 * 
+	 * @param userTitle	title of event.
+	 * @param start		start time of event.
+	 * @param end		end time of event.
+	 */
 	public Todo(String userTitle, DateTime start, DateTime end) {
 		this.index = indexCounter;
 		this.title = userTitle;
@@ -59,7 +84,12 @@ public class Todo {
 		indexCounter++;
 	}
 	
-	// Copy of todo
+
+	/**
+	 * Makes an exact copy of another Todo.
+	 * 
+	 * @param todo the Todo to be copied.
+	 */
 	protected Todo(Todo todo) {
 		this.index = todo.index;
 		this.title = todo.title;
@@ -71,7 +101,13 @@ public class Todo {
 		this.type = todo.type;
 	}
 	
-	// Placeholder for removed Todo {
+	
+	/**
+	 * Constructs a placeholder Todo with null fields except the index. To be
+	 * used by Memory class in its stacks for undo/redo operations.
+	 * 
+	 * @param index	the index of the Todo that was removed from Memory.
+	 */
 	private Todo(int index) {
 		this.index = index;
 		this.title = null;
@@ -83,58 +119,123 @@ public class Todo {
 		this.type = null;
 	}
 
+	/**
+	 * Returns the index of the Todo.
+	 * 
+	 * @return the index of the Todo.
+	 */
 	public int getIndex() {
 		return index;
 	}
 
+	/**
+	 * Returns the title of the Todo.
+	 * 
+	 * @return the title of the Todo.
+	 */
 	public String getTitle() {
 		return title;
 	}
 
+	/**
+	 * Replaces the title with the specified String and updates the last modified field of the Todo.
+	 * 
+	 * @param title the new title of the Todo.
+	 */
 	public void setTitle(String title) {
 		this.title = title;
 		modifiedOn = new DateTime();
 	}
 
+	/**
+	 * Returns the start time of the Todo.
+	 * 
+	 * @return the start time of the Todo.
+	 */
 	public DateTime getStartTime() {
 		return startTime;
 	}
 
+	/**
+	 * Replaces the start time with the specified DateTime and updates the last modified field of the Todo.
+	 * 
+	 * @param startTime the new start time of the Todo.
+	 */
 	public void setStartTime(DateTime startTime) {
 		this.startTime = startTime;
 		modifiedOn = new DateTime();
 	}
 
+	/**
+	 * Returns the end time of the Todo.
+	 * 
+	 * @return the end time of the Todo.
+	 */
 	public DateTime getEndTime() {
 		return endTime;
 	}
 
+	/**
+	 * Replaces the end time with the specified DateTime and updates the last modified field of the Todo.
+	 * 
+	 * @param endTime the new end time of the Todo.
+	 */
 	public void setEndTime(DateTime endTime) {
 		this.endTime = endTime;
 		modifiedOn = new DateTime();
 	}
 
+	/**
+	 * Checks if the Todo is marked as done.
+	 * 
+	 * @return true if the Todo has been marked as done, false otherwise.
+	 */
 	public boolean isDone() {
 		return isDone;
 	}
 
+	/**
+	 * Marks the Todo as done or undone and updates the last modified field.
+	 * 
+	 * @param isDone	the new status of the Todo.
+	 */
 	public void setDone(boolean isDone) {
 		this.isDone = isDone;
 		modifiedOn = new DateTime();
 	}
 
+	/**
+	 * Returns the time at which the Todo was created.
+	 * 
+	 * @return the time at which the Todo was created.
+	 */
 	public DateTime getCreatedOn() {
 		return createdOn;
 	}
 
+	/**
+	 * Returns the time at which the Todo was last modified.
+	 * 
+	 * @return the time at which the Todo was last modified.
+	 */
 	public DateTime getModifiedOn() {
 		return modifiedOn;
 	}
 
+	/**
+	 * Returns the type of the Todo as specified by Todo.TYPE.
+	 * 
+	 * @return returns the type of the Todo.
+	 */
 	public TYPE getType() {
 		return type;
 	}
 	
+	/**
+	 * Returns the placeholder Todo constructed from the index of this Todo.
+	 * 
+	 * @return the placeholder Todo constructed from the index of this Todo.
+	 */
 	public Todo getPlaceholder() {
 		return new Todo(index);
 	}
@@ -153,6 +254,9 @@ public class Todo {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		StringBuilder taskStringBuilder = new StringBuilder(modifiedOn.toString() + " " + createdOn.toString() + " " + title);
 		
@@ -171,13 +275,9 @@ public class Todo {
 
     /**
      * Method to return a DateTime of the todo for ordering them chronologically
-     * 
      * The order of preference: start time > end time > null
-     * 
      * For events, start time will be returned
-     * 
      * For deadlines, end time will be returned
-     * 
      * For floating todos, null will be returned
      * 
      * @author paradite
