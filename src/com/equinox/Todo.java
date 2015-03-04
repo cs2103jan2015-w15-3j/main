@@ -13,6 +13,8 @@ public class Todo {
 		TASK, DEADLINE, EVENT;
 	}
 
+	private static int indexCounter = 0; // TODO Find max index from loaded file and assign.
+	private int index;
 	private String title;
 	private DateTime createdOn, modifiedOn, startTime, endTime;
 	private boolean isDone;
@@ -20,6 +22,7 @@ public class Todo {
 
 	// Floating task
 	public Todo(DateTime currentTime, String userTitle) {
+		this.index = indexCounter;
 		this.title = userTitle;
 		this.createdOn = currentTime;
 		this.modifiedOn = currentTime;
@@ -27,10 +30,12 @@ public class Todo {
 		this.endTime = null;
 		this.isDone = false;
 		this.type = TYPE.TASK;
+		indexCounter++;
 	}
 	
 	// Deadline
 	public Todo(DateTime currentTime, String userTitle, DateTime deadline) {
+		this.index = indexCounter;
 		this.title = userTitle;
 		this.createdOn = currentTime;
 		this.modifiedOn = currentTime;
@@ -38,10 +43,12 @@ public class Todo {
 		this.endTime = deadline;
 		this.isDone = false;
 		this.type = TYPE.DEADLINE;
+		indexCounter++;
 	}
 	
 	// Event
 	public Todo(DateTime currentTime, String userTitle, DateTime start, DateTime end) {
+		this.index = indexCounter;
 		this.title = userTitle;
 		this.createdOn = currentTime;
 		this.modifiedOn = currentTime;
@@ -49,10 +56,12 @@ public class Todo {
 		this.endTime = end;
 		this.isDone = false;
 		this.type = TYPE.EVENT;
+		indexCounter++;
 	}
 	
 	// Copy of todo
 	protected Todo(Todo todo) {
+		this.index = todo.index;
 		this.title = todo.title;
 		this.createdOn = todo.createdOn;
 		this.modifiedOn = todo.modifiedOn;
@@ -61,8 +70,10 @@ public class Todo {
 		this.isDone = todo.isDone;
 		this.type = todo.type;
 	}
-	
-	
+
+	public int getIndex() {
+		return index;
+	}
 
 	public String getTitle() {
 		return title;

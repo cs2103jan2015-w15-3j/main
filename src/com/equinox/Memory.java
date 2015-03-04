@@ -1,81 +1,80 @@
 package com.equinox;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 public class Memory {
 	private static int STACK_MAX_SIZE = 5;
-	private ArrayList<Todo> currentState;
-	private LinkedList<ArrayList<Todo>> undoStack;
-	private LinkedList<ArrayList<Todo>> redoStack;
+	private HashMap<Integer, Todo> memoryMap;
+	private LinkedList<Todo> undoStack;
+	private LinkedList<Todo> redoStack;
 
 	public Memory() {
-		this.currentState = new ArrayList<Todo>();
-		this.undoStack = new LinkedList<ArrayList<Todo>>();
-		this.redoStack = new LinkedList<ArrayList<Todo>>();
+		this.memoryMap = new HashMap<Integer, Todo>();
+		this.undoStack = new LinkedList<Todo>();
+		this.redoStack = new LinkedList<Todo>();
 	}
 
 	public void add(Todo todo) {
-		currentState.add(todo);
+		memoryMap.put(todo.getIndex(), todo);
 	}
 
-	public Todo get(int userIndex) {
-		return currentState.get(--userIndex);
+	public Todo get(int index) {
+		return memoryMap.get(index);
 	}
 
 	public int size() {
-		return currentState.size();
+		return memoryMap.size();
 	}
 
-	public int stackSize() {
-		return undoStack.size();
+	public void remove(int index) {
+		memoryMap.remove(index);
 	}
 
-	public void remove(int userIndex) {
-		currentState.remove(--userIndex);
-	}
-
-	public void saveCurrentState() {
-		ArrayList<Todo> currentStateCopy = deepCopyCurrentState();
+	public void save(Todo toBeSaved) {
+		Todo toBeSavedCopy = new Todo(toBeSaved);
 		if (undoStack.size() > STACK_MAX_SIZE) {
 			undoStack.removeFirst();
 		}
-		undoStack.add(currentStateCopy);
-	}
-
-	/**
-	 * @return
-	 */
-	private ArrayList<Todo> deepCopyCurrentState() {
-		ArrayList<Todo> currentStateCopy = new ArrayList<Todo>();
-		for (Todo todo : currentState) {
-			currentStateCopy.add(new Todo(todo));
-		}
-		return currentStateCopy;
+		undoStack.add(toBeSavedCopy);
 	}
 
 	public void restoreHistoryState() throws StateUndefinedException {
-		ArrayList<Todo> currentStateCopy = deepCopyCurrentState();
-		if (redoStack.size() > STACK_MAX_SIZE) {
-			redoStack.removeFirst();
-		}
-		redoStack.add(currentStateCopy);
-
+		Todo toReplace;
 		try {
-			currentState = undoStack.removeLast();
+			toReplace = undoStack.removeLast();
 		} catch (NoSuchElementException e) {
 			throw new StateUndefinedException("No history states exist.");
 		}
+		
+		int index = toReplace.getIndex();
+		Todo toBeReplaced = memoryMap.get(index);
+		
+		if (redoStack.size() > STACK_MAX_SIZE) {
+			redoStack.removeFirst();
+		}
+		redoStack.add(toBeReplaced);
+		memoryMap.put(index, toReplace);
 	}
 
 	public void restoreFutureState() throws StateUndefinedException {
-		saveCurrentState();
+		Todo toReplace;
 		try {
-			currentState = redoStack.removeLast();
+			toReplace = redoStack.removeLast();
 		} catch (NoSuchElementException e) {
 			throw new StateUndefinedException("No future states exist.");
 		}
+		
+		int index = toReplace.getIndex();
+		Todo toBeReplaced = memoryMap.get(index);
+		
+		if (undoStack.size() > STACK_MAX_SIZE) {
+			undoStack.removeFirst();
+		}
+		undoStack.add(toBeReplaced);
+		memoryMap.put(index, toReplace);
 	}
 
 	/**
@@ -83,7 +82,7 @@ public class Memory {
 	 * 
 	 * @return all todos as ArrayList<Todo>
 	 */
-	public ArrayList<Todo> getAllTodos() {
-		return currentState;
+	public Collection<Todo> getAllTodos() {
+		return memoryMap.values();
 	}
 }
