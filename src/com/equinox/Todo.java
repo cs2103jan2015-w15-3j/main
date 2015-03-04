@@ -21,11 +21,11 @@ public class Todo {
 	private TYPE type;
 
 	// Floating task
-	public Todo(DateTime currentTime, String userTitle) {
+	public Todo(String userTitle) {
 		this.index = indexCounter;
 		this.title = userTitle;
-		this.createdOn = currentTime;
-		this.modifiedOn = currentTime;
+		this.createdOn = new DateTime();
+		this.modifiedOn = this.createdOn;
 		this.startTime = null;
 		this.endTime = null;
 		this.isDone = false;
@@ -34,28 +34,28 @@ public class Todo {
 	}
 	
 	// Deadline
-	public Todo(DateTime currentTime, String userTitle, DateTime deadline) {
+	public Todo(String userTitle, DateTime deadline) {
 		this.index = indexCounter;
 		this.title = userTitle;
-		this.createdOn = currentTime;
-		this.modifiedOn = currentTime;
+		this.createdOn = new DateTime();
+		this.modifiedOn = this.createdOn;
 		this.startTime = null;
 		this.endTime = deadline;
 		this.isDone = false;
-		this.type = TYPE.DEADLINE;
+		this.type = TYPE.TASK;
 		indexCounter++;
 	}
 	
 	// Event
-	public Todo(DateTime currentTime, String userTitle, DateTime start, DateTime end) {
+	public Todo(String userTitle, DateTime start, DateTime end) {
 		this.index = indexCounter;
 		this.title = userTitle;
-		this.createdOn = currentTime;
-		this.modifiedOn = currentTime;
+		this.createdOn = new DateTime();
+		this.modifiedOn = this.createdOn;
 		this.startTime = start;
 		this.endTime = end;
 		this.isDone = false;
-		this.type = TYPE.EVENT;
+		this.type = TYPE.TASK;
 		indexCounter++;
 	}
 	
