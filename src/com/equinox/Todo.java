@@ -70,8 +70,10 @@ public class Todo {
 		this.isDone = todo.isDone;
 		this.type = todo.type;
 	}
-	
-	
+
+	public int getIndex() {
+		return index;
+	}
 
 	public String getTitle() {
 		return title;
