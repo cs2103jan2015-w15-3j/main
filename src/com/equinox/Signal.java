@@ -1,63 +1,37 @@
 package com.equinox;
+
 /**
- * The Signal Class is used for constructing a signal as a feedback mechanism
- * for interactions between different processes
+ * The Signal Class is used as a container for the messages displayed to the
+ * user at the end of an operation.
  * 
- * The signals indicates whether an operation is successful or not.
- * 
- * It also contains parameters for displaying purposes, which are to be parsed
- * and printed to the screen using {@link DisplayHandler}.
+ * It also contains the formats for different signals.
  * 
  * @author paradite
  *
  */
 public class Signal {
 	
-    public static final int SIGNAL_ERROR = -1;
-    public static final int SIGNAL_SUCCESS = 1;
-    public static final int SIGNAL_EMPTY_TODO = 2;
-    public static final int SIGNAL_NOT_FOUND = 404;
-    public static final int SIGNAL_INVALID_COMMAND = -2;
-    public static final int SIGNAL_INVALID_PARAMS = -3;
-    public static final int SIGNAL_NO_PREVIOUS_STATE = -4;
-    public static final int SIGNAL_DISPLAY_SUCCESS = 99;
+    public static final String AddSuccessSignalFormat = "%1$s successfully added.";
 
-    private int type;
-    private String[] params;
+    public static final String invalidCommandFormat = "Error: %1$s command is invalid!"
+            + System.lineSeparator()
+            + "Supported commands: add, mark, delete, edit, undo, etc...";
 
-    public Signal(int type, String[] params) {
-        this.type = type;
-        this.params = params;
+
+    private String message;
+
+    /**
+     * Constructor for Signal
+     * 
+     * @param signal
+     */
+    public Signal(String signal) {
+        this.message = signal;
     }
 
-    public Signal(int type) {
-        this.type = type;
-        this.params = null;
-    }
-
-    public int getType() {
-        return this.type;
-    }
-
-    public String[] getParams() {
-        return this.params;
-    }
-    
-    public String getFirstParam() {
-        if (this.params == null) {
-            return "";
-        }
-        return this.params[0];
-    }
-
-    public String getSecondParam() {
-        if (this.params == null) {
-            return "";
-        }
-        if (this.params.length < 2) {
-            return "";
-        }
-        return this.params[1];
+    @Override
+    public String toString() {
+        return message;
     }
 
     public static boolean areParamsEqual(String[] params1, String[] params2){
@@ -100,7 +74,7 @@ public class Signal {
     	}
     	final Signal other = (Signal) obj;
     	
-    	if(!(this.type == other.type) || !(Signal.areParamsEqual(this.params, other.params))){
+        if (!(this.message == other.message)) {
     		return false;
     	}
     	return true;	
