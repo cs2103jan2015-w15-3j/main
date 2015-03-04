@@ -2,11 +2,8 @@ package com.equinox;
 
 import java.util.ArrayList;
 
-import org.joda.time.DateTime;
-
 public class EditHandler {
-
-	@SuppressWarnings("unused")
+	
 	public static Signal process(ParsedInput input, Memory memory) {
 		ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
 		int userIndex = Integer.parseInt(paramPairList.get(0).getParam());

@@ -43,7 +43,7 @@ public class DisplayHandler {
         // By default we show pending tasks, in chronological order
         displayString = getDisplayChrono(todos, showPending);
         System.out.println(displayString);
-        return new Signal(Signal.SIGNAL_SUCCESS);
+        return new Signal(Signal.SIGNAL_DISPLAY_SUCCESS);
     }
 
     public static String getDisplayChrono(ArrayList<Todo> todos, int signal) {
