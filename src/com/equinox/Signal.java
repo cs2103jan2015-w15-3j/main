@@ -20,6 +20,7 @@ public class Signal {
     public static final int SIGNAL_INVALID_COMMAND = -2;
     public static final int SIGNAL_INVALID_PARAMS = -3;
     public static final int SIGNAL_NO_PREVIOUS_STATE = -4;
+    public static final int SIGNAL_DISPLAY_SUCCESS = 99;
 
     private int type;
     private String[] params;
@@ -42,6 +43,23 @@ public class Signal {
         return this.params;
     }
     
+    public String getFirstParam() {
+        if (this.params == null) {
+            return "";
+        }
+        return this.params[0];
+    }
+
+    public String getSecondParam() {
+        if (this.params == null) {
+            return "";
+        }
+        if (this.params.length < 2) {
+            return "";
+        }
+        return this.params[1];
+    }
+
     public static boolean areParamsEqual(String[] params1, String[] params2){
     	//check if params1 and params2 are null
     	if(params1 == null && params2 == null){
