@@ -31,7 +31,11 @@ public class EditHandler {
 				}
 			}
 			if(!editing.isValid()) {
-				memory.restoreLastState();
+				try {
+					memory.restoreHistoryState();
+				} catch (StateUndefinedException e) {
+					e.printStackTrace();
+				}
 				return new Signal(Signal.SIGNAL_INVALID_PARAMS);
 			}
 			
