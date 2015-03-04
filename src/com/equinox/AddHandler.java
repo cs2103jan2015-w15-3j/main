@@ -32,7 +32,6 @@ public class AddHandler {
     	try{
 	        ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
 	        int numberOfElements = keyParamPairList.size();
-	        DateTime currentTime = DateTime.now();
 	        
 	        switch(numberOfElements){
 	        	//Floating task
@@ -40,8 +39,7 @@ public class AddHandler {
 	        	//KeyParamPair 0: add <task>
 	        	case 1 :
 	        	String floatingTaskName = keyParamPairList.get(0).getParam();
-	        	Todo floatingTask = new Todo(currentTime , floatingTaskName);
-	        	memory.saveCurrentState();
+	        	Todo floatingTask = new Todo(floatingTaskName);
 	        	memory.add(floatingTask);
                     return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
                             "add", floatingTaskName });
@@ -62,8 +60,7 @@ public class AddHandler {
 	        	//Deadline
 	        	if(secondKeyword.equals("by") || secondKeyword.equals("on") || secondKeyword.equals("at")){
 	        		DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
-		        	Todo deadline = new Todo(currentTime, todoName, deadlineTime );
-		        	memory.saveCurrentState();
+		        	Todo deadline = new Todo(todoName, deadlineTime );
 		        	memory.add(deadline);
 	                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
 	                            "add", todoName });
@@ -74,8 +71,7 @@ public class AddHandler {
 	        		List<DateTime> dateTimeList = DateParser.parseDates(keyParamPairList.get(1).getParam());
 		            DateTime eventStartTime = dateTimeList.get(0);
 		            DateTime eventEndTime = dateTimeList.get(1);
-	        		Todo event = new Todo(currentTime, todoName, eventStartTime, eventEndTime);
-		            memory.saveCurrentState();
+	        		Todo event = new Todo(todoName, eventStartTime, eventEndTime);
 		        	memory.add(event);
 	                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
 	                            "add", todoName });

@@ -25,7 +25,6 @@ public class DeleteHandler {
 		}
 		
     	try {
-    		memory.save();
     		memory.remove(deleteIndex);
     	} catch (IndexOutOfBoundsException e) {
     		return new Signal(Signal.SIGNAL_NOT_FOUND);
