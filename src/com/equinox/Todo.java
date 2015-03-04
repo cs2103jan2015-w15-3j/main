@@ -70,6 +70,18 @@ public class Todo {
 		this.isDone = todo.isDone;
 		this.type = todo.type;
 	}
+	
+	// Placeholder for removed Todo {
+	private Todo(int index) {
+		this.index = index;
+		this.title = null;
+		this.createdOn = null;
+		this.modifiedOn = null;
+		this.startTime = null;
+		this.endTime = null;
+		this.isDone = false;
+		this.type = null;
+	}
 
 	public int getIndex() {
 		return index;
@@ -121,6 +133,10 @@ public class Todo {
 
 	public TYPE getType() {
 		return type;
+	}
+	
+	public Todo getPlaceholder() {
+		return new Todo(index);
 	}
 	
 	public boolean isValid() {
