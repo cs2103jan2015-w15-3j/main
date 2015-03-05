@@ -57,11 +57,11 @@ public class MemoryTest {
 		assertEquals("Todo1 Redo Mark", todo1MarkCopy, memory.get(todo1.getIndex()));
 	}
 
-	@Test
+	@Test (expected = NullPointerException.class)
 	public void testRemoveUndo() throws StateUndefinedException {
 		memory.remove(todo2.getIndex());
 		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
-		assertEquals("Todo2", null, memory.get(todo2.getIndex()));
+		memory.get(todo2.getIndex()); // Exception
 		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
 		memory.restoreHistoryState();
 		assertEquals("Todo2", todo2, memory.get(todo2.getIndex()));
@@ -78,10 +78,10 @@ public class MemoryTest {
 		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
 	}
 	
-	@Test
+	@Test (expected = NullPointerException.class)
 	public void testAddUndo() throws StateUndefinedException {
 		memory.restoreHistoryState();
-		assertEquals("Todo3", null, memory.get(todo3.getIndex()));	
+		memory.get(todo3.getIndex()); // Exception
 	}
 	
 	@Test
