@@ -41,7 +41,7 @@ public class AddHandler {
 	        	String floatingTaskName = keyParamPairList.get(0).getParam();
 	        	Todo floatingTask = new Todo(floatingTaskName);
 	        	memory.add(floatingTask);
-                    return new Signal(String.format(Signal.AddSuccessSignalFormat, floatingTask));
+                    return new Signal(String.format(Signal.addSuccessSignalFormat, floatingTask));
 	        	
 	        	//Deadline 
 	        	//Example: 
@@ -61,8 +61,7 @@ public class AddHandler {
 	        		DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(1).getParam());
 		        	Todo deadline = new Todo(todoName, deadlineTime );
 		        	memory.add(deadline);
-	                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
-	                            "add", todoName });
+	                    return new Signal(String.format(Signal.addSuccessSignalFormat, deadline));
 	        	}
 	        	
 	        	//Event
@@ -72,8 +71,7 @@ public class AddHandler {
 		            DateTime eventEndTime = dateTimeList.get(1);
 	        		Todo event = new Todo(todoName, eventStartTime, eventEndTime);
 		        	memory.add(event);
-	                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
-	                            "add", todoName });
+	                    return new Signal(String.format(Signal.addSuccessSignalFormat, event));
 	        	}
 	        }
     	} catch(DateUndefinedException e) {
