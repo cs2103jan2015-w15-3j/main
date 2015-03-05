@@ -10,7 +10,13 @@ package com.equinox;
 import java.util.ArrayList;
 
 public class MarkHandler {
-
+	/**
+	 * Retrieves the Todo object specified by index in ParsedInput from Memory and marks it as done.
+	 * 
+	 * @param input A ParsedInput object that contains a KEYWORDS type and an ArrayList<KeyParamPair> 
+	 * @param memory A memory object that stores Todo objects
+	 * @return It returns a Signal object to indicate success or failure.
+	 */
 	public static Signal process(ParsedInput input, Memory memory) {
 		ArrayList<KeyParamPair> inputList = input.getParamPairList();
 
