@@ -6,7 +6,7 @@ public class SignalHandler {
 
     public static void printSignal(Signal signal) {
         String message = signal.toString();
-        if (message != null) {
+        if (message != null && !message.isEmpty()) {
             System.out.println(PREFIX + message);
         }
 	}

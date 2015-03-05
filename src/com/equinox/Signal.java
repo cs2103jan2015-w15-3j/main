@@ -13,6 +13,8 @@ public class Signal {
 	
     public static final String AddSuccessSignalFormat = "%1$s successfully added.";
 
+    public static final String DisplaySuccessSignalFormat = "";
+
     public static final String invalidCommandFormat = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
