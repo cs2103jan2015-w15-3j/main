@@ -39,9 +39,9 @@ public class AddHandler {
 		ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
 		String todoName = keyParamPairList.get(0).getParam();
 		
-		// Check for null title
-		if(todoName.equals(null)){
-			return new Signal(Signal.nullTitleException);
+		// Check for empty string params
+		if(isParamEmptyString(keyParamPairList)){
+			return new Signal(Signal.emptyParamException);
 		}
 		
 		try {
@@ -98,5 +98,19 @@ public class AddHandler {
 		}
 
 		return new Signal(Signal.unknownAddError);
+	}
+	/**
+	 * Iterates through the keyParamPair ArrayList and checks if any parameter is an empty string.
+	 * 
+	 * @param keyParamPairList 
+	 * @return boolean If there is at least one empty string parameter, return true. Else, return false.
+	 */
+	private static boolean isParamEmptyString(ArrayList<KeyParamPair> keyParamPairList) {
+		for(KeyParamPair pair : keyParamPairList){
+			if(pair.getParam().equals("")){
+				return true;
+			}
+		}
+		return false;
 	}
 }

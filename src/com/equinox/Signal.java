@@ -30,7 +30,7 @@ public class Signal {
     		+ "\t Events: add <title> from <time> to <time> on <date>"
     		+ System.lineSeparator()
     		+ "\t\t add <title> from <date> to <date>";
-    public static final String nullTitleException = "Error: Title of Todo was not given.";
+    public static final String emptyParamException = "Error: At least one parameter is unspecified and empty.";
     
     /**
      * Display Handler Signals
