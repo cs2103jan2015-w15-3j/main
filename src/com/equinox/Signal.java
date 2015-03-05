@@ -14,7 +14,11 @@ public class Signal {
     /**
      * Add Handler Signals
      */
-    public static final String AddSuccessSignalFormat = "%1$s successfully added.";
+    // Success messages
+    public static final String addSuccessSignalFormat = "%1$s successfully added.";
+
+    // Error messages
+    public static final String unknownAddError = "Error: Unknown add error";
 
     public static final String invalidParamsForAddHandler = "Error: The number of parameters is invalid."
             + System.lineSeparator()
@@ -37,11 +41,14 @@ public class Signal {
     /**
      * General Signals
      */
+
     public static final String invalidCommandFormat = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
 
 
+    
+    public static final String dateUndefinedException = "Error: Date is undefined; %1$s";
     
     private String message;
 
