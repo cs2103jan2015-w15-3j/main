@@ -26,7 +26,7 @@ public class AddHandler {
     	//Check for valid number of keywords
     	int numberOfKeywords = input.getParamPairList().size();
     	if(numberOfKeywords > 3){
-    		return new Signal(Signal.SIGNAL_INVALID_PARAMS);
+    		return new Signal(Signal.invalidParamsForAddHandler);
     	}
     	
     	try{
@@ -41,8 +41,7 @@ public class AddHandler {
 	        	String floatingTaskName = keyParamPairList.get(0).getParam();
 	        	Todo floatingTask = new Todo(floatingTaskName);
 	        	memory.add(floatingTask);
-                    return new Signal(Signal.SIGNAL_SUCCESS, new String[] {
-                            "add", floatingTaskName });
+                    return new Signal(String.format(Signal.AddSuccessSignalFormat, floatingTask));
 	        	
 	        	//Deadline 
 	        	//Example: 
