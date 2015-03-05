@@ -258,20 +258,26 @@ public class Todo {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuilder taskStringBuilder = new StringBuilder(modifiedOn.toString() + " " + createdOn.toString() + " " + title);
+        StringBuilder taskStringBuilder = new StringBuilder();
 		
-		switch(type) {
-		case TASK:
-			return taskStringBuilder.toString();
-		case DEADLINE:
-			taskStringBuilder.append(" " + endTime);
-			return taskStringBuilder.toString();
-		case EVENT:
-			taskStringBuilder.append(" " + startTime + " " + endTime);
-			return taskStringBuilder.toString();
-		}
-		return (modifiedOn.toString() + " " + createdOn.toString() + " " + title + " " + startTime.toString() + " " + endTime.toString() + " " + isDone);
-	}
+        switch (type) {
+            case TASK :
+                taskStringBuilder.append("Floating task " + title);
+                return taskStringBuilder.toString();
+            case DEADLINE :
+                taskStringBuilder.append("Deadline " + title);
+                taskStringBuilder.append(" by " + endTime);
+                return taskStringBuilder.toString();
+            case EVENT :
+                taskStringBuilder.append("Event " + title);
+                taskStringBuilder.append(" from " + startTime + " to "
+                        + endTime);
+                return taskStringBuilder.toString();
+        }
+        return (modifiedOn.toString() + " " + createdOn.toString() + " "
+                + title + " " + startTime.toString() + " " + endTime.toString()
+                + " " + isDone);
+    }
 
     /**
      * Method to return a DateTime of the todo for ordering them chronologically
