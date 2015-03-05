@@ -1,8 +1,6 @@
 package com.equinox;
 
 import static org.junit.Assert.*;
-
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,66 +10,86 @@ public class MemoryTest {
 	private static final String TASK_2 = "Do laundry";
 	private static final String TASK_3 = "Do homework";
 	Memory memory;
+	Todo todo1, todo2, todo3;
 
 	@Before
 	public void setUp() {
 		memory = new Memory();
-		Todo todo1 = new Todo(new DateTime(), TASK_1);
+		todo1 = new Todo(TASK_1);
 		memory.add(todo1);
-		Todo todo2 = new Todo(new DateTime(), TASK_2);
+		todo2 = new Todo(TASK_2);
 		memory.add(todo2);
-		Todo todo3 = new Todo(new DateTime(), TASK_3);
+		todo3 = new Todo(TASK_3);
 		memory.add(todo3);
 	}
 
 	@Test
 	public void testAddGet() {
-		assertEquals("Task 1 Add (Title)", TASK_1, memory.get(1).getTitle());
-		assertEquals("Task 2 Add (Title)", TASK_2, memory.get(2).getTitle());
-		assertEquals("Task 3 Add (Title)", TASK_3, memory.get(3).getTitle());
+		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
+		assertEquals("Todo2", todo2, memory.get(todo2.getIndex()));
+		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
 	}
 
 	@Test
-	public void testSetGet() {
-		memory.saveCurrentState();
-		Todo todo1 = memory.get(1);
+	public void testSetterGetUndo() throws StateUndefinedException {
+		memory.setterGet(todo1.getIndex());
+		Todo todo1Copy = new Todo(todo1);
 		todo1.setDone(true);
-		assertEquals("Task 1 Mark (isDone)", true, memory.get(1).isDone());
-		assertEquals("Task 2 (isDone)", false, memory.get(2).isDone());
-		assertEquals("Task 3 (isDone)", false, memory.get(3).isDone());
-	}
-
-	@Test
-	public void testRemove() {
-		memory.saveCurrentState();
-		memory.remove(2);
-		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
-		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2)
-				.getTitle());
-	}
-
-	@Test
-	public void testSaveRestore() throws StateUndefinedException {
-		memory.saveCurrentState();
-		memory.remove(2);
-		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
-		assertEquals("Task 2, was Task 3 (Title)", TASK_3, memory.get(2)
-				.getTitle());
+		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
+		assertEquals("Todo2", todo2, memory.get(todo2.getIndex()));
+		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
 		memory.restoreHistoryState();
-		assertEquals("Task 1 (Title)", TASK_1, memory.get(1).getTitle());
-		assertEquals("Task 2 Restored (Title)", TASK_2, memory.get(2)
-				.getTitle());
-		assertEquals("Task 3 (Title)", TASK_3, memory.get(3).getTitle());
+		assertEquals("Todo1 Undo Mark", todo1Copy, memory.get(todo1.getIndex()));
 	}
-
+	
 	@Test
-	public void testUndoRedo() throws StateUndefinedException {
-		memory.saveCurrentState();
-		memory.remove(2);
-		memory.saveCurrentState();
-		memory.remove(1);
+	public void testSetterGetUndoRedo() throws StateUndefinedException {
+		memory.setterGet(todo1.getIndex());
+		Todo todo1Copy = new Todo(todo1);
+		todo1.setDone(true);
+		Todo todo1MarkCopy = new Todo(todo1);
+		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
+		assertEquals("Todo2", todo2, memory.get(todo2.getIndex()));
+		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
 		memory.restoreHistoryState();
+		assertEquals("Todo1 Undo Mark", todo1Copy, memory.get(todo1.getIndex()));
 		memory.restoreFutureState();
-		assertEquals("Task 3 (Title)", TASK_3, memory.get(1).getTitle());
+		assertEquals("Todo1 Redo Mark", todo1MarkCopy, memory.get(todo1.getIndex()));
+	}
+
+	@Test
+	public void testRemoveUndo() throws StateUndefinedException {
+		memory.remove(todo2.getIndex());
+		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
+		assertEquals("Todo2", null, memory.get(todo2.getIndex()));
+		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
+		memory.restoreHistoryState();
+		assertEquals("Todo2", todo2, memory.get(todo2.getIndex()));
+	}
+
+	@Test
+	public void testRemoveUndoRedo() throws StateUndefinedException {
+		memory.remove(todo2.getIndex());
+		memory.remove(todo1.getIndex());
+		memory.restoreHistoryState();
+		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
+		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
+		memory.restoreFutureState();
+		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
+	}
+	
+	@Test
+	public void testAddUndo() throws StateUndefinedException {
+		memory.restoreHistoryState();
+		assertEquals("Todo3", null, memory.get(todo3.getIndex()));	
+	}
+	
+	@Test
+	public void testAddUndoRedo() throws StateUndefinedException {
+		memory.restoreHistoryState();
+		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
+		assertEquals("Todo2", todo2, memory.get(todo2.getIndex()));
+		memory.restoreFutureState();
+		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
 	}
 }
