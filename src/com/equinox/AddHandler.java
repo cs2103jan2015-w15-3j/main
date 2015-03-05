@@ -57,7 +57,7 @@ public class AddHandler {
 	        	case 2 :
 	        	
 	        	String todoName = keyParamPairList.get(0).getParam();
-	        	String secondKeyword = keyParamPairList.get(1).getParam();
+	        	String secondKeyword = keyParamPairList.get(1).getKeyword();
 	        	
 	        	//Deadline
 	        	if(secondKeyword.equals("by") || secondKeyword.equals("on") || secondKeyword.equals("at")){
