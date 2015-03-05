@@ -42,6 +42,9 @@ public class MarkHandler {
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 			return new Signal(String.format(Signal.nullMapException));
+		} catch (NullTodoException e) {
+			e.printStackTrace();
+			return new Signal(String.format(Signal.NULL_TODO_EXCEPTION, e.getMessage()));
 		}
 	}
 }
