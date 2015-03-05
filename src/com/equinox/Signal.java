@@ -11,8 +11,11 @@ package com.equinox;
  */
 public class Signal {
 	
-    public static final String AddSuccessSignalFormat = "%1$s successfully added.";
-
+	//Success messages
+    public static final String addSuccessSignalFormat = "%1$s successfully added.";
+    
+    //Error messages
+    public static final String unknownAddError = "Error: Unknown add error";
     public static final String invalidCommandFormat = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
@@ -28,6 +31,8 @@ public class Signal {
     		+ "Events: add <title> from <time> to <time> on <date>"
     		+ System.lineSeparator()
     		+ "Events: add <title> from <date> to <date>";
+    
+    public static final String dateUndefinedException = "Error: Date is undefined; %1$s";
     
     private String message;
 
