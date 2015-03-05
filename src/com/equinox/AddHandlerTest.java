@@ -19,7 +19,6 @@ public class AddHandlerTest {
 	ParsedInput input;
 	KEYWORDS addCommand = KEYWORDS.ADD;
 	
-	private static final DateTime currentTime = DateTime.now();
 	private static final String userInputFloatingTask1 = "add study CS2105";
 	
 	public enum TYPE{
@@ -50,7 +49,7 @@ public class AddHandlerTest {
 	
 	@Test
 	public void testTodoPrint(){
-		Todo td1 = new Todo(currentTime, "do CS2103T TextBuddy CE2");
+		Todo td1 = new Todo("do CS2103T TextBuddy CE2");
 		System.out.println(td1.toString());
 	}
 	
@@ -64,7 +63,7 @@ public class AddHandlerTest {
 		AddHandler.process(input, memory);
 
 		//Test for equivalence between Todo object in memory and testTodo
-		Todo testTodo = new Todo(currentTime, taskTitle);
+		Todo testTodo = new Todo(taskTitle);
 		Todo fromMemory = memory.get(1);
 
 		if(testTodo.equals(fromMemory)){

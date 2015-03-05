@@ -1,6 +1,7 @@
 package com.equinox;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -40,7 +41,7 @@ public class DisplayHandler {
 
 	public static Signal process(ParsedInput c, Memory memory) {
         String displayString;
-        ArrayList<Todo> todos = memory.getAllTodos();
+        Collection<Todo> todos = memory.getAllTodos();
         if (todos.size() == 0) {
             return new Signal(Signal.SIGNAL_EMPTY_TODO);
         }
@@ -60,12 +61,12 @@ public class DisplayHandler {
         return new Signal(Signal.DisplaySuccessSignalFormat);
     }
 
-    public static String getDisplayChrono(ArrayList<Todo> todos, int signal) {
+    public static String getDisplayChrono(Collection<Todo> todos, int signal) {
         ArrayList<Todo> clonedTodos = cloneSortChrono(todos);
         return getDisplayDefault(clonedTodos, signal);
     }
 
-    private static ArrayList<Todo> cloneSortChrono(ArrayList<Todo> todos) {
+    private static ArrayList<Todo> cloneSortChrono(Collection<Todo> todos) {
         ArrayList<Todo> clonedTodos = new ArrayList<Todo>(todos.size());
         for (Todo todo : todos) {
             clonedTodos.add(new Todo(todo));
@@ -177,36 +178,36 @@ public class DisplayHandler {
 
         try {
 			// Add different types of todos
-			todos.add(new Todo(DateTime.now(), "floating task"));
+			todos.add(new Todo("floating task"));
 
 			// Completed tasks
-			todos.add(new Todo(DateTime.now(), "CS3230 deadline", DateParser
+			todos.add(new Todo("CS3230 deadline", DateParser
 			        .parseDate("6 March at 9pm")));
 
-			Todo todo_done_0 = new Todo(DateTime.now(), "eat more");
+			Todo todo_done_0 = new Todo("eat more");
 			todo_done_0.setDone(true);
 			todos.add(todo_done_0);
 
-			Todo todo_done = new Todo(DateTime.now(), "CIP event",
+			Todo todo_done = new Todo("CIP event",
 			        DateParser.parseDate("3 March at 10am"),
 			        DateParser.parseDate("3 March at 12pm"));
 			todo_done.setDone(true);
 			todos.add(todo_done);
 
-			Todo todo_done_1 = new Todo(DateTime.now(), "new year",
+			Todo todo_done_1 = new Todo("new year",
 			        DateParser.parseDate("1 January at 10am"),
 			        DateParser.parseDate("1 January at 11am"));
 			todo_done_1.setDone(true);
 			todos.add(todo_done_1);
 
-			Todo todo_done_2 = new Todo(DateTime.now(), "CS1010 deadline",
+			Todo todo_done_2 = new Todo("CS1010 deadline",
 			        DateParser.parseDate("3 Feb at 10pm"));
 			todo_done_2.setDone(true);
 			todos.add(todo_done_2);
 
-			todos.add(new Todo(DateTime.now(), "read floating books"));
+			todos.add(new Todo("read floating books"));
 
-			todos.add(new Todo(DateTime.now(), "CS3243 project deadline",
+			todos.add(new Todo("CS3243 project deadline",
 			        DateParser.parseDate("7 March at 9am")));
 		} catch (DateUndefinedException e) {
 			// TODO Auto-generated catch block

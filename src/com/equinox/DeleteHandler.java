@@ -3,11 +3,23 @@ package com.equinox;
 import java.util.ArrayList;
 
 /**
- * @author Ikarus
+ * Houses a method which processes the delete request from the user. 
+ * 
+ * @author Ho Wei Li || IkarusWill
  *
  */
 public class DeleteHandler {
 
+	/**
+	 * Processes a ParsedInput object containing the delete command and its
+	 * accompanying parameters and commits those changes to the memory.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 * @return a Signal object with a message denoting success or failure in
+	 *         processing.
+	 */
 	public static Signal process(ParsedInput input, Memory memory) {
 		
 		ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
@@ -25,7 +37,6 @@ public class DeleteHandler {
 		}
 		
     	try {
-    		memory.saveCurrentState();
     		memory.remove(deleteIndex);
     	} catch (IndexOutOfBoundsException e) {
     		return new Signal(Signal.SIGNAL_NOT_FOUND);
