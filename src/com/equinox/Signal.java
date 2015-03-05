@@ -21,16 +21,16 @@ public class Signal {
     public static final String unknownAddError = "Error: Unknown add error";
 
     public static final String invalidParamsForAddHandler = "Error: The number of parameters is invalid."
-            + System.lineSeparator()
-            + "Supported formats"
-            + System.lineSeparator()
-            + "Floating tasks: add <title>"
-            + System.lineSeparator()
-            + "Deadlines: add <title> by/on/at <date>"
-            + System.lineSeparator()
-            + "Events: add <title> from <time> to <time> on <date>"
-            + System.lineSeparator()
-            + "Events: add <title> from <date> to <date>";
+    		+ System.lineSeparator()
+    		+ "\t Supported formats:"
+    		+ System.lineSeparator()
+    		+ "\t Floating tasks: add <title>"
+    		+ System.lineSeparator()
+    		+ "\t Deadlines: add <title> by/on/at <date>"
+    		+ System.lineSeparator()
+    		+ "\t Events: add <title> from <time> to <time> on <date>"
+    		+ System.lineSeparator()
+    		+ "\t\t add <title> from <date> to <date>";
 
     /**
      * Display Handler Signals
@@ -46,6 +46,11 @@ public class Signal {
     
     //Failure messages
     public static final String unknownMarkError = "Error: Unknown mark error.";
+    public static final String invalidParamsForMarkHandler = "Error: The number of parameters is invalid."
+    			+ System.lineSeparator()
+    			+ "\t Supported format:"
+    			+ System.lineSeparator()
+    			+ "\t mark <indexNumber>";
     
     /**
      * General Signals
