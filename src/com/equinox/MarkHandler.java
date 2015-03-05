@@ -41,7 +41,7 @@ public class MarkHandler {
 
 		} catch (NullTodoException e) {
 			e.printStackTrace();
-			return new Signal(e.getMessage());
+			return new Signal(String.format(Signal.EXCEPTIONS_FORMAT, e.getMessage()));
 		}
 	}
 }

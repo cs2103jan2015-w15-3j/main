@@ -101,8 +101,8 @@ public class Signal {
     		+ "\t Supported format:"
     		+ System.lineSeparator()
     		+ "\t undo <indexNumber>";;
-    
-    
+
+    		
     /**
      * General Signals
      */
@@ -112,6 +112,7 @@ public class Signal {
             + "Supported commands: add, mark, delete, edit, undo, etc...";
     public static final String emptyParamException = "Error: At least one parameter is unspecified and empty.";
     public static final String dateUndefinedException = "Error: Date is undefined; %1$s";
+    public static final String EXCEPTIONS_FORMAT = "Error: %1$s";
     
     
     /**
