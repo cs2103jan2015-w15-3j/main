@@ -26,12 +26,12 @@ public class MarkHandler {
 			int index = Integer.parseInt(inputList.get(0).getParam());
 			Todo todoToMark = memory.setterGet(index);
 			todoToMark.setDone(true);
+			return new Signal(String.format(Signal.markSuccessSignalFormat, todoToMark));
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Signal(Signal.SIGNAL_ERROR);
 		}
 
-		return new Signal(Signal.SIGNAL_SUCCESS);
+		return new Signal(Signal.unknownMarkError);
 	}
 }
