@@ -31,7 +31,7 @@ public class Signal {
     		+ "\t Events: add <title> from <time> to <time> on <date>"
     		+ System.lineSeparator()
     		+ "\t\t add <title> from <date> to <date>";
-
+    
     /**
      * Display Handler Signals
      */
@@ -51,7 +51,8 @@ public class Signal {
     			+ "\t Supported format:"
     			+ System.lineSeparator()
     			+ "\t mark <indexNumber>";
-    
+    public static final String nullMapException = "Error: Memory is null.";
+   
     /**
      * General Signals
      */
