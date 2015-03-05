@@ -57,7 +57,7 @@ public class DisplayHandler {
             displayString = getDisplayChrono(todos, showPending);
             System.out.println(displayString);
         }
-        return new Signal(Signal.SIGNAL_DISPLAY_SUCCESS);
+        return new Signal(Signal.DisplaySuccessSignalFormat);
     }
 
     public static String getDisplayChrono(ArrayList<Todo> todos, int signal) {
