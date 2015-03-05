@@ -16,7 +16,7 @@ public class MarkHandler {
 
 		// Ensure that there is only one KeyParamPair in inputList
 		if (inputList.size() > 1) {
-			return new Signal(Signal.SIGNAL_INVALID_PARAMS);
+			return new Signal(Signal.invalidParamsForMarkHandler);
 		}
 
 		try {
