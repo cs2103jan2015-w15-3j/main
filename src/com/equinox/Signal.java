@@ -19,7 +19,6 @@ public class Signal {
 
     // Error messages
     public static final String unknownAddError = "Error: Unknown add error";
-
     public static final String invalidParamsForAddHandler = "Error: The number of parameters is invalid."
     		+ System.lineSeparator()
     		+ "\t Supported formats:"
@@ -31,6 +30,7 @@ public class Signal {
     		+ "\t Events: add <title> from <time> to <time> on <date>"
     		+ System.lineSeparator()
     		+ "\t\t add <title> from <date> to <date>";
+    public static final String nullTitleException = "Error: Title of Todo was not given.";
     
     /**
      * Display Handler Signals
