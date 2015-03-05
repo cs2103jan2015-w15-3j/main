@@ -52,6 +52,7 @@ public class Signal {
     			+ System.lineSeparator()
     			+ "\t mark <indexNumber>";
     public static final String nullMapException = "Error: Memory is null.";
+    public static final String NULL_TODO_EXCEPTION = "Error: %1$s";
    
     /**
      * General Signals
