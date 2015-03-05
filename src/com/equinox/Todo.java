@@ -1,4 +1,6 @@
 package com.equinox;
+import java.util.TreeSet;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.DateTimeFieldType;
@@ -22,8 +24,11 @@ public class Todo {
 	public enum TYPE {
 		TASK, DEADLINE, EVENT;
 	}
-
-	private static int indexCounter = 0; // TODO Find max index from loaded file and assign.
+	
+	private static final int INDEX_BUFFER_SIZE = 5;
+	private static final int INDEX_BUFFER_MAX_SIZE = 2 * INDEX_BUFFER_SIZE;
+	protected static final IndexBuffer indexBuffer = new IndexBuffer();
+	private static int startingIndex = 0; // TODO Find max index from loaded file and assign.
 	private int index;
 	private String title;
 	private DateTime createdOn, modifiedOn, startTime, endTime;
@@ -36,7 +41,7 @@ public class Todo {
 	 * @param userTitle title of the task.
 	 */
 	public Todo(String userTitle) {
-		this.index = indexCounter;
+		this.index = indexBuffer.getIndex();
 		this.title = userTitle;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
@@ -44,7 +49,6 @@ public class Todo {
 		this.endTime = null;
 		this.isDone = false;
 		this.type = TYPE.TASK;
-		indexCounter++;
 	}
 	
 	/**
@@ -54,7 +58,7 @@ public class Todo {
 	 * @param deadline	time when deadline elapses.
 	 */
 	public Todo(String userTitle, DateTime deadline) {
-		this.index = indexCounter;
+		this.index = indexBuffer.getIndex();
 		this.title = userTitle;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
@@ -62,7 +66,6 @@ public class Todo {
 		this.endTime = deadline;
 		this.isDone = false;
 		this.type = TYPE.DEADLINE;
-		indexCounter++;
 	}
 	
 	/**
@@ -73,7 +76,7 @@ public class Todo {
 	 * @param end		end time of event.
 	 */
 	public Todo(String userTitle, DateTime start, DateTime end) {
-		this.index = indexCounter;
+		this.index = indexBuffer.getIndex();
 		this.title = userTitle;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
@@ -81,7 +84,6 @@ public class Todo {
 		this.endTime = end;
 		this.isDone = false;
 		this.type = TYPE.EVENT;
-		indexCounter++;
 	}
 	
 
@@ -236,7 +238,7 @@ public class Todo {
 	 * 
 	 * @return the placeholder Todo constructed from the index of this Todo.
 	 */
-	public Todo getPlaceholder() {
+	protected Todo getPlaceholder() {
 		return new Todo(index);
 	}
 	
@@ -364,5 +366,43 @@ public class Todo {
 				}
 				
 		return true;
+	}
+	
+	protected static class IndexBuffer {
+		private TreeSet<Integer> buffer;
+		
+		private IndexBuffer() {
+			buffer = new TreeSet<Integer>();
+			for (int i = startingIndex; i < startingIndex + INDEX_BUFFER_SIZE; i++) {
+				buffer.add(i);
+			}
+		}
+
+		protected int getIndex() {
+			if (buffer.size() == 1) {
+				loadToSize();
+			}
+			return buffer.pollFirst();
+		}
+		
+		protected void putIndex(int index) {
+			buffer.add(index);
+			if (buffer.size() > INDEX_BUFFER_MAX_SIZE) {
+				unloadToSize();
+			}
+		}
+
+		private void loadToSize() {
+			int largestIndex = buffer.last();
+			for (int i = largestIndex; i < largestIndex + INDEX_BUFFER_SIZE; i++) {
+				buffer.add(i);
+			}
+		}
+		
+		private void unloadToSize() {
+			for (int i = 0; i < INDEX_BUFFER_SIZE; i++) {
+				buffer.pollLast();
+			}
+		}
 	}
 }

@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
  *
  */
 public class Memory {
-	private static int STACK_MAX_SIZE = 5;
+	private static final int STACK_MAX_SIZE = 5;
 	private HashMap<Integer, Todo> memoryMap;
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
@@ -94,14 +94,20 @@ public class Memory {
 	/**
 	 * Saves the a copy of the state of a Todo into the undo stack. If the Todo
 	 * specified is null, a placeholder is used instead. The stack never
-	 * contains null values.
+	 * contains null values. If the maximum stack size is reached, the earliest
+	 * state is discarded. If the stack and memory no longer contains a
+	 * particular Todo, its index is returned to the pool of available indices.
 	 * 
 	 * @param toBeSaved the Todo to be saved.
 	 */
 	private void save(Todo toBeSaved) {
+		// If undo stack has exceeded max size, discard earliest state.
 		Todo toBeSavedCopy = new Todo(toBeSaved);
 		if (undoStack.size() > STACK_MAX_SIZE) {
-			undoStack.removeFirst();
+			int index = undoStack.removeFirst().getIndex();
+			if(!memoryMap.containsKey(index)) {
+				Todo.indexBuffer.putIndex(index);
+			}
 		}
 		undoStack.add(toBeSavedCopy);
 	}
@@ -129,10 +135,7 @@ public class Memory {
 			inMemory = fromStack.getPlaceholder();
 		}
 
-		// If redo stack has exceeded max size, discard earliest state.
-		if (redoStack.size() > STACK_MAX_SIZE) {
-			redoStack.removeFirst();
-		}
+		// Redo stack will not exceed maximum size.
 		redoStack.add(inMemory);
 
 		// If Todo from stack is a placeholder, delete Todo indicated by its
@@ -167,11 +170,7 @@ public class Memory {
 			inMemory = fromStack.getPlaceholder();
 		}
 
-		// If redo stack has exceeded max size, discard earliest state.
-		if (undoStack.size() > STACK_MAX_SIZE) {
-			undoStack.removeFirst();
-		}
-		undoStack.add(inMemory);
+		save(inMemory);
 
 		// If Todo from stack is a placeholder, delete Todo indicated by its
 		// index in the memory.
@@ -190,4 +189,6 @@ public class Memory {
 	public Collection<Todo> getAllTodos() {
 		return memoryMap.values();
 	}
+	
+	
 }
