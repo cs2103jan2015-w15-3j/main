@@ -21,29 +21,28 @@ public class DisplayHandler {
     private static final String messageCompleted = "Completed:";
     private static final String messageAll = "All:";
 
+    // Messages for different types of todos (event, deadline, floating)
+    private static final String messageEvent = "E ";
+    private static final String messageDeadline = "D ";
+    private static final String messageFloating = "F ";
+
     // Max length for the title of todo to be displayed
     private static final int MAX_CHAR = 15;
 
-    private static final String eventFormat = "%1$-8s %2$-25s %3$s - %4$s";
-    private static final String deadLineFormat = "%1$-8s %2$-25s %3$s";
-    private static final String floatingFormat = "%1$-8s %2$-25s";
+    private static final String eventFormat = "%1$-2s %2$-7s %3$-25s %4$s - %5$s";
+    private static final String deadLineFormat = "%1$-2s %2$-7s %3$-25s %4$s";
+    private static final String floatingFormat = "%1$-2s %2$-7s %3$-25s";
 
-    private static final DateTimeFormatter deadlineDateFormatter = DateTimeFormat
+    private static final DateTimeFormatter DateFormatter = DateTimeFormat
             .forPattern("dd MMM");
-    private static final DateTimeFormatter deadlineTimeFormatter = DateTimeFormat
-            .forPattern("HH:mm");
-    private static final DateTimeFormatter floatingTimeFormatter = DateTimeFormat
-            .forPattern("yyyyMMdd");
-    private static final DateTimeFormatter eventDateFormatter = DateTimeFormat
-            .forPattern("dd MMM");
-    private static final DateTimeFormatter eventTimeFormatter = DateTimeFormat
+    private static final DateTimeFormatter TimeFormatter = DateTimeFormat
             .forPattern("HH:mm");
 
 	public static Signal process(ParsedInput c, Memory memory) {
         String displayString;
         Collection<Todo> todos = memory.getAllTodos();
         if (todos.size() == 0) {
-            return new Signal(Signal.SIGNAL_EMPTY_TODO);
+            return new Signal(Signal.DisplayEmptySignalFormat);
         }
         String param = c.getParamPairList().get(0).getParam();
         if (param.equals("completed") || param.equals("complete")
@@ -58,7 +57,7 @@ public class DisplayHandler {
             displayString = getDisplayChrono(todos, showPending);
             System.out.println(displayString);
         }
-        return new Signal(Signal.SIGNAL_DISPLAY_SUCCESS);
+        return new Signal(Signal.DisplaySuccessSignalFormat);
     }
 
     public static String getDisplayChrono(Collection<Todo> todos, int signal) {
@@ -90,57 +89,62 @@ public class DisplayHandler {
         
         while (iterator.hasNext()) {
             Todo todo = iterator.next();
-            // Show pending, skip the completed tasks
-            if (signal == showPending && todo.isDone()) {
-                continue;
-            }
-
-            // Show completed, skip the pending tasks
-            if (signal == showCompleted && !todo.isDone()) {
-                continue;
-            }
-
-            if (todo.getStartTime() != null && todo.getEndTime() != null) {
-                sBuilder.append(formatEvent(todo));
-            } else if (todo.getEndTime() != null) {
-                sBuilder.append(formatDeadline(todo));
-            } else if (todo.getStartTime() == null && todo.getEndTime() == null) {
-                sBuilder.append(formatFloatingTask(todo));
-            }
+            appendTodo(signal, sBuilder, todo);
         }
         return sBuilder.toString();
     }
 
+    private static void appendTodo(int signal, StringBuilder sBuilder, Todo todo) {
+        // Show pending, skip the completed tasks
+        if (signal == showPending && todo.isDone()) {
+            return;
+        }
+
+        // Show completed, skip the pending tasks
+        if (signal == showCompleted && !todo.isDone()) {
+            return;
+        }
+
+        if (todo.getStartTime() != null && todo.getEndTime() != null) {
+            sBuilder.append(formatEvent(todo));
+        } else if (todo.getEndTime() != null) {
+            sBuilder.append(formatDeadline(todo));
+        } else if (todo.getStartTime() == null && todo.getEndTime() == null) {
+            sBuilder.append(formatFloatingTask(todo));
+        }
+    }
+
     private static String formatFloatingTask(Todo todo) {
         String title = todo.getTitle();
-        title = shortenTitle(title);
-        return String.format(floatingFormat, "", title)
+        title = messageFloating + shortenTitle(title);
+        String index = String.valueOf(todo.getIndex());
+        return String.format(floatingFormat, index, "", title)
                 + System.lineSeparator();
     }
 
     private static String formatDeadline(Todo todo) {
         String title = todo.getTitle();
-        title = shortenTitle(title);
-        int maxLength = (title.length() < MAX_CHAR) ? title.length() : MAX_CHAR;
+        title = messageDeadline + shortenTitle(title);
+        String index = String.valueOf(todo.getIndex());
         DateTime endTime = todo.getEndTime();
-        String endDateString = deadlineDateFormatter.print(endTime);
-        String endTimeString = deadlineTimeFormatter.print(endTime);
-        return String.format(deadLineFormat, endDateString, title,
+        String endDateString = DateFormatter.print(endTime);
+        String endTimeString = TimeFormatter.print(endTime);
+        return String.format(deadLineFormat, index, endDateString, title,
                 endTimeString)
                 + System.lineSeparator();
     }
 
     private static String formatEvent(Todo todo) {
         String title = todo.getTitle();
-        title = shortenTitle(title);
-        int maxLength = (title.length() < MAX_CHAR) ? title.length() : MAX_CHAR;
+        title = messageEvent + shortenTitle(title);
+        String index = String.valueOf(todo.getIndex());
         DateTime startTime = todo.getStartTime();
         DateTime endTime = todo.getEndTime();
         // TODO: Handle start and end on different dates
-        String startDateString = eventDateFormatter.print(startTime);
-        String startTimeString = eventTimeFormatter.print(startTime);
-        String endTimeString = eventTimeFormatter.print(endTime);
-        return String.format(eventFormat, startDateString, title,
+        String startDateString = DateFormatter.print(startTime);
+        String startTimeString = TimeFormatter.print(startTime);
+        String endTimeString = TimeFormatter.print(endTime);
+        return String.format(eventFormat, index, startDateString, title,
                 startTimeString, endTimeString)
                 + System.lineSeparator();
     }
@@ -214,10 +218,12 @@ public class DisplayHandler {
 			e.printStackTrace();
 		}
 
-        // System.out.println("pending:");
-        System.out.println(DisplayHandler.getDisplayChrono(todos, 0));
-        // System.out.println("completed:");
-        System.out.println(DisplayHandler.getDisplayChrono(todos, 1));
+        System.out.println(DisplayHandler.getDisplayChrono(todos, showAll));
+
+        System.out.println(DisplayHandler.getDisplayChrono(todos, showPending));
+
+        System.out.println(DisplayHandler
+                .getDisplayChrono(todos, showCompleted));
 
     }
 }

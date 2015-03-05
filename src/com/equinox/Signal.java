@@ -11,26 +11,42 @@ package com.equinox;
  */
 public class Signal {
 	
-	//Success messages
+    /**
+     * Add Handler Signals
+     */
+    // Success messages
     public static final String addSuccessSignalFormat = "%1$s successfully added.";
-    
-    //Error messages
+
+    // Error messages
     public static final String unknownAddError = "Error: Unknown add error";
+
+    public static final String invalidParamsForAddHandler = "Error: The number of parameters is invalid."
+            + System.lineSeparator()
+            + "Supported formats"
+            + System.lineSeparator()
+            + "Floating tasks: add <title>"
+            + System.lineSeparator()
+            + "Deadlines: add <title> by/on/at <date>"
+            + System.lineSeparator()
+            + "Events: add <title> from <time> to <time> on <date>"
+            + System.lineSeparator()
+            + "Events: add <title> from <date> to <date>";
+
+    /**
+     * Display Handler Signals
+     */
+    public static final String DisplaySuccessSignalFormat = "";
+    public static final String DisplayEmptySignalFormat = "The list is empty";
+
+    /**
+     * General Signals
+     */
+
     public static final String invalidCommandFormat = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
 
-    public static final String invalidParamsForAddHandler = "Error: The number of parameters is invalid."
-    		+ System.lineSeparator()
-    		+ "Supported formats"
-    		+ System.lineSeparator()
-    		+ "Floating tasks: add <title>"
-    		+ System.lineSeparator()
-    		+ "Deadlines: add <title> by/on/at <date>"
-    		+ System.lineSeparator()
-    		+ "Events: add <title> from <time> to <time> on <date>"
-    		+ System.lineSeparator()
-    		+ "Events: add <title> from <date> to <date>";
+
     
     public static final String dateUndefinedException = "Error: Date is undefined; %1$s";
     
