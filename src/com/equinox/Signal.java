@@ -14,7 +14,7 @@ public class Signal {
     /**
      * Add Handler Signals
      */
-    // Success messages
+    // Success message
     public static final String addSuccessSignalFormat = "%1$s successfully added.";
 
     // Error messages
@@ -30,7 +30,6 @@ public class Signal {
     		+ "\t Events: add <title> from <time> to <time> on <date>"
     		+ System.lineSeparator()
     		+ "\t\t add <title> from <date> to <date>";
-    public static final String emptyParamException = "Error: At least one parameter is unspecified and empty.";
     
     /**
      * Display Handler Signals
@@ -38,11 +37,33 @@ public class Signal {
     public static final String DisplaySuccessSignalFormat = "";
     public static final String DisplayEmptySignalFormat = "The list is empty";
 
+    
     /**
-     * MarkHandler Signals
+     * Delete Handler SIgnals
+     */
+    // Success Message
+    public static final String DELETE_SUCCESS_FORMAT = "%s successfully deleted.";
+    
+    // Failure Messages
+    public static final String DELETE_INVALID_PARAMS = "Error: The number of parameters is invalid.";
+   
+    
+    /**
+     * Edit Handler Signals
+     */
+    // Success Message
+    public static final String EDIT_SUCCESS_FORMAT = "%s$s successfully edited."; // TODO include old and new event
+    
+    // Failure Messages
+    public static final String EDIT_INVALID_TIME = "Error: The start time must be before the end time.";
+    public static final String EDIT_INVALID_PARAMS = "Error: The number or format of parameters is invalid.";
+    
+    
+    /**
+     * Mark Handler Signals
      */
     //Success messages
-    public static final String markSuccessSignalFormat = "%1$s successfully added."; 
+    public static final String markSuccessSignalFormat = "%1$s successfully marked as done."; 
     
     //Failure messages
     public static final String unknownMarkError = "Error: Unknown mark error.";
@@ -52,7 +73,36 @@ public class Signal {
     			+ System.lineSeparator()
     			+ "\t mark <indexNumber>";
     public static final String nullMapException = "Error: Memory is null.";
-   
+    
+    
+    /**
+     * Undo Handler Signals
+     */
+    // Success Message
+    public static final String UNDO_SUCCESS_FORMAT = "Undo operation successful.";
+    
+    // Failure Messages
+    public static final String UNDO_INVALID_PARAMS = "Error: The number of parameters is invalid."
+    		+ System.lineSeparator()
+    		+ "\t Supported format:"
+    		+ System.lineSeparator()
+    		+ "\t undo <indexNumber>";
+    
+    
+    /**
+     * Redo Handler Signals
+     */
+    // Success Message
+    public static final String REDO_SUCCESS = "Redo operation successful.";
+    
+    //Failure Messages
+    public static final String REDO_INVALID_PARAMS = "Error: The number of parameters is invalid"
+    		+ System.lineSeparator()
+    		+ "\t Supported format:"
+    		+ System.lineSeparator()
+    		+ "\t undo <indexNumber>";;
+    
+    
     /**
      * General Signals
      */
@@ -60,10 +110,19 @@ public class Signal {
     public static final String invalidCommandFormat = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
-
-
-    
+    public static final String emptyParamException = "Error: At least one parameter is unspecified and empty.";
     public static final String dateUndefinedException = "Error: Date is undefined; %1$s";
+    
+    
+    /**
+     * Exception Messages
+     */
+    public static final String NULL_TODO_EXCEPTION = "Specified Todo does not exist.";
+    public static final String NO_HISTORY_STATES_EXCEPTION = "No undoable states exist";
+    public static final String NO_FUTURE_STATES_EXCEPTION = "No redoable states exist";
+    public static final String UNDEFINED_DATE_STRING_EXCEPTION = "Date String is empty or does not contain dates.";
+    public static final String NULL_DATE_STRING_EXCEPTION = "Date String is null.";
+	
     
     private String message;
 

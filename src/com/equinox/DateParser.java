@@ -34,9 +34,9 @@ public class DateParser {
 			Date firstDate = dateList.get(0);
 			returnDateTime = new DateTime(firstDate);
 		} catch (IndexOutOfBoundsException e) {
-			throw new DateUndefinedException("Date String is empty or does not contain dates.");
+			throw new DateUndefinedException(Signal.UNDEFINED_DATE_STRING_EXCEPTION);
 		} catch (NullPointerException e) {
-			throw new DateUndefinedException("Date String is null.");
+			throw new DateUndefinedException(Signal.NULL_DATE_STRING_EXCEPTION);
 		}
 		return returnDateTime;
 	}
@@ -58,9 +58,9 @@ public class DateParser {
 				dateTimeList.add(new DateTime(date));
 			}
 		} catch (IndexOutOfBoundsException e) {
-			throw new DateUndefinedException("Date String is empty or does not contain dates.");
+			throw new DateUndefinedException(Signal.UNDEFINED_DATE_STRING_EXCEPTION);
 		} catch (NullPointerException e) {
-			throw new DateUndefinedException("Date String is null.");
+			throw new DateUndefinedException(Signal.NULL_DATE_STRING_EXCEPTION);
 		}
 		return dateTimeList;
 	}

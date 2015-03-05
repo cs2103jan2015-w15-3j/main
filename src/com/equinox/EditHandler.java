@@ -23,42 +23,47 @@ public class EditHandler {
 	 *         processing.
 	 */
 	public static Signal process(ParsedInput input, Memory memory) {
-		ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
-		int userIndex = Integer.parseInt(paramPairList.get(0).getParam());
-		Todo editing = memory.setterGet(userIndex);
-		
-		try {
+		Todo edited;
+		try { // TODO Check for empty params.
+			ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
+			int userIndex = Integer.parseInt(paramPairList.get(0).getParam());
+			edited = memory.setterGet(userIndex);
+			
 			for (int i = 1; i < paramPairList.size(); i++) {
 				String keyword = paramPairList.get(i).getKeyword();
 				String param = paramPairList.get(i).getParam();
 
 				switch (keyword) {
 				case "title":
-					editing.setTitle(param);
+					edited.setTitle(param);
 					break;
 				case "start":
-					editing.setStartTime(DateParser.parseDate(param));
+					edited.setStartTime(DateParser.parseDate(param));
 					break;
 				case "end":
-					editing.setEndTime(DateParser.parseDate(param));
+					edited.setEndTime(DateParser.parseDate(param));
 					break;
 				case "done":
-					editing.setDone(Boolean.parseBoolean(param));
+					edited.setDone(Boolean.parseBoolean(param));
 					break;
 				}
 			}
-			if(!editing.isValid()) {
+			if(!edited.isValid()) {
 				try {
 					memory.restoreHistoryState();
 				} catch (StateUndefinedException e) {
 					e.printStackTrace();
 				}
-				return new Signal(Signal.SIGNAL_INVALID_PARAMS);
+				return new Signal(Signal.EDIT_INVALID_TIME);
 			}
 		} catch (DateUndefinedException e) {
-			return new Signal(Signal.SIGNAL_INVALID_PARAMS);
+			return new Signal(e.getMessage());
+		} catch (NullTodoException e) {
+			return new Signal(e.getMessage());
+		} catch (NumberFormatException e) {
+			return new Signal(Signal.EDIT_INVALID_PARAMS);
 		}
-		return new Signal(Signal.SIGNAL_SUCCESS);
+		return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, edited));
 	}
 
 }
