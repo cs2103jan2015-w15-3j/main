@@ -39,6 +39,15 @@ public class Signal {
     public static final String DisplayEmptySignalFormat = "The list is empty";
 
     /**
+     * MarkHandler Signals
+     */
+    //Success messages
+    public static final String markSuccessSignalFormat = "%1$s successfully added."; 
+    
+    //Failure messages
+    public static final String unknownMarkError = "Error: Unknown mark error.";
+    
+    /**
      * General Signals
      */
 
