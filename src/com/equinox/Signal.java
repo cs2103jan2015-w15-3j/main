@@ -17,7 +17,18 @@ public class Signal {
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
 
-
+    public static final String invalidParamsForAddHandler = "Error: The number of parameters is invalid."
+    		+ System.lineSeparator()
+    		+ "Supported formats"
+    		+ System.lineSeparator()
+    		+ "Floating tasks: add <title>"
+    		+ System.lineSeparator()
+    		+ "Deadlines: add <title> by/on/at <date>"
+    		+ System.lineSeparator()
+    		+ "Events: add <title> from <time> to <time> on <date>"
+    		+ System.lineSeparator()
+    		+ "Events: add <title> from <date> to <date>";
+    
     private String message;
 
     /**
