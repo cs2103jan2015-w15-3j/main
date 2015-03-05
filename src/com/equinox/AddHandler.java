@@ -21,9 +21,9 @@ public class AddHandler {
 	 * It returns a Signal object to indicate success or failure (if exception
 	 * is thrown).
 	 * 
-	 * @param input A ParsedInput object that contains the command TYPE and a keyParamPair array
+	 * @param input A ParsedInput object that contains the command TYPE and an ArrayList<KeyParamPair>
 	 * @param memory A Memory object that stores Todo objects
-	 * @return Signal object carrying a String that indicates success or failure of add operation
+	 * @return It returns a Signal object to indicate success or failure.
 	 */
     public static Signal process(ParsedInput input, Memory memory) {
     	//Check for valid number of keywords
