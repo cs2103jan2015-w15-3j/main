@@ -39,9 +39,9 @@ public class MarkHandler {
 			todoToMark.setDone(true);
 			return new Signal(String.format(Signal.markSuccessSignalFormat, todoToMark));
 
-		} catch (NullPointerException e) {
+		} catch (NullTodoException e) {
 			e.printStackTrace();
-			return new Signal(String.format(Signal.nullMapException));
+			return new Signal(e.getMessage());
 		}
 	}
 }

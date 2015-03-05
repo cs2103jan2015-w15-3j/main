@@ -24,14 +24,14 @@ public class MemoryTest {
 	}
 
 	@Test
-	public void testAddGet() {
+	public void testAddGet() throws NullTodoException {
 		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
 		assertEquals("Todo2", todo2, memory.get(todo2.getIndex()));
 		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
 	}
 
 	@Test
-	public void testSetterGetUndo() throws StateUndefinedException {
+	public void testSetterGetUndo() throws StateUndefinedException, NullTodoException {
 		memory.setterGet(todo1.getIndex());
 		Todo todo1Copy = new Todo(todo1);
 		todo1.setDone(true);
@@ -43,7 +43,7 @@ public class MemoryTest {
 	}
 	
 	@Test
-	public void testSetterGetUndoRedo() throws StateUndefinedException {
+	public void testSetterGetUndoRedo() throws StateUndefinedException, NullTodoException {
 		memory.setterGet(todo1.getIndex());
 		Todo todo1Copy = new Todo(todo1);
 		todo1.setDone(true);
@@ -58,7 +58,7 @@ public class MemoryTest {
 	}
 
 	@Test (expected = NullPointerException.class)
-	public void testRemoveUndo() throws StateUndefinedException {
+	public void testRemoveUndo() throws StateUndefinedException, NullTodoException {
 		memory.remove(todo2.getIndex());
 		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
 		memory.get(todo2.getIndex()); // Exception
@@ -68,7 +68,7 @@ public class MemoryTest {
 	}
 
 	@Test
-	public void testRemoveUndoRedo() throws StateUndefinedException {
+	public void testRemoveUndoRedo() throws StateUndefinedException, NullTodoException {
 		memory.remove(todo2.getIndex());
 		memory.remove(todo1.getIndex());
 		memory.restoreHistoryState();
@@ -79,13 +79,13 @@ public class MemoryTest {
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testAddUndo() throws StateUndefinedException {
+	public void testAddUndo() throws StateUndefinedException, NullTodoException {
 		memory.restoreHistoryState();
 		memory.get(todo3.getIndex()); // Exception
 	}
 	
 	@Test
-	public void testAddUndoRedo() throws StateUndefinedException {
+	public void testAddUndoRedo() throws StateUndefinedException, NullTodoException {
 		memory.restoreHistoryState();
 		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
 		assertEquals("Todo2", todo2, memory.get(todo2.getIndex()));

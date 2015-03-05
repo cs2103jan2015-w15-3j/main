@@ -50,7 +50,7 @@ public class Memory {
 	public Todo get(int index) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(index);
 		if (returnTodo == null) {
-			throw new NullTodoException("Todo does not exist.");
+			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
 		}
 		return returnTodo;
 	}
@@ -67,10 +67,10 @@ public class Memory {
 	public Todo setterGet(int index) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(index);
 		if (returnTodo == null) {
-			throw new NullTodoException("Todo does not exist.");
+			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
 		}
-		save(memoryMap.get(index));
-		return memoryMap.get(index);
+		save(returnTodo);
+		return returnTodo;
 	}
 
 	/**
@@ -81,13 +81,14 @@ public class Memory {
 	 * @throws NullTodoException if the Todo identified by the specified
 	 *             index does not exist.
 	 */
-	public void remove(int index) throws NullTodoException {
+	public Todo remove(int index) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(index);
 		if (returnTodo == null) {
-			throw new NullTodoException("Todo does not exist.");
+			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
 		}
-		save(memoryMap.get(index));
+		save(returnTodo);
 		memoryMap.remove(index);
+		return returnTodo;
 	}
 
 	/**
@@ -117,7 +118,7 @@ public class Memory {
 		try {
 			fromStack = undoStack.removeLast();
 		} catch (NoSuchElementException e) {
-			throw new StateUndefinedException("No history states exist.");
+			throw new StateUndefinedException(Signal.NO_HISTORY_STATES_EXCEPTION);
 		}
 
 		int index = fromStack.getIndex();
@@ -155,7 +156,7 @@ public class Memory {
 		try {
 			fromStack = redoStack.removeLast();
 		} catch (NoSuchElementException e) {
-			throw new StateUndefinedException("No future states exist.");
+			throw new StateUndefinedException(Signal.NO_FUTURE_STATES_EXCEPTION);
 		}
 
 		int index = fromStack.getIndex();

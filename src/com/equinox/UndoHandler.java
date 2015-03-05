@@ -11,15 +11,15 @@ public class UndoHandler {
 		//check if the number of parameters is correct
 		int numberOfKeywords = input.getParamPairList().size();
 		if(numberOfKeywords != 1){
-			return new Signal(Signal.SIGNAL_INVALID_PARAMS);
+			return new Signal(Signal.UNDO_INVALID_PARAMS);
 		}
 		
 		try{
 			memory.restoreHistoryState();
 		} catch (StateUndefinedException e) {
-			return new Signal(Signal.SIGNAL_NO_PREVIOUS_STATE);
+			return new Signal(e.getMessage());
 		}
 		
-		return new Signal(Signal.SIGNAL_SUCCESS);
+		return new Signal(Signal.UNDO_SUCCESS_FORMAT);
 	}
 }
