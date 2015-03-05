@@ -35,9 +35,17 @@ public class AddHandler {
 		if (numberOfKeywords > 3) {
 			return new Signal(Signal.invalidParamsForAddHandler);
 		}
-
+		
+		ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
+		String todoName = keyParamPairList.get(0).getParam();
+		
+		// Check for null title
+		if(todoName.equals(null)){
+			return new Signal(Signal.nullTitleException);
+		}
+		
 		try {
-			ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
+			
 			int numberOfElements = keyParamPairList.size();
 
 			switch (numberOfElements) {
@@ -45,8 +53,7 @@ public class AddHandler {
 			// Example:
 			// KeyParamPair 0: add <task>
 				case 1:
-					String floatingTaskName = keyParamPairList.get(0).getParam();
-					Todo floatingTask = new Todo(floatingTaskName);
+					Todo floatingTask = new Todo(todoName);
 					memory.add(floatingTask);
 					return new Signal(String.format(Signal.addSuccessSignalFormat, floatingTask));
 
@@ -60,8 +67,6 @@ public class AddHandler {
 					// <startDate to endDate>
 
 				case 2:
-
-					String todoName = keyParamPairList.get(0).getParam();
 					String secondKeyword = keyParamPairList.get(1).getKeyword();
 
 					// Deadline
