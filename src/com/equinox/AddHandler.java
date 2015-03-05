@@ -1,16 +1,7 @@
 package com.equinox;
 /**
- * The AddHandler class handles all user commands with "add" as the first keyword.
- * 
- * It takes in a ParsedInput object and generates a Todo object with respect to the
- * ParsedInput object. The Todo object can be a floating task, deadline or event.
- * 
- * It returns a Signal object to indicate success or failure (if exception is thrown).
- * 
- * @param input A ParsedInput object that contains the command TYPE and a keyParamPair array
- * @param memory A Memory object that stores Todo objects
- * @return A Signal object whose type is SIGNAL_SUCCESS if AddHandler is successful,
- * SIGNAL_ERROR if unsuccessful.
+ * The AddHandler class handles all user commands with "add" as the first keyword and processes
+ * ParsedInput to generate Todo objects and adds them into memory. * 
  * 
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  */
@@ -21,7 +12,19 @@ import java.util.List;
 import org.joda.time.DateTime;
 
 public class AddHandler {
-
+	
+	/**
+	 * It takes in a ParsedInput object and generates a Todo object with respect
+	 * to the ParsedInput object. The Todo object can be a floating task,
+	 * deadline or event.
+	 * 
+	 * It returns a Signal object to indicate success or failure (if exception
+	 * is thrown).
+	 * 
+	 * @param input A ParsedInput object that contains the command TYPE and a keyParamPair array
+	 * @param memory A Memory object that stores Todo objects
+	 * @return Signal object carrying a String that indicates success or failure of add operation
+	 */
     public static Signal process(ParsedInput input, Memory memory) {
     	//Check for valid number of keywords
     	int numberOfKeywords = input.getParamPairList().size();
@@ -78,9 +81,10 @@ public class AddHandler {
     		e.printStackTrace();
     		String exceptionMessage = e.getMessage();
     		
-    		return new Signal(Signal.SIGNAL_ERROR);
+    		return new Signal(String.format(Signal.dateUndefinedException, exceptionMessage));
     	}
-        return new Signal(Signal.SIGNAL_SUCCESS);
+        
+        return new Signal(Signal.unknownAddError);
     }
 
 }
