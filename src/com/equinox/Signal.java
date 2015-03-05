@@ -30,7 +30,6 @@ public class Signal {
     		+ "\t Events: add <title> from <time> to <time> on <date>"
     		+ System.lineSeparator()
     		+ "\t\t add <title> from <date> to <date>";
-    public static final String emptyParamException = "Error: At least one parameter is unspecified and empty.";
     
     /**
      * Display Handler Signals
@@ -62,7 +61,7 @@ public class Signal {
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
 
-
+    public static final String EMPTY_PARAM_EXCEPTION = "Error: At least one parameter is unspecified and empty.";
     
     public static final String dateUndefinedException = "Error: Date is undefined; %1$s";
     

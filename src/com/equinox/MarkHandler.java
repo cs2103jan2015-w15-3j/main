@@ -29,7 +29,10 @@ public class MarkHandler {
 		if (inputList.size() > 1) {
 			return new Signal(Signal.invalidParamsForMarkHandler);
 		}
-
+		
+		if(inputList.get(0).isParamEmptyString()){
+			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+		}
 		try {
 
 			// -1 discrepancy between user input index and index in memory is

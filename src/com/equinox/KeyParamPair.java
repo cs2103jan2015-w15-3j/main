@@ -25,6 +25,15 @@ public class KeyParamPair {
 		this.param = param;
 	}
 	
+	public boolean isParamEmptyString(){
+		if(this.param.equals("")){
+			return true;
+		} 
+		else {
+			return false;
+		}
+	}
+	
 	@Override
 	public boolean equals(Object other) {
 		if(other.getClass() == this.getClass()) {

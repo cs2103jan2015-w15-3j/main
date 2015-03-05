@@ -40,8 +40,8 @@ public class AddHandler {
 		String todoName = keyParamPairList.get(0).getParam();
 		
 		// Check for empty string params
-		if(isParamEmptyString(keyParamPairList)){
-			return new Signal(Signal.emptyParamException);
+		if(isListParamEmptyString(keyParamPairList)){
+			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
 		}
 		
 		try {
@@ -105,9 +105,9 @@ public class AddHandler {
 	 * @param keyParamPairList 
 	 * @return boolean If there is at least one empty string parameter, return true. Else, return false.
 	 */
-	private static boolean isParamEmptyString(ArrayList<KeyParamPair> keyParamPairList) {
+	private static boolean isListParamEmptyString(ArrayList<KeyParamPair> keyParamPairList) {
 		for(KeyParamPair pair : keyParamPairList){
-			if(pair.getParam().equals("")){
+			if(pair.isParamEmptyString()){
 				return true;
 			}
 		}
