@@ -27,7 +27,7 @@ public class MarkHandler {
 
 		// Ensure that there is only one KeyParamPair in inputList
 		if (inputList.size() > 1) {
-			return new Signal(Signal.invalidParamsForMarkHandler);
+			return new Signal(Signal.INVALID_PARAMS_FOR_MARK_HANDLER);
 		}
 		
 		if(inputList.get(0).isParamEmptyString()){
@@ -40,11 +40,11 @@ public class MarkHandler {
 			int index = Integer.parseInt(inputList.get(0).getParam());
 			Todo todoToMark = memory.setterGet(index);
 			todoToMark.setDone(true);
-			return new Signal(String.format(Signal.markSuccessSignalFormat, todoToMark));
+			return new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT, todoToMark));
 
 		} catch (NullPointerException e) {
 			e.printStackTrace();
-			return new Signal(String.format(Signal.nullMapException));
+			return new Signal(String.format(Signal.NULL_MAP_EXCEPTION));
 		} catch (NullTodoException e) {
 			e.printStackTrace();
 			return new Signal(String.format(Signal.NULL_TODO_EXCEPTION, e.getMessage()));

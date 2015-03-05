@@ -15,11 +15,11 @@ public class Signal {
      * Add Handler Signals
      */
     // Success messages
-    public static final String addSuccessSignalFormat = "%1$s successfully added.";
+    public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added.";
 
     // Error messages
-    public static final String unknownAddError = "Error: Unknown add error";
-    public static final String invalidParamsForAddHandler = "Error: The number of parameters is invalid."
+    public static final String UNKNOWN_ADD_ERROR = "Error: Unknown add error";
+    public static final String INVALID_PARAMS_FOR_ADD_HANDLER = "Error: The number of parameters is invalid."
     		+ System.lineSeparator()
     		+ "\t Supported formats:"
     		+ System.lineSeparator()
@@ -34,36 +34,36 @@ public class Signal {
     /**
      * Display Handler Signals
      */
-    public static final String DisplaySuccessSignalFormat = "";
-    public static final String DisplayEmptySignalFormat = "The list is empty";
+    public static final String DISPLAY_SUCCESS_SIGNAL_FORMAT = "";
+    public static final String DISPLAY_EMPTY_SIGNAL_FORMAT = "The list is empty";
 
     /**
      * MarkHandler Signals
      */
     //Success messages
-    public static final String markSuccessSignalFormat = "%1$s successfully added."; 
+    public static final String MARK_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added."; 
     
     //Failure messages
-    public static final String unknownMarkError = "Error: Unknown mark error.";
-    public static final String invalidParamsForMarkHandler = "Error: The number of parameters is invalid."
+    public static final String UNKNOWN_MARK_ERROR = "Error: Unknown mark error.";
+    public static final String INVALID_PARAMS_FOR_MARK_HANDLER = "Error: The number of parameters is invalid."
     			+ System.lineSeparator()
     			+ "\t Supported format:"
     			+ System.lineSeparator()
     			+ "\t mark <indexNumber>";
-    public static final String nullMapException = "Error: Memory is null.";
+    public static final String NULL_MAP_EXCEPTION = "Error: Memory is null.";
     public static final String NULL_TODO_EXCEPTION = "Error: %1$s";
    
     /**
      * General Signals
      */
 
-    public static final String invalidCommandFormat = "Error: %1$s command is invalid!"
+    public static final String INVALID_COMMAND_FORMAT = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
 
     public static final String EMPTY_PARAM_EXCEPTION = "Error: At least one parameter is unspecified and empty.";
     
-    public static final String dateUndefinedException = "Error: Date is undefined; %1$s";
+    public static final String DATE_UNDEFINED_EXCEPTION = "Error: Date is undefined; %1$s";
     
     private String message;
 
