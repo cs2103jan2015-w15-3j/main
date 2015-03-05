@@ -2,7 +2,7 @@ package com.equinox;
 
 public class SignalHandler {
 
-    private static final String PREFIX = "Zqitgesit: ";
+    private static final String PREFIX = "Zeitgesit: ";
 
     public static void printSignal(Signal signal) {
         String message = signal.toString();
