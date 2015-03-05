@@ -61,7 +61,7 @@ public class Todo {
 		this.startTime = null;
 		this.endTime = deadline;
 		this.isDone = false;
-		this.type = TYPE.TASK;
+		this.type = TYPE.DEADLINE;
 		indexCounter++;
 	}
 	
@@ -80,7 +80,7 @@ public class Todo {
 		this.startTime = start;
 		this.endTime = end;
 		this.isDone = false;
-		this.type = TYPE.TASK;
+		this.type = TYPE.EVENT;
 		indexCounter++;
 	}
 	
@@ -273,10 +273,9 @@ public class Todo {
                 taskStringBuilder.append(" from " + startTime + " to "
                         + endTime);
                 return taskStringBuilder.toString();
+            default :
+            	return null;
         }
-        return (modifiedOn.toString() + " " + createdOn.toString() + " "
-                + title + " " + startTime.toString() + " " + endTime.toString()
-                + " " + isDone);
     }
 
     /**
