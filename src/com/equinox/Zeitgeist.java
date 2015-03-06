@@ -64,6 +64,10 @@ public class Zeitgeist {
                     processSignal = SearchHandler.process(userInput, memory);
                     break;
 
+                case EXIT :
+                    processSignal = ExitHandler.process(userInput, memory);
+                    break;
+
                 default :
                     processSignal = new Signal(
                             String.format(Signal.INVALID_COMMAND_FORMAT));
