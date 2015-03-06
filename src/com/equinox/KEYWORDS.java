@@ -14,7 +14,6 @@ public enum KEYWORDS {
 	// Keywords for parameters in ADD command
 	BY,
 	FROM,
-	TO,
 	ON,
 	AT,
 	
