@@ -15,7 +15,6 @@ public class InputStringKeyword {
 	private static final String KEY_REDO = "redo";
 	private static final String KEY_BY = "by";
 	private static final String KEY_FROM = "from";
-	private static final String KEY_TO = "to";
 	private static final String KEY_ON = "on";
 	private static final String KEY_AT = "at";
 	private static final String KEY_TITLE = "title";
@@ -39,7 +38,6 @@ public class InputStringKeyword {
         keywords = new HashMap<String, KEYWORDS>(commands);
         keywords.put(KEY_BY, KEYWORDS.BY);
         keywords.put(KEY_FROM, KEYWORDS.FROM);
-        keywords.put(KEY_TO, KEYWORDS.TO);
         keywords.put(KEY_ON, KEYWORDS.ON);
         keywords.put(KEY_AT, KEYWORDS.AT);
         keywords.put(KEY_TITLE, KEYWORDS.TITLE);

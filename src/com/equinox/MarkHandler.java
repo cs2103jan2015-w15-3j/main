@@ -42,7 +42,6 @@ public class MarkHandler {
 			todoToMark.setDone(true);
 			return new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT, todoToMark));
 		} catch (NullTodoException e) {
-			e.printStackTrace();
 			return new Signal(String.format(Signal.EXCEPTIONS_FORMAT, e.getMessage()));
 		} catch (NumberFormatException e) {
 			return new Signal(String.format(Signal.INVALID_PARAMS_FOR_MARK_HANDLER));
