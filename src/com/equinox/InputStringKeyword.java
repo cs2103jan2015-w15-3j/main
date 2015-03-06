@@ -20,6 +20,7 @@ public class InputStringKeyword {
 	private static final String KEY_TITLE = "title";
 	private static final String KEY_START = "start";
 	private static final String KEY_END = "end";
+    private static final String KEY_EXIT = "exit";
 
     private static Map<String, KEYWORDS> keywords;
     private static Map<String, KEYWORDS> commands;
@@ -34,6 +35,7 @@ public class InputStringKeyword {
         commands.put(KEY_DISPLAY, KEYWORDS.DISPLAY);
         commands.put(KEY_UNDO, KEYWORDS.UNDO);
         commands.put(KEY_REDO, KEYWORDS.REDO);
+        commands.put(KEY_EXIT, KEYWORDS.EXIT);
     	
         keywords = new HashMap<String, KEYWORDS>(commands);
         keywords.put(KEY_BY, KEYWORDS.BY);

@@ -38,6 +38,10 @@ public class Signal {
     public static final String DISPLAY_SUCCESS_SIGNAL_FORMAT = "";
     public static final String DISPLAY_EMPTY_SIGNAL_FORMAT = "The list is empty";
 
+    /**
+     * Exit Handler Signals
+     */
+    public static final String EXIT_SUCCESS = "Exit successfuly.";
     
     /**
      * Delete Handler SIgnals
