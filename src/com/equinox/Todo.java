@@ -81,7 +81,7 @@ public class Todo {
 			this.startTime = dateList.get(0);
 			this.endTime = dateList.get(1);
 			this.type = TYPE.EVENT;
-		}
+		} // Catch DateList more than 2 DateTimes (optional)
 	}
 
 	/**
