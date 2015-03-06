@@ -7,7 +7,7 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 
-public class DateParserTest {
+public class TodoTest {
 	
 	DateTime expectedSingleDate = new DateTime(2015, 8, 26, 12, 59, 0);
 	DateTime expectedFirstDate = new DateTime(2015, 9, 29, 00, 00, 0);

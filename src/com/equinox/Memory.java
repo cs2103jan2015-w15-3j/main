@@ -106,7 +106,7 @@ public class Memory {
 		if (undoStack.size() > STACK_MAX_SIZE) {
 			int index = undoStack.removeFirst().getIndex();
 			if(!memoryMap.containsKey(index)) {
-				Todo.indexBuffer.putIndex(index);
+				Todo.idBuffer.put(index);
 			}
 		}
 		undoStack.add(toBeSavedCopy);
