@@ -73,8 +73,6 @@ public class Signal {
     			+ "\t Supported format:"
     			+ System.lineSeparator()
     			+ "\t mark <indexNumber>";
-
-    public static final String nullMapException = "Error: Memory is null.";
     
     
     /**
@@ -111,8 +109,7 @@ public class Signal {
     public static final String INVALID_COMMAND_FORMAT = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
-    public static final String emptyParamException = "Error: At least one parameter is unspecified and empty.";
-    public static final String dateUndefinedException = "Error: Date is undefined; %1$s";
+    
     public static final String EXCEPTIONS_FORMAT = "Error: %1$s";
     
     
