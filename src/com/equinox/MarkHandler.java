@@ -23,16 +23,17 @@ public class MarkHandler {
 	 * @return It returns a Signal object to indicate success or failure.
 	 */
 	public static Signal process(ParsedInput input, Memory memory) {
+		if(input.containsEmptyParams()) {
+			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+		}
+		
 		ArrayList<KeyParamPair> inputList = input.getParamPairList();
 
 		// Ensure that there is only one KeyParamPair in inputList
 		if (inputList.size() > 1) {
 			return new Signal(Signal.INVALID_PARAMS_FOR_MARK_HANDLER);
 		}
-		
-		if(inputList.get(0).isParamEmptyString()){
-			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
-		}
+
 		try {
 
 			// -1 discrepancy between user input index and index in memory is

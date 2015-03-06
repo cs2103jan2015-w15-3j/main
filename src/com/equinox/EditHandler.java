@@ -24,7 +24,10 @@ public class EditHandler {
 	 */
 	public static Signal process(ParsedInput input, Memory memory) {
 		Todo edited;
-		try { // TODO Check for empty params.
+		try {
+			if(input.containsEmptyParams()) {
+				return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+			}
 			ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
 			int userIndex = Integer.parseInt(paramPairList.get(0).getParam());
 			edited = memory.setterGet(userIndex);
