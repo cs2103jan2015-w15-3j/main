@@ -30,6 +30,11 @@ public class AddHandler {
 	 * @return It returns a Signal object to indicate success or failure.
 	 */
 	public static Signal process(ParsedInput input, Memory memory) {
+		// Check for empty string params
+		if (input.containsEmptyParams()) {
+			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+		}
+		
 		// Check for valid number of keywords
 		int numberOfKeywords = input.getParamPairList().size();
 		if (numberOfKeywords > 3) {
@@ -38,11 +43,6 @@ public class AddHandler {
 		
 		ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
 		String todoName = keyParamPairList.get(0).getParam();
-		
-		// Check for empty string params
-		if(isListParamEmptyString(keyParamPairList)){
-			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
-		}
 		
 		try {
 			
@@ -98,19 +98,5 @@ public class AddHandler {
 		}
 
 		return new Signal(Signal.UNKNOWN_ADD_ERROR);
-	}
-	/**
-	 * Iterates through the keyParamPair ArrayList and checks if any parameter is an empty string.
-	 * 
-	 * @param keyParamPairList 
-	 * @return boolean If there is at least one empty string parameter, return true. Else, return false.
-	 */
-	private static boolean isListParamEmptyString(ArrayList<KeyParamPair> keyParamPairList) {
-		for(KeyParamPair pair : keyParamPairList){
-			if(pair.isParamEmptyString()){
-				return true;
-			}
-		}
-		return false;
 	}
 }

@@ -21,6 +21,10 @@ public class DeleteHandler {
 	 *         processing.
 	 */
 	public static Signal process(ParsedInput input, Memory memory) {
+		if(input.containsEmptyParams()) {
+			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+		}
+		
 		ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
 		
 		//Check for valid number of keywords
