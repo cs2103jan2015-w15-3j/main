@@ -14,13 +14,9 @@ public class Signal {
     /**
      * Add Handler Signals
      */
-    // Success message
     public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added.";
-
-
-    // Error messages
-    public static final String UNKNOWN_ADD_ERROR = "Error: Unknown add error";
-    public static final String INVALID_PARAMS_FOR_ADD_HANDLER = "Error: The number of parameters is invalid."
+    public static final String ADD_UNKNOWN_ERROR = "Error: Unknown add error";
+    public static final String ADD_INVALID_PARAMS = "Error: The number of parameters is invalid."
     		+ System.lineSeparator()
     		+ "\t Supported formats:"
     		+ System.lineSeparator()
@@ -46,20 +42,14 @@ public class Signal {
     /**
      * Delete Handler SIgnals
      */
-    // Success Message
     public static final String DELETE_SUCCESS_FORMAT = "%s successfully deleted.";
-    
-    // Failure Messages
     public static final String DELETE_INVALID_PARAMS = "Error: The number of parameters is invalid.";
    
     
     /**
      * Edit Handler Signals
      */
-    // Success Message
     public static final String EDIT_SUCCESS_FORMAT = "%s$s successfully edited."; // TODO include old and new event
-    
-    // Failure Messages
     public static final String EDIT_INVALID_TIME = "Error: The start time must be before the end time.";
     public static final String EDIT_INVALID_PARAMS = "Error: The number or format of parameters is invalid.";
     
@@ -67,12 +57,9 @@ public class Signal {
     /**
      * Mark Handler Signals
      */
-    //Success messages
     public static final String MARK_SUCCESS_SIGNAL_FORMAT = "%1$s successfully marked as done."; 
-    
-    //Failure messages
-    public static final String UNKNOWN_MARK_ERROR = "Error: Unknown mark error.";
-    public static final String INVALID_PARAMS_FOR_MARK_HANDLER = "Error: The number of parameters is invalid."
+    public static final String MARK_UNKNOWN_ERROR = "Error: Unknown mark error.";
+    public static final String MARK_INVALID_PARAMS = "Error: The number of parameters is invalid."
     			+ System.lineSeparator()
     			+ "\t Supported format:"
     			+ System.lineSeparator()
@@ -82,10 +69,7 @@ public class Signal {
     /**
      * Undo Handler Signals
      */
-    // Success Message
     public static final String UNDO_SUCCESS_FORMAT = "Undo operation successful.";
-    
-    // Failure Messages
     public static final String UNDO_INVALID_PARAMS = "Error: The number of parameters is invalid."
     		+ System.lineSeparator()
     		+ "\t Supported format:"
@@ -96,25 +80,23 @@ public class Signal {
     /**
      * Redo Handler Signals
      */
-    // Success Message
     public static final String REDO_SUCCESS = "Redo operation successful.";
-    
-    //Failure Messages
     public static final String REDO_INVALID_PARAMS = "Error: The number of parameters is invalid"
     		+ System.lineSeparator()
     		+ "\t Supported format:"
     		+ System.lineSeparator()
-    		+ "\t undo <indexNumber>";;
+    		+ "\t undo <indexNumber>";
    
+    
     /**
-     * General Signals
+     * Generic Signals
      */
-
-    public static final String INVALID_COMMAND_FORMAT = "Error: %1$s command is invalid!"
+    public static final String GENERIC_EMPTY_PARAM = "Error: At least one parameter is unspecified and empty.";
+    public static final String GENERIC_INVALID_COMMAND_FORMAT = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
-    
-    public static final String EXCEPTIONS_FORMAT = "Error: %1$s";
+    public static final String GENERIC_DATE_UNDEFINED = "Error: Date is undefined; %1$s";
+    public static final String GENERIC_EXCEPTIONS_FORMAT = "Error: %1$s";
     
     
     /**
@@ -125,13 +107,7 @@ public class Signal {
     public static final String NO_FUTURE_STATES_EXCEPTION = "No redoable states exist";
     public static final String UNDEFINED_DATE_STRING_EXCEPTION = "Date String is empty or does not contain dates.";
     public static final String NULL_DATE_STRING_EXCEPTION = "Date String is null.";
-	
-
-
-    public static final String EMPTY_PARAM_EXCEPTION = "Error: At least one parameter is unspecified and empty.";
     
-    public static final String DATE_UNDEFINED_EXCEPTION = "Error: Date is undefined; %1$s";
-
     
     private String message;
 
