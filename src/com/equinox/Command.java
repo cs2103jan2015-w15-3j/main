@@ -9,6 +9,7 @@ public abstract class Command {
 	
 	public Command(ParsedInput input, Memory memory) {
 		keyParamPairList = input.getParamPairList();
+		this.input = input;
 		this.memory = memory;
 	}
 	
