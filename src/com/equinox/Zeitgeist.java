@@ -29,7 +29,7 @@ public class Zeitgeist {
 		KEYWORDS commandType = userInput.getType();
 		if (commandType == null) {
             SignalHandler.printSignal(new Signal(String
-                    .format(Signal.GENERIC_INVALID_COMMAND_FORMAT, ""))); // TODO
+                    .format(Signal.GENERIC_INVALID_COMMAND_FORMAT, "")));
 		} else {
 
             switch (commandType) {
@@ -79,8 +79,9 @@ public class Zeitgeist {
                     break;
 
                 default :
-                    processSignal = new Signal(
-                            String.format(Signal.GENERIC_INVALID_COMMAND_FORMAT,"")); // TODO
+                	// NOTE: This case should never happen
+                    processSignal = new Signal(Signal.GENERIC_FATAL_ERROR);
+                    System.exit(-1);
                     break;
 			}
             SignalHandler.printSignal(processSignal);

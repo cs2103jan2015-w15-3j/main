@@ -25,6 +25,6 @@ public class UndoCommand extends Command{
 			return new Signal(e.getMessage());
 		}
 		
-		return new Signal(Signal.UNDO_SUCCESS_FORMAT);
+		return new Signal(Signal.UNDO_SUCCESS);
 	}
 }

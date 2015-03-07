@@ -26,13 +26,14 @@ public class EditCommand extends Command{
 	 */
 	@Override
 	public Signal execute() {
-		Todo edited;
+		Todo preEdit, postEdit;
 		try {
 			if(input.containsEmptyParams()) {
 				return new Signal(Signal.GENERIC_EMPTY_PARAM);
 			}
 			int userIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
-			edited = memory.setterGet(userIndex);
+			postEdit = memory.setterGet(userIndex);
+			preEdit = new Todo(postEdit);
 			
 			for (KeyParamPair keyParamPair : keyParamPairList) {
 				String keyword = keyParamPair.getKeyword();
@@ -40,20 +41,20 @@ public class EditCommand extends Command{
 
 				switch (keyword) {
 				case "title":
-					edited.setTitle(param);
+					postEdit.setTitle(param);
 					break;
 				case "start":
-					edited.setStartTime(param);
+					postEdit.setStartTime(param);
 					break;
 				case "end":
-					edited.setEndTime(param);
+					postEdit.setEndTime(param);
 					break;
 				case "done":
-					edited.setDone(Boolean.parseBoolean(param));
+					postEdit.setDone(Boolean.parseBoolean(param));
 					break;
 				}
 			}
-			if(!edited.isValid()) {
+			if(!postEdit.isValid()) {
 				try {
 					memory.restoreHistoryState();
 				} catch (StateUndefinedException e) {
@@ -68,7 +69,7 @@ public class EditCommand extends Command{
 		} catch (NumberFormatException e) {
 			return new Signal(Signal.EDIT_INVALID_PARAMS);
 		}
-		return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, edited));
+		return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, preEdit, postEdit));
 	}
 
 }
