@@ -34,48 +34,48 @@ public class Zeitgeist {
 
             switch (commandType) {
                 case ADD :
-                	c = new AddCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new AddCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case DELETE :
-                	c = new DeleteCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new DeleteCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case MARK :
-                	c = new MarkCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new MarkCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 				
                 case REDO :
-                	c = new RedoCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new RedoCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case UNDO :
-                	c = new UndoCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new UndoCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case EDIT :
-                	c = new EditCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new EditCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case DISPLAY :
-                	c = new DisplayCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new DisplayCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case SEARCH :
-                	c = new SearchCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new SearchCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case EXIT :
-                	c = new ExitCommand();
-                	processSignal = c.execute(userInput, memory);
+                	c = new ExitCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 default :

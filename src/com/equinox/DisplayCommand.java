@@ -11,6 +11,11 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public class DisplayCommand extends Command {
+	
+	public DisplayCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
 	// Signals for whether to display pending or completed todos
 	private static final int showPending = 0;
 	private static final int showCompleted = 1;
@@ -39,13 +44,13 @@ public class DisplayCommand extends Command {
 			.forPattern("HH:mm");
 
 	@Override
-	public Signal execute(ParsedInput input, Memory memory) {
+	public Signal execute() {
 		String displayString;
 		Collection<Todo> todos = memory.getAllTodos();
 		if (todos.size() == 0) {
 			return new Signal(Signal.DISPLAY_EMPTY_SIGNAL_FORMAT);
 		}
-		String param = input.getParamPairList().get(0).getParam();
+		String param = keyParamPairList.get(0).getParam();
 		if (param.equals("completed") || param.equals("complete")
 				|| param.equals("c")) {
 			displayString = getDisplayChrono(todos, showCompleted);

@@ -1,7 +1,17 @@
 package com.equinox;
 
+import java.util.ArrayList;
+
 public abstract class Command {
+	ParsedInput input;
+	Memory memory;
+	ArrayList<KeyParamPair> keyParamPairList;
 	
-	public abstract Signal execute(ParsedInput input, Memory memory);
+	public Command(ParsedInput input, Memory memory) {
+		keyParamPairList = input.getParamPairList();
+		this.memory = memory;
+	}
+	
+	public abstract Signal execute();
 
 }

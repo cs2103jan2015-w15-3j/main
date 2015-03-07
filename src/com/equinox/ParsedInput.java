@@ -4,11 +4,11 @@ import java.util.ArrayList;
 public class ParsedInput {
 	
 	private KEYWORDS type;
-	private ArrayList<KeyParamPair> paramPairList;
+	private ArrayList<KeyParamPair> keyParamPairList;
     
     public ParsedInput(KEYWORDS cType, ArrayList<KeyParamPair> pairList) {
     	type = cType;
-    	paramPairList= pairList;
+    	keyParamPairList= pairList;
 	}
     
     public KEYWORDS getType() {
@@ -20,7 +20,7 @@ public class ParsedInput {
 	}
 
 	public ArrayList<KeyParamPair> getParamPairList() {
-		return paramPairList;
+		return keyParamPairList;
 	}
 	
 	/**
@@ -30,7 +30,7 @@ public class ParsedInput {
 	 * @return boolean If there is at least one empty string parameter, return true. Else, return false.
 	 */
 	public boolean containsEmptyParams() {
-		for(KeyParamPair pair : paramPairList){
+		for(KeyParamPair pair : keyParamPairList){
 			if(pair.getParam().equals("")){
 				return true;
 			}

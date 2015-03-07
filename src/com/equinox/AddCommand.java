@@ -15,6 +15,10 @@ import org.joda.time.DateTime;
 
 public class AddCommand extends Command {
 
+	public AddCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
 	/**
 	 * It takes in a ParsedInput object and generates a Todo object with respect
 	 * to the ParsedInput object. The Todo object can be a floating task,
@@ -31,7 +35,7 @@ public class AddCommand extends Command {
 	 * @return It returns a Signal object to indicate success or failure.
 	 */
 	@Override
-	public Signal execute(ParsedInput input, Memory memory) {
+	public Signal execute() {
 		// Check for empty string params
 		if (input.containsEmptyParams()) {
 			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
@@ -42,8 +46,7 @@ public class AddCommand extends Command {
 		if (numberOfKeywords > 3) {
 			return new Signal(Signal.INVALID_PARAMS_FOR_ADD_HANDLER);
 		}
-
-		ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
+		
 		String todoName = keyParamPairList.get(0).getParam();
 
 		try {
