@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Ho Wei Li || IkarusWill
  *
  */
-public class DeleteHandler {
+public class DeleteCommand extends Command {
 
 	/**
 	 * Processes a ParsedInput object containing the delete command and its
@@ -20,7 +20,8 @@ public class DeleteHandler {
 	 * @return a Signal object with a message denoting success or failure in
 	 *         processing.
 	 */
-	public static Signal process(ParsedInput input, Memory memory) {
+	@Override
+	public Signal execute(ParsedInput input, Memory memory) {
 		if(input.containsEmptyParams()) {
 			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
 		}
