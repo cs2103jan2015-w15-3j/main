@@ -1,7 +1,5 @@
 package com.equinox;
 
-import java.util.ArrayList;
-
 /**
  * Houses a method which processes the edit request from the user. 
  * 
@@ -9,6 +7,10 @@ import java.util.ArrayList;
  *
  */
 public class EditCommand extends Command{
+
+	public EditCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
 
 	/**
 	 * Processes a ParsedInput object containing the edit command and its
@@ -23,29 +25,28 @@ public class EditCommand extends Command{
 	 *         processing.
 	 */
 	@Override
-	public Signal execute(ParsedInput input, Memory memory) {
+	public Signal execute() {
 		Todo edited;
 		try {
 			if(input.containsEmptyParams()) {
 				return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
 			}
-			ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
-			int userIndex = Integer.parseInt(paramPairList.get(0).getParam());
+			int userIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
 			edited = memory.setterGet(userIndex);
 			
-			for (int i = 1; i < paramPairList.size(); i++) {
-				String keyword = paramPairList.get(i).getKeyword();
-				String param = paramPairList.get(i).getParam();
+			for (KeyParamPair keyParamPair : keyParamPairList) {
+				String keyword = keyParamPair.getKeyword();
+				String param = keyParamPair.getParam();
 
 				switch (keyword) {
 				case "title":
 					edited.setTitle(param);
 					break;
 				case "start":
-					edited.setStartTime(DateParser.parseDate(param));
+					edited.setStartTime(param);
 					break;
 				case "end":
-					edited.setEndTime(DateParser.parseDate(param));
+					edited.setEndTime(param);
 					break;
 				case "done":
 					edited.setDone(Boolean.parseBoolean(param));

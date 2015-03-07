@@ -8,6 +8,10 @@ package com.equinox;
  */
 public class RedoCommand extends Command {
 
+	public RedoCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
 	/**
 	 * Processes a ParsedInput object containing the delete command and its
 	 * accompanying parameters and commits those changes to the memory.
@@ -19,8 +23,8 @@ public class RedoCommand extends Command {
 	 *         processing.
 	 */
 	@Override
-	public Signal execute(ParsedInput userInput, Memory memory) {
-		int numberOfKeywords = userInput.getParamPairList().size();
+	public Signal execute() {
+		int numberOfKeywords = keyParamPairList.size();
 		if(numberOfKeywords != 1){
 			return new Signal(Signal.REDO_INVALID_PARAMS);
 		}

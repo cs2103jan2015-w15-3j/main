@@ -6,10 +6,15 @@ package com.equinox;
  *
  */
 public class UndoCommand extends Command{
+	
+	public UndoCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
 	@Override
-	public Signal execute(ParsedInput input, Memory memory) {
+	public Signal execute() {
 		//check if the number of parameters is correct
-		int numberOfKeywords = input.getParamPairList().size();
+		int numberOfKeywords = keyParamPairList.size();
 		if(numberOfKeywords != 1){
 			return new Signal(Signal.UNDO_INVALID_PARAMS);
 		}
