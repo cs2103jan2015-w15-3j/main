@@ -73,14 +73,21 @@ public class AddCommand extends Command {
 					// <startDate to endDate>
 
 				case 2:
+				// TODO Todo can now determine if it is a Single date or Double
+				// date String and dynamically adjust its type accordingly.
+					
+				// Use a while loop, keep catching DateUndefinedException and
+				// append the keyword to the todoName so that we can avoid
+				// catching keywords in title. Catch until the Todo is
+				// successfully created.
+					
 					String secondKeyword = keyParamPairList.get(1).getKeyword();
 
 					// Deadline
 					if (secondKeyword.equals("by")
 							|| secondKeyword.equals("on")
 							|| secondKeyword.equals("at")) {
-						DateTime deadlineTime = DateParser
-								.parseDate(keyParamPairList.get(1).getParam());
+						String deadlineTime = keyParamPairList.get(1).getParam();
 						Todo deadline = new Todo(todoName, deadlineTime);
 						memory.add(deadline);
 						return new Signal(String.format(
@@ -89,12 +96,8 @@ public class AddCommand extends Command {
 
 					// Event
 					else if (secondKeyword.equals("from")) {
-						List<DateTime> dateTimeList = DateParser
-								.parseDates(keyParamPairList.get(1).getParam());
-						DateTime eventStartTime = dateTimeList.get(0);
-						DateTime eventEndTime = dateTimeList.get(1);
-						Todo event = new Todo(todoName, eventStartTime,
-								eventEndTime);
+						String eventStartEndTime = keyParamPairList.get(1).getParam();
+						Todo event = new Todo(todoName, eventStartEndTime);
 						memory.add(event);
 						return new Signal(String.format(
 								Signal.ADD_SUCCESS_SIGNAL_FORMAT, event));
