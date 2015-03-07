@@ -16,8 +16,8 @@ import com.joestelmach.natty.Parser;
  * Stores parameters of a Todo using org.joda.time.DateTime objects. A Todo can
  * be subdivided into 3 different subtypes namely Task, Deadline, or Event,
  * which is uniquely determined at construction by the availability of
- * parameters. Todos are uniquely specified identifier known as index until
- * their deletion, upon which the index may be reused.
+ * parameters. Todos are uniquely specified identifier known as ID until
+ * their deletion, upon which the ID may be recycled.
  * 
  * @author Ho Wei Li || IkarusWill
  *
@@ -32,9 +32,9 @@ public class Todo {
 		TASK, DEADLINE, EVENT;
 	}
 	
-	private static final int ID_BUFFER_SIZE = 5;
-	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_SIZE;
-	protected static final IDBuffer idBuffer = new IDBuffer();
+	private static final int ID_BUFFER_INITIAL_SIZE = 5;
+	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
+	private static final IDBuffer idBuffer = new IDBuffer();
 	private static int startingId = 0; // TODO Find max id from loaded file and assign.
 	private int id;
 	private String title;
@@ -101,13 +101,13 @@ public class Todo {
 	}
 	
 	/**
-	 * Constructs a placeholder Todo with null fields except the index. To be
+	 * Constructs a placeholder Todo with null fields except the ID. To be
 	 * used by Memory class in its stacks for undo/redo operations.
 	 * 
-	 * @param index	the index of the Todo that was removed from Memory.
+	 * @param id the ID of the Todo that was removed from Memory.
 	 */
-	private Todo(int index) {
-		this.id = index;
+	private Todo(int id) {
+		this.id = id;
 		this.title = null;
 		this.createdOn = null;
 		this.modifiedOn = null;
@@ -118,11 +118,11 @@ public class Todo {
 	}
 
 	/**
-	 * Returns the index of the Todo.
+	 * Returns the ID of the Todo.
 	 * 
-	 * @return the index of the Todo.
+	 * @return the ID of the Todo.
 	 */
-	public int getIndex() {
+	public int getId() {
 		return id;
 	}
 
@@ -235,9 +235,8 @@ public class Todo {
 	}
 	
 	/**
-	 * Returns the placeholder Todo constructed from the index of this Todo.
+	 * Returns the placeholder Todo constructed from the ID of this Todo.
 	 * 
-	 * @return the placeholder Todo constructed from the index of this Todo.
 	 */
 	protected Todo getPlaceholder() {
 		return new Todo(id);
@@ -393,7 +392,17 @@ public class Todo {
 	}
 	
 	/**
-	 * Serves as a buffer of fixed size for new Todos to draw their index from.
+	 * Releases the specified ID number to the pool of available ID numbers for
+	 * future use by new Todos.
+	 * 
+	 * @param id the ID to be released.
+	 */
+	public static void releaseId(int id) {
+		idBuffer.put(id);
+	}
+	
+	/**
+	 * Serves as a buffer of fixed size for new Todos to draw their ID from.
 	 * 
 	 * @author Ikarus
 	 *
@@ -403,7 +412,7 @@ public class Todo {
 		
 		private IDBuffer() {
 			buffer = new TreeSet<Integer>();
-			for (int i = startingId; i < startingId + ID_BUFFER_SIZE; i++) {
+			for (int i = startingId; i < startingId + ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.add(i);
 			}
 		}
@@ -423,14 +432,14 @@ public class Todo {
 		}
 
 		private void loadToSize() {
-			int largestIndex = buffer.last();
-			for (int i = largestIndex; i < largestIndex + ID_BUFFER_SIZE; i++) {
+			int largestId = buffer.last();
+			for (int i = largestId; i < largestId + ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.add(i);
 			}
 		}
 		
 		private void unloadToSize() {
-			for (int i = 0; i < ID_BUFFER_SIZE; i++) {
+			for (int i = 0; i < ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.pollLast();
 			}
 		}
