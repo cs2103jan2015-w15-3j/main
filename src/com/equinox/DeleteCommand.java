@@ -25,7 +25,7 @@ public class DeleteCommand extends Command {
 	@Override
 	public Signal execute() {
 		if(input.containsEmptyParams()) {
-			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+			return new Signal(Signal.GENERIC_EMPTY_PARAM);
 		}
 		
 		//Check for valid number of keywords

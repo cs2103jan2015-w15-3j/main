@@ -29,12 +29,12 @@ public class MarkCommand extends Command {
 	@Override
 	public Signal execute() {
 		if(input.containsEmptyParams()) {
-			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+			return new Signal(Signal.GENERIC_EMPTY_PARAM);
 		}
 
 		// Ensure that there is only one KeyParamPair in inputList
 		if (keyParamPairList.size() > 1) {
-			return new Signal(Signal.INVALID_PARAMS_FOR_MARK_HANDLER);
+			return new Signal(Signal.MARK_INVALID_PARAMS);
 		}
 
 		try {
@@ -46,9 +46,9 @@ public class MarkCommand extends Command {
 			todoToMark.setDone(true);
 			return new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT, todoToMark));
 		} catch (NullTodoException e) {
-			return new Signal(String.format(Signal.EXCEPTIONS_FORMAT, e.getMessage()));
+			return new Signal(String.format(Signal.GENERIC_EXCEPTIONS_FORMAT, e.getMessage()));
 		} catch (NumberFormatException e) {
-			return new Signal(String.format(Signal.INVALID_PARAMS_FOR_MARK_HANDLER));
+			return new Signal(String.format(Signal.MARK_INVALID_PARAMS));
 		}
 	}
 }

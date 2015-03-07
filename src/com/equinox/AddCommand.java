@@ -38,13 +38,13 @@ public class AddCommand extends Command {
 	public Signal execute() {
 		// Check for empty string params
 		if (input.containsEmptyParams()) {
-			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+			return new Signal(Signal.GENERIC_EMPTY_PARAM);
 		}
 
 		// Check for valid number of keywords
 		int numberOfKeywords = input.getParamPairList().size();
 		if (numberOfKeywords > 3) {
-			return new Signal(Signal.INVALID_PARAMS_FOR_ADD_HANDLER);
+			return new Signal(Signal.ADD_INVALID_PARAMS);
 		}
 		
 		String todoName = keyParamPairList.get(0).getParam();
@@ -107,10 +107,10 @@ public class AddCommand extends Command {
 		} catch (DateUndefinedException e) {
 			e.printStackTrace();
 			String exceptionMessage = e.getMessage();
-			return new Signal(String.format(Signal.DATE_UNDEFINED_EXCEPTION,
+			return new Signal(String.format(Signal.GENERIC_DATE_UNDEFINED,
 					exceptionMessage));
 		}
 
-		return new Signal(Signal.UNKNOWN_ADD_ERROR);
+		return new Signal(Signal.ADD_UNKNOWN_ERROR);
 	}
 }

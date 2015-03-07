@@ -29,7 +29,7 @@ public class EditCommand extends Command{
 		Todo edited;
 		try {
 			if(input.containsEmptyParams()) {
-				return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+				return new Signal(Signal.GENERIC_EMPTY_PARAM);
 			}
 			int userIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
 			edited = memory.setterGet(userIndex);
