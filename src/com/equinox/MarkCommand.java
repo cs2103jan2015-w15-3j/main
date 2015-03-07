@@ -38,9 +38,6 @@ public class MarkCommand extends Command {
 		}
 
 		try {
-
-			// -1 discrepancy between user input index and index in memory is
-			// handled in Memory class
 			int index = Integer.parseInt(keyParamPairList.get(0).getParam());
 			Todo todoToMark = memory.setterGet(index);
 			todoToMark.setDone(true);

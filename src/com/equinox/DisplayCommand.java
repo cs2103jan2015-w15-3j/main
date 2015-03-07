@@ -123,33 +123,33 @@ public class DisplayCommand extends Command {
 	private static String formatFloatingTask(Todo todo) {
 		String title = todo.getTitle();
 		title = messageFloating + shortenTitle(title);
-		String index = String.valueOf(todo.getIndex());
-		return String.format(floatingFormat, index, "", title)
+		String id = String.valueOf(todo.getId());
+		return String.format(floatingFormat, id, "", title)
 				+ System.lineSeparator();
 	}
 
 	private static String formatDeadline(Todo todo) {
 		String title = todo.getTitle();
 		title = messageDeadline + shortenTitle(title);
-		String index = String.valueOf(todo.getIndex());
+		String id = String.valueOf(todo.getId());
 		DateTime endTime = todo.getEndTime();
 		String endDateString = DateFormatter.print(endTime);
 		String endTimeString = TimeFormatter.print(endTime);
-		return String.format(deadLineFormat, index, endDateString, title,
+		return String.format(deadLineFormat, id, endDateString, title,
 				endTimeString) + System.lineSeparator();
 	}
 
 	private static String formatEvent(Todo todo) {
 		String title = todo.getTitle();
 		title = messageEvent + shortenTitle(title);
-		String index = String.valueOf(todo.getIndex());
+		String id = String.valueOf(todo.getId());
 		DateTime startTime = todo.getStartTime();
 		DateTime endTime = todo.getEndTime();
 		// TODO: Handle start and end on different dates
 		String startDateString = DateFormatter.print(startTime);
 		String startTimeString = TimeFormatter.print(startTime);
 		String endTimeString = TimeFormatter.print(endTime);
-		return String.format(eventFormat, index, startDateString, title,
+		return String.format(eventFormat, id, startDateString, title,
 				startTimeString, endTimeString) + System.lineSeparator();
 	}
 

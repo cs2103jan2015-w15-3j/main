@@ -1,8 +1,6 @@
 package com.equinox;
+
 import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.junit.Test;
 

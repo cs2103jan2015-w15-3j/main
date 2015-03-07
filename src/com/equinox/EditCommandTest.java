@@ -19,7 +19,7 @@ public class EditCommandTest {
 		Todo actual = new Todo("Project meeting", startTime + endTime);
 		memory.add(actual);
 		ArrayList<KeyParamPair> paramList = new ArrayList<KeyParamPair>();
-		paramList.add(new KeyParamPair("", Integer.toString(actual.getIndex())));
+		paramList.add(new KeyParamPair("", Integer.toString(actual.getId())));
 		paramList.add(new KeyParamPair("title", title));
 		paramList.add(new KeyParamPair("start", editedStart));
 		paramList.add(new KeyParamPair("end", editedEnd));
@@ -28,7 +28,7 @@ public class EditCommandTest {
 		c.execute();
 		
 		Todo expectedTodo = new Todo(title, editedStart + " to " + editedEnd);
-		assertEquals(expectedTodo, memory.get(actual.getIndex()));
+		assertEquals(expectedTodo, memory.get(actual.getId()));
 		
 	}
 
