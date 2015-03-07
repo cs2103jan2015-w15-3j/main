@@ -12,7 +12,7 @@ package com.equinox;
 public class Signal {
 	
     /**
-     * Add Handler Signals
+     * Add Command Signals
      */
     public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added.";
     public static final String ADD_UNKNOWN_ERROR = "Error: Unknown add error";
@@ -28,34 +28,45 @@ public class Signal {
     		+ System.lineSeparator()
     		+ "\t\t add <title> from <date> to <date>";
     
-    /**
-     * Display Handler Signals
-     */
-    public static final String DISPLAY_SUCCESS_SIGNAL_FORMAT = "";
-    public static final String DISPLAY_EMPTY_SIGNAL_FORMAT = "The list is empty";
-
-    /**
-     * Exit Handler Signals
-     */
-    public static final String EXIT_SUCCESS = "Exit successfuly.";
     
     /**
-     * Delete Handler SIgnals
+     * Delete Command Signals
      */
-    public static final String DELETE_SUCCESS_FORMAT = "%s successfully deleted.";
-    public static final String DELETE_INVALID_PARAMS = "Error: The number of parameters is invalid.";
+    public static final String DELETE_SUCCESS_FORMAT = "%1$s successfully deleted.";
+    public static final String DELETE_INVALID_PARAMS = "Error: The number of parameters is invalid."
+			+ System.lineSeparator()
+			+ "\t Supported format:"
+			+ System.lineSeparator()
+			+ "\t delete <indexNumber>";
    
     
     /**
-     * Edit Handler Signals
+     * Display Command Signals
      */
-    public static final String EDIT_SUCCESS_FORMAT = "%s$s successfully edited."; // TODO include old and new event
+    public static final String DISPLAY_SUCCESS_SIGNAL = "";
+    public static final String DISPLAY_EMPTY_SIGNAL = "The list is empty";
+
+    
+    /**
+     * Edit Command Signals
+     */
+    public static final String EDIT_SUCCESS_FORMAT = "%1$s successfully modified to %2$s";
     public static final String EDIT_INVALID_TIME = "Error: The start time must be before the end time.";
-    public static final String EDIT_INVALID_PARAMS = "Error: The number or format of parameters is invalid.";
+    public static final String EDIT_INVALID_PARAMS = "Error: The number or format of parameters is invalid."
+    		+ System.lineSeparator()
+    		+ "\t Supported format:"
+    		+ System.lineSeparator()
+    		+ "\t edit <indexNumber> [title <newTitle>] [start <newStartTime>] [end <newEndTime>]";
+
+    
+    /**
+     * Exit Command Signals
+     */
+    public static final String EXIT_SUCCESS = "Exit successfuly.";
     
     
     /**
-     * Mark Handler Signals
+     * Mark Command Signals
      */
     public static final String MARK_SUCCESS_SIGNAL_FORMAT = "%1$s successfully marked as done."; 
     public static final String MARK_UNKNOWN_ERROR = "Error: Unknown mark error.";
@@ -67,9 +78,9 @@ public class Signal {
     
     
     /**
-     * Undo Handler Signals
+     * Undo Command Signals
      */
-    public static final String UNDO_SUCCESS_FORMAT = "Undo operation successful.";
+    public static final String UNDO_SUCCESS = "Undo operation successful.";
     public static final String UNDO_INVALID_PARAMS = "Error: The number of parameters is invalid."
     		+ System.lineSeparator()
     		+ "\t Supported format:"
@@ -78,15 +89,19 @@ public class Signal {
     
     
     /**
-     * Redo Handler Signals
+     * Redo Command Signals
      */
     public static final String REDO_SUCCESS = "Redo operation successful.";
     public static final String REDO_INVALID_PARAMS = "Error: The number of parameters is invalid"
     		+ System.lineSeparator()
     		+ "\t Supported format:"
     		+ System.lineSeparator()
-    		+ "\t undo <indexNumber>";
+    		+ "\t redo <indexNumber>";
    
+    
+    /**
+     * Search Command Signals
+     */
     
     /**
      * Generic Signals
@@ -95,8 +110,9 @@ public class Signal {
     public static final String GENERIC_INVALID_COMMAND_FORMAT = "Error: %1$s command is invalid!"
             + System.lineSeparator()
             + "Supported commands: add, mark, delete, edit, undo, etc...";
-    public static final String GENERIC_DATE_UNDEFINED = "Error: Date is undefined; %1$s";
+    public static final String GENERIC_DATE_UNDEFINED_FORMAT = "Error: Date is undefined; %1$s";
     public static final String GENERIC_EXCEPTIONS_FORMAT = "Error: %1$s";
+    public static final String GENERIC_FATAL_ERROR = "Fatal error.";
     
     
     /**
