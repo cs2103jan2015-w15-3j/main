@@ -24,6 +24,7 @@ public class Zeitgeist {
 
 	private static void dispatchCommand(ParsedInput userInput, Memory memory) {
 		Signal processSignal;
+		Command c;
 
 		KEYWORDS commandType = userInput.getType();
 		if (commandType == null) {
@@ -33,39 +34,48 @@ public class Zeitgeist {
 
             switch (commandType) {
                 case ADD :
-                    processSignal = AddHandler.process(userInput, memory);
+                	c = new AddCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 
                 case DELETE :
-                    processSignal = DeleteHandler.process(userInput, memory);
+                	c = new DeleteCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 
                 case MARK :
-                    processSignal = MarkHandler.process(userInput, memory);
+                	c = new MarkCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 				
                 case REDO :
-                    processSignal = RedoHandler.process(userInput, memory);
+                	c = new RedoCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 
                 case UNDO :
-                    processSignal = UndoHandler.process(userInput, memory);
+                	c = new UndoCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 
                 case EDIT :
-                    processSignal = EditHandler.process(userInput, memory);
+                	c = new EditCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 
                 case DISPLAY :
-                    processSignal = DisplayHandler.process(userInput, memory);
+                	c = new DisplayCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 
                 case SEARCH :
-                    processSignal = SearchHandler.process(userInput, memory);
+                	c = new SearchCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 
                 case EXIT :
-                    processSignal = ExitHandler.process(userInput, memory);
+                	c = new ExitCommand();
+                	processSignal = c.execute(userInput, memory);
                     break;
 
                 default :
