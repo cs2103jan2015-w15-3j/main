@@ -102,7 +102,7 @@ public class AddCommand extends Command {
 		} catch (DateUndefinedException e) {
 			e.printStackTrace();
 			String exceptionMessage = e.getMessage();
-			return new Signal(String.format(Signal.GENERIC_DATE_UNDEFINED,
+			return new Signal(String.format(Signal.GENERIC_DATE_UNDEFINED_FORMAT,
 					exceptionMessage));
 		}
 
