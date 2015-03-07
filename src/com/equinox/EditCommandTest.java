@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-public class EditHandlerTest {
+public class EditCommandTest {
 	Memory memory = new Memory();
 	
 	DateTime startDate = new DateTime(2015, 9, 29, 00, 00, 0);
@@ -25,7 +25,8 @@ public class EditHandlerTest {
 		paramList.add(new KeyParamPair("start", start));
 		paramList.add(new KeyParamPair("end", end));
 		ParsedInput input = new ParsedInput(null, paramList);
-		EditHandler.process(input, memory);
+		EditCommand c = new EditCommand();
+		c.execute(input, memory);
 		
 		Todo expectedTodo = new Todo(title, DateParser.parseDate(start),
 				DateParser.parseDate(end));

@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * @author Ho Wei Li || IkarusWill
  *
  */
-public class EditHandler {
+public class EditCommand extends Command{
 
 	/**
 	 * Processes a ParsedInput object containing the edit command and its
@@ -22,7 +22,8 @@ public class EditHandler {
 	 * @return a Signal object with a message denoting success or failure in
 	 *         processing.
 	 */
-	public static Signal process(ParsedInput input, Memory memory) {
+	@Override
+	public Signal execute(ParsedInput input, Memory memory) {
 		Todo edited;
 		try {
 			if(input.containsEmptyParams()) {
