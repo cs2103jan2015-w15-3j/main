@@ -10,7 +10,7 @@ package com.equinox;
  */
 import java.util.ArrayList;
 
-public class MarkHandler {
+public class MarkCommand extends Command {
 	/**
 	 * Retrieves the Todo object specified by index in ParsedInput from Memory
 	 * and marks it as done.
@@ -22,7 +22,8 @@ public class MarkHandler {
 	 *            A memory object that stores Todo objects
 	 * @return It returns a Signal object to indicate success or failure.
 	 */
-	public static Signal process(ParsedInput input, Memory memory) {
+	@Override
+	public Signal execute(ParsedInput input, Memory memory) {
 		if(input.containsEmptyParams()) {
 			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
 		}

@@ -5,9 +5,9 @@ package com.equinox;
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  *
  */
-public class UndoHandler {
-
-	public static Signal process(ParsedInput input, Memory memory) {
+public class UndoCommand extends Command{
+	@Override
+	public Signal execute(ParsedInput input, Memory memory) {
 		//check if the number of parameters is correct
 		int numberOfKeywords = input.getParamPairList().size();
 		if(numberOfKeywords != 1){
