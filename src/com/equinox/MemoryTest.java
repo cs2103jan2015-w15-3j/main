@@ -13,7 +13,7 @@ public class MemoryTest {
 	Todo todo1, todo2, todo3;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws DateUndefinedException{
 		memory = new Memory();
 		todo1 = new Todo(TASK_1);
 		memory.add(todo1);
@@ -57,7 +57,7 @@ public class MemoryTest {
 		assertEquals("Todo1 Redo Mark", todo1MarkCopy, memory.get(todo1.getIndex()));
 	}
 
-	@Test (expected = NullPointerException.class)
+	@Test (expected = NullTodoException.class)
 	public void testRemoveUndo() throws StateUndefinedException, NullTodoException {
 		memory.remove(todo2.getIndex());
 		assertEquals("Todo1", todo1, memory.get(todo1.getIndex()));
@@ -78,7 +78,7 @@ public class MemoryTest {
 		assertEquals("Todo3", todo3, memory.get(todo3.getIndex()));
 	}
 	
-	@Test (expected = NullPointerException.class)
+	@Test (expected = NullTodoException.class)
 	public void testAddUndo() throws StateUndefinedException, NullTodoException {
 		memory.restoreHistoryState();
 		memory.get(todo3.getIndex()); // Exception
