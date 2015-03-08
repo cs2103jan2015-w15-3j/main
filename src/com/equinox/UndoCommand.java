@@ -5,11 +5,16 @@ package com.equinox;
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  *
  */
-public class UndoHandler {
+public class UndoCommand extends Command{
+	
+	public UndoCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
 
-	public static Signal process(ParsedInput input, Memory memory) {
+	@Override
+	public Signal execute() {
 		//check if the number of parameters is correct
-		int numberOfKeywords = input.getParamPairList().size();
+		int numberOfKeywords = keyParamPairList.size();
 		if(numberOfKeywords != 1){
             return new Signal(Signal.UNDO_INVALID_PARAMS, false);
 		}
