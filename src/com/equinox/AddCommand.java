@@ -53,7 +53,7 @@ public class AddCommand extends Command {
 			// Example:
 			// KeyParamPair 0: add <task>
 				case 1:
-					Todo floatingTask = new Todo(todoName);
+					Todo floatingTask = new Todo(memory, todoName);
 					memory.add(floatingTask);
 					return new Signal(String.format(
                             Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask),
@@ -84,7 +84,7 @@ public class AddCommand extends Command {
 							|| secondKeyword.equals("on")
 							|| secondKeyword.equals("at")) {
 						String deadlineTime = keyParamPairList.get(1).getParam();
-						Todo deadline = new Todo(todoName, deadlineTime);
+						Todo deadline = new Todo(memory, todoName, deadlineTime);
 						memory.add(deadline);
 						return new Signal(String.format(
                                 Signal.ADD_SUCCESS_SIGNAL_FORMAT, deadline),
@@ -94,7 +94,7 @@ public class AddCommand extends Command {
 					// Event
 					else if (secondKeyword.equals("from")) {
 						String eventStartEndTime = keyParamPairList.get(1).getParam();
-						Todo event = new Todo(todoName, eventStartEndTime);
+						Todo event = new Todo(memory, todoName, eventStartEndTime);
 						memory.add(event);
 						return new Signal(String.format(
                                 Signal.ADD_SUCCESS_SIGNAL_FORMAT, event), true);
