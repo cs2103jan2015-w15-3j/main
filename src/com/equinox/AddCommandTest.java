@@ -1,5 +1,5 @@
 /**
- * Unit test class for AddHandler.
+ * Unit test class for AddCommand.
  * 
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  */
@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
-public class AddHandlerTest {
+public class AddCommandTest {
 	Memory memory;
 	ParsedInput input;
 	KEYWORDS addCommand = KEYWORDS.ADD;
@@ -38,13 +38,13 @@ public class AddHandlerTest {
 	
 	@Test
 	public void testLessThanOneKeyword(){
-		//Hard-coded parameters for AddHandler.process method
+		//Hard-coded parameters for AddCommand.process method
 		ArrayList<KeyParamPair> list = new ArrayList<KeyParamPair>();
 		input = new ParsedInput(addCommand, list);
 		Signal invalidParamSignal = new Signal(Signal.SIGNAL_INVALID_PARAMS);
 		
 		//Test for equivalence in Signal object
-		assertEquals(invalidParamSignal, AddHandler.process(input, memory));
+		assertEquals(invalidParamSignal, AddCommand.process(input, memory));
 	}
 	
 	@Test
@@ -55,12 +55,12 @@ public class AddHandlerTest {
 	
 	@Test
 	public void testFloatingTask(){
-		//Hard-coded parameters for AddHandler.process method
+		//Hard-coded parameters for AddCommand.process method
 		ParsedInput input = InputStringParser.parse(userInputFloatingTask1);
 		String taskTitle = "study CS2105";
 		
-		//Add hard-coded input into memory using AddHandler's process method
-		AddHandler.process(input, memory);
+		//Add hard-coded input into memory using AddCommand's process method
+		AddCommand.process(input, memory);
 
 		//Test for equivalence between Todo object in memory and testTodo
 		Todo testTodo = new Todo(taskTitle);
@@ -77,7 +77,7 @@ public class AddHandlerTest {
 		/*
 		ParsedInput input2 = InputStringParser.parse("add one");
 		testTodo = new Todo(currentTime, "two");
-		AddHandler.process(input2, memory);
+		AddCommand.process(input2, memory);
 		assertEquals(testTodo, memory.get(memory.getCurrentSize()));
 		 */
 	}

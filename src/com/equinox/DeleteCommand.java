@@ -1,14 +1,16 @@
 package com.equinox;
 
-import java.util.ArrayList;
-
 /**
  * Houses a method which processes the delete request from the user. 
  * 
  * @author Ho Wei Li || IkarusWill
  *
  */
-public class DeleteHandler {
+public class DeleteCommand extends Command {
+
+	public DeleteCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
 
 	/**
 	 * Processes a ParsedInput object containing the delete command and its
@@ -20,15 +22,14 @@ public class DeleteHandler {
 	 * @return a Signal object with a message denoting success or failure in
 	 *         processing.
 	 */
-	public static Signal process(ParsedInput input, Memory memory) {
+	@Override
+	public Signal execute() {
 		if(input.containsEmptyParams()) {
-			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+			return new Signal(Signal.GENERIC_EMPTY_PARAM);
 		}
 		
-		ArrayList<KeyParamPair> paramPairList = input.getParamPairList();
-		
 		//Check for valid number of keywords
-    	int numberOfKeywords = paramPairList.size();
+    	int numberOfKeywords = keyParamPairList.size();
     	if(numberOfKeywords > 1){
     		return new Signal(Signal.DELETE_INVALID_PARAMS);
     	}
@@ -36,7 +37,7 @@ public class DeleteHandler {
     	int deleteIndex;
     	Todo deleted;
 		try {
-			deleteIndex = Integer.parseInt(paramPairList.get(0).getParam());
+			deleteIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
 			deleted = memory.remove(deleteIndex);
 		} catch (NumberFormatException e) {
 			return new Signal(Signal.DELETE_INVALID_PARAMS);

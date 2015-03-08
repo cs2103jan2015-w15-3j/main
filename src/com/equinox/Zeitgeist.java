@@ -24,53 +24,64 @@ public class Zeitgeist {
 
 	private static void dispatchCommand(ParsedInput userInput, Memory memory) {
 		Signal processSignal;
+		Command c;
 
 		KEYWORDS commandType = userInput.getType();
 		if (commandType == null) {
             SignalHandler.printSignal(new Signal(String
-                    .format(Signal.INVALID_COMMAND_FORMAT, ""))); // TODO
+                    .format(Signal.GENERIC_INVALID_COMMAND_FORMAT, "")));
 		} else {
 
             switch (commandType) {
                 case ADD :
-                    processSignal = AddHandler.process(userInput, memory);
+                	c = new AddCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case DELETE :
-                    processSignal = DeleteHandler.process(userInput, memory);
+                	c = new DeleteCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case MARK :
-                    processSignal = MarkHandler.process(userInput, memory);
+                	c = new MarkCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 				
                 case REDO :
-                    processSignal = RedoHandler.process(userInput, memory);
+                	c = new RedoCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case UNDO :
-                    processSignal = UndoHandler.process(userInput, memory);
+                	c = new UndoCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case EDIT :
-                    processSignal = EditHandler.process(userInput, memory);
+                	c = new EditCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case DISPLAY :
-                    processSignal = DisplayHandler.process(userInput, memory);
+                	c = new DisplayCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case SEARCH :
-                    processSignal = SearchHandler.process(userInput, memory);
+                	c = new SearchCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 case EXIT :
-                    processSignal = ExitHandler.process(userInput, memory);
+                	c = new ExitCommand(userInput, memory);
+                	processSignal = c.execute();
                     break;
 
                 default :
-                    processSignal = new Signal(
-                            String.format(Signal.INVALID_COMMAND_FORMAT,"")); // TODO
+                	// NOTE: This case should never happen
+                    processSignal = new Signal(Signal.GENERIC_FATAL_ERROR);
+                    System.exit(-1);
                     break;
 			}
             SignalHandler.printSignal(processSignal);

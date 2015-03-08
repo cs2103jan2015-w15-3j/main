@@ -1,18 +1,18 @@
 package com.equinox;
 
 /**
- * The AddHandler class handles all user commands with "add" as the first keyword and processes
- * ParsedInput to generate Todo objects and adds them into memory. * 
+ * The AddCommand class handles all user commands with "add" as the first
+ * keyword and processes ParsedInput to generate Todo objects and adds them into
+ * memory. *
  * 
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  */
 
-import java.util.ArrayList;
-import java.util.List;
+public class AddCommand extends Command {
 
-import org.joda.time.DateTime;
-
-public class AddHandler {
+	public AddCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
 
 	/**
 	 * It takes in a ParsedInput object and generates a Todo object with respect
@@ -29,23 +29,23 @@ public class AddHandler {
 	 *            A Memory object that stores Todo objects
 	 * @return It returns a Signal object to indicate success or failure.
 	 */
-	public static Signal process(ParsedInput input, Memory memory) {
+	@Override
+	public Signal execute() {
 		// Check for empty string params
 		if (input.containsEmptyParams()) {
-			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+			return new Signal(Signal.GENERIC_EMPTY_PARAM);
 		}
-		
+
 		// Check for valid number of keywords
 		int numberOfKeywords = input.getParamPairList().size();
 		if (numberOfKeywords > 3) {
-			return new Signal(Signal.INVALID_PARAMS_FOR_ADD_HANDLER);
+			return new Signal(Signal.ADD_INVALID_PARAMS);
 		}
 		
-		ArrayList<KeyParamPair> keyParamPairList = input.getParamPairList();
 		String todoName = keyParamPairList.get(0).getParam();
-		
+
 		try {
-			
+
 			int numberOfElements = keyParamPairList.size();
 
 			switch (numberOfElements) {
@@ -55,7 +55,8 @@ public class AddHandler {
 				case 1:
 					Todo floatingTask = new Todo(todoName);
 					memory.add(floatingTask);
-					return new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask));
+					return new Signal(String.format(
+							Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask));
 
 					// Deadline
 					// Example:
@@ -67,36 +68,44 @@ public class AddHandler {
 					// <startDate to endDate>
 
 				case 2:
+				// TODO Todo can now determine if it is a Single date or Double
+				// date String and dynamically adjust its type accordingly.
+					
+				// Use a while loop, keep catching DateUndefinedException and
+				// append the keyword to the todoName so that we can avoid
+				// catching keywords in title. Catch until the Todo is
+				// successfully created.
+					
 					String secondKeyword = keyParamPairList.get(1).getKeyword();
 
 					// Deadline
-					if (secondKeyword.equals("by") || secondKeyword.equals("on")
+					if (secondKeyword.equals("by")
+							|| secondKeyword.equals("on")
 							|| secondKeyword.equals("at")) {
-						DateTime deadlineTime = DateParser.parseDate(keyParamPairList.get(1)
-								.getParam());
+						String deadlineTime = keyParamPairList.get(1).getParam();
 						Todo deadline = new Todo(todoName, deadlineTime);
 						memory.add(deadline);
-						return new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, deadline));
+						return new Signal(String.format(
+								Signal.ADD_SUCCESS_SIGNAL_FORMAT, deadline));
 					}
 
 					// Event
 					else if (secondKeyword.equals("from")) {
-						List<DateTime> dateTimeList = DateParser.parseDates(keyParamPairList.get(1)
-								.getParam());
-						DateTime eventStartTime = dateTimeList.get(0);
-						DateTime eventEndTime = dateTimeList.get(1);
-						Todo event = new Todo(todoName, eventStartTime, eventEndTime);
+						String eventStartEndTime = keyParamPairList.get(1).getParam();
+						Todo event = new Todo(todoName, eventStartEndTime);
 						memory.add(event);
-						return new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, event));
+						return new Signal(String.format(
+								Signal.ADD_SUCCESS_SIGNAL_FORMAT, event));
 					}
 			}
 
 		} catch (DateUndefinedException e) {
 			e.printStackTrace();
 			String exceptionMessage = e.getMessage();
-			return new Signal(String.format(Signal.DATE_UNDEFINED_EXCEPTION, exceptionMessage));
+			return new Signal(String.format(Signal.GENERIC_DATE_UNDEFINED_FORMAT,
+					exceptionMessage));
 		}
 
-		return new Signal(Signal.UNKNOWN_ADD_ERROR);
+		return new Signal(Signal.ADD_UNKNOWN_ERROR);
 	}
 }

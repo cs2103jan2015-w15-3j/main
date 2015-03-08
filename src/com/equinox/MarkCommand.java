@@ -8,9 +8,13 @@ package com.equinox;
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  * 
  */
-import java.util.ArrayList;
 
-public class MarkHandler {
+public class MarkCommand extends Command {
+	
+	public MarkCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
 	/**
 	 * Retrieves the Todo object specified by index in ParsedInput from Memory
 	 * and marks it as done.
@@ -22,30 +26,26 @@ public class MarkHandler {
 	 *            A memory object that stores Todo objects
 	 * @return It returns a Signal object to indicate success or failure.
 	 */
-	public static Signal process(ParsedInput input, Memory memory) {
+	@Override
+	public Signal execute() {
 		if(input.containsEmptyParams()) {
-			return new Signal(Signal.EMPTY_PARAM_EXCEPTION);
+			return new Signal(Signal.GENERIC_EMPTY_PARAM);
 		}
-		
-		ArrayList<KeyParamPair> inputList = input.getParamPairList();
 
 		// Ensure that there is only one KeyParamPair in inputList
-		if (inputList.size() > 1) {
-			return new Signal(Signal.INVALID_PARAMS_FOR_MARK_HANDLER);
+		if (keyParamPairList.size() > 1) {
+			return new Signal(Signal.MARK_INVALID_PARAMS);
 		}
 
 		try {
-
-			// -1 discrepancy between user input index and index in memory is
-			// handled in Memory class
-			int index = Integer.parseInt(inputList.get(0).getParam());
+			int index = Integer.parseInt(keyParamPairList.get(0).getParam());
 			Todo todoToMark = memory.setterGet(index);
 			todoToMark.setDone(true);
 			return new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT, todoToMark));
 		} catch (NullTodoException e) {
-			return new Signal(String.format(Signal.EXCEPTIONS_FORMAT, e.getMessage()));
+			return new Signal(String.format(Signal.GENERIC_EXCEPTIONS_FORMAT, e.getMessage()));
 		} catch (NumberFormatException e) {
-			return new Signal(String.format(Signal.INVALID_PARAMS_FOR_MARK_HANDLER));
+			return new Signal(String.format(Signal.MARK_INVALID_PARAMS));
 		}
 	}
 }
