@@ -33,11 +33,11 @@ public class MarkCommand extends Command {
 		}
 
 		// Ensure that there is only one KeyParamPair in inputList
-		if (inputList.size() > 1) {
+        if (keyParamPairList.size() > 1) {
             return new Signal(Signal.MARK_INVALID_PARAMS, false);
 		}
 		
-		if(inputList.get(0).isParamEmptyString()){
+        if (keyParamPairList.get(0).getParam().isEmpty()) {
             return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 		}
 
