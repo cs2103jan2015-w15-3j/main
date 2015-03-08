@@ -58,11 +58,14 @@ public class DisplayCommand extends Command {
 		} else if (param.equals("all") || param.equals("a")) {
 			displayString = getDisplayChrono(todos, showAll);
 			System.out.println(displayString);
-		} else {
+        } else if (param.isEmpty()) {
 			// By default we show pending tasks, in chronological order
 			displayString = getDisplayChrono(todos, showPending);
 			System.out.println(displayString);
-		}
+        } else {
+            return new Signal(
+                    String.format(Signal.DISPLAY_INVALID_PARAM, param), false);
+        }
         return new Signal(Signal.DISPLAY_SUCCESS_SIGNAL, true);
 	}
 
