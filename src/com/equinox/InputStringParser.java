@@ -60,6 +60,18 @@ public class InputStringParser {
 			if (InputStringKeyword.isKeyword(currentParam)) {
 				resultList.add(new KeyParamPair(key, tempParam));
 				key = currentParam;
+				
+				if(InputStringKeyword.getKeyword(currentParam) == KEYWORDS.FROM){
+					// concatenate all params that come after 'from'
+					// and generate a KeyParamPair
+					tempParam = STRING_EMPTY;
+					for(int j=i+1; j<inputArray.length; j++){
+						tempParam += inputArray[j] + " ";
+					}
+					resultList.add(new KeyParamPair(key, tempParam.trim()));
+					return resultList;
+				}
+				
 				tempParam = STRING_EMPTY;
 
 				// inputArray[i] is not a keyword; concat with tempParam.
