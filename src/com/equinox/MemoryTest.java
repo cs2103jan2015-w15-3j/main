@@ -17,11 +17,11 @@ public class MemoryTest {
 	@Before
 	public void setUp() throws DateUndefinedException{
 		memory = new Memory();
-		todo1 = new Todo(TASK_1);
+		todo1 = new Todo(memory, TASK_1);
 		memory.add(todo1);
-		todo2 = new Todo(TASK_2);
+		todo2 = new Todo(memory, TASK_2);
 		memory.add(todo2);
-		todo3 = new Todo(TASK_3);
+		todo3 = new Todo(memory, TASK_3);
 		memory.add(todo3);
 	}
 

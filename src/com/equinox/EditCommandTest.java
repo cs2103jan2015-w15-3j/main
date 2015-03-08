@@ -16,7 +16,7 @@ public class EditCommandTest {
 
 	@Test
 	public void test() throws NullTodoException, DateUndefinedException {
-		Todo actual = new Todo("Project meeting", startTime + endTime);
+		Todo actual = new Todo(memory, "Project meeting", startTime + endTime);
 		memory.add(actual);
 		ArrayList<KeyParamPair> paramList = new ArrayList<KeyParamPair>();
 		paramList.add(new KeyParamPair("", Integer.toString(actual.getId())));
@@ -27,7 +27,7 @@ public class EditCommandTest {
 		EditCommand c = new EditCommand(input, memory);
 		c.execute();
 		
-		Todo expectedTodo = new Todo(title, editedStart + " to " + editedEnd);
+		Todo expectedTodo = new Todo(memory, title, editedStart + " to " + editedEnd);
 		assertEquals(expectedTodo, memory.get(actual.getId()));
 		
 	}
