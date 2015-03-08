@@ -45,6 +45,11 @@ public class Signal {
      */
     public static final String DISPLAY_SUCCESS_SIGNAL = "";
     public static final String DISPLAY_EMPTY_SIGNAL = "The list is empty";
+    public static final String DISPLAY_INVALID_PARAM = "The parameter %1$s is not recognized."
+            + System.lineSeparator()
+            + "The display command only supports only following additional parameters: c, completed, a, all. "
+            + System.lineSeparator()
+            + "Pending todos will be displayed by default, when no paramters are supplied. ";
 
     
     /**
