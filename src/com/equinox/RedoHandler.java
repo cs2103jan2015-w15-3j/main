@@ -21,15 +21,15 @@ public class RedoHandler {
 	public static Signal process(ParsedInput userInput, Memory memory) {
 		int numberOfKeywords = userInput.getParamPairList().size();
 		if(numberOfKeywords != 1){
-			return new Signal(Signal.REDO_INVALID_PARAMS);
+            return new Signal(Signal.REDO_INVALID_PARAMS, false);
 		}
 		
 		try{
 			memory.restoreFutureState();
 		} catch (StateUndefinedException e) {
-			return new Signal(e.getMessage());
+            return new Signal(e.getMessage(), false);
 		}
 		
-		return new Signal(Signal.REDO_SUCCESS);
+        return new Signal(Signal.REDO_SUCCESS, true);
 	}
 }

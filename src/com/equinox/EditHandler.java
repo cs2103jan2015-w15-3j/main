@@ -54,16 +54,17 @@ public class EditHandler {
 				} catch (StateUndefinedException e) {
 					e.printStackTrace();
 				}
-				return new Signal(Signal.EDIT_INVALID_TIME);
+                return new Signal(Signal.EDIT_INVALID_TIME, false);
 			}
 		} catch (DateUndefinedException e) {
-			return new Signal(e.getMessage());
+            return new Signal(e.getMessage(), false);
 		} catch (NullTodoException e) {
-			return new Signal(e.getMessage());
+            return new Signal(e.getMessage(), false);
 		} catch (NumberFormatException e) {
-			return new Signal(Signal.EDIT_INVALID_PARAMS);
+            return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 		}
-		return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, edited));
+        return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, edited),
+                true);
 	}
 
 }

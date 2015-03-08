@@ -116,6 +116,7 @@ public class Signal {
     
     public static final String EXCEPTIONS_FORMAT = "Error: %1$s";
     
+    public static final String ERROR_PREFIX = "Error: ";
     
     /**
      * Exception Messages
@@ -140,8 +141,11 @@ public class Signal {
      * 
      * @param signal
      */
-    public Signal(String signal) {
+    public Signal(String signal, boolean isSuccessful) {
         this.message = signal;
+        if (!isSuccessful) {
+            this.message = ERROR_PREFIX.concat(this.message);
+        }
     }
 
     @Override

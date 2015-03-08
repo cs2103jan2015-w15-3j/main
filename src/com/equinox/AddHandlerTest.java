@@ -5,14 +5,13 @@
  */
 
 package com.equinox;
-import org.joda.time.DateTime;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 public class AddHandlerTest {
 	Memory memory;
@@ -41,7 +40,8 @@ public class AddHandlerTest {
 		//Hard-coded parameters for AddHandler.process method
 		ArrayList<KeyParamPair> list = new ArrayList<KeyParamPair>();
 		input = new ParsedInput(addCommand, list);
-		Signal invalidParamSignal = new Signal(Signal.SIGNAL_INVALID_PARAMS);
+        Signal invalidParamSignal = new Signal(Signal.SIGNAL_INVALID_PARAMS,
+                false);
 		
 		//Test for equivalence in Signal object
 		assertEquals(invalidParamSignal, AddHandler.process(input, memory));
