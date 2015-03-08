@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 
@@ -28,7 +29,12 @@ import com.google.gson.JsonSerializer;
  *
  */
 public class Memory {
+	
 	private static final int STACK_MAX_SIZE = 5;
+	private static final int ID_BUFFER_INITIAL_SIZE = 5;
+	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
+	private final IDBuffer idBuffer = new IDBuffer();
+	private int startingId;
 	private HashMap<Integer, Todo> memoryMap;
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
@@ -37,6 +43,7 @@ public class Memory {
 	 * Constructs an empty Memory object.
 	 */
 	public Memory() {
+		this.startingId = 0;
 		this.memoryMap = new HashMap<Integer, Todo>();
 		this.undoStack = new LinkedList<Todo>();
 		this.redoStack = new LinkedList<Todo>();
@@ -123,7 +130,7 @@ public class Memory {
 		if (undoStack.size() > STACK_MAX_SIZE) {
 			int id = undoStack.removeFirst().getId();
 			if(!memoryMap.containsKey(id)) {
-				Todo.releaseId(id);;
+				releaseId(id);;
 			}
 		}
 		undoStack.add(toBeSavedCopy);
@@ -131,8 +138,10 @@ public class Memory {
 	
 	private void flushRedoStack() {
 		while(!redoStack.isEmpty()) {
-			Todo todo = redoStack.pollLast();
-			Todo.releaseId(todo.getId());
+			int id = redoStack.pollLast().getId();
+			if(!memoryMap.containsKey(id)) {
+				releaseId(id);;
+			}
 		}
 	}
 
@@ -278,5 +287,67 @@ public class Memory {
         }
 
     }
+
+	/**
+	 * Obtains an ID number from the pool of available ID numbers.
+	 * 
+	 * @return the ID obtained.
+	 */
+	public int obtainFreshId() {
+		return idBuffer.get();
+	}
 	
+	/**
+	 * Releases the specified ID number to the pool of available ID numbers for
+	 * future use by new Todos.
+	 * 
+	 * @param id the ID to be released.
+	 */
+	public void releaseId(int id) {
+		idBuffer.put(id);
+	}
+	
+    /**
+	 * Serves as a buffer of fixed size for new Todos to draw their ID from.
+	 * 
+	 * @author Ikarus
+	 *
+	 */
+	private class IDBuffer {
+		private TreeSet<Integer> buffer;
+		
+		private IDBuffer() {
+			buffer = new TreeSet<Integer>();
+			for (int i = startingId; i < startingId + ID_BUFFER_INITIAL_SIZE; i++) {
+				buffer.add(i);
+			}
+		}
+
+		protected int get() {
+			if (buffer.size() == 1) {
+				loadToSize();
+			}
+			return buffer.pollFirst();
+		}
+		
+		protected void put(int id) {
+			buffer.add(id);
+			if (buffer.size() > ID_BUFFER_MAX_SIZE) {
+				unloadToSize();
+			}
+		}
+
+		private void loadToSize() { // Bug: Remove 5 elements or so from a memory of size 10. Will load duplicate ID unnecessarily
+			int largestId = buffer.last();
+			for (int i = largestId; i < largestId + ID_BUFFER_INITIAL_SIZE; i++) {
+				buffer.add(i);
+			}
+		}
+		
+		private void unloadToSize() {
+			for (int i = 0; i < ID_BUFFER_INITIAL_SIZE; i++) {
+				buffer.pollLast();
+			}
+		}
+	}
 }

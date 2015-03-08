@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
@@ -33,14 +32,11 @@ public class Todo {
 	public enum TYPE {
 		TASK, DEADLINE, EVENT;
 	}
-	
-	private static final int ID_BUFFER_INITIAL_SIZE = 5;
-	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
-	private static final IDBuffer idBuffer = new IDBuffer();
-	private static int startingId = 0; // TODO Find max id from loaded file and assign.
-	private int id;
+
+	private final int id;
 	private String title;
-	private DateTime createdOn, modifiedOn, startTime, endTime;
+	private final DateTime createdOn;
+	private DateTime modifiedOn, startTime, endTime;
 	private boolean isDone;
 	private TYPE type;
 
@@ -62,8 +58,8 @@ public class Todo {
 	 * @param userTitle title of the task.
 	 * @throws DateUndefinedException 
 	 */
-	public Todo(String titleString) throws DateUndefinedException {
-		this.id = idBuffer.get();
+	public Todo(Memory memory, String titleString) throws DateUndefinedException {
+		this.id = memory.obtainFreshId();
 		this.title = titleString;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
@@ -79,8 +75,8 @@ public class Todo {
 	 * @param userTitle title of the task.
 	 * @throws DateUndefinedException 
 	 */
-	public Todo(String titleString, String dateString) throws DateUndefinedException {
-		this.id = idBuffer.get();
+	public Todo(Memory memory, String titleString, String dateString) throws DateUndefinedException {
+		this.id = memory.obtainFreshId();
 		this.title = titleString;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
@@ -408,59 +404,5 @@ public class Todo {
 				}
 				
 		return true;
-	}
-	
-	/**
-	 * Releases the specified ID number to the pool of available ID numbers for
-	 * future use by new Todos.
-	 * 
-	 * @param id the ID to be released.
-	 */
-	public static void releaseId(int id) {
-		idBuffer.put(id);
-	}
-	
-	/**
-	 * Serves as a buffer of fixed size for new Todos to draw their ID from.
-	 * 
-	 * @author Ikarus
-	 *
-	 */
-	protected static class IDBuffer {
-		private TreeSet<Integer> buffer;
-		
-		private IDBuffer() {
-			buffer = new TreeSet<Integer>();
-			for (int i = startingId; i < startingId + ID_BUFFER_INITIAL_SIZE; i++) {
-				buffer.add(i);
-			}
-		}
-
-		protected int get() {
-			if (buffer.size() == 1) {
-				loadToSize();
-			}
-			return buffer.pollFirst();
-		}
-		
-		protected void put(int id) {
-			buffer.add(id);
-			if (buffer.size() > ID_BUFFER_MAX_SIZE) {
-				unloadToSize();
-			}
-		}
-
-		private void loadToSize() {
-			int largestId = buffer.last();
-			for (int i = largestId; i < largestId + ID_BUFFER_INITIAL_SIZE; i++) {
-				buffer.add(i);
-			}
-		}
-		
-		private void unloadToSize() {
-			for (int i = 0; i < ID_BUFFER_INITIAL_SIZE; i++) {
-				buffer.pollLast();
-			}
-		}
 	}
 }
