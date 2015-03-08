@@ -122,21 +122,6 @@ public class Signal {
     
     public static final String ERROR_PREFIX = "Error: ";
     
-    /**
-     * Exception Messages
-     * 
-     * Used to construct new exceptions only. Not directly related to signals.
-     * 
-     * TODO: Move to other classes
-     * 
-     */
-    public static final String NULL_TODO_EXCEPTION = "Specified Todo does not exist.";
-    public static final String NO_HISTORY_STATES_EXCEPTION = "No undoable states exist";
-    public static final String NO_FUTURE_STATES_EXCEPTION = "No redoable states exist";
-    public static final String UNDEFINED_DATE_STRING_EXCEPTION = "Date String is empty or does not contain dates.";
-    public static final String NULL_DATE_STRING_EXCEPTION = "Date String is null.";
-    
-    
     private String message;
 
     /**

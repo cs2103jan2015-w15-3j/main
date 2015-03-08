@@ -65,7 +65,7 @@ public class Memory {
 	public Todo get(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
 		if (returnTodo == null) {
-			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
+			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
 		return returnTodo;
 	}
@@ -82,7 +82,7 @@ public class Memory {
 	public Todo setterGet(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
 		if (returnTodo == null) {
-			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
+			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
 		save(returnTodo);
 		flushRedoStack();
@@ -100,7 +100,7 @@ public class Memory {
 	public Todo remove(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
 		if (returnTodo == null) {
-			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
+			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
 		save(returnTodo);
 		flushRedoStack();
@@ -148,7 +148,7 @@ public class Memory {
 		try {
 			fromStack = undoStack.removeLast();
 		} catch (NoSuchElementException e) {
-			throw new StateUndefinedException(Signal.NO_HISTORY_STATES_EXCEPTION);
+			throw new StateUndefinedException(ExceptionMessages.NO_HISTORY_STATES_EXCEPTION);
 		}
 
 		int id = fromStack.getId();
@@ -183,7 +183,7 @@ public class Memory {
 		try {
 			fromStack = redoStack.removeLast();
 		} catch (NoSuchElementException e) {
-			throw new StateUndefinedException(Signal.NO_FUTURE_STATES_EXCEPTION);
+			throw new StateUndefinedException(ExceptionMessages.NO_FUTURE_STATES_EXCEPTION);
 		}
 
 		int id = fromStack.getId();
