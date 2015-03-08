@@ -118,6 +118,11 @@ public class Signal {
     
     /**
      * Exception Messages
+     * 
+     * Used to construct new exceptions only. Not directly related to signals.
+     * 
+     * TODO: Move to other classes
+     * 
      */
     public static final String NULL_TODO_EXCEPTION = "Specified Todo does not exist.";
     public static final String NO_HISTORY_STATES_EXCEPTION = "No undoable states exist";
