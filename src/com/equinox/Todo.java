@@ -8,6 +8,8 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
@@ -42,6 +44,17 @@ public class Todo {
 	private boolean isDone;
 	private TYPE type;
 
+    private static final DateTimeFormatter DateFormatter = DateTimeFormat
+            .forPattern("dd MMM");
+    private static final DateTimeFormatter TimeFormatter = DateTimeFormat
+            .forPattern("HH:mm");
+    private static final String DateTimeStringFormat = "on %1$s at %2$s";
+
+    private static final String EventStringFormat = "Event \"%1$s\" from %2$s to %3$s";
+
+    private static final String DeadlineStringFormat = "Deadline \"%1$s\" by %2$s";
+
+    private static final String FloatingTaskStringFormat = "Floating task \"%1$s\"";
 	
 	/**
 	 * Constructs a Todo of type: TASK.
@@ -284,24 +297,30 @@ public class Todo {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-        StringBuilder taskStringBuilder = new StringBuilder();
-		
+        String endDateTimeString = formatDateTime(endTime);
+        String startDateTimeString = formatDateTime(startTime);
+
         switch (type) {
             case TASK :
-                taskStringBuilder.append("Floating task " + title);
-                return taskStringBuilder.toString();
+                return String.format(FloatingTaskStringFormat, title);
             case DEADLINE :
-                taskStringBuilder.append("Deadline " + title);
-                taskStringBuilder.append(" by " + endTime);
-                return taskStringBuilder.toString();
+                return String.format(DeadlineStringFormat, title,
+                        endDateTimeString);
             case EVENT :
-                taskStringBuilder.append("Event " + title);
-                taskStringBuilder.append(" from " + startTime + " to "
-                        + endTime);
-                return taskStringBuilder.toString();
+                return String.format(EventStringFormat, title,
+                        startDateTimeString, endDateTimeString);
             default :
-            	return null;
+                return "";
         }
+    }
+
+    private String formatDateTime(DateTime dateTime) {
+        if (dateTime == null) {
+            return "";
+        }
+        String dateString = DateFormatter.print(dateTime);
+        String timeString = TimeFormatter.print(dateTime);
+        return String.format(DateTimeStringFormat, dateString, timeString);
     }
 
     /**
