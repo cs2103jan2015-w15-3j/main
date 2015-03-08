@@ -1,9 +1,26 @@
 package com.equinox;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * Stores all Todos and keeps state information allowing Undo and Redo
@@ -200,5 +217,44 @@ public class Memory {
 		return memoryMap.values();
 	}
 	
+    public String exportAsJson() {
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(this);
+        return jsonString;
+
+    }
+
+    public static Memory importFromJson(String jsonString) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(DateTime.class,
+                new DateTimeTypeConverter());
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(jsonString, Memory.class);
+    }
+
+    private static class DateTimeTypeConverter implements
+            JsonSerializer<DateTime>, JsonDeserializer<DateTime> {
+        @Override
+        public JsonElement serialize(DateTime src, Type srcType,
+                JsonSerializationContext context) {
+            final DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+            String jsonString = fmt.print(src);
+            return new JsonPrimitive(jsonString);
+        }
+
+        @Override
+        public DateTime deserialize(JsonElement json, Type type,
+                JsonDeserializationContext context) throws JsonParseException {
+            try {
+                JsonObject jsonObject = json.getAsJsonObject();
+                return new DateTime(jsonObject.get("iMillis").getAsLong());
+            } catch (IllegalArgumentException e) {
+                // May be it came in formatted as a java.util.Date, so try that
+                Date date = context.deserialize(json, Date.class);
+                return new DateTime(date);
+            }
+        }
+
+    }
 	
 }

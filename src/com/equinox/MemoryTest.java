@@ -1,6 +1,8 @@
 package com.equinox;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -92,4 +94,15 @@ public class MemoryTest {
 		memory.restoreFutureState();
 		assertEquals("Todo3", todo3, memory.get(todo3.getId()));
 	}
+
+    @Test
+    public void testExternalStorage() throws NullTodoException {
+        String jsonString = memory.exportAsJson();
+        Memory importedMemory = Memory.importFromJson(jsonString);
+        Todo[] originalArray = (Todo[]) memory.getAllTodos().toArray(
+                new Todo[0]);
+        Todo[] importedArray = (Todo[]) importedMemory.getAllTodos().toArray(
+                new Todo[0]);
+        assertArrayEquals(originalArray, importedArray);
+    }
 }
