@@ -8,15 +8,12 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
@@ -217,13 +214,30 @@ public class Memory {
 		return memoryMap.values();
 	}
 	
+    /**
+     * Method to export the current memory into a json String for external
+     * storage
+     * 
+     * @return json String
+     */
     public String exportAsJson() {
-        Gson gson = new Gson();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(DateTime.class,
+                new DateTimeTypeConverter());
+        Gson gson = gsonBuilder.create();
         String jsonString = gson.toJson(this);
         return jsonString;
 
     }
 
+    /**
+     * Method to parse a json String representing an instance of memory into an
+     * instance of Memory class
+     * 
+     * @param jsonString
+     *            json representation of an instance of memory as String
+     * @return an instance of Memory class
+     */
     public static Memory importFromJson(String jsonString) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(DateTime.class,
@@ -232,24 +246,32 @@ public class Memory {
         return gson.fromJson(jsonString, Memory.class);
     }
 
+    /**
+     * Converter to serialize and deserialize between org.joda.time.DateTime and
+     * com.google.gson.JsonElement
+     * 
+     * Written with the help of the Gson user guide at
+     * 
+     * https://sites.google.com/site/gson/gson-user-guide
+     * 
+     * @author paradite
+     *
+     */
     private static class DateTimeTypeConverter implements
             JsonSerializer<DateTime>, JsonDeserializer<DateTime> {
         @Override
         public JsonElement serialize(DateTime src, Type srcType,
                 JsonSerializationContext context) {
-            final DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-            String jsonString = fmt.print(src);
-            return new JsonPrimitive(jsonString);
+            return new JsonPrimitive(src.toString());
         }
 
         @Override
         public DateTime deserialize(JsonElement json, Type type,
                 JsonDeserializationContext context) throws JsonParseException {
             try {
-                JsonObject jsonObject = json.getAsJsonObject();
-                return new DateTime(jsonObject.get("iMillis").getAsLong());
+                return new DateTime(json.getAsJsonPrimitive().getAsString());
             } catch (IllegalArgumentException e) {
-                // May be it came in formatted as a java.util.Date, so try that
+                // Try parsing as java.util.Date instead
                 Date date = context.deserialize(json, Date.class);
                 return new DateTime(date);
             }
