@@ -68,6 +68,7 @@ public class Signal {
      * Exit Command Signals
      */
     public static final String EXIT_SUCCESS = "Exit successfuly.";
+    public static final String EXIT_INVALLID_PARAMS = "Exit command should not be accompanied by additional paramters.";
     
     
     /**
