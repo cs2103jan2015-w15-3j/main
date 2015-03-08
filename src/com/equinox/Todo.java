@@ -286,9 +286,9 @@ public class Todo {
 				dateTimeList.add(new DateTime(date));
 			}
 		} catch (IndexOutOfBoundsException e) {
-			throw new DateUndefinedException(Signal.UNDEFINED_DATE_STRING_EXCEPTION);
+			throw new DateUndefinedException(ExceptionMessages.UNDEFINED_DATE_STRING_EXCEPTION);
 		} catch (NullPointerException e) {
-			throw new DateUndefinedException(Signal.NULL_DATE_STRING_EXCEPTION);
+			throw new DateUndefinedException(ExceptionMessages.NULL_DATE_STRING_EXCEPTION);
 		}
 		return dateTimeList;
 	}
