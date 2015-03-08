@@ -6,7 +6,11 @@ package com.equinox;
  * @author Ho Wei Li || IkarusWill
  *
  */
-public class RedoHandler {
+public class RedoCommand extends Command {
+
+	public RedoCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
 
 	/**
 	 * Processes a ParsedInput object containing the delete command and its
@@ -18,8 +22,9 @@ public class RedoHandler {
 	 * @return a Signal object with a message denoting success or failure in
 	 *         processing.
 	 */
-	public static Signal process(ParsedInput userInput, Memory memory) {
-		int numberOfKeywords = userInput.getParamPairList().size();
+	@Override
+	public Signal execute() {
+		int numberOfKeywords = keyParamPairList.size();
 		if(numberOfKeywords != 1){
             return new Signal(Signal.REDO_INVALID_PARAMS, false);
 		}

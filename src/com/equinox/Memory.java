@@ -36,19 +36,20 @@ public class Memory {
 	 */
 	public void add(Todo todo) {
 		save(todo.getPlaceholder());
-		memoryMap.put(todo.getIndex(), todo);
+		flushRedoStack();
+		memoryMap.put(todo.getId(), todo);
 	}
 
 	/**
-	 * Retrieves the Todo identified by the specified index from the memory.
+	 * Retrieves the Todo identified by the specified ID from the memory.
 	 * 
-	 * @param index the index of the Todo to be retrieved.
-	 * @return the Todo object identified by the specified index.
+	 * @param id the ID of the Todo to be retrieved.
+	 * @return the Todo object identified by the specified ID.
 	 * @throws NullTodoException if the Todo identified by the specified
-	 *             index does not exist.
+	 *             ID does not exist.
 	 */
-	public Todo get(int index) throws NullTodoException {
-		Todo returnTodo = memoryMap.get(index);
+	public Todo get(int id) throws NullTodoException {
+		Todo returnTodo = memoryMap.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
 		}
@@ -56,38 +57,40 @@ public class Memory {
 	}
 
 	/**
-	 * Retrieves the Todo identified by the specified index from the memory for
+	 * Retrieves the Todo identified by the specified ID from the memory for
 	 * editing. The current state is saved prior to any operation.
 	 * 
-	 * @param index the index of the Todo to be retrieved.
-	 * @return the Todo object identified by the specified index.
+	 * @param id the ID of the Todo to be retrieved.
+	 * @return the Todo object identified by the specified ID.
 	 * @throws NullTodoException if the Todo identified by the specified
-	 *             index does not exist.
+	 *             ID does not exist.
 	 */
-	public Todo setterGet(int index) throws NullTodoException {
-		Todo returnTodo = memoryMap.get(index);
+	public Todo setterGet(int id) throws NullTodoException {
+		Todo returnTodo = memoryMap.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
 		}
 		save(returnTodo);
+		flushRedoStack();
 		return returnTodo;
 	}
 
 	/**
-	 * Removes the Todo identified by the specified index from the memory. The
+	 * Removes the Todo identified by the specified id from the memory. The
 	 * current state is saved prior to any operation.
 	 * 
-	 * @param index the index of the Todo to be removed.
+	 * @param id the ID of the Todo to be removed.
 	 * @throws NullTodoException if the Todo identified by the specified
-	 *             index does not exist.
+	 *             ID does not exist.
 	 */
-	public Todo remove(int index) throws NullTodoException {
-		Todo returnTodo = memoryMap.get(index);
+	public Todo remove(int id) throws NullTodoException {
+		Todo returnTodo = memoryMap.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(Signal.NULL_TODO_EXCEPTION);
 		}
 		save(returnTodo);
-		memoryMap.remove(index);
+		flushRedoStack();
+		memoryMap.remove(id);
 		return returnTodo;
 	}
 
@@ -96,7 +99,7 @@ public class Memory {
 	 * specified is null, a placeholder is used instead. The stack never
 	 * contains null values. If the maximum stack size is reached, the earliest
 	 * state is discarded. If the stack and memory no longer contains a
-	 * particular Todo, its index is returned to the pool of available indices.
+	 * particular Todo, its ID is returned to the pool of available indices.
 	 * 
 	 * @param toBeSaved the Todo to be saved.
 	 */
@@ -104,12 +107,19 @@ public class Memory {
 		// If undo stack has exceeded max size, discard earliest state.
 		Todo toBeSavedCopy = new Todo(toBeSaved);
 		if (undoStack.size() > STACK_MAX_SIZE) {
-			int index = undoStack.removeFirst().getIndex();
-			if(!memoryMap.containsKey(index)) {
-				Todo.indexBuffer.putIndex(index);
+			int id = undoStack.removeFirst().getId();
+			if(!memoryMap.containsKey(id)) {
+				Todo.releaseId(id);;
 			}
 		}
 		undoStack.add(toBeSavedCopy);
+	}
+	
+	private void flushRedoStack() {
+		while(!redoStack.isEmpty()) {
+			Todo todo = redoStack.pollLast();
+			Todo.releaseId(todo.getId());
+		}
 	}
 
 	/**
@@ -127,8 +137,8 @@ public class Memory {
 			throw new StateUndefinedException(Signal.NO_HISTORY_STATES_EXCEPTION);
 		}
 
-		int index = fromStack.getIndex();
-		Todo inMemory = memoryMap.get(index);
+		int id = fromStack.getId();
+		Todo inMemory = memoryMap.get(id);
 
 		// If Todo does not exist in memory, use placeholder.
 		if (inMemory == null) {
@@ -139,11 +149,11 @@ public class Memory {
 		redoStack.add(inMemory);
 
 		// If Todo from stack is a placeholder, delete Todo indicated by its
-		// index in the memory.
+		// ID in the memory.
 		if (fromStack.getCreatedOn() == null) {
-			memoryMap.remove(index);
+			memoryMap.remove(id);
 		} else {
-			memoryMap.put(index, fromStack);
+			memoryMap.put(id, fromStack);
 		}
 	}
 
@@ -162,8 +172,8 @@ public class Memory {
 			throw new StateUndefinedException(Signal.NO_FUTURE_STATES_EXCEPTION);
 		}
 
-		int index = fromStack.getIndex();
-		Todo inMemory = memoryMap.get(index);
+		int id = fromStack.getId();
+		Todo inMemory = memoryMap.get(id);
 
 		// If Todo does not exist in memory, use placeholder.
 		if (inMemory == null) {
@@ -173,11 +183,11 @@ public class Memory {
 		save(inMemory);
 
 		// If Todo from stack is a placeholder, delete Todo indicated by its
-		// index in the memory.
+		// ID in the memory.
 		if (fromStack.getCreatedOn() == null) {
-			memoryMap.remove(index);
+			memoryMap.remove(id);
 		} else {
-			memoryMap.put(index, fromStack);
+			memoryMap.put(id, fromStack);
 		}
 	}
 

@@ -7,7 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DisplayHandlerTest {
+public class DisplayCommandTest {
     ArrayList<Todo> todos = new ArrayList<Todo>();
 
     @Before
@@ -57,7 +57,7 @@ public class DisplayHandlerTest {
                 + "\n06 Mar   CS3230 deadline           21:00"
                 + "\n         read floating b          "
                 + "\n07 Mar   CS3243 project            09:00" + "\n";
-        assertEquals(expected, DisplayHandler.getDisplayDefault(todos, 0));
+        assertEquals(expected, DisplayCommand.getDisplayDefault(todos, 0));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class DisplayHandlerTest {
                 + "\n07 Mar   CS3243 project            09:00"
                 + "\n         floating task            "
                 + "\n         read floating b          " + "\n";
-        assertEquals(expected, DisplayHandler.getDisplayChrono(todos, 0));
+        assertEquals(expected, DisplayCommand.getDisplayChrono(todos, 0));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class DisplayHandlerTest {
                 + "\n01 Jan   new year                  10:00 - 11:00"
                 + "\n03 Feb   CS1010 deadline           22:00"
                 + "\n";
-        assertEquals(expected, DisplayHandler.getDisplayDefault(todos, 1));
+        assertEquals(expected, DisplayCommand.getDisplayDefault(todos, 1));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class DisplayHandlerTest {
                 + "\n03 Mar   CIP event                 10:00 - 12:00"
                 + "\n         eat more                 " + "\n";
 
-        assertEquals(expected, DisplayHandler.getDisplayChrono(todos, 1));
+        assertEquals(expected, DisplayCommand.getDisplayChrono(todos, 1));
     }
 
 }

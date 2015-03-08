@@ -1,16 +1,23 @@
 package com.equinox;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.DateTimeFieldType;
 
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
+
 /**
  * Stores parameters of a Todo using org.joda.time.DateTime objects. A Todo can
  * be subdivided into 3 different subtypes namely Task, Deadline, or Event,
  * which is uniquely determined at construction by the availability of
- * parameters. Todos are uniquely specified identifier known as index until
- * their deletion, upon which the index may be reused.
+ * parameters. Todos are uniquely specified identifier known as ID until
+ * their deletion, upon which the ID may be recycled.
  * 
  * @author Ho Wei Li || IkarusWill
  *
@@ -25,24 +32,26 @@ public class Todo {
 		TASK, DEADLINE, EVENT;
 	}
 	
-	private static final int INDEX_BUFFER_SIZE = 5;
-	private static final int INDEX_BUFFER_MAX_SIZE = 2 * INDEX_BUFFER_SIZE;
-	protected static final IndexBuffer indexBuffer = new IndexBuffer();
-	private static int startingIndex = 0; // TODO Find max index from loaded file and assign.
-	private int index;
+	private static final int ID_BUFFER_INITIAL_SIZE = 5;
+	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
+	private static final IDBuffer idBuffer = new IDBuffer();
+	private static int startingId = 0; // TODO Find max id from loaded file and assign.
+	private int id;
 	private String title;
 	private DateTime createdOn, modifiedOn, startTime, endTime;
 	private boolean isDone;
 	private TYPE type;
 
+	
 	/**
-	 * Constructs a Todo of type: TASK. Tasks are Todos that are not time sensitive.
+	 * Constructs a Todo of type: TASK.
 	 * 
 	 * @param userTitle title of the task.
+	 * @throws DateUndefinedException 
 	 */
-	public Todo(String userTitle) {
-		this.index = indexBuffer.getIndex();
-		this.title = userTitle;
+	public Todo(String titleString) throws DateUndefinedException {
+		this.id = idBuffer.get();
+		this.title = titleString;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.startTime = null;
@@ -52,40 +61,28 @@ public class Todo {
 	}
 	
 	/**
-	 * Constructs a Todo of type: DEADLINE. Deadlines are Todos that have a end time.
+	 * Constructs a Todo of type: DEADLINE or EVENT.
 	 * 
-	 * @param userTitle	title of deadline.
-	 * @param deadline	time when deadline elapses.
+	 * @param userTitle title of the task.
+	 * @throws DateUndefinedException 
 	 */
-	public Todo(String userTitle, DateTime deadline) {
-		this.index = indexBuffer.getIndex();
-		this.title = userTitle;
+	public Todo(String titleString, String dateString) throws DateUndefinedException {
+		this.id = idBuffer.get();
+		this.title = titleString;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
-		this.startTime = null;
-		this.endTime = deadline;
 		this.isDone = false;
-		this.type = TYPE.DEADLINE;
+		List<DateTime> dateList = parseDates(dateString);
+		if(dateList.size() == 1) {
+			this.startTime = null;
+			this.endTime = dateList.get(0);
+			this.type = TYPE.DEADLINE;
+		} else if(dateList.size() == 2) {
+			this.startTime = dateList.get(0);
+			this.endTime = dateList.get(1);
+			this.type = TYPE.EVENT;
+		} // Catch DateList more than 2 DateTimes (optional)
 	}
-	
-	/**
-	 * Constructs a Todo of type: EVENT. Events are Todos that have a start and end time.
-	 * 
-	 * @param userTitle	title of event.
-	 * @param start		start time of event.
-	 * @param end		end time of event.
-	 */
-	public Todo(String userTitle, DateTime start, DateTime end) {
-		this.index = indexBuffer.getIndex();
-		this.title = userTitle;
-		this.createdOn = new DateTime();
-		this.modifiedOn = this.createdOn;
-		this.startTime = start;
-		this.endTime = end;
-		this.isDone = false;
-		this.type = TYPE.EVENT;
-	}
-	
 
 	/**
 	 * Makes an exact copy of another Todo.
@@ -93,7 +90,7 @@ public class Todo {
 	 * @param todo the Todo to be copied.
 	 */
 	protected Todo(Todo todo) {
-		this.index = todo.index;
+		this.id = todo.id;
 		this.title = todo.title;
 		this.createdOn = todo.createdOn;
 		this.modifiedOn = todo.modifiedOn;
@@ -103,15 +100,14 @@ public class Todo {
 		this.type = todo.type;
 	}
 	
-	
 	/**
-	 * Constructs a placeholder Todo with null fields except the index. To be
+	 * Constructs a placeholder Todo with null fields except the ID. To be
 	 * used by Memory class in its stacks for undo/redo operations.
 	 * 
-	 * @param index	the index of the Todo that was removed from Memory.
+	 * @param id the ID of the Todo that was removed from Memory.
 	 */
-	private Todo(int index) {
-		this.index = index;
+	private Todo(int id) {
+		this.id = id;
 		this.title = null;
 		this.createdOn = null;
 		this.modifiedOn = null;
@@ -122,12 +118,12 @@ public class Todo {
 	}
 
 	/**
-	 * Returns the index of the Todo.
+	 * Returns the ID of the Todo.
 	 * 
-	 * @return the index of the Todo.
+	 * @return the ID of the Todo.
 	 */
-	public int getIndex() {
-		return index;
+	public int getId() {
+		return id;
 	}
 
 	/**
@@ -159,12 +155,15 @@ public class Todo {
 	}
 
 	/**
-	 * Replaces the start time with the specified DateTime and updates the last modified field of the Todo.
+	 * Replaces the start time with the date encoded in the specified
+	 * startTimeString and updates the last modified field of the Todo.
 	 * 
-	 * @param startTime the new start time of the Todo.
+	 * @param startTime String containing the new start time of the Todo.
+	 * @throws DateUndefinedException if startTimeString does not contain a valid date, is empty, or null
 	 */
-	public void setStartTime(DateTime startTime) {
-		this.startTime = startTime;
+	public void setStartTime(String startTimeString) throws DateUndefinedException {
+		List<DateTime> dateList = parseDates(startTimeString); // Catch dateList has more than 1 DateTime
+		this.startTime = dateList.get(0);
 		modifiedOn = new DateTime();
 	}
 
@@ -180,10 +179,12 @@ public class Todo {
 	/**
 	 * Replaces the end time with the specified DateTime and updates the last modified field of the Todo.
 	 * 
-	 * @param endTime the new end time of the Todo.
+	 * @param endTime String containing the new end time of the Todo.
+	 * @throws DateUndefinedException if endTimeString does not contain a valid date, is empty, or null
 	 */
-	public void setEndTime(DateTime endTime) {
-		this.endTime = endTime;
+	public void setEndTime(String endTimeString) throws DateUndefinedException {
+		List<DateTime> dateList = parseDates(endTimeString); // Catch dateList has more than 1 DateTime
+		this.endTime = dateList.get(0);
 		modifiedOn = new DateTime();
 	}
 
@@ -199,7 +200,7 @@ public class Todo {
 	/**
 	 * Marks the Todo as done or undone and updates the last modified field.
 	 * 
-	 * @param isDone	the new status of the Todo.
+	 * @param isDone the new status of the Todo.
 	 */
 	public void setDone(boolean isDone) {
 		this.isDone = isDone;
@@ -234,15 +235,14 @@ public class Todo {
 	}
 	
 	/**
-	 * Returns the placeholder Todo constructed from the index of this Todo.
+	 * Returns the placeholder Todo constructed from the ID of this Todo.
 	 * 
-	 * @return the placeholder Todo constructed from the index of this Todo.
 	 */
 	protected Todo getPlaceholder() {
-		return new Todo(index);
+		return new Todo(id);
 	}
 	
-	public boolean isValid() {
+	protected boolean isValid() {
 		if(startTime != null && endTime != null) {
 			type = TYPE.EVENT;
 			if(endTime.isBefore(startTime)) {
@@ -254,6 +254,30 @@ public class Todo {
 			type = TYPE.TASK;
 		}
 		return true;
+	}
+	
+	/**
+	 * Parses a String with multiple dates provided to the DateParser, and returns a DateTime array.
+	 * 
+	 * @param dateString String containing the date to be parsed
+	 * @return A list of all immutable DateTime objects representing dates processed in the string.
+	 * @throws DateUndefinedException if dateString does not contain a valid date, is empty, or null
+	 */
+	private static List<DateTime> parseDates(String dateString) throws DateUndefinedException {
+		List<DateTime> dateTimeList = new ArrayList<DateTime>();
+		Parser parser = new Parser(TimeZone.getDefault());
+		try {
+			DateGroup parsedDate = parser.parse(dateString).get(0);
+			List<Date> dateList = parsedDate.getDates();
+			for(Date date : dateList) {
+				dateTimeList.add(new DateTime(date));
+			}
+		} catch (IndexOutOfBoundsException e) {
+			throw new DateUndefinedException(Signal.UNDEFINED_DATE_STRING_EXCEPTION);
+		} catch (NullPointerException e) {
+			throw new DateUndefinedException(Signal.NULL_DATE_STRING_EXCEPTION);
+		}
+		return dateTimeList;
 	}
 
 	/* (non-Javadoc)
@@ -299,7 +323,6 @@ public class Todo {
         } else {
             return null;
         }
-
     }
 	
 	/**
@@ -368,39 +391,55 @@ public class Todo {
 		return true;
 	}
 	
-	protected static class IndexBuffer {
+	/**
+	 * Releases the specified ID number to the pool of available ID numbers for
+	 * future use by new Todos.
+	 * 
+	 * @param id the ID to be released.
+	 */
+	public static void releaseId(int id) {
+		idBuffer.put(id);
+	}
+	
+	/**
+	 * Serves as a buffer of fixed size for new Todos to draw their ID from.
+	 * 
+	 * @author Ikarus
+	 *
+	 */
+	protected static class IDBuffer {
 		private TreeSet<Integer> buffer;
 		
-		private IndexBuffer() {
+		private IDBuffer() {
 			buffer = new TreeSet<Integer>();
-			for (int i = startingIndex; i < startingIndex + INDEX_BUFFER_SIZE; i++) {
+			for (int i = startingId; i < startingId + ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.add(i);
 			}
 		}
 
-		protected int getIndex() {
+		protected int get() {
 			if (buffer.size() == 1) {
 				loadToSize();
 			}
 			return buffer.pollFirst();
 		}
 		
-		protected void putIndex(int index) {
-			buffer.add(index);
-			if (buffer.size() > INDEX_BUFFER_MAX_SIZE) {
+		protected void put(int id) {
+			buffer.add(id);
+			if (buffer.size() > ID_BUFFER_MAX_SIZE) {
 				unloadToSize();
 			}
 		}
 
 		private void loadToSize() {
-			int largestIndex = buffer.last();
-			for (int i = largestIndex; i < largestIndex + INDEX_BUFFER_SIZE; i++) {
+			int largestId = buffer.last();
+			for (int i = largestId; i < largestId + ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.add(i);
 			}
 		}
 		
 		private void unloadToSize() {
-			for (int i = 0; i < INDEX_BUFFER_SIZE; i++) {
+			for (int i = 0; i < ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.pollLast();
 			}
 		}
