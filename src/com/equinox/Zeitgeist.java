@@ -28,7 +28,7 @@ public class Zeitgeist {
 		KEYWORDS commandType = userInput.getType();
 		if (commandType == null) {
             SignalHandler.printSignal(new Signal(String
-                    .format(Signal.INVALID_COMMAND_FORMAT)));
+                    .format(Signal.INVALID_COMMAND_FORMAT), false));
 		} else {
 
             switch (commandType) {
@@ -70,7 +70,7 @@ public class Zeitgeist {
 
                 default :
                     processSignal = new Signal(
-                            String.format(Signal.INVALID_COMMAND_FORMAT));
+                            String.format(Signal.INVALID_COMMAND_FORMAT), false);
                     break;
 			}
             SignalHandler.printSignal(processSignal);

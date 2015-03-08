@@ -42,7 +42,7 @@ public class DisplayHandler {
         String displayString;
         Collection<Todo> todos = memory.getAllTodos();
         if (todos.size() == 0) {
-            return new Signal(Signal.DISPLAY_EMPTY_SIGNAL_FORMAT);
+            return new Signal(Signal.DISPLAY_EMPTY_SIGNAL_FORMAT, false);
         }
         String param = c.getParamPairList().get(0).getParam();
         if (param.equals("completed") || param.equals("complete")
@@ -57,7 +57,7 @@ public class DisplayHandler {
             displayString = getDisplayChrono(todos, showPending);
             System.out.println(displayString);
         }
-        return new Signal(Signal.DISPLAY_SUCCESS_SIGNAL_FORMAT);
+        return new Signal(Signal.DISPLAY_SUCCESS_SIGNAL_FORMAT, true);
     }
 
     public static String getDisplayChrono(Collection<Todo> todos, int signal) {
