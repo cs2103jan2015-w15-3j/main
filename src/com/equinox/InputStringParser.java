@@ -1,5 +1,6 @@
 package com.equinox;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class InputStringParser {
@@ -8,15 +9,15 @@ public class InputStringParser {
 	private static final String REGEX_SPACE = "\\s";
 
 	public static ParsedInput parse(String input) {
-		String[] inputArray = processInput(input);
-		KEYWORDS cType = getCommandType(inputArray);
+		ArrayList<String> wordList = processInput(input);
+		KEYWORDS cType = getCommandType(wordList);
 
 		// if command type is error
 		if (cType == null) {
 			return new ParsedInput(null, null);
 		}
 
-		ArrayList<KeyParamPair> pairArray = extractParam(inputArray);
+		ArrayList<KeyParamPair> pairArray = extractParam(wordList);
 		return new ParsedInput(cType, pairArray);
 	}
 
@@ -29,10 +30,15 @@ public class InputStringParser {
 	 * @return A String array where each element is a word from the original
 	 *         string
 	 */
-	public static String[] processInput(String input) {
+	public static ArrayList<String> processInput(String input) {
 		input = input.trim();
 		input = input.toLowerCase();
-		return input.split(REGEX_SPACE);
+		String[] inputArray = input.split(REGEX_SPACE);
+		ArrayList<String> wordList = new ArrayList<String>();
+		for(int i=0; i<inputArray.length; i++){
+			wordList.add(inputArray[i]);
+		}
+		return wordList;
 	}
 
 	/**
@@ -45,16 +51,40 @@ public class InputStringParser {
 	 *            words.
 	 * @return A ArrayList<KeyParamPair> object with KeyParamPair objects
 	 */
-	public static ArrayList<KeyParamPair> extractParam(String[] inputArray) {
-		String key = inputArray[0];
+	public static ArrayList<KeyParamPair> extractParam(ArrayList<String> wordList) {
+		String key = wordList.get(0);
 		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
 		String tempParam = STRING_EMPTY;
 		String currentParam;
+		String processedInputArray;
+		
+		
+		/*buggy: infinite loop
+		 * // Process the wordList to append [on <date>] to the end of the ArrayList 
+		 
+		int initialSize = 
+		for(int i=0; i< wordList.size(); i++){
+			String word = wordList.get(i);
+			
+			if(InputStringKeyword.getKeyword(word) == KEYWORDS.ON){
+				int index = i+1;
+				wordList.remove(word);
+				wordList.add(word);
+				
+				while(InputStringKeyword.getKeyword(word) != KEYWORDS.FROM){
+					
+					String removed = wordList.remove(index);
+					wordList.add(removed);
+				}
+				
+				break;
+			}
+		}
+		*/
+		for (int i = 1; i < wordList.size(); i++) {
+			currentParam = wordList.get(i);
 
-		for (int i = 1; i < inputArray.length; i++) {
-			currentParam = inputArray[i];
-
-			// inputArray[i] is a keyword. Create a KeyParamPair with previous
+			// wordList.get(i) is a keyword. Create a KeyParamPair with previous
 			// keyword
 			// and tempParam and add to ArrayList. Update key and tempParam.
 			if (InputStringKeyword.isKeyword(currentParam)) {
@@ -65,16 +95,17 @@ public class InputStringParser {
 					// concatenate all params that come after 'from'
 					// and generate a KeyParamPair
 					tempParam = STRING_EMPTY;
-					for(int j=i+1; j<inputArray.length; j++){
-						tempParam += inputArray[j] + " ";
+					for(int j=i+1; j<wordList.size(); j++){
+						tempParam += wordList.get(j) + " ";
 					}
 					resultList.add(new KeyParamPair(key, tempParam.trim()));
 					return resultList;
 				}
 				
+				
 				tempParam = STRING_EMPTY;
 
-				// inputArray[i] is not a keyword; concat with tempParam.
+				// wordList.get(i) is not a keyword; concat with tempParam.
 			} else {
 				tempParam = combineParamString(tempParam, currentParam);
 			}
@@ -101,8 +132,8 @@ public class InputStringParser {
 	 * @param inputArray
 	 * @return
 	 */
-	public static KEYWORDS getCommandType(String[] inputArray) {
-		String typeString = inputArray[0];
+	public static KEYWORDS getCommandType(ArrayList<String> wordList) {
+		String typeString = wordList.get(0);
 		return determineCommandType(typeString);
 	}
 
