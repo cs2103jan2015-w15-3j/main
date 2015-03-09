@@ -7,8 +7,11 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 public class DisplayCommand extends Command {
 	
@@ -38,10 +41,19 @@ public class DisplayCommand extends Command {
 	private static final String deadLineFormat = "%1$-2s %2$-7s %3$-25s %4$s";
 	private static final String floatingFormat = "%1$-2s %2$-7s %3$-25s";
 
+    private static DateTime now = new DateTime();
+    private static DateTime inOneDay = new DateTime().plusDays(1);
+
 	private static final DateTimeFormatter DateFormatter = DateTimeFormat
 			.forPattern("dd MMM");
 	private static final DateTimeFormatter TimeFormatter = DateTimeFormat
 			.forPattern("HH:mm");
+
+    private static PeriodFormatter formatter = new PeriodFormatterBuilder()
+            .appendPrefix(" in ").appendHours().appendSuffix(" hours ")
+            .appendMinutes()
+            .appendSuffix(" minutes ")
+            .printZeroNever().toFormatter();
 
 	@Override
 	public Signal execute() {
@@ -70,17 +82,17 @@ public class DisplayCommand extends Command {
 	}
 
 	public static String getDisplayChrono(Collection<Todo> todos, int signal) {
-		ArrayList<Todo> clonedTodos = cloneSortChrono(todos);
+        ArrayList<Todo> clonedTodos = cloneTodos(todos);
+        // By default, we order the todos in chronological order
+        Collections.sort(clonedTodos, new ChronoComparator());
 		return getDisplayDefault(clonedTodos, signal);
 	}
 
-	private static ArrayList<Todo> cloneSortChrono(Collection<Todo> todos) {
+	private static ArrayList<Todo> cloneTodos(Collection<Todo> todos) {
 		ArrayList<Todo> clonedTodos = new ArrayList<Todo>(todos.size());
 		for (Todo todo : todos) {
 			clonedTodos.add(new Todo(todo));
 		}
-		// By default, we order the todos in chronological order
-		Collections.sort(clonedTodos, new ChronoComparator());
 		return clonedTodos;
 	}
 
@@ -136,8 +148,8 @@ public class DisplayCommand extends Command {
 		title = messageDeadline + shortenTitle(title);
 		String id = String.valueOf(todo.getId());
 		DateTime endTime = todo.getEndTime();
-		String endDateString = DateFormatter.print(endTime);
-		String endTimeString = TimeFormatter.print(endTime);
+        String endDateString = formatDateForDisplay(endTime);
+        String endTimeString = formatTimeForDisplay(endTime);
 		return String.format(deadLineFormat, id, endDateString, title,
 				endTimeString) + System.lineSeparator();
 	}
@@ -148,10 +160,9 @@ public class DisplayCommand extends Command {
 		String id = String.valueOf(todo.getId());
 		DateTime startTime = todo.getStartTime();
 		DateTime endTime = todo.getEndTime();
-		// TODO: Handle start and end on different dates
-		String startDateString = DateFormatter.print(startTime);
-		String startTimeString = TimeFormatter.print(startTime);
-		String endTimeString = TimeFormatter.print(endTime);
+        String startDateString = formatDateForDisplay(startTime);
+        String startTimeString = formatTimeForDisplay(startTime);
+        String endTimeString = formatTimeForDisplay(endTime);
 		return String.format(eventFormat, id, startDateString, title,
 				startTimeString, endTimeString) + System.lineSeparator();
 	}
@@ -184,13 +195,29 @@ public class DisplayCommand extends Command {
 		return title;
 	}
 
+    private static String formatTimeForDisplay(DateTime time) {
+        String periodString = "";
+        if (time.isAfter(now) && time.isBefore(inOneDay)) {
+            Period period = new Period(now, time);
+            periodString = formatter.print(period);
+        }
+
+        String timeString = TimeFormatter.print(time).concat(periodString);
+        return timeString;
+    }
+
+    private static String formatDateForDisplay(DateTime time) {
+        String dateString = DateFormatter.print(time);
+        return dateString;
+    }
+
 	public static void main(String[] args) {
         Collection<Todo> todos;
 
         // try {
         Zeitgeist.handleInput("add floating task");
 
-        Zeitgeist.handleInput("add CS3230 deadline 6 March at 9pm");
+        Zeitgeist.handleInput("add CS3230 deadline on 9 March 9pm");
 
         Zeitgeist
                 .handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
@@ -203,6 +230,8 @@ public class DisplayCommand extends Command {
         Zeitgeist.handleInput("add read floating books");
 
         Zeitgeist.handleInput("add CS3243 project deadline by 7 March at 9am");
+
+        Zeitgeist.handleInput("add CS3333 project 2 on 7 Apr 10am");
 
         Zeitgeist.handleInput("mark 0");
 
