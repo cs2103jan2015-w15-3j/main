@@ -27,7 +27,7 @@ public class InputStringParser {
 	 *
 	 * @param input
 	 *            Input string from Zeitgeist class
-	 * @return A String array where each element is a word from the original
+	 * @return An ArrayList<String> where each element is a word from the original
 	 *         string
 	 */
 	public static ArrayList<String> processInput(String input) {
@@ -46,10 +46,10 @@ public class InputStringParser {
 	 * objects. This method assumes that the first word in user input
 	 * is a keyword.
 	 * 
-	 * @param inputArray
-	 *            A string array with the user input split into individual
+	 * @param wordList
+	 *            An ArrayList<String> with the user input split into individual
 	 *            words.
-	 * @return A ArrayList<KeyParamPair> object with KeyParamPair objects
+	 * @return An ArrayList<KeyParamPair> object with KeyParamPair objects
 	 */
 	public static ArrayList<KeyParamPair> extractParam(ArrayList<String> wordList) {
 		String key = wordList.get(0);
@@ -58,29 +58,9 @@ public class InputStringParser {
 		String currentParam;
 		String processedInputArray;
 		
+		// Append 'on' keyword and following parameters at the end of the ArrayList
+		appendOnParamsAtEnd(wordList);
 		
-		/*buggy: infinite loop
-		 * // Process the wordList to append [on <date>] to the end of the ArrayList 
-		 
-		int initialSize = 
-		for(int i=0; i< wordList.size(); i++){
-			String word = wordList.get(i);
-			
-			if(InputStringKeyword.getKeyword(word) == KEYWORDS.ON){
-				int index = i+1;
-				wordList.remove(word);
-				wordList.add(word);
-				
-				while(InputStringKeyword.getKeyword(word) != KEYWORDS.FROM){
-					
-					String removed = wordList.remove(index);
-					wordList.add(removed);
-				}
-				
-				break;
-			}
-		}
-		*/
 		for (int i = 1; i < wordList.size(); i++) {
 			currentParam = wordList.get(i);
 
@@ -116,6 +96,24 @@ public class InputStringParser {
 		return resultList;
 	}
 
+	private static void appendOnParamsAtEnd(ArrayList<String> wordList) {
+		// Process the wordList to append [on <date>] to the end of the ArrayList 
+		for(int i=0; i< wordList.size(); i++){
+			String word = wordList.get(i);
+			
+			if(InputStringKeyword.getKeyword(word) == KEYWORDS.ON){
+							
+				while(InputStringKeyword.getKeyword(word) != KEYWORDS.FROM && i != wordList.size()-3){
+					String removed = wordList.remove(i);
+					wordList.add(removed);
+					word = wordList.get(i);
+				}
+				
+				break;
+			}
+		}
+	}
+
 	public static String combineParamString(String tempParam,
 			String currentParam) {
 		if (tempParam.length() == 0) {
@@ -129,7 +127,7 @@ public class InputStringParser {
 	 * This operation gets the type of command of the user input assuming that
 	 * the keyword of command type is input by the user as the first word.
 	 * 
-	 * @param inputArray
+	 * @param wordList
 	 * @return
 	 */
 	public static KEYWORDS getCommandType(ArrayList<String> wordList) {
