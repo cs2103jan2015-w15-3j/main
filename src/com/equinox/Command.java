@@ -12,7 +12,7 @@ public abstract class Command {
 		this.input = input;
 		this.memory = memory;
 	}
-	
+
 	public abstract Signal execute();
 
 }

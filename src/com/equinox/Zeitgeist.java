@@ -9,18 +9,27 @@ package com.equinox;
 import java.util.Scanner;
 
 public class Zeitgeist {
-	public static Scanner scn;
+
+    public static Scanner scn = new Scanner(System.in);;
+    public static Memory memory = new Memory();
 
 	public static void main(String[] args) {
-		scn = new Scanner(System.in);
-		Memory memory = new Memory();
+        SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
 		String input = scn.nextLine();
 		while (true) {
-			ParsedInput c = InputStringParser.parse(input);
-			dispatchCommand(c, memory);
+            handleInput(input);
 			input = scn.nextLine();
 		}
 	}
+
+    public static void handleInput(String input) {
+        handleInput(memory, input);
+    }
+
+    private static void handleInput(Memory memory, String input) {
+        ParsedInput c = InputStringParser.parse(input);
+        dispatchCommand(c, memory);
+    }
 
 	private static void dispatchCommand(ParsedInput userInput, Memory memory) {
 		Signal processSignal;
