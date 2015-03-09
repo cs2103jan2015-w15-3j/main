@@ -1,6 +1,5 @@
 package com.equinox;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class InputStringParser {
@@ -56,8 +55,7 @@ public class InputStringParser {
 		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
 		String tempParam = STRING_EMPTY;
 		String currentParam;
-		String processedInputArray;
-		
+
 		// Append 'on' keyword and following parameters at the end of the ArrayList
 		appendOnParamsAtEnd(wordList);
 		
