@@ -101,12 +101,13 @@ public class InputStringParser {
 			
 			// Append to the end if 'on' appears and is not the last keyword
 			if(InputStringKeyword.getKeyword(word) == KEYWORDS.ON && !isLastKeyword(wordList, i+1)){
-							
-				while(InputStringKeyword.getKeyword(word) != KEYWORDS.FROM ){
+			
+				do {
 					String removed = wordList.remove(i);
 					wordList.add(removed);
 					word = wordList.get(i);
-				}
+				}while(!InputStringKeyword.isKeyword(word));
+				
 				break;
 			}
 		}
