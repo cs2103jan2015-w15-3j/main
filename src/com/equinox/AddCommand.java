@@ -85,10 +85,19 @@ public class AddCommand extends Command {
 							|| secondKeyword.equals("at")) {
 						String deadlineTime = keyParamPairList.get(1).getParam();
 						Todo deadline = new Todo(memory, todoName, deadlineTime);
-						memory.add(deadline);
-						return new Signal(String.format(
-                                Signal.ADD_SUCCESS_SIGNAL_FORMAT, deadline),
-                                true);
+						if(deadline.isValid()){
+							memory.add(deadline);
+							return new Signal(String.format(
+	                                Signal.ADD_SUCCESS_SIGNAL_FORMAT, deadline),
+	                                true);
+						}
+						
+						// Start time is after end time error.
+						else{
+							return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
+						}
+						
+					
 					}
 
 					// Event
