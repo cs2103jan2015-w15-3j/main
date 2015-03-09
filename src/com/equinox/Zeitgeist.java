@@ -14,6 +14,7 @@ public class Zeitgeist {
     public static Memory memory = new Memory();
 
 	public static void main(String[] args) {
+        SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
 		String input = scn.nextLine();
 		while (true) {
             handleInput(input);

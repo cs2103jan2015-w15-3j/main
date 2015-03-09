@@ -44,7 +44,7 @@ public class Todo{
             .forPattern("dd MMM");
     private static final DateTimeFormatter TimeFormatter = DateTimeFormat
             .forPattern("HH:mm");
-    private static final String DateTimeStringFormat = "on %1$s at %2$s";
+    private static final String DateTimeStringFormat = "%1$s at %2$s";
 
     private static final String EventStringFormat = "Event \"%1$s\" from %2$s to %3$s";
 
