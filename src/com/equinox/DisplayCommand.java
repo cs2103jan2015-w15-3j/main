@@ -84,7 +84,7 @@ public class DisplayCommand extends Command {
 		return clonedTodos;
 	}
 
-	public static String getDisplayDefault(ArrayList<Todo> todos, int signal) {
+    public static String getDisplayDefault(Collection<Todo> todos, int signal) {
 		Iterator<Todo> iterator = todos.iterator();
 		StringBuilder sBuilder = new StringBuilder();
 
@@ -185,44 +185,36 @@ public class DisplayCommand extends Command {
 	}
 
 	public static void main(String[] args) {
-		ArrayList<Todo> todos = new ArrayList<Todo>();
+        Collection<Todo> todos;
 
-		try {
-			// Add different types of todos
-			todos.add(new Todo("floating task"));
+        // try {
+        Zeitgeist.handleInput("add floating task");
 
-			// Completed tasks
-			todos.add(new Todo("CS3230 deadline", "6 March at 9pm"));
+        Zeitgeist.handleInput("add CS3230 deadline 6 March at 9pm");
 
-			Todo todo_done_0 = new Todo("eat more");
-			todo_done_0.setDone(true);
-			todos.add(todo_done_0);
+        Zeitgeist
+                .handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
 
-			Todo todo_done = new Todo("CIP event","3 March at 10am to 3 March at 12pm");
-			todo_done.setDone(true);
-			todos.add(todo_done);
+        Zeitgeist
+                .handleInput("add new year from 1 January at 10am to 1 January at 11am");
 
-			Todo todo_done_1 = new Todo("new year", "1 January at 10am to 1 January at 11am");
-			todo_done_1.setDone(true);
-			todos.add(todo_done_1);
+        Zeitgeist.handleInput("add CS1010 deadline by 3 Feb at 10pm");
 
-			Todo todo_done_2 = new Todo("CS1010 deadline on 3 Feb at 10pm");
-			todo_done_2.setDone(true);
-			todos.add(todo_done_2);
+        Zeitgeist.handleInput("add read floating books");
 
-			todos.add(new Todo("read floating books"));
+        Zeitgeist.handleInput("add CS3243 project deadline by 7 March at 9am");
 
-            todos.add(new Todo("CS3243 project deadline on 7 March at 9am"));
-		} catch (DateUndefinedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        Zeitgeist.handleInput("mark 0");
 
-		System.out.println(DisplayCommand.getDisplayChrono(todos, showAll));
+        Zeitgeist.handleInput("mark 2");
 
-		System.out.println(DisplayCommand.getDisplayChrono(todos, showPending));
+        todos = Zeitgeist.memory.getAllTodos();
+        
+        System.out.println(DisplayCommand.getDisplayChrono(todos, showAll));
 
-		System.out.println(DisplayCommand
+        System.out.println(DisplayCommand.getDisplayChrono(todos, showPending));
+
+        System.out.println(DisplayCommand
 				.getDisplayChrono(todos, showCompleted));
 
 	}

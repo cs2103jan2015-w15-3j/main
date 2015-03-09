@@ -2,45 +2,40 @@ package com.equinox;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class DisplayCommandTest {
-    ArrayList<Todo> todos = new ArrayList<Todo>();
+    Collection<Todo> todos;
 
     @Before
     public void setUp() throws Exception{
-        // Add different types of todos
-        todos.add(new Todo("floating task"));
 
-        // Completed tasks
-        todos.add(new Todo("CS3230 deadline", "6 March at 9pm"));
+        // try {
+        Zeitgeist.handleInput("add floating task");
 
-        Todo todo_done_0 = new Todo("eat more");
-        todo_done_0.setDone(true);
-        todos.add(todo_done_0);
+        Zeitgeist.handleInput("add CS3230 deadline 6 March at 9pm");
 
-        Todo todo_done = new Todo("CIP event",
-                "3 March at 10am to 3 March at 12pm");
-        todo_done.setDone(true);
-        todos.add(todo_done);
+        Zeitgeist
+                .handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
 
-        Todo todo_done_1 = new Todo("new year",
-                "1 January at 10am to 1 January at 11am");
-        todo_done_1.setDone(true);
-        todos.add(todo_done_1);
+        Zeitgeist
+                .handleInput("add new year from 1 January at 10am to 1 January at 11am");
 
-        Todo todo_done_2 = new Todo("CS1010 deadline on 3 Feb at 10pm");
-        todo_done_2.setDone(true);
-        todos.add(todo_done_2);
+        Zeitgeist.handleInput("add CS1010 deadline by 3 Feb at 10pm");
 
-        todos.add(new Todo("read floating books"));
+        Zeitgeist.handleInput("add read floating books");
 
-        todos.add(new Todo("CS3243 project deadline on 7 March at 9am"));
+        Zeitgeist.handleInput("add CS3243 project deadline by 7 March at 9am");
 
+        Zeitgeist.handleInput("mark 0");
+
+        Zeitgeist.handleInput("mark 2");
+
+        todos = Zeitgeist.memory.getAllTodos();
     }
 
     @After
