@@ -12,6 +12,11 @@ package com.equinox;
 public class Signal {
 	
     /**
+     * Welcome Signal
+     */
+    public static final String WELCOME_SIGNAL = "Welcome to Zeitgeist!";
+
+    /**
      * Add Command Signals
      */
     public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added.";
