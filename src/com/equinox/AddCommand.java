@@ -85,28 +85,26 @@ public class AddCommand extends Command {
 							|| secondKeyword.equals("at")) {
 						String deadlineTime = keyParamPairList.get(1).getParam();
 						Todo deadline = new Todo(memory, todoName, deadlineTime);
-						if(deadline.isValid()){
 							memory.add(deadline);
 							return new Signal(String.format(
 	                                Signal.ADD_SUCCESS_SIGNAL_FORMAT, deadline),
 	                                true);
-						}
-						
-						// Start time is after end time error.
-						else{
-							return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
-						}
-						
-					
-					}
+					}			
+	
 
 					// Event
 					else if (secondKeyword.equals("from")) {
 						String eventStartEndTime = keyParamPairList.get(1).getParam();
 						Todo event = new Todo(memory, todoName, eventStartEndTime);
-						memory.add(event);
-						return new Signal(String.format(
-                                Signal.ADD_SUCCESS_SIGNAL_FORMAT, event), true);
+						if (event.isValid()) {
+							memory.add(event);
+							return new Signal(
+									String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, event), true);
+							// Start time is after end time error.
+						} else {
+							return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
+						}
+
 					}
 			}
 
