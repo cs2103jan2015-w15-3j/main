@@ -26,15 +26,15 @@ public class InputStringParser {
 	 *
 	 * @param input
 	 *            Input string from Zeitgeist class
-	 * @return An ArrayList<String> where each element is a word from the original
-	 *         string
+	 * @return An ArrayList<String> where each element is a word from the
+	 *         original string
 	 */
 	public static ArrayList<String> processInput(String input) {
 		input = input.trim();
 		input = input.toLowerCase();
 		String[] inputArray = input.split(REGEX_SPACE);
 		ArrayList<String> wordList = new ArrayList<String>();
-		for(int i=0; i<inputArray.length; i++){
+		for (int i = 0; i < inputArray.length; i++) {
 			wordList.add(inputArray[i]);
 		}
 		return wordList;
@@ -42,23 +42,25 @@ public class InputStringParser {
 
 	/**
 	 * Processes the inputArray to fill up an ArrayList with KeyParamPair
-	 * objects. This method assumes that the first word in user input
-	 * is a keyword.
+	 * objects. This method assumes that the first word in user input is a
+	 * keyword.
 	 * 
 	 * @param wordList
 	 *            An ArrayList<String> with the user input split into individual
 	 *            words.
 	 * @return An ArrayList<KeyParamPair> object with KeyParamPair objects
 	 */
-	public static ArrayList<KeyParamPair> extractParam(ArrayList<String> wordList) {
+	public static ArrayList<KeyParamPair> extractParam(
+			ArrayList<String> wordList) {
 		String key = wordList.get(0);
 		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
 		String tempParam = STRING_EMPTY;
 		String currentParam;
 
-		// Append 'on' keyword and following parameters at the end of the ArrayList
+		// Append 'on' keyword and following parameters at the end of the
+		// ArrayList
 		appendOnParamsAtEnd(wordList);
-		
+
 		for (int i = 1; i < wordList.size(); i++) {
 			currentParam = wordList.get(i);
 
@@ -68,19 +70,20 @@ public class InputStringParser {
 			if (InputStringKeyword.isKeyword(currentParam)) {
 				resultList.add(new KeyParamPair(key, tempParam));
 				key = currentParam;
-				
-				if(InputStringKeyword.getKeyword(currentParam) == KEYWORDS.FROM){
+
+				if (InputStringKeyword.getKeyword(currentParam) == KEYWORDS.FROM
+						|| InputStringKeyword.getKeyword(currentParam) == KEYWORDS.BY
+						|| InputStringKeyword.getKeyword(currentParam) == KEYWORDS.AT) {
 					// concatenate all params that come after 'from'
 					// and generate a KeyParamPair
 					tempParam = STRING_EMPTY;
-					for(int j=i+1; j<wordList.size(); j++){
+					for (int j = i + 1; j < wordList.size(); j++) {
 						tempParam += wordList.get(j) + " ";
 					}
 					resultList.add(new KeyParamPair(key, tempParam.trim()));
 					return resultList;
 				}
-				
-				
+
 				tempParam = STRING_EMPTY;
 
 				// wordList.get(i) is not a keyword; concat with tempParam.
@@ -95,28 +98,30 @@ public class InputStringParser {
 	}
 
 	private static void appendOnParamsAtEnd(ArrayList<String> wordList) {
-		// Process the wordList to append [on <date>] to the end of the ArrayList 
-		for(int i=0; i< wordList.size(); i++){
+		// Process the wordList to append [on <date>] to the end of the
+		// ArrayList
+		for (int i = 0; i < wordList.size(); i++) {
 			String word = wordList.get(i);
-			
+
 			// Append to the end if 'on' appears and is not the last keyword
-			if(InputStringKeyword.getKeyword(word) == KEYWORDS.ON && !isLastKeyword(wordList, i+1)){
-			
+			if (InputStringKeyword.getKeyword(word) == KEYWORDS.ON
+					&& !isLastKeyword(wordList, i + 1)) {
+
 				do {
 					String removed = wordList.remove(i);
 					wordList.add(removed);
 					word = wordList.get(i);
-				}while(!InputStringKeyword.isKeyword(word));
-				
+				} while (!InputStringKeyword.isKeyword(word));
+
 				break;
 			}
 		}
 	}
-	
-	private static boolean isLastKeyword(ArrayList<String> wordList, int index){
-		for(int i=index; i<wordList.size(); i++){
+
+	private static boolean isLastKeyword(ArrayList<String> wordList, int index) {
+		for (int i = index; i < wordList.size(); i++) {
 			String word = wordList.get(i);
-			if(InputStringKeyword.isKeyword(word)){
+			if (InputStringKeyword.isKeyword(word)) {
 				return false;
 			}
 		}
