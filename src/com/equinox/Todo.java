@@ -27,7 +27,7 @@ import com.joestelmach.natty.Parser;
  * @author Ikarus
  *
  */
-public class Todo {
+public class Todo{
 	
 	public enum TYPE {
 		TASK, DEADLINE, EVENT;
@@ -338,6 +338,21 @@ public class Todo {
         } else {
             return null;
         }
+    }
+    
+    /**
+     * Method to compare two DateTime objects at the minute resolution
+     * Returns -1 if the first object is smaller (earlier)
+     * Returns 0 if the two objects are equal
+     * Returns 1 if the first object is larger(later)
+     * 
+     * @author Jonathan Lim Siu Chi || ign3sc3nc3
+     * 
+     * @return int
+     */
+    public int compareDateTime(DateTime first, DateTime second){
+    	DateTimeComparator comparator = DateTimeComparator.getInstance(DateTimeFieldType.minuteOfDay());
+    	return comparator.compare(first, second);
     }
 	
 	/**

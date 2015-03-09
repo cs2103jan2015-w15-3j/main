@@ -15,8 +15,9 @@ public class Signal {
      * Add Command Signals
      */
     public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added.";
-    public static final String ADD_UNKNOWN_ERROR = "Error: Unknown add error";
-    public static final String ADD_INVALID_PARAMS = "Error: The number of parameters is invalid."
+    public static final String ADD_UNKNOWN_ERROR = "Unknown add error";
+    public static final String ADD_END_BEFORE_START_ERROR = "The start time is after the end time.";
+    public static final String ADD_INVALID_PARAMS = "The number of parameters is invalid."
     		+ System.lineSeparator()
     		+ "\t Supported formats:"
     		+ System.lineSeparator()
