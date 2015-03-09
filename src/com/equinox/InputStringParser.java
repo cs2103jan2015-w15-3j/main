@@ -101,17 +101,27 @@ public class InputStringParser {
 		for(int i=0; i< wordList.size(); i++){
 			String word = wordList.get(i);
 			
-			if(InputStringKeyword.getKeyword(word) == KEYWORDS.ON){
+			// Append to the end if 'on' appears and is not the last keyword
+			if(InputStringKeyword.getKeyword(word) == KEYWORDS.ON && !isLastKeyword(wordList, i+1)){
 							
-				while(InputStringKeyword.getKeyword(word) != KEYWORDS.FROM && i != wordList.size()-3){
+				while(InputStringKeyword.getKeyword(word) != KEYWORDS.FROM ){
 					String removed = wordList.remove(i);
 					wordList.add(removed);
 					word = wordList.get(i);
 				}
-				
 				break;
 			}
 		}
+	}
+	
+	private static boolean isLastKeyword(ArrayList<String> wordList, int index){
+		for(int i=index; i<wordList.size(); i++){
+			String word = wordList.get(i);
+			if(InputStringKeyword.isKeyword(word)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public static String combineParamString(String tempParam,
