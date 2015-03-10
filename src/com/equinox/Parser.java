@@ -2,10 +2,13 @@ package com.equinox;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
+
 import com.joestelmach.natty.DateGroup;
 
 public class Parser {
@@ -51,23 +54,41 @@ public class Parser {
 		// Append 'on' keyword and following parameters at the end of the
 		// ArrayList
 		appendOnParamsAtEnd(wordList);
-		
 		StringBuilder dateString = new StringBuilder();
 		
+		// Find index of last date keyword
+		int lastDateKeywordIndex = findLastDateKeyword(wordList);
+		
+		// Build dateString
+		for(int i = lastDateKeywordIndex; i < wordList.size(); i++) {
+			String word = wordList.get(i);
+			dateString.append(word + " ");
+		}
+		
+		// Remove dateString from wordList
+		for (int i = wordList.size() - 1; i >= lastDateKeywordIndex; i--) {
+			wordList.remove(i);
+		}
+		return dateString.toString().trim();
+	}
+
+	private static int findLastDateKeyword(ArrayList<String> wordList) {
+		LinkedList<Integer> onIndices = new LinkedList<Integer>();
+		
+		// Find index of from, at, by, on keywords whichever is earlier
 		for(int i = wordList.size() - 1; i >= 0; i--) {
 			String word = wordList.get(i);
 			if(InputStringKeyword.isDateKeyword(word)) {
-				KEYWORDS keywordType = InputStringKeyword.getDateKeyword(word);
-				if(keywordType == KEYWORDS.FROM || keywordType == KEYWORDS.AT || keywordType == KEYWORDS.BY) {
-					wordList.remove(i);
-					return dateString.toString();
+				KEYWORDS dateKeyword = InputStringKeyword.getDateKeyword(word);
+				if(dateKeyword == KEYWORDS.ON) {
+					onIndices.offer(i);
+				} else {
+					return i;
 				}
-			} else {
-				wordList.remove(i);
-				dateString.append(word);
 			}
 		}
-		return null;
+		// If there are no instances of from, at or by, take the last on
+		return onIndices.poll();
 	}
 
 	/**
