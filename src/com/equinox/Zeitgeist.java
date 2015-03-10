@@ -17,28 +17,28 @@ public class Zeitgeist {
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
 		String input = scn.nextLine();
 		while (true) {
-            handleInput(input);
+            Signal signal = handleInput(input);
 			input = scn.nextLine();
+			SignalHandler.printSignal(signal);
 		}
 	}
 
-    public static void handleInput(String input) {
+    public static Signal handleInput(String input) {
         handleInput(memory, input);
     }
 
-    private static void handleInput(Memory memory, String input) { // Propose removal as Zeitgeist class now has static memory. Reference via Zeitgeist.memory
+    private static Signal handleInput(Memory memory, String input) { // Propose removal as Zeitgeist class now has static memory. Reference via Zeitgeist.memory
         ParsedInput c = Parser.parseInput(input);
         execute(c, memory);
     }
 
-	private static void execute(ParsedInput userInput, Memory memory) {
+	private static Signal execute(ParsedInput userInput, Memory memory) {
 		Signal processSignal;
 		Command c;
 
 		KEYWORDS commandType = userInput.getType();
 		if (commandType == null) {
-            SignalHandler.printSignal(new Signal(String
-                    .format(Signal.GENERIC_INVALID_COMMAND_FORMAT, ""), false));
+            return new Signal(String.format(Signal.GENERIC_INVALID_COMMAND_FORMAT, ""), false);
 		} else {
 
             switch (commandType) {
@@ -94,7 +94,7 @@ public class Zeitgeist {
                     System.exit(-1);
                     break;
 			}
-            SignalHandler.printSignal(processSignal);
+           return processSignal;
 		}
 	}
 }
