@@ -11,6 +11,8 @@ import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+import org.joda.time.base.AbstractDateTime;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -43,9 +45,16 @@ public class Memory {
 	private LinkedList<Todo> redoStack;
 	private HashMap<String, ArrayList<Integer>> nameMap;
 	private HashMap<LocalDate, ArrayList<Integer>> dateMap;
+	private HashMap<LocalTime, ArrayList<Integer>> timeMap;
+//	private HashMap<Integer, ArrayList<Integer>> yearMap;
+	private HashMap<Integer, ArrayList<Integer>> monthMap;
+	private HashMap<Integer, ArrayList<Integer>> dayMap;
 
 	/**
 	 * Constructs an empty Memory object.
+	 */
+	/**
+	 * 
 	 */
 	public Memory() {
 		this.startingId = 0;
@@ -54,6 +63,10 @@ public class Memory {
 		this.redoStack = new LinkedList<Todo>();
 		this.nameMap = new HashMap<String, ArrayList<Integer>>();
 		this.dateMap = new HashMap<LocalDate, ArrayList<Integer>>();
+		this.timeMap = new HashMap<LocalTime, ArrayList<Integer>>();
+//		this.yearMap = new HashMap<Integer, ArrayList<Integer>>();
+		this.monthMap = new HashMap<Integer, ArrayList<Integer>>();
+		this.dayMap = new HashMap<Integer, ArrayList<Integer>>();
 	}
 
 	/**
@@ -76,11 +89,80 @@ public class Memory {
 		if (startDateTime != null) {
 			LocalDate startDate = startDateTime.toLocalDate();
 			insertToDateMap(startDate, id);
+			LocalTime startTime = startDateTime.toLocalTime();
+			insertToTimeMap(startTime, id);
+//			int startYear = startDateTime.getYear();
+//			insertToYearMap(startYear, id);
+			int startMonth = startDateTime.getMonthOfYear();
+			insertToMonthMap(startMonth, id);
+			int startDay = startDateTime.getDayOfWeek();
+			insertToDayMap(startDay, id);
 		}
 		if (endDateTime != null) {
 			LocalDate endDate = endDateTime.toLocalDate();
 			insertToDateMap(endDate, id);
+			LocalTime endTime = endDateTime.toLocalTime();
+			insertToTimeMap(endTime, id);
+//			int endYear = endDateTime.getYear();
+//			insertToYearMap(endYear, id);
+			int endMonth = endDateTime.getMonthOfYear();
+			insertToMonthMap(endMonth, id);
+			int endDay = endDateTime.getDayOfWeek();
+			insertToDayMap(endDay, id);
 		}
+	}
+
+	private void insertToDayMap(int day, int id) {
+		if (dayMap.containsKey(day)) {
+			dayMap.get(day).add(id);
+		} else {
+			ArrayList<Integer> newIdList = new ArrayList<Integer>();
+			newIdList.add(id);
+			dayMap.put(day, newIdList);
+		}
+	}
+
+	private void insertToMonthMap(int month, int id) {
+		if (monthMap.containsKey(month)) {
+			monthMap.get(month).add(id);
+		} else {
+			ArrayList<Integer> newIdList = new ArrayList<Integer>();
+			newIdList.add(id);
+			monthMap.put(month, newIdList);
+		}
+	}
+
+//	/**
+//	 * Inserts year property of Todo into timeMap along with the Todo's id
+//	 * 
+//	 * @param time
+//	 * @param id
+//	 */
+//	private void insertToYearMap(int year, int id) {
+//		if (yearMap.containsKey(year)) {
+//			yearMap.get(year).add(id);
+//		} else {
+//			ArrayList<Integer> newIdList = new ArrayList<Integer>();
+//			newIdList.add(id);
+//			yearMap.put(year, newIdList);
+//		}
+//	}
+
+	/**
+	 * Inserts time property of Todo into timeMap along with the Todo's id
+	 * 
+	 * @param time
+	 * @param id
+	 */
+	private void insertToTimeMap(LocalTime time, int id) {
+		if (timeMap.containsKey(time)) {
+			timeMap.get(time).add(id);
+		} else {
+			ArrayList<Integer> newIdList = new ArrayList<Integer>();
+			newIdList.add(id);
+			timeMap.put(time, newIdList);
+		}
+
 	}
 
 	/**
@@ -360,7 +442,7 @@ public class Memory {
 	 * Gets the arrayList of Todo ids from the nameMap based on searchKey given
 	 * 
 	 * @param searchKey
-	 * @return ArrayList of Todo ids if searchkey is in nameMap empty ArrayList
+	 * @return ArrayList of Todo ids if searchkey is in nameMap, empty ArrayList
 	 *         otherwise
 	 */
 	public ArrayList<Integer> searchName(String searchKey) {
@@ -369,10 +451,52 @@ public class Memory {
 		}
 		return new ArrayList<Integer>();
 	}
-
+	
+	/**
+	 * Gets the arrayList of Todo ids from the dateMap based on searchDate given
+	 * 
+	 * @param searchDate
+	 * @return ArrayList of Todo ids if searchDate is in dateMap, empty ArrayList
+	 *         otherwise
+	 */
 	public ArrayList<Integer> searchDate(LocalDate searchDate) {
 		if (dateMap.containsKey(searchDate)) {
 			return dateMap.get(searchDate);
+		}
+		return new ArrayList<Integer>();
+	}
+
+	/**
+	 * Gets the arrayList of Todo ids from the timeMap based on searchTime given
+	 * 
+	 * @param searchTime
+	 * @return ArrayList of Todo ids if searchkey is in timeMap, empty ArrayList
+	 *         otherwise
+	 */
+	public ArrayList<Integer> searchTime(LocalTime searchTime) {
+		if (timeMap.containsKey(searchTime)) {
+			return timeMap.get(searchTime);
+		}
+		return new ArrayList<Integer>();
+	}
+
+//	public ArrayList<Integer> searchYear(int searchYear) {
+//		if (yearMap.containsKey(searchYear)) {
+//			return yearMap.get(searchYear);
+//		}
+//		return new ArrayList<Integer>();
+//	}
+
+	public ArrayList<Integer> searchMonth(int searchMonth) {
+		if (monthMap.containsKey(searchMonth)) {
+			return monthMap.get(searchMonth);
+		}
+		return new ArrayList<Integer>();
+	}
+
+	public ArrayList<Integer> searchDay(int searchDay) {
+		if (dayMap.containsKey(searchDay)) {
+			return dayMap.get(searchDay);
 		}
 		return new ArrayList<Integer>();
 	}
