@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,6 +42,7 @@ public class Memory {
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
 	private HashMap<String, ArrayList<Integer>> nameMap;
+	private HashMap<LocalDate, ArrayList<Integer>> dateMap;
 
 	/**
 	 * Constructs an empty Memory object.
@@ -51,6 +53,7 @@ public class Memory {
 		this.undoStack = new LinkedList<Todo>();
 		this.redoStack = new LinkedList<Todo>();
 		this.nameMap = new HashMap<String, ArrayList<Integer>>();
+		this.dateMap = new HashMap<LocalDate, ArrayList<Integer>>();
 	}
 
 	/**
@@ -65,7 +68,36 @@ public class Memory {
 		save(todo.getPlaceholder());
 		flushRedoStack();
 		memoryMap.put(id, todo);
+
+		// inserts fields in Todo into various hashmaps
 		insertToNameMap(todo.getTitle(), id);
+		DateTime startDateTime = todo.getStartTime();
+		DateTime endDateTime = todo.getEndTime();
+		if (startDateTime != null) {
+			LocalDate startDate = startDateTime.toLocalDate();
+			insertToDateMap(startDate, id);
+		}
+		if (endDateTime != null) {
+			LocalDate endDate = endDateTime.toLocalDate();
+			insertToDateMap(endDate, id);
+		}
+	}
+
+	/**
+	 * Inserts date property of Todo into dateMap along with the Todo's id
+	 * 
+	 * @param date
+	 * @param id
+	 */
+	private void insertToDateMap(LocalDate date, int id) {
+		if (dateMap.containsKey(date)) {
+			dateMap.get(date).add(id);
+		} else {
+			ArrayList<Integer> newIdList = new ArrayList<Integer>();
+			newIdList.add(id);
+			dateMap.put(date, newIdList);
+		}
+
 	}
 
 	/**
@@ -326,13 +358,21 @@ public class Memory {
 
 	/**
 	 * Gets the arrayList of Todo ids from the nameMap based on searchKey given
+	 * 
 	 * @param searchKey
-	 * @return ArrayList of Todo ids if searchkey is in nameMap
-	 * 			empty ArrayList otherwise
+	 * @return ArrayList of Todo ids if searchkey is in nameMap empty ArrayList
+	 *         otherwise
 	 */
 	public ArrayList<Integer> searchName(String searchKey) {
-		if(nameMap.containsKey(searchKey)) {
+		if (nameMap.containsKey(searchKey)) {
 			return nameMap.get(searchKey);
+		}
+		return new ArrayList<Integer>();
+	}
+
+	public ArrayList<Integer> searchDate(LocalDate searchDate) {
+		if (dateMap.containsKey(searchDate)) {
+			return dateMap.get(searchDate);
 		}
 		return new ArrayList<Integer>();
 	}
