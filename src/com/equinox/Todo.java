@@ -52,7 +52,7 @@ public class Todo{
 	 * @throws DateUndefinedException 
 	 */
 	public Todo(Memory memory, String titleString) throws DateUndefinedException {
-		this.id = memory.obtainFreshId();
+		this.id = Zeitgeist.memory.obtainFreshId();
 		this.title = titleString;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
