@@ -50,11 +50,7 @@ public class Parser {
 	 * @return An ArrayList<String> where each element is a word from the
 	 *         original string
 	 */
-<<<<<<< HEAD
 	public static ArrayList<String> tokenize(String input) {
-=======
-	public static ArrayList<String> processInput(String input) { //TODO: Propose rename to tokenize for clarity
->>>>>>> New_Architecture
 		input = input.trim();
 		input = input.toLowerCase();
 		String[] inputArray = input.split(REGEX_SPACE);
