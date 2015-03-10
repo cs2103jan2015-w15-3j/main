@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-public class InputStringParserTest {
+public class ParserTest {
 	String s0 = "";
 	String s1 = "add task 1 at computing level 1 on 12 december";
 	String s2 = "DELETE TASK 2";

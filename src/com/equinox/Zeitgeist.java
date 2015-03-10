@@ -18,8 +18,8 @@ public class Zeitgeist {
 		String input = scn.nextLine();
 		while (true) {
             Signal signal = handleInput(input);
+            SignalHandler.printSignal(signal);
 			input = scn.nextLine();
-			SignalHandler.printSignal(signal);
 		}
 	}
 
@@ -29,7 +29,7 @@ public class Zeitgeist {
 
     private static Signal handleInput(Memory memory, String input) { // Propose removal as Zeitgeist class now has static memory. Reference via Zeitgeist.memory
         ParsedInput c = Parser.parseInput(input);
-        execute(c, memory);
+        return execute(c, memory);
     }
 
 	private static Signal execute(ParsedInput userInput, Memory memory) {
