@@ -115,6 +115,10 @@ public class Signal {
      * Search Command Signals
      */
     
+    public static final String SEARCH_SUCCESS_SIGNAL = "";
+    public static final String SEARCH_EMPTY_SIGNAL = "No result found.";
+    
+    
     /**
      * Generic Signals
      */

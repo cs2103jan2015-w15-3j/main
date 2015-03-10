@@ -1,6 +1,7 @@
 package com.equinox;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,7 +30,8 @@ import com.google.gson.JsonSerializer;
  *
  */
 public class Memory {
-	
+
+	private static final String REGEX_SPACE = "\\s";
 	private static final int STACK_MAX_SIZE = 5;
 	private static final int ID_BUFFER_INITIAL_SIZE = 5;
 	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
@@ -38,6 +40,7 @@ public class Memory {
 	private HashMap<Integer, Todo> memoryMap;
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
+	private HashMap<String, ArrayList<Integer>> nameMap;
 
 	/**
 	 * Constructs an empty Memory object.
@@ -47,27 +50,52 @@ public class Memory {
 		this.memoryMap = new HashMap<Integer, Todo>();
 		this.undoStack = new LinkedList<Todo>();
 		this.redoStack = new LinkedList<Todo>();
+		this.nameMap = new HashMap<String, ArrayList<Integer>>();
 	}
 
 	/**
 	 * Adds the specified Todo to memory. The current state is saved prior to
 	 * any operation.
 	 * 
-	 * @param todo the Todo to be added.
+	 * @param todo
+	 *            the Todo to be added.
 	 */
 	public void add(Todo todo) {
+		int id = todo.getId();
 		save(todo.getPlaceholder());
 		flushRedoStack();
-		memoryMap.put(todo.getId(), todo);
+		memoryMap.put(id, todo);
+		insertToNameMap(todo.getTitle(), id);
+	}
+
+	/**
+	 * Inserts each word in Todo name string into nameMap along with the Todo's
+	 * id
+	 * 
+	 * @param name
+	 * @param id
+	 */
+	private void insertToNameMap(String name, int id) {
+		String[] nameArray = name.split(REGEX_SPACE);
+		for (String x : nameArray) {
+			if (nameMap.containsKey(x)) {
+				nameMap.get(x).add(id);
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				nameMap.put(x, newIdList);
+			}
+		}
 	}
 
 	/**
 	 * Retrieves the Todo identified by the specified ID from the memory.
 	 * 
-	 * @param id the ID of the Todo to be retrieved.
+	 * @param id
+	 *            the ID of the Todo to be retrieved.
 	 * @return the Todo object identified by the specified ID.
-	 * @throws NullTodoException if the Todo identified by the specified
-	 *             ID does not exist.
+	 * @throws NullTodoException
+	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo get(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -81,10 +109,11 @@ public class Memory {
 	 * Retrieves the Todo identified by the specified ID from the memory for
 	 * editing. The current state is saved prior to any operation.
 	 * 
-	 * @param id the ID of the Todo to be retrieved.
+	 * @param id
+	 *            the ID of the Todo to be retrieved.
 	 * @return the Todo object identified by the specified ID.
-	 * @throws NullTodoException if the Todo identified by the specified
-	 *             ID does not exist.
+	 * @throws NullTodoException
+	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo setterGet(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -100,9 +129,10 @@ public class Memory {
 	 * Removes the Todo identified by the specified id from the memory. The
 	 * current state is saved prior to any operation.
 	 * 
-	 * @param id the ID of the Todo to be removed.
-	 * @throws NullTodoException if the Todo identified by the specified
-	 *             ID does not exist.
+	 * @param id
+	 *            the ID of the Todo to be removed.
+	 * @throws NullTodoException
+	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo remove(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -122,25 +152,28 @@ public class Memory {
 	 * state is discarded. If the stack and memory no longer contains a
 	 * particular Todo, its ID is returned to the pool of available indices.
 	 * 
-	 * @param toBeSaved the Todo to be saved.
+	 * @param toBeSaved
+	 *            the Todo to be saved.
 	 */
 	private void save(Todo toBeSaved) {
 		// If undo stack has exceeded max size, discard earliest state.
 		Todo toBeSavedCopy = new Todo(toBeSaved);
 		if (undoStack.size() > STACK_MAX_SIZE) {
 			int id = undoStack.removeFirst().getId();
-			if(!memoryMap.containsKey(id)) {
-				releaseId(id);;
+			if (!memoryMap.containsKey(id)) {
+				releaseId(id);
+				;
 			}
 		}
 		undoStack.add(toBeSavedCopy);
 	}
-	
+
 	private void flushRedoStack() {
-		while(!redoStack.isEmpty()) {
+		while (!redoStack.isEmpty()) {
 			int id = redoStack.pollLast().getId();
-			if(!memoryMap.containsKey(id)) {
-				releaseId(id);;
+			if (!memoryMap.containsKey(id)) {
+				releaseId(id);
+				;
 			}
 		}
 	}
@@ -149,15 +182,16 @@ public class Memory {
 	 * Restores the latest history state of the memory. Also known as the undo
 	 * operation.
 	 * 
-	 * @throws StateUndefinedException if there are no history states to restore
-	 *             to.
+	 * @throws StateUndefinedException
+	 *             if there are no history states to restore to.
 	 */
 	public void restoreHistoryState() throws StateUndefinedException {
 		Todo fromStack;
 		try {
 			fromStack = undoStack.removeLast();
 		} catch (NoSuchElementException e) {
-			throw new StateUndefinedException(ExceptionMessages.NO_HISTORY_STATES_EXCEPTION);
+			throw new StateUndefinedException(
+					ExceptionMessages.NO_HISTORY_STATES_EXCEPTION);
 		}
 
 		int id = fromStack.getId();
@@ -184,15 +218,16 @@ public class Memory {
 	 * Restores the latest future state of the memory. Also known as the redo
 	 * operation.
 	 * 
-	 * @throws StateUndefinedException if there are no future states to restore
-	 *             to.
+	 * @throws StateUndefinedException
+	 *             if there are no future states to restore to.
 	 */
 	public void restoreFutureState() throws StateUndefinedException {
 		Todo fromStack;
 		try {
 			fromStack = redoStack.removeLast();
 		} catch (NoSuchElementException e) {
-			throw new StateUndefinedException(ExceptionMessages.NO_FUTURE_STATES_EXCEPTION);
+			throw new StateUndefinedException(
+					ExceptionMessages.NO_FUTURE_STATES_EXCEPTION);
 		}
 
 		int id = fromStack.getId();
@@ -222,7 +257,7 @@ public class Memory {
 	public Collection<Todo> getAllTodos() {
 		return memoryMap.values();
 	}
-	
+
 	/**
 	 * Obtains an ID number from the pool of available ID numbers.
 	 * 
@@ -231,18 +266,19 @@ public class Memory {
 	public int obtainFreshId() {
 		return idBuffer.get();
 	}
-	
+
 	/**
 	 * Releases the specified ID number to the pool of available ID numbers for
 	 * future use by new Todos.
 	 * 
-	 * @param id the ID to be released.
+	 * @param id
+	 *            the ID to be released.
 	 */
 	public void releaseId(int id) {
 		idBuffer.put(id);
 	}
-	
-    /**
+
+	/**
 	 * Serves as a buffer of fixed size for new Todos to draw their ID from.
 	 * 
 	 * @author Ikarus
@@ -250,7 +286,7 @@ public class Memory {
 	 */
 	private class IDBuffer {
 		private TreeSet<Integer> buffer;
-		
+
 		private IDBuffer() {
 			buffer = new TreeSet<Integer>();
 			for (int i = startingId; i < startingId + ID_BUFFER_INITIAL_SIZE; i++) {
@@ -264,7 +300,7 @@ public class Memory {
 			}
 			return buffer.pollFirst();
 		}
-		
+
 		protected void put(int id) {
 			buffer.add(id);
 			if (buffer.size() > ID_BUFFER_MAX_SIZE) {
@@ -272,17 +308,32 @@ public class Memory {
 			}
 		}
 
-		private void loadToSize() { // Bug: Remove 5 elements or so from a memory of size 10. Will load duplicate ID unnecessarily
+		private void loadToSize() { // Bug: Remove 5 elements or so from a
+									// memory of size 10. Will load duplicate ID
+									// unnecessarily
 			int largestId = buffer.last();
 			for (int i = largestId; i < largestId + ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.add(i);
 			}
 		}
-		
+
 		private void unloadToSize() {
 			for (int i = 0; i < ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.pollLast();
 			}
 		}
+	}
+
+	/**
+	 * Gets the arrayList of Todo ids from the nameMap based on searchKey given
+	 * @param searchKey
+	 * @return ArrayList of Todo ids if searchkey is in nameMap
+	 * 			empty ArrayList otherwise
+	 */
+	public ArrayList<Integer> searchName(String searchKey) {
+		if(nameMap.containsKey(searchKey)) {
+			return nameMap.get(searchKey);
+		}
+		return new ArrayList<Integer>();
 	}
 }

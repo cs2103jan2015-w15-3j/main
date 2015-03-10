@@ -1,17 +1,10 @@
 package com.equinox;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
 
 /**
  * Stores parameters of a Todo using org.joda.time.DateTime objects. A Todo can
@@ -59,7 +52,7 @@ public class Todo{
 	 * @throws DateUndefinedException 
 	 */
 	public Todo(Memory memory, String titleString) throws DateUndefinedException {
-		this.id = memory.obtainFreshId();
+		this.id = Zeitgeist.memory.obtainFreshId();
 		this.title = titleString;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
@@ -81,7 +74,7 @@ public class Todo{
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.isDone = false;
-		List<DateTime> dateList = parseDates(dateString);
+		List<DateTime> dateList = Parser.parseDates(dateString);
 		if(dateList.size() == 1) {
 			this.startTime = null;
 			this.endTime = dateList.get(0);
@@ -171,7 +164,7 @@ public class Todo{
 	 * @throws DateUndefinedException if startTimeString does not contain a valid date, is empty, or null
 	 */
 	public void setStartTime(String startTimeString) throws DateUndefinedException {
-		List<DateTime> dateList = parseDates(startTimeString); // Catch dateList has more than 1 DateTime
+		List<DateTime> dateList = Parser.parseDates(startTimeString); // Catch dateList has more than 1 DateTime
 		this.startTime = dateList.get(0);
 		modifiedOn = new DateTime();
 	}
@@ -192,7 +185,7 @@ public class Todo{
 	 * @throws DateUndefinedException if endTimeString does not contain a valid date, is empty, or null
 	 */
 	public void setEndTime(String endTimeString) throws DateUndefinedException {
-		List<DateTime> dateList = parseDates(endTimeString); // Catch dateList has more than 1 DateTime
+		List<DateTime> dateList = Parser.parseDates(endTimeString); // Catch dateList has more than 1 DateTime
 		this.endTime = dateList.get(0);
 		modifiedOn = new DateTime();
 	}
@@ -263,30 +256,6 @@ public class Todo{
 			type = TYPE.TASK;
 		}
 		return true;
-	}
-	
-	/**
-	 * Parses a String with multiple dates provided to the DateParser, and returns a DateTime array.
-	 * 
-	 * @param dateString String containing the date to be parsed
-	 * @return A list of all immutable DateTime objects representing dates processed in the string.
-	 * @throws DateUndefinedException if dateString does not contain a valid date, is empty, or null
-	 */
-	private static List<DateTime> parseDates(String dateString) throws DateUndefinedException {
-		List<DateTime> dateTimeList = new ArrayList<DateTime>();
-		Parser parser = new Parser(TimeZone.getDefault());
-		try {
-			DateGroup parsedDate = parser.parse(dateString).get(0);
-			List<Date> dateList = parsedDate.getDates();
-			for(Date date : dateList) {
-				dateTimeList.add(new DateTime(date));
-			}
-		} catch (IndexOutOfBoundsException e) {
-			throw new DateUndefinedException(ExceptionMessages.UNDEFINED_DATE_STRING_EXCEPTION);
-		} catch (NullPointerException e) {
-			throw new DateUndefinedException(ExceptionMessages.NULL_DATE_STRING_EXCEPTION);
-		}
-		return dateTimeList;
 	}
 
 	/* (non-Javadoc)
