@@ -13,7 +13,7 @@ public class Parser {
 	private static final String STRING_EMPTY = "";
 	private static final String REGEX_SPACE = "\\s";
 
-	public static ParsedInput parseInput(String input) throws DateUndefinedException {
+	public static ParsedInput parseInput(String input) {
 		ArrayList<String> wordList = processInput(input);
 		KEYWORDS cType = getCommandType(wordList);
 
@@ -56,8 +56,8 @@ public class Parser {
 		
 		for(int i = wordList.size() - 1; i >= 0; i--) {
 			String word = wordList.get(i);
-			if(InputStringKeyword.isKeyword(word)) {
-				KEYWORDS keywordType = InputStringKeyword.getKeyword(word);
+			if(InputStringKeyword.isDateKeyword(word)) {
+				KEYWORDS keywordType = InputStringKeyword.getDateKeyword(word);
 				if(keywordType == KEYWORDS.FROM || keywordType == KEYWORDS.AT || keywordType == KEYWORDS.BY) {
 					wordList.remove(i);
 					return dateString.toString();
