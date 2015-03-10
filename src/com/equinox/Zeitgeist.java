@@ -12,6 +12,7 @@ public class Zeitgeist {
 
     public static Scanner scn = new Scanner(System.in);;
     public static Memory memory = new Memory();
+    public static Storage storage = new Storage();
 
 	public static void main(String[] args) {
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
@@ -95,6 +96,10 @@ public class Zeitgeist {
                     break;
 			}
             SignalHandler.printSignal(processSignal);
+
+            storage.storeMemoryToFile(memory);
+            memory = null;
+            //memory = storage.retrieveMemoryFromFile();
 		}
 	}
 }
