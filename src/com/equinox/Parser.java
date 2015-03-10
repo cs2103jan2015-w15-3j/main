@@ -1,13 +1,19 @@
 package com.equinox;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
-public class InputStringParser {
+import org.joda.time.DateTime;
+import com.joestelmach.natty.DateGroup;
+
+public class Parser {
 
 	private static final String STRING_EMPTY = "";
 	private static final String REGEX_SPACE = "\\s";
 
-	public static ParsedInput parse(String input) {
+	public static ParsedInput parseInput(String input) {
 		ArrayList<String> wordList = processInput(input);
 		KEYWORDS cType = getCommandType(wordList);
 
@@ -158,11 +164,36 @@ public class InputStringParser {
 	 * @return KEYWORDS specifying the type, null if typeString does not contain
 	 *         command.
 	 */
-	public static KEYWORDS determineCommandType(String typeString) {
+	private static KEYWORDS determineCommandType(String typeString) {
 		KEYWORDS type = null;
 		if (InputStringKeyword.isCommand(typeString)) {
 			type = InputStringKeyword.getCommand(typeString);
 		}
 		return type;
+	}
+	
+
+	/**
+	 * Parses a String with multiple dates provided to the DateParser, and returns a DateTime array.
+	 * 
+	 * @param dateString String containing the date to be parsed
+	 * @return A list of all immutable DateTime objects representing dates processed in the string.
+	 * @throws DateUndefinedException if dateString does not contain a valid date, is empty, or null
+	 */
+	public static List<DateTime> parseDates(String dateString) throws DateUndefinedException {
+		List<DateTime> dateTimeList = new ArrayList<DateTime>();
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(TimeZone.getDefault());
+		try {
+			DateGroup parsedDate = parser.parse(dateString).get(0);
+			List<Date> dateList = parsedDate.getDates();
+			for(Date date : dateList) {
+				dateTimeList.add(new DateTime(date));
+			}
+		} catch (IndexOutOfBoundsException e) {
+			throw new DateUndefinedException(ExceptionMessages.UNDEFINED_DATE_STRING_EXCEPTION);
+		} catch (NullPointerException e) {
+			throw new DateUndefinedException(ExceptionMessages.NULL_DATE_STRING_EXCEPTION);
+		}
+		return dateTimeList;
 	}
 }

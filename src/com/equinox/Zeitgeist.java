@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class Zeitgeist {
 
-    public static Scanner scn = new Scanner(System.in);;
+    public static Scanner scn = new Scanner(System.in);
     public static Memory memory = new Memory();
 
 	public static void main(String[] args) {
@@ -26,12 +26,12 @@ public class Zeitgeist {
         handleInput(memory, input);
     }
 
-    private static void handleInput(Memory memory, String input) {
-        ParsedInput c = InputStringParser.parse(input);
-        dispatchCommand(c, memory);
+    private static void handleInput(Memory memory, String input) { // Propose removal as Zeitgeist class now has static memory. Reference via Zeitgeist.memory
+        ParsedInput c = Parser.parseInput(input);
+        execute(c, memory);
     }
 
-	private static void dispatchCommand(ParsedInput userInput, Memory memory) {
+	private static void execute(ParsedInput userInput, Memory memory) {
 		Signal processSignal;
 		Command c;
 
