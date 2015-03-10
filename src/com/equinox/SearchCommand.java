@@ -2,7 +2,12 @@ package com.equinox;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 /**
  * The SearchCommand class handles user input with search commands.
@@ -26,7 +31,7 @@ public class SearchCommand extends Command {
 		String typeKey;
 		String param;
 
-		//Iterates through every KeyParamPair
+		// Iterates through every KeyParamPair
 		for (int i = 0; i < inputList.size(); i++) {
 			pair = inputList.get(i);
 			typeKey = pair.getKeyword();
@@ -39,22 +44,24 @@ public class SearchCommand extends Command {
 			}
 
 			// checks if param behind a flag is an empty string
-			if (i!=0 && param.isEmpty()) {
+			if (i != 0 && param.isEmpty()) {
 				return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 			}
 
-			String[] paramArray = param.split(REGEX_SPACE);
-			
-			searchIndex(resultSet, typeKey, paramArray);
+			try {
+				searchIndex(resultSet, typeKey, param);
+			} catch (DateUndefinedException e) {
+				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
+			}
 
 		}
-		
-		//checks if resultSet is empty
+
+		// checks if resultSet is empty
 		if (resultSet.isEmpty()) {
 			return new Signal(Signal.SEARCH_EMPTY_SIGNAL, false);
 		}
-		
-		//displays the list of todos that were found
+
+		// displays the list of todos that were found
 		ArrayList<Todo> todos = getTodos(resultSet);
 		String displayString = DisplayCommand.getDisplayChrono(todos, 2);
 		System.out.println(displayString);
@@ -71,8 +78,7 @@ public class SearchCommand extends Command {
 	private ArrayList<Todo> getTodos(Set<Integer> resultSet) {
 		ArrayList<Todo> todos = new ArrayList<Todo>();
 		Todo current = null;
-		
-		
+
 		for (int x : resultSet) {
 			try {
 				current = memory.get(x);
@@ -93,17 +99,55 @@ public class SearchCommand extends Command {
 	 * @param resultSet
 	 * @param key
 	 * @param paramArray
+	 * @throws DateUndefinedException
 	 */
 	private void searchIndex(Set<Integer> resultSet, String typeKey,
-			String[] paramArray) {
+			String param) throws DateUndefinedException {
 		ArrayList<Integer> tempResult;
 		switch (typeKey) {
 			case "-n":
-
+				String[] paramArray = param.split(REGEX_SPACE);
 				for (String searchKey : paramArray) {
 					tempResult = memory.searchName(searchKey);
 					addToSet(tempResult, resultSet);
 				}
+				break;
+			case "-dt":
+				List<DateTime> dateList = Parser.parseDates(param);
+				assert (dateList.size() == 1);
+				LocalDate searchDate = dateList.get(0).toLocalDate();
+				tempResult = memory.searchDate(searchDate);
+				addToSet(tempResult, resultSet);
+				break;
+			case "-t":
+				List<DateTime> timeList = Parser.parseDates(param);
+				assert (timeList.size() == 1);
+				LocalTime searchTime = timeList.get(0).toLocalTime();
+				tempResult = memory.searchTime(searchTime);
+				addToSet(tempResult, resultSet);
+				break;
+				
+//			case "-y":
+//				List<DateTime> yearList = Parser.parseDates(param);
+//				assert (yearList.size() == 1);
+//				int searchYear = yearList.get(0).getYear();
+//				tempResult = memory.searchYear(searchYear);
+//				addToSet(tempResult, resultSet);
+//				break;
+			case "-m":
+				List<DateTime> monthList = Parser.parseDates(param);
+				assert (monthList.size() == 1);
+				int searchMonth = monthList.get(0).getMonthOfYear();
+				tempResult = memory.searchMonth(searchMonth);
+				addToSet(tempResult, resultSet);
+				break;
+			case "-d":
+				List<DateTime> dayList = Parser.parseDates(param);
+				assert (dayList.size() == 1);
+				int searchDay = dayList.get(0).getDayOfWeek();
+				tempResult = memory.searchDay(searchDay);
+				addToSet(tempResult, resultSet);
+				break;
 		}
 	}
 
@@ -115,7 +159,7 @@ public class SearchCommand extends Command {
 	 */
 	private void addToSet(ArrayList<Integer> tempResult, Set<Integer> resultSet) {
 		int current;
-		for(int i = 0; i < tempResult.size(); i++) {
+		for (int i = 0; i < tempResult.size(); i++) {
 			current = tempResult.get(i);
 			resultSet.add(current);
 		}
@@ -147,6 +191,14 @@ public class SearchCommand extends Command {
 		Zeitgeist.handleInput("search -n floating deadline");
 
 		Zeitgeist.handleInput("search deadline");
+
+		Zeitgeist.handleInput("search -dt 3 march -dt 1/1");
+		
+		Zeitgeist.handleInput("search -t 10am");
+		
+		Zeitgeist.handleInput("search -m march");
+		
+		Zeitgeist.handleInput("search -d thu");
 
 	}
 }
