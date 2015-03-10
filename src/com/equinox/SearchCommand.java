@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
 /**
  * The SearchCommand class handles user input with search commands.
@@ -112,11 +113,39 @@ public class SearchCommand extends Command {
 				}
 				break;
 			case "-dt":
-				List<DateTime> dateTimeList = Parser.parseDates(param);
-				assert (dateTimeList.size() == 1);
-				DateTime searchDateTime = dateTimeList.get(0);
-				LocalDate searchDate = searchDateTime.toLocalDate();
+				List<DateTime> dateList = Parser.parseDates(param);
+				assert (dateList.size() == 1);
+				LocalDate searchDate = dateList.get(0).toLocalDate();
 				tempResult = memory.searchDate(searchDate);
+				addToSet(tempResult, resultSet);
+				break;
+			case "-t":
+				List<DateTime> timeList = Parser.parseDates(param);
+				assert (timeList.size() == 1);
+				LocalTime searchTime = timeList.get(0).toLocalTime();
+				tempResult = memory.searchTime(searchTime);
+				addToSet(tempResult, resultSet);
+				break;
+				
+//			case "-y":
+//				List<DateTime> yearList = Parser.parseDates(param);
+//				assert (yearList.size() == 1);
+//				int searchYear = yearList.get(0).getYear();
+//				tempResult = memory.searchYear(searchYear);
+//				addToSet(tempResult, resultSet);
+//				break;
+			case "-m":
+				List<DateTime> monthList = Parser.parseDates(param);
+				assert (monthList.size() == 1);
+				int searchMonth = monthList.get(0).getMonthOfYear();
+				tempResult = memory.searchMonth(searchMonth);
+				addToSet(tempResult, resultSet);
+				break;
+			case "-d":
+				List<DateTime> dayList = Parser.parseDates(param);
+				assert (dayList.size() == 1);
+				int searchDay = dayList.get(0).getDayOfWeek();
+				tempResult = memory.searchDay(searchDay);
 				addToSet(tempResult, resultSet);
 				break;
 		}
@@ -164,6 +193,12 @@ public class SearchCommand extends Command {
 		Zeitgeist.handleInput("search deadline");
 
 		Zeitgeist.handleInput("search -dt 3 march -dt 1/1");
+		
+		Zeitgeist.handleInput("search -t 10am");
+		
+		Zeitgeist.handleInput("search -m march");
+		
+		Zeitgeist.handleInput("search -d thu");
 
 	}
 }
