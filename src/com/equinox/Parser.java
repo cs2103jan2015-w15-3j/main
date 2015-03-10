@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
@@ -25,10 +24,22 @@ public class Parser {
 			return new ParsedInput(null, null, null, null);
 		}
 		
-		String dateString = removeDates(wordList); // Returns null if no "from", "by" or "at" keyword is found
-		List<DateTime> dateTimeList = parseDates(dateString); // Must not throw exception even if dates are not found
-		ArrayList<KeyParamPair> pairArray = extractParam(wordList);
-		return new ParsedInput(input, cType, pairArray, dateTimeList);
+		List<DateTime> dateTimeList = new ArrayList<DateTime>();
+		ParsedInput returnInput;
+		try {
+			int lastDateKeywordIndex = findLastDateKeyword(wordList);
+			String dateString = getDateString(lastDateKeywordIndex, wordList);
+			dateTimeList = parseDates(dateString);
+			removeDates(lastDateKeywordIndex, wordList);
+		} catch (NoDateKeywordException e) {
+			// Ignore as not all commands need dates
+		} catch (DateUndefinedException e) {
+			// Ignore as keywords identified without dates might be part of title
+		} finally {
+			ArrayList<KeyParamPair> pairArray = extractParam(wordList);
+			returnInput = new ParsedInput(input, cType, pairArray, dateTimeList);
+		}
+		return returnInput;
 	}
 
 	/**
@@ -50,29 +61,29 @@ public class Parser {
 		return wordList;
 	}
 	
-	private static String removeDates(ArrayList<String> wordList) {
+	private static String getDateString(int lastDateKeywordIndex, ArrayList<String> wordList) {
 		// Append 'on' keyword and following parameters at the end of the
 		// ArrayList
 		appendOnParamsAtEnd(wordList);
 		StringBuilder dateString = new StringBuilder();
-		
-		// Find index of last date keyword
-		int lastDateKeywordIndex = findLastDateKeyword(wordList);
 		
 		// Build dateString
 		for(int i = lastDateKeywordIndex; i < wordList.size(); i++) {
 			String word = wordList.get(i);
 			dateString.append(word + " ");
 		}
-		
+		return dateString.toString().trim();
+	}
+
+	private static void removeDates(int lastDateKeywordIndex,
+			ArrayList<String> wordList) {
 		// Remove dateString from wordList
 		for (int i = wordList.size() - 1; i >= lastDateKeywordIndex; i--) {
 			wordList.remove(i);
 		}
-		return dateString.toString().trim();
 	}
 
-	private static int findLastDateKeyword(ArrayList<String> wordList) {
+	private static int findLastDateKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
 		LinkedList<Integer> onIndices = new LinkedList<Integer>();
 		
 		// Find index of from, at, by, on keywords whichever is earlier
@@ -88,7 +99,10 @@ public class Parser {
 			}
 		}
 		// If there are no instances of from, at or by, take the last on
-		return onIndices.poll();
+		if(!onIndices.isEmpty()) {
+			return onIndices.poll();
+		}
+		throw new NoDateKeywordException(ExceptionMessages.NO_DATE_KEYWORD_EXCEPTION);
 	}
 
 	/**
@@ -208,12 +222,17 @@ public class Parser {
 	 * @return A list of all immutable DateTime objects representing dates processed in the string.
 	 * @throws DateUndefinedException if dateString does not contain a valid date, is empty, or null
 	 */
-	public static List<DateTime> parseDates(String dateString) {
+	public static List<DateTime> parseDates(String dateString) throws DateUndefinedException {
 		List<DateTime> dateTimeList = new ArrayList<DateTime>();
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
-		DateGroup parsedDate = parser.parse(dateString).get(0);
+		DateGroup parsedDate;
+		try {
+			parsedDate = parser.parse(dateString).get(0);
+		} catch (IndexOutOfBoundsException e) {
+			throw new DateUndefinedException(ExceptionMessages.UNDEFINED_DATE_STRING_EXCEPTION);
+		}
 		List<Date> dateList = parsedDate.getDates();
 		for (Date date : dateList) {
 			dateTimeList.add(new DateTime(date));
