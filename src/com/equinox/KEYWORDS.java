@@ -20,5 +20,13 @@ public enum KEYWORDS {
 	// Keywords for parameters in EDIT command
 	TITLE,
 	START,
-	END;
+	END,
+	
+	//Keywords for parameters in SEARCH command
+	NAME,
+	DATE,
+	TIME,
+	DAY,
+	MONTH,
+	YEAR;
 }

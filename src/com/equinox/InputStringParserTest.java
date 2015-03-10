@@ -27,21 +27,21 @@ public class InputStringParserTest {
 
 	@Test
 	public void testProcessInput() {
-		assertEquals(a0, InputStringParser.processInput(s0));
-		assertEquals(a1, InputStringParser.processInput(s1));
-		assertEquals(a2, InputStringParser.processInput(s2));
-		assertEquals(a3, InputStringParser.processInput(s3));
-		assertEquals(a4, InputStringParser.processInput(s4));
+		assertEquals(a0, Parser.processInput(s0));
+		assertEquals(a1, Parser.processInput(s1));
+		assertEquals(a2, Parser.processInput(s2));
+		assertEquals(a3, Parser.processInput(s3));
+		assertEquals(a4, Parser.processInput(s4));
 	}
 
 	@Test
 	public void testGetCommandType() {
-		assertEquals(null, InputStringParser.getCommandType(a0));
-		assertEquals(KEYWORDS.ADD, InputStringParser.getCommandType(a1));
-		assertEquals(KEYWORDS.DELETE, InputStringParser.getCommandType(a2));
-		assertEquals(KEYWORDS.DELETE, InputStringParser.getCommandType(a3));
-		assertEquals(KEYWORDS.MARK, InputStringParser.getCommandType(a4));
-		assertEquals(null, InputStringParser.getCommandType(a5));
+		assertEquals(null, Parser.getCommandType(a0));
+		assertEquals(KEYWORDS.ADD, Parser.getCommandType(a1));
+		assertEquals(KEYWORDS.DELETE, Parser.getCommandType(a2));
+		assertEquals(KEYWORDS.DELETE, Parser.getCommandType(a3));
+		assertEquals(KEYWORDS.MARK, Parser.getCommandType(a4));
+		assertEquals(null, Parser.getCommandType(a5));
 	}
 
 	@Test
@@ -56,10 +56,10 @@ public class InputStringParserTest {
 		p3.add(new KeyParamPair("on", "list"));
 		ArrayList<KeyParamPair> p4 = new ArrayList<KeyParamPair>(1);
 		p4.add(new KeyParamPair("mark", ""));
-		assertEquals(p1, InputStringParser.extractParam(a1));
-		assertEquals(p2, InputStringParser.extractParam(a2));
-		assertEquals(p3, InputStringParser.extractParam(a3));
-		assertEquals(p4, InputStringParser.extractParam(a4));
+		assertEquals(p1, Parser.extractParam(a1));
+		assertEquals(p2, Parser.extractParam(a2));
+		assertEquals(p3, Parser.extractParam(a3));
+		assertEquals(p4, Parser.extractParam(a4));
 	}
 
 }
