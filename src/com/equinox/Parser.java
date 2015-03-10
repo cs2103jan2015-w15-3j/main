@@ -2,10 +2,12 @@ package com.equinox;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
+
 import com.joestelmach.natty.DateGroup;
 
 public class Parser {
@@ -19,23 +21,40 @@ public class Parser {
 
 		// if command type is error
 		if (cType == null) {
-			return new ParsedInput(null, null);
+			return new ParsedInput(null, null, null, null);
 		}
-
-		ArrayList<KeyParamPair> pairArray = extractParam(wordList);
-		return new ParsedInput(cType, pairArray);
+		
+		List<DateTime> dateTimeList = new ArrayList<DateTime>();
+		ParsedInput returnInput;
+		try {
+			int lastDateKeywordIndex = findLastDateKeyword(wordList);
+			String dateString = getDateString(lastDateKeywordIndex, wordList);
+			dateTimeList = parseDates(dateString);
+			removeDates(lastDateKeywordIndex, wordList);
+		} catch (NoDateKeywordException e) {
+			// Ignore as not all commands need dates
+		} catch (DateUndefinedException e) {
+			// Ignore as keywords identified without dates might be part of title
+		} finally {
+			ArrayList<KeyParamPair> pairArray = extractParam(wordList);
+			returnInput = new ParsedInput(input, cType, pairArray, dateTimeList);
+		}
+		return returnInput;
 	}
 
 	/**
 	 * Takes in a user input string and puts individual words into elements in a
 	 * String array.
 	 *
-	 * @param input
-	 *            Input string from Zeitgeist class
+	 * @param input Input string from Zeitgeist class
 	 * @return An ArrayList<String> where each element is a word from the
 	 *         original string
 	 */
+<<<<<<< HEAD
 	public static ArrayList<String> tokenize(String input) {
+=======
+	public static ArrayList<String> processInput(String input) { //TODO: Propose rename to tokenize for clarity
+>>>>>>> New_Architecture
 		input = input.trim();
 		input = input.toLowerCase();
 		String[] inputArray = input.split(REGEX_SPACE);
@@ -44,6 +63,50 @@ public class Parser {
 			wordList.add(inputArray[i]);
 		}
 		return wordList;
+	}
+	
+	private static String getDateString(int lastDateKeywordIndex, ArrayList<String> wordList) {
+		// Append 'on' keyword and following parameters at the end of the
+		// ArrayList
+		appendOnParamsAtEnd(wordList);
+		StringBuilder dateString = new StringBuilder();
+		
+		// Build dateString
+		for(int i = lastDateKeywordIndex; i < wordList.size(); i++) {
+			String word = wordList.get(i);
+			dateString.append(word + " ");
+		}
+		return dateString.toString().trim();
+	}
+
+	private static void removeDates(int lastDateKeywordIndex,
+			ArrayList<String> wordList) {
+		// Remove dateString from wordList
+		for (int i = wordList.size() - 1; i >= lastDateKeywordIndex; i--) {
+			wordList.remove(i);
+		}
+	}
+
+	private static int findLastDateKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
+		LinkedList<Integer> onIndices = new LinkedList<Integer>();
+		
+		// Find index of from, at, by, on keywords whichever is earlier
+		for(int i = wordList.size() - 1; i >= 0; i--) {
+			String word = wordList.get(i);
+			if(InputStringKeyword.isDateKeyword(word)) {
+				KEYWORDS dateKeyword = InputStringKeyword.getDateKeyword(word);
+				if(dateKeyword == KEYWORDS.ON) {
+					onIndices.offer(i);
+				} else {
+					return i;
+				}
+			}
+		}
+		// If there are no instances of from, at or by, take the last on
+		if(!onIndices.isEmpty()) {
+			return onIndices.poll();
+		}
+		throw new NoDateKeywordException(ExceptionMessages.NO_DATE_KEYWORD_EXCEPTION);
 	}
 
 	/**
@@ -60,36 +123,19 @@ public class Parser {
 			ArrayList<String> wordList) {
 		String key = wordList.get(0);
 		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
+		
 		String tempParam = STRING_EMPTY;
-		String currentParam;
-
-		// Append 'on' keyword and following parameters at the end of the
-		// ArrayList
-		appendOnParamsAtEnd(wordList);
 
 		for (int i = 1; i < wordList.size(); i++) {
-			currentParam = wordList.get(i);
+			String currentParam = wordList.get(i);
 
 			// wordList.get(i) is a keyword. Create a KeyParamPair with previous
-			// keyword
+			// param
 			// and tempParam and add to ArrayList. Update key and tempParam.
+			// If currentParam is a keyword:
 			if (InputStringKeyword.isKeyword(currentParam)) {
 				resultList.add(new KeyParamPair(key, tempParam));
 				key = currentParam;
-
-				if (InputStringKeyword.getKeyword(currentParam) == KEYWORDS.FROM
-						|| InputStringKeyword.getKeyword(currentParam) == KEYWORDS.BY
-						|| InputStringKeyword.getKeyword(currentParam) == KEYWORDS.AT) {
-					// concatenate all params that come after 'from'
-					// and generate a KeyParamPair
-					tempParam = STRING_EMPTY;
-					for (int j = i + 1; j < wordList.size(); j++) {
-						tempParam += wordList.get(j) + " ";
-					}
-					resultList.add(new KeyParamPair(key, tempParam.trim()));
-					return resultList;
-				}
-
 				tempParam = STRING_EMPTY;
 
 				// wordList.get(i) is not a keyword; concat with tempParam.
@@ -174,7 +220,7 @@ public class Parser {
 	
 
 	/**
-	 * Parses a String with multiple dates provided to the DateParser, and returns a DateTime array.
+	 * Parses a String with multiple dates provided to the DateParser, and returns a DateTime ArrayList.
 	 * 
 	 * @param dateString String containing the date to be parsed
 	 * @return A list of all immutable DateTime objects representing dates processed in the string.
@@ -182,17 +228,18 @@ public class Parser {
 	 */
 	public static List<DateTime> parseDates(String dateString) throws DateUndefinedException {
 		List<DateTime> dateTimeList = new ArrayList<DateTime>();
-		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(TimeZone.getDefault());
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		DateGroup parsedDate;
 		try {
-			DateGroup parsedDate = parser.parse(dateString).get(0);
-			List<Date> dateList = parsedDate.getDates();
-			for(Date date : dateList) {
-				dateTimeList.add(new DateTime(date));
-			}
+			parsedDate = parser.parse(dateString).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			throw new DateUndefinedException(ExceptionMessages.UNDEFINED_DATE_STRING_EXCEPTION);
-		} catch (NullPointerException e) {
-			throw new DateUndefinedException(ExceptionMessages.NULL_DATE_STRING_EXCEPTION);
+		}
+		List<Date> dateList = parsedDate.getDates();
+		for (Date date : dateList) {
+			dateTimeList.add(new DateTime(date));
 		}
 		return dateTimeList;
 	}
