@@ -95,15 +95,12 @@ public class Zeitgeist {
                     System.exit(-1);
                     break;
 			}
-<<<<<<< HEAD
-            SignalHandler.printSignal(processSignal);
 
             storage.storeMemoryToFile(memory);
             memory = null;
             //memory = storage.retrieveMemoryFromFile();
-=======
-           return processSignal;
->>>>>>> New_Architecture
+            return processSignal;
+
 		}
 	}
 }
