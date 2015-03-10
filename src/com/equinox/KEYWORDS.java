@@ -9,7 +9,8 @@ public enum KEYWORDS {
 	EDIT,
 	DISPLAY, 
 	UNDO,
- REDO, EXIT,
+	REDO,
+	EXIT,
 	
 	// Keywords for parameters in ADD command
 	BY,
