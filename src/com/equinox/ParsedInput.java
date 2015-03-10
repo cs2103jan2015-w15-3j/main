@@ -1,14 +1,20 @@
 package com.equinox;
 import java.util.ArrayList;
+import java.util.List;
+import org.joda.time.DateTime;
 
 public class ParsedInput {
 	
+	private String userInput;
 	private KEYWORDS type;
 	private ArrayList<KeyParamPair> keyParamPairList;
+	private List<DateTime> dateTimeList;
     
-    public ParsedInput(KEYWORDS cType, ArrayList<KeyParamPair> pairList) {
-    	type = cType;
-    	keyParamPairList= pairList;
+    public ParsedInput(String userInput, KEYWORDS type, ArrayList<KeyParamPair> keyParamPairList, List<DateTime> dateTimeList) {
+    	this.userInput = userInput;
+    	this.type = type;
+    	this.keyParamPairList = keyParamPairList;
+    	this.dateTimeList = dateTimeList;
 	}
     
     public KEYWORDS getType() {
@@ -17,6 +23,10 @@ public class ParsedInput {
 
 	public ArrayList<KeyParamPair> getParamPairList() {
 		return keyParamPairList;
+	}
+	
+	public List<DateTime> getDateTimeList() {
+		return dateTimeList;
 	}
 	
 	/**

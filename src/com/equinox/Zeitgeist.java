@@ -18,28 +18,28 @@ public class Zeitgeist {
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
 		String input = scn.nextLine();
 		while (true) {
-            handleInput(input);
+            Signal signal = handleInput(input);
+            SignalHandler.printSignal(signal);
 			input = scn.nextLine();
 		}
 	}
 
-    public static void handleInput(String input) {
-        handleInput(memory, input);
+    public static Signal handleInput(String input) {
+        return handleInput(memory, input);
     }
 
-    private static void handleInput(Memory memory, String input) { // Propose removal as Zeitgeist class now has static memory. Reference via Zeitgeist.memory
+    private static Signal handleInput(Memory memory, String input) { // Propose removal as Zeitgeist class now has static memory. Reference via Zeitgeist.memory
         ParsedInput c = Parser.parseInput(input);
-        execute(c, memory);
+        return execute(c, memory);
     }
 
-	private static void execute(ParsedInput userInput, Memory memory) {
+	private static Signal execute(ParsedInput userInput, Memory memory) {
 		Signal processSignal;
 		Command c;
 
 		KEYWORDS commandType = userInput.getType();
 		if (commandType == null) {
-            SignalHandler.printSignal(new Signal(String
-                    .format(Signal.GENERIC_INVALID_COMMAND_FORMAT, ""), false));
+            return new Signal(String.format(Signal.GENERIC_INVALID_COMMAND_FORMAT, ""), false);
 		} else {
 
             switch (commandType) {
@@ -95,11 +95,15 @@ public class Zeitgeist {
                     System.exit(-1);
                     break;
 			}
+<<<<<<< HEAD
             SignalHandler.printSignal(processSignal);
 
             storage.storeMemoryToFile(memory);
             memory = null;
             //memory = storage.retrieveMemoryFromFile();
+=======
+           return processSignal;
+>>>>>>> New_Architecture
 		}
 	}
 }
