@@ -14,7 +14,7 @@ public class Parser {
 	private static final String REGEX_SPACE = "\\s";
 
 	public static ParsedInput parseInput(String input) {
-		ArrayList<String> wordList = processInput(input);
+		ArrayList<String> wordList = tokenize(input);
 		KEYWORDS cType = getCommandType(wordList);
 
 		// if command type is error
@@ -35,7 +35,7 @@ public class Parser {
 	 * @return An ArrayList<String> where each element is a word from the
 	 *         original string
 	 */
-	public static ArrayList<String> processInput(String input) {
+	public static ArrayList<String> tokenize(String input) {
 		input = input.trim();
 		input = input.toLowerCase();
 		String[] inputArray = input.split(REGEX_SPACE);
