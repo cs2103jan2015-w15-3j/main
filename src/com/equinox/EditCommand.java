@@ -32,26 +32,29 @@ public class EditCommand extends Command{
 				return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 			}
 			int userIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
+			preEdit = new Todo(memory.get(userIndex));
 			postEdit = memory.setterGet(userIndex);
-			preEdit = new Todo(postEdit);
 			
-			for (KeyParamPair keyParamPair : keyParamPairList) {
-				String keyword = keyParamPair.getKeyword();
-				String param = keyParamPair.getParam();
+			for (int i = 1; i < keyParamPairList.size(); i++) {
+				KEYWORDS keyword = keyParamPairList.get(i).getKeyword();
+				String param = keyParamPairList.get(i).getParam();
 
 				switch (keyword) {
-				case "title":
-					postEdit.setTitle(param);
+				case NAME:
+					postEdit.setName(param);
 					break;
-				case "start":
-					postEdit.setStartTime(param);
+				case START:
+					postEdit.setStartTime(dateTimeList.remove(0));
 					break;
-				case "end":
-					postEdit.setEndTime(param);
+				case END:
+					postEdit.setEndTime(dateTimeList.remove(0));
 					break;
-				case "done":
+				case DONE:
 					postEdit.setDone(Boolean.parseBoolean(param));
 					break;
+				default:
+					// Invalid Params
+					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
 			}
 			if(!postEdit.isValid()) {
