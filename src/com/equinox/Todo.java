@@ -51,9 +51,9 @@ public class Todo{
 	 * @param userTitle title of the task.
 	 * @throws DateUndefinedException 
 	 */
-	public Todo(Memory memory, String titleString) throws DateUndefinedException {
-		this.id = Zeitgeist.memory.obtainFreshId();
-		this.title = titleString;
+	public Todo(int id, String title) throws DateUndefinedException {
+		this.id = id;
+		this.title = title;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.startTime = null;
@@ -68,20 +68,19 @@ public class Todo{
 	 * @param userTitle title of the task.
 	 * @throws DateUndefinedException 
 	 */
-	public Todo(Memory memory, String titleString, String dateString) throws DateUndefinedException {
-		this.id = memory.obtainFreshId();
-		this.title = titleString;
+	public Todo(int id, String title, List<DateTime> dateTimeList) throws DateUndefinedException {
+		this.id = id;
+		this.title = title;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.isDone = false;
-		List<DateTime> dateList = Parser.parseDates(dateString);
-		if(dateList.size() == 1) {
+		if(dateTimeList.size() == 1) {
 			this.startTime = null;
-			this.endTime = dateList.get(0);
+			this.endTime = dateTimeList.get(0);
 			this.type = TYPE.DEADLINE;
-		} else if(dateList.size() == 2) {
-			this.startTime = dateList.get(0);
-			this.endTime = dateList.get(1);
+		} else if(dateTimeList.size() == 2) {
+			this.startTime = dateTimeList.get(0);
+			this.endTime = dateTimeList.get(1);
 			this.type = TYPE.EVENT;
 		} // Catch DateList more than 2 DateTimes (optional)
 	}
