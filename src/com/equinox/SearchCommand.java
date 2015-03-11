@@ -28,7 +28,7 @@ public class SearchCommand extends Command {
 		ArrayList<KeyParamPair> inputList = input.getParamPairList();
 		Set<Integer> resultSet = new HashSet<Integer>();
 		KeyParamPair pair;
-		String typeKey;
+		KEYWORDS typeKey;
 		String param;
 
 		// Iterates through every KeyParamPair
@@ -40,7 +40,7 @@ public class SearchCommand extends Command {
 			// assumes that if no flag input, assume that user is searching in
 			// Todo name
 			if (i == 0) {
-				typeKey = "-n";
+				typeKey = KEYWORDS.NAME;
 			}
 
 			// checks if param behind a flag is an empty string
@@ -101,25 +101,25 @@ public class SearchCommand extends Command {
 	 * @param paramArray
 	 * @throws DateUndefinedException
 	 */
-	private void searchIndex(Set<Integer> resultSet, String typeKey,
+	private void searchIndex(Set<Integer> resultSet, KEYWORDS typeKey,
 			String param) throws DateUndefinedException {
 		ArrayList<Integer> tempResult;
 		switch (typeKey) {
-			case "-n":
+			case NAME:
 				String[] paramArray = param.split(REGEX_SPACE);
 				for (String searchKey : paramArray) {
 					tempResult = memory.searchName(searchKey);
 					addToSet(tempResult, resultSet);
 				}
 				break;
-			case "-dt":
+			case DATE:
 				List<DateTime> dateList = Parser.parseDates(param);
 				assert (dateList.size() == 1);
 				LocalDate searchDate = dateList.get(0).toLocalDate();
 				tempResult = memory.searchDate(searchDate);
 				addToSet(tempResult, resultSet);
 				break;
-			case "-t":
+			case TIME:
 				List<DateTime> timeList = Parser.parseDates(param);
 				assert (timeList.size() == 1);
 				LocalTime searchTime = timeList.get(0).toLocalTime();
@@ -127,26 +127,30 @@ public class SearchCommand extends Command {
 				addToSet(tempResult, resultSet);
 				break;
 				
-//			case "-y":
+//			case YEAR:
 //				List<DateTime> yearList = Parser.parseDates(param);
 //				assert (yearList.size() == 1);
 //				int searchYear = yearList.get(0).getYear();
 //				tempResult = memory.searchYear(searchYear);
 //				addToSet(tempResult, resultSet);
 //				break;
-			case "-m":
+			case MONTH:
 				List<DateTime> monthList = Parser.parseDates(param);
 				assert (monthList.size() == 1);
 				int searchMonth = monthList.get(0).getMonthOfYear();
 				tempResult = memory.searchMonth(searchMonth);
 				addToSet(tempResult, resultSet);
 				break;
-			case "-d":
+			case DAY:
 				List<DateTime> dayList = Parser.parseDates(param);
 				assert (dayList.size() == 1);
 				int searchDay = dayList.get(0).getDayOfWeek();
 				tempResult = memory.searchDay(searchDay);
 				addToSet(tempResult, resultSet);
+				break;
+				
+			default:
+				//TODO: Invalid params flag is unrecognised
 				break;
 		}
 	}
