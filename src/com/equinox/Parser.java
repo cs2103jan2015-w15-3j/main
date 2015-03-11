@@ -118,9 +118,8 @@ public class Parser {
 	public static ArrayList<KeyParamPair> extractParam(
 			ArrayList<String> wordList) {
 		String key = wordList.get(0);
-		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
-		
 		String tempParam = STRING_EMPTY;
+		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
 
 		for (int i = 1; i < wordList.size(); i++) {
 			String currentParam = wordList.get(i);
@@ -136,12 +135,11 @@ public class Parser {
 
 				// wordList.get(i) is not a keyword; concat with tempParam.
 			} else {
-				tempParam = combineParamString(tempParam, currentParam);
+				tempParam = combineParamString(tempParam, currentParam); // TODO: Suggest using StringBuilder for simplicity
 			}
 		}
 		// last KeyParamPair to be added to ArrayList
 		resultList.add(new KeyParamPair(key, tempParam));
-
 		return resultList;
 	}
 
