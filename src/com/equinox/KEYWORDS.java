@@ -19,9 +19,10 @@ public enum KEYWORDS {
 	AT,
 	
 	// Keywords for parameters in EDIT command
-	TITLE,
+	// NAME,
 	START,
 	END,
+	DONE,
 	
 	//Keywords for parameters in SEARCH command
 	NAME,

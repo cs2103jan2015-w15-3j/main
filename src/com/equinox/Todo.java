@@ -51,9 +51,9 @@ public class Todo{
 	 * @param userTitle title of the task.
 	 * @throws DateUndefinedException 
 	 */
-	public Todo(Memory memory, String titleString) throws DateUndefinedException {
-		this.id = Zeitgeist.memory.obtainFreshId();
-		this.title = titleString;
+	public Todo(int id, String title) throws DateUndefinedException {
+		this.id = id;
+		this.title = title;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.startTime = null;
@@ -68,20 +68,19 @@ public class Todo{
 	 * @param userTitle title of the task.
 	 * @throws DateUndefinedException 
 	 */
-	public Todo(Memory memory, String titleString, String dateString) throws DateUndefinedException {
-		this.id = memory.obtainFreshId();
-		this.title = titleString;
+	public Todo(int id, String title, List<DateTime> dateTimeList) throws DateUndefinedException {
+		this.id = id;
+		this.title = title;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.isDone = false;
-		List<DateTime> dateList = Parser.parseDates(dateString);
-		if(dateList.size() == 1) {
+		if(dateTimeList.size() == 1) {
 			this.startTime = null;
-			this.endTime = dateList.get(0);
+			this.endTime = dateTimeList.get(0);
 			this.type = TYPE.DEADLINE;
-		} else if(dateList.size() == 2) {
-			this.startTime = dateList.get(0);
-			this.endTime = dateList.get(1);
+		} else if(dateTimeList.size() == 2) {
+			this.startTime = dateTimeList.get(0);
+			this.endTime = dateTimeList.get(1);
 			this.type = TYPE.EVENT;
 		} // Catch DateList more than 2 DateTimes (optional)
 	}
@@ -142,7 +141,7 @@ public class Todo{
 	 * 
 	 * @param title the new title of the Todo.
 	 */
-	public void setTitle(String title) {
+	public void setName(String title) {
 		this.title = title;
 		modifiedOn = new DateTime();
 	}
@@ -160,12 +159,10 @@ public class Todo{
 	 * Replaces the start time with the date encoded in the specified
 	 * startTimeString and updates the last modified field of the Todo.
 	 * 
-	 * @param startTime String containing the new start time of the Todo.
-	 * @throws DateUndefinedException if startTimeString does not contain a valid date, is empty, or null
+	 * @param startTime DateTime of the new startTime
 	 */
-	public void setStartTime(String startTimeString) throws DateUndefinedException {
-		List<DateTime> dateList = Parser.parseDates(startTimeString); // Catch dateList has more than 1 DateTime
-		this.startTime = dateList.get(0);
+	public void setStartTime(DateTime startTime) {
+		this.startTime = startTime;
 		modifiedOn = new DateTime();
 	}
 
@@ -184,9 +181,8 @@ public class Todo{
 	 * @param endTime String containing the new end time of the Todo.
 	 * @throws DateUndefinedException if endTimeString does not contain a valid date, is empty, or null
 	 */
-	public void setEndTime(String endTimeString) throws DateUndefinedException {
-		List<DateTime> dateList = Parser.parseDates(endTimeString); // Catch dateList has more than 1 DateTime
-		this.endTime = dateList.get(0);
+	public void setEndTime(DateTime endTime) throws DateUndefinedException {
+		this.endTime = endTime;
 		modifiedOn = new DateTime();
 	}
 
