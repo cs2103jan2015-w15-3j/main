@@ -26,19 +26,38 @@ public class Parser {
 		
 		List<DateTime> dateTimeList = new ArrayList<DateTime>();
 		ParsedInput returnInput;
-		try {
-			int lastDateKeywordIndex = findLastDateKeyword(wordList);
-			String dateString = getDateString(lastDateKeywordIndex, wordList);
-			dateTimeList = parseDates(dateString);
-			removeDates(lastDateKeywordIndex, wordList);
-		} catch (NoDateKeywordException e) {
-			// Ignore as not all commands need dates
-		} catch (DateUndefinedException e) {
-			// Ignore as keywords identified without dates might be part of title
-		} finally {
-			ArrayList<KeyParamPair> pairArray = extractParam(wordList);
-			returnInput = new ParsedInput(input, cType, pairArray, dateTimeList);
+		if(cType == KEYWORDS.ADD) {
+			try {
+				int lastDateKeywordIndex = findLastDateKeyword(wordList);
+				String dateString = getDateString(lastDateKeywordIndex,
+						wordList);
+				dateTimeList = parseDates(dateString);
+				removeDates(lastDateKeywordIndex, wordList);
+			} catch (NoDateKeywordException e) {
+				// Ignore as not all commands need dates
+			} catch (DateUndefinedException e) {
+				// Ignore as keywords identified without dates might be part of
+				// title
+			} 
 		}
+		ArrayList<KeyParamPair> pairArray = extractParam(wordList);
+		
+		// Post-process EDIT command parameters
+		if(cType == KEYWORDS.EDIT) {
+			for(KeyParamPair keyparam : pairArray) {
+				KEYWORDS key = keyparam.getKeyword();
+				if(key == KEYWORDS.START || key == KEYWORDS.END) {
+					try {
+						DateTime parsedDate = parseDates(keyparam.getParam()).get(0);
+						dateTimeList.add(parsedDate);
+					} catch (DateUndefinedException e) {
+						// Ignore for now
+					}
+				}
+			}
+		} 
+		
+		returnInput = new ParsedInput(input, cType, pairArray, dateTimeList);	
 		return returnInput;
 	}
 
@@ -120,6 +139,7 @@ public class Parser {
 		String key = wordList.get(0);
 		String tempParam = STRING_EMPTY;
 		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
+		KEYWORDS keyword;
 
 		for (int i = 1; i < wordList.size(); i++) {
 			String currentParam = wordList.get(i);
@@ -129,7 +149,8 @@ public class Parser {
 			// and tempParam and add to ArrayList. Update key and tempParam.
 			// If currentParam is a keyword:
 			if (InputStringKeyword.isKeyword(currentParam)) {
-				resultList.add(new KeyParamPair(key, tempParam));
+				keyword = InputStringKeyword.getKeyword(key);
+				resultList.add(new KeyParamPair(keyword, tempParam));
 				key = currentParam;
 				tempParam = STRING_EMPTY;
 
@@ -139,7 +160,8 @@ public class Parser {
 			}
 		}
 		// last KeyParamPair to be added to ArrayList
-		resultList.add(new KeyParamPair(key, tempParam));
+		keyword = InputStringKeyword.getKeyword(key);
+		resultList.add(new KeyParamPair(keyword, tempParam));
 		return resultList;
 	}
 
