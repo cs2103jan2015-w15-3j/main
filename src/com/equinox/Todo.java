@@ -246,6 +246,8 @@ public class Todo{
 			if(endTime.isBefore(startTime)) {
 				return false;
 			}
+		} else if (startTime != null && endTime == null) {
+			return false;
 		} else if(startTime == null && endTime != null) {
 			type = TYPE.DEADLINE;
 		} else if(startTime == null && endTime == null) {
