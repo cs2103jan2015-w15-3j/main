@@ -49,8 +49,6 @@ public class InputStringKeyword {
         dateKeywords.put(KEY_FROM, KEYWORDS.FROM);
         dateKeywords.put(KEY_ON, KEYWORDS.ON);
         dateKeywords.put(KEY_AT, KEYWORDS.AT);
-        dateKeywords.put(KEY_START, KEYWORDS.START);
-        dateKeywords.put(KEY_END, KEYWORDS.END);
     	
         keywords = new HashMap<String, KEYWORDS>(commands);
         keywords.put(KEY_START, KEYWORDS.START);
