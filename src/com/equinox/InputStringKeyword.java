@@ -18,10 +18,12 @@ public class InputStringKeyword {
 	private static final String KEY_ON = "on";
 	private static final String KEY_AT = "at";
 	private static final String KEY_NAME = "name";
-	private static final String KEY_START = "start";
-	private static final String KEY_END = "end";
-    private static final String KEY_EXIT = "exit";
 	private static final String KEY_NAME_ABV = "-n"; // TODO: Propose using suffix _ABV to denote abbreviated forms.
+	private static final String KEY_START = "start";
+	private static final String KEY_START_ABV = "-s";
+	private static final String KEY_END = "end";
+	private static final String KEY_END_ABV = "-e";
+	private static final String KEY_EXIT = "exit";
 	private static final String KEY_DATE = "-dt";
 	private static final String KEY_TIME = "-t";
 	private static final String KEY_DAY = "-d";
@@ -52,7 +54,9 @@ public class InputStringKeyword {
     	
         keywords = new HashMap<String, KEYWORDS>(commands);
         keywords.put(KEY_START, KEYWORDS.START);
+        keywords.put(KEY_START_ABV, KEYWORDS.START);
         keywords.put(KEY_END, KEYWORDS.END);
+        keywords.put(KEY_END_ABV, KEYWORDS.END);
         keywords.put(KEY_NAME, KEYWORDS.NAME);
         keywords.put(KEY_NAME_ABV, KEYWORDS.NAME);
         keywords.put(KEY_DATE, KEYWORDS.DATE);
