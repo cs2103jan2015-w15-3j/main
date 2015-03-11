@@ -25,10 +25,6 @@ public class Zeitgeist {
 	}
 
     public static Signal handleInput(String input) {
-        return handleInput(memory, input);
-    }
-
-    private static Signal handleInput(Memory memory, String input) { // Propose removal as Zeitgeist class now has static memory. Reference via Zeitgeist.memory
         ParsedInput c = Parser.parseInput(input);
         return execute(c, memory);
     }
