@@ -76,7 +76,7 @@ public class TodoTest {
 	@Test
 	public void testSetStartEndTime() throws DateUndefinedException {
 		Todo todo = new Todo(title1, deadlineString);
-		todo.setTitle(title2);
+		todo.setName(title2);
 		todo.setStartTime(startTimeString);
 		todo.setEndTime(endTimeString);
 		todo.isValid();
