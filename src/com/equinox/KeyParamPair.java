@@ -5,7 +5,7 @@ public class KeyParamPair {
 	private String param;
 	
 	KeyParamPair(String commandKeyword, String commandParam) {
-		keyword = commandKeyword;
+		keyword = commandKeyword; // TODO: Propose using KEYOWRDS keyword = InputStringKeyword.getKeyword(commandKeyword); 
 		param = commandParam;
 	}
 

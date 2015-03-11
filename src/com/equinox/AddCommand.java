@@ -37,8 +37,8 @@ public class AddCommand extends Command {
 		}
 
 		// Check for valid number of keywords
-		int numberOfKeywords = input.getParamPairList().size();
-		if (numberOfKeywords > 3) {
+		int numberOfKeywords = keyParamPairList.size() + dateTimeList.size();
+		if (numberOfKeywords > 3) { // TODO: Check if dates are in order.
             return new Signal(Signal.ADD_INVALID_PARAMS, false);
 		}
 		
@@ -46,14 +46,14 @@ public class AddCommand extends Command {
 
 		try {
 
-			int numberOfElements = keyParamPairList.size();
+			int numberOfDates = keyParamPairList.size();
 
-			switch (numberOfElements) {
+			switch (numberOfDates) {
 			// Floating task
 			// Example:
 			// KeyParamPair 0: add <task>
-				case 1:
-					Todo floatingTask = new Todo(memory, todoName);
+				case 0:
+					Todo floatingTask = new Todo(memory.obtainFreshId(), todoName);
 					memory.add(floatingTask);
 					return new Signal(String.format(
                             Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask),
@@ -68,44 +68,16 @@ public class AddCommand extends Command {
 					// KeyParamPair 0: add <event>, KeyParamPair 1: from
 					// <startDate to endDate>
 
-				case 2:
-				// TODO Todo can now determine if it is a Single date or Double
-				// date String and dynamically adjust its type accordingly.
-					
-				// Use a while loop, keep catching DateUndefinedException and
-				// append the keyword to the todoName so that we can avoid
-				// catching keywords in title. Catch until the Todo is
-				// successfully created.
-					
-					String secondKeyword = keyParamPairList.get(1).getKeyword();
-
-					// Deadline
-					if (secondKeyword.equals("by")
-							|| secondKeyword.equals("on")
-							|| secondKeyword.equals("at")) {
-						String deadlineTime = keyParamPairList.get(1).getParam();
-						Todo deadline = new Todo(memory, todoName, deadlineTime);
-							memory.add(deadline);
-							return new Signal(String.format(
-	                                Signal.ADD_SUCCESS_SIGNAL_FORMAT, deadline),
-	                                true);
-					}			
-	
-
-					// Event
-					else if (secondKeyword.equals("from")) {
-						String eventStartEndTime = keyParamPairList.get(1).getParam();
-						Todo event = new Todo(memory, todoName, eventStartEndTime);
-						if (event.isValid()) {
-							memory.add(event);
-							return new Signal(
-									String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, event), true);
-							// Start time is after end time error.
-						} else {
-							return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
-						}
-
-					}
+				case 1: case 2:
+					Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
+						dateTimeList);
+					if (timedTodo.isValid()) {
+						memory.add(timedTodo);
+						return new Signal(String.format(
+							Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
+					} else {
+						return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
+					}	
 			}
 
 		} catch (DateUndefinedException e) {
