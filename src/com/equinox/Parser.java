@@ -2,6 +2,8 @@ package com.equinox;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
@@ -26,18 +28,19 @@ public class Parser {
 		
 		List<DateTime> dateTimeList = new ArrayList<DateTime>();
 		ParsedInput returnInput;
+		// Pre-process ADD command parameters for date
 		if(cType == KEYWORDS.ADD) {
 			try {
-				int lastDateKeywordIndex = findLastDateKeyword(wordList);
+				int lastDateKeywordIndex = findLastAddKeyword(wordList);
 				String dateString = getDateString(lastDateKeywordIndex,
 						wordList);
 				dateTimeList = parseDates(dateString);
 				removeDates(lastDateKeywordIndex, wordList);
 			} catch (NoDateKeywordException e) {
-				// Ignore as not all commands need dates
+				// Ignore empty date list will be returned
 			} catch (DateUndefinedException e) {
 				// Ignore as keywords identified without dates might be part of
-				// title
+				// title, empty date list will still be returned
 			} 
 		}
 		ArrayList<KeyParamPair> pairArray = extractParam(wordList);
@@ -102,7 +105,7 @@ public class Parser {
 		}
 	}
 
-	private static int findLastDateKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
+	private static int findLastAddKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
 		LinkedList<Integer> onIndices = new LinkedList<Integer>();
 		LinkedList<Integer> atIndices = new LinkedList<Integer>();
 		
@@ -148,6 +151,7 @@ public class Parser {
 		String tempParam = STRING_EMPTY;
 		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
 		KEYWORDS keyword;
+		EnumSet<KEYWORDS> keywordOccurrence = EnumSet.of(InputStringKeyword.getCommand(key));
 
 		for (int i = 1; i < wordList.size(); i++) {
 			String currentParam = wordList.get(i);
@@ -158,12 +162,16 @@ public class Parser {
 			// If currentParam is a keyword:
 			if (InputStringKeyword.isKeyword(currentParam)) {
 				keyword = InputStringKeyword.getKeyword(key);
-				resultList.add(new KeyParamPair(keyword, tempParam));
-				key = currentParam;
-				tempParam = STRING_EMPTY;
-
-				// wordList.get(i) is not a keyword; concat with tempParam.
-			} else {
+				// Ignore and append keyword if it has occurred before
+				if(!keywordOccurrence.contains(keyword)){
+					keywordOccurrence.add(keyword);
+					resultList.add(new KeyParamPair(keyword, tempParam));
+					key = currentParam;
+					tempParam = STRING_EMPTY;
+				} else { // wordList.get(i) is a repeated keyword; concat with tempParam.
+					tempParam = combineParamString(tempParam, currentParam); // TODO: Suggest using StringBuilder for simplicity
+				}
+			} else { // wordList.get(i) is not a keyword; concat with tempParam.
 				tempParam = combineParamString(tempParam, currentParam); // TODO: Suggest using StringBuilder for simplicity
 			}
 		}
