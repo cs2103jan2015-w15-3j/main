@@ -31,7 +31,7 @@ public class InputStringKeyword {
 	private static final String KEY_YEAR = "-y";
 
     private static Map<String, KEYWORDS> keywords;
-    private static Map<String, KEYWORDS> dateKeywords;
+    private static Map<String, KEYWORDS> addKeywords;
     private static Map<String, KEYWORDS> commands;
 
     static {
@@ -46,11 +46,11 @@ public class InputStringKeyword {
         commands.put(KEY_REDO, KEYWORDS.REDO);
         commands.put(KEY_EXIT, KEYWORDS.EXIT);
         
-        dateKeywords = new HashMap<String, KEYWORDS>();
-        dateKeywords.put(KEY_BY, KEYWORDS.BY);
-        dateKeywords.put(KEY_FROM, KEYWORDS.FROM);
-        dateKeywords.put(KEY_ON, KEYWORDS.ON);
-        dateKeywords.put(KEY_AT, KEYWORDS.AT);
+        addKeywords = new HashMap<String, KEYWORDS>();
+        addKeywords.put(KEY_BY, KEYWORDS.BY);
+        addKeywords.put(KEY_FROM, KEYWORDS.FROM);
+        addKeywords.put(KEY_ON, KEYWORDS.ON);
+        addKeywords.put(KEY_AT, KEYWORDS.AT);
     	
         keywords = new HashMap<String, KEYWORDS>(commands);
         keywords.put(KEY_START, KEYWORDS.START);
@@ -82,11 +82,11 @@ public class InputStringKeyword {
     	return commands.get(s);
     }
     
-    public static boolean isDateKeyword(String s) {
-    	return dateKeywords.containsKey(s);
+    public static boolean isAddKeyword(String s) {
+    	return addKeywords.containsKey(s);
     }
     
-    public static KEYWORDS getDateKeyword(String s) {
-    	return dateKeywords.get(s);
+    public static KEYWORDS getAddKeyword(String s) {
+    	return addKeywords.get(s);
     }
 }

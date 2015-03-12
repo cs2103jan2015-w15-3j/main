@@ -104,23 +104,31 @@ public class Parser {
 
 	private static int findLastDateKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
 		LinkedList<Integer> onIndices = new LinkedList<Integer>();
+		LinkedList<Integer> atIndices = new LinkedList<Integer>();
 		
 		// Find index of from, at, by, on keywords whichever is earlier
 		for(int i = wordList.size() - 1; i >= 0; i--) {
 			String word = wordList.get(i);
-			if(InputStringKeyword.isDateKeyword(word)) {
-				KEYWORDS dateKeyword = InputStringKeyword.getDateKeyword(word);
+			if(InputStringKeyword.isAddKeyword(word)) {
+				KEYWORDS dateKeyword = InputStringKeyword.getAddKeyword(word);
 				if(dateKeyword == KEYWORDS.ON) {
 					onIndices.offer(i);
+				} else if(dateKeyword == KEYWORDS.AT) {
+					atIndices.offer(i);
 				} else {
 					return i;
 				}
 			}
 		}
-		// If there are no instances of from, at or by, take the last on
-		if(!onIndices.isEmpty()) {
+		// If there are no instances of from, at or by, take the last on or last at whichever is earlier.
+		if(!onIndices.isEmpty() && !atIndices.isEmpty()) {
+			return Math.min(onIndices.poll(), atIndices.poll());
+		} else if (!onIndices.isEmpty()) {
 			return onIndices.poll();
+		} else if (!atIndices.isEmpty()){
+			return atIndices.poll();
 		}
+		
 		throw new NoDateKeywordException(ExceptionMessages.NO_DATE_KEYWORD_EXCEPTION);
 	}
 
