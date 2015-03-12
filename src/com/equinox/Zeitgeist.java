@@ -93,7 +93,7 @@ public class Zeitgeist {
 			}
 
             storage.storeMemoryToFile(memory);
-            memory = null;
+            //memory = null;
             //memory = storage.retrieveMemoryFromFile();
             return processSignal;
 
