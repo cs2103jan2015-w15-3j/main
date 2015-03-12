@@ -2,7 +2,6 @@ package com.equinox;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,7 +85,8 @@ public class Parser {
 	private static String getDateString(int lastDateKeywordIndex, ArrayList<String> wordList) {
 		// Append 'on' keyword and following parameters at the end of the
 		// ArrayList
-		appendOnParamsAtEnd(wordList);
+		// appendOnParamsAtEnd(wordList); 
+		// TODO: No longer works. Suggest removal. 
 		StringBuilder dateString = new StringBuilder();
 		
 		// Build dateString
@@ -180,7 +180,7 @@ public class Parser {
 		resultList.add(new KeyParamPair(keyword, tempParam));
 		return resultList;
 	}
-
+/*
 	private static void appendOnParamsAtEnd(ArrayList<String> wordList) {
 		// Process the wordList to append [on <date>] to the end of the
 		// ArrayList
@@ -188,14 +188,14 @@ public class Parser {
 			String word = wordList.get(i);
 
 			// Append to the end if 'on' appears and is not the last keyword
-			if (InputStringKeyword.getKeyword(word) == KEYWORDS.ON
+			if (InputStringKeyword.getAddKeyword(word) == KEYWORDS.ON
 					&& !isLastKeyword(wordList, i + 1)) {
 
 				do {
 					String removed = wordList.remove(i);
 					wordList.add(removed);
 					word = wordList.get(i);
-				} while (!InputStringKeyword.isKeyword(word));
+				} while (!InputStringKeyword.isAddKeyword(word));
 
 				break;
 			}
@@ -205,13 +205,13 @@ public class Parser {
 	private static boolean isLastKeyword(ArrayList<String> wordList, int index) {
 		for (int i = index; i < wordList.size(); i++) {
 			String word = wordList.get(i);
-			if (InputStringKeyword.isKeyword(word)) {
+			if (InputStringKeyword.isAddKeyword(word)) {
 				return false;
 			}
 		}
 		return true;
 	}
-
+*/
 	public static String combineParamString(String tempParam,
 			String currentParam) {
 		if (tempParam.length() == 0) {
