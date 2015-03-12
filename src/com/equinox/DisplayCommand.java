@@ -29,17 +29,21 @@ public class DisplayCommand extends Command {
 	private static final String messageCompleted = "Completed:";
 	private static final String messageAll = "All:";
 
+    // Heading for dates and floating tasks
+    private static final String FLOATING_TASK_HEADING = "Anytime";
+    private static final Object HEADING_PREFIX = System.lineSeparator();
+
 	// Messages for different types of todos (event, deadline, floating)
 	private static final String messageEvent = "E ";
 	private static final String messageDeadline = "D ";
 	private static final String messageFloating = "F ";
 
 	// Max length for the title of todo to be displayed
-	private static final int MAX_CHAR = 15;
+    private static final int MAX_CHAR = 25;
 
-	private static final String eventFormat = "%1$-2s %2$-7s %3$-25s %4$s - %5$s";
-	private static final String deadLineFormat = "%1$-2s %2$-7s %3$-25s %4$s";
-	private static final String floatingFormat = "%1$-2s %2$-7s %3$-25s";
+    private static final String eventFormat = "%1$-2s %2$-30s %3$s - %4$s";
+    private static final String deadLineFormat = "%1$-2s %2$-30s %3$s";
+    private static final String floatingFormat = "%1$-2s %2$-30s";
 
     private static DateTime now = new DateTime();
     private static DateTime inOneDay = new DateTime().plusDays(1);
@@ -50,9 +54,8 @@ public class DisplayCommand extends Command {
 			.forPattern("HH:mm");
 
     private static PeriodFormatter formatter = new PeriodFormatterBuilder()
-            .appendPrefix(" in ").appendHours().appendSuffix(" hours ")
-            .appendMinutes()
-            .appendSuffix(" minutes ")
+            .appendPrefix(" in ").appendHours().appendSuffix("h ")
+            .appendMinutes().appendSuffix("min ")
             .printZeroNever().toFormatter();
 
 	@Override
@@ -85,7 +88,7 @@ public class DisplayCommand extends Command {
         ArrayList<Todo> clonedTodos = cloneTodos(todos);
         // By default, we order the todos in chronological order
         Collections.sort(clonedTodos, new ChronoComparator());
-		return getDisplayDefault(clonedTodos, signal);
+		return getDisplay(clonedTodos, signal);
 	}
 
 	private static ArrayList<Todo> cloneTodos(Collection<Todo> todos) {
@@ -96,36 +99,100 @@ public class DisplayCommand extends Command {
 		return clonedTodos;
 	}
 
-    public static String getDisplayDefault(Collection<Todo> todos, int signal) {
+    public static String getDisplay(Collection<Todo> todos, int signal) {
 		Iterator<Todo> iterator = todos.iterator();
 		StringBuilder sBuilder = new StringBuilder();
+        DateTime currentDate = new DateTime(0);
+		appendCategory(signal, sBuilder);
 
-		if (signal == showAll) {
+		while (iterator.hasNext()) {
+			Todo todo = iterator.next();
+            // Show pending, skip the completed tasks
+            if (signal == showPending && todo.isDone()) {
+                continue;
+            }
+            // Show completed, skip the pending tasks
+            if (signal == showCompleted && !todo.isDone()) {
+                continue;
+            }
+            DateTime todoDateTime = todo.getDateTime();
+            if (!dateAlreadyDisplayed(currentDate, todoDateTime)) {
+                // Date not displayed yet, update currentDate
+                currentDate = todoDateTime;
+                appendDate(sBuilder, todoDateTime);
+            }
+            appendTodo(sBuilder, todo);
+		}
+		return sBuilder.toString();
+	}
+
+    /**
+     * Check if the date is already displayed
+     * 
+     * currentDate will be set to null for the first floating task, and a
+     * heading for floating task will be displayed.
+     * 
+     * Subsequent floating tasks will not have the heading displayed when the
+     * currentDate is null.
+     * 
+     * @param currentDate
+     * @param dateTime
+     * @return
+     */
+    private static boolean dateAlreadyDisplayed(DateTime currentDate,
+            DateTime dateTime) {
+        if (currentDate == null) {
+            // null currentDate indicates that floating task heading has
+            // already been displayed
+            return true;
+        }
+        if (dateTime == null) {
+            // null dateTime indicates that this is a floating task
+            return false;
+        }
+        if (currentDate.getDayOfYear() == dateTime.getDayOfYear()
+                && currentDate.getYear() == dateTime.getYear()) {
+            // currentDate equals to the DateTime of todo, meaning that the date
+            // has been displayed
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Append the date before the task details if the date is not already
+     * appended.
+     * 
+     * Each date will be displayed only once for all tasks on that date.
+     * 
+     * Floating tasks will have a heading in place of the date.
+     * 
+     * @param sBuilder
+     * @param todo
+     */
+    private static void appendDate(StringBuilder sBuilder, DateTime dateTime) {
+        // Add empty spaces in front
+        sBuilder.append(HEADING_PREFIX);
+        if (dateTime == null) {
+            // Floating task, add heading
+            sBuilder.append(FLOATING_TASK_HEADING + System.lineSeparator());
+        } else {
+            sBuilder.append(formatDateForDisplay(dateTime)
+                    + System.lineSeparator());
+        }
+    }
+
+    private static void appendCategory(int signal, StringBuilder sBuilder) {
+        if (signal == showAll) {
 			sBuilder.append(messageAll + System.lineSeparator());
 		} else if (signal == showCompleted) {
 			sBuilder.append(messageCompleted + System.lineSeparator());
 		} else if (signal == showPending) {
 			sBuilder.append(messagePending + System.lineSeparator());
 		}
+    }
 
-		while (iterator.hasNext()) {
-			Todo todo = iterator.next();
-			appendTodo(signal, sBuilder, todo);
-		}
-		return sBuilder.toString();
-	}
-
-	private static void appendTodo(int signal, StringBuilder sBuilder, Todo todo) {
-		// Show pending, skip the completed tasks
-		if (signal == showPending && todo.isDone()) {
-			return;
-		}
-
-		// Show completed, skip the pending tasks
-		if (signal == showCompleted && !todo.isDone()) {
-			return;
-		}
-
+    private static void appendTodo(StringBuilder sBuilder, Todo todo) {
 		if (todo.getStartTime() != null && todo.getEndTime() != null) {
 			sBuilder.append(formatEvent(todo));
 		} else if (todo.getEndTime() != null) {
@@ -139,7 +206,7 @@ public class DisplayCommand extends Command {
 		String title = todo.getTitle();
 		title = messageFloating + shortenTitle(title);
 		String id = String.valueOf(todo.getId());
-		return String.format(floatingFormat, id, "", title)
+        return String.format(floatingFormat, id, title)
 				+ System.lineSeparator();
 	}
 
@@ -150,7 +217,7 @@ public class DisplayCommand extends Command {
 		DateTime endTime = todo.getEndTime();
         String endDateString = formatDateForDisplay(endTime);
         String endTimeString = formatTimeForDisplay(endTime);
-		return String.format(deadLineFormat, id, endDateString, title,
+        return String.format(deadLineFormat, id, title,
 				endTimeString) + System.lineSeparator();
 	}
 
@@ -163,7 +230,7 @@ public class DisplayCommand extends Command {
         String startDateString = formatDateForDisplay(startTime);
         String startTimeString = formatTimeForDisplay(startTime);
         String endTimeString = formatTimeForDisplay(endTime);
-		return String.format(eventFormat, id, startDateString, title,
+        return String.format(eventFormat, id, title,
 				startTimeString, endTimeString) + System.lineSeparator();
 	}
 
@@ -232,6 +299,9 @@ public class DisplayCommand extends Command {
         Zeitgeist.handleInput("add CS3243 project deadline by 7 March at 9am");
 
         Zeitgeist.handleInput("add CS3333 project 2 on 7 Apr 10am");
+
+        Zeitgeist
+                .handleInput("add meet june at on the table from malaysia from 9pm on 9 march to 10pm on 10 march");
 
         Zeitgeist.handleInput("mark 0");
 
