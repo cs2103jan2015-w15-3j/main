@@ -69,7 +69,6 @@ public class Storage {
 	public void storeMemoryToFile(Memory memoryToStore){
 		initialiseWriter();
 		String jsonString = exportAsJson(memoryToStore);
-		System.out.println("json written: " + jsonString);
 		writer.println(jsonString);
 		tearDownWriter();
 	}
@@ -82,7 +81,6 @@ public class Storage {
 			builder.append(reader.nextLine() + "\n");
 		}
 		String jsonString = builder.toString();
-		System.out.println("jsonString read: " + jsonString);
 		tearDownReader();
 		return importFromJson(jsonString);
 	}
