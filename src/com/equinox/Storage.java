@@ -13,13 +13,12 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonObject;
 
 import java.io.File;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+
 import java.util.Date;
 import java.util.Scanner;
 
@@ -91,6 +90,11 @@ public class Storage {
 		writer.close();
 	}
 
+	/**
+	 * Stores the memory object that is passed in into a file in JSON formatting
+	 * 
+	 * @param memoryToStore
+	 */
 	public void storeMemoryToFile(Memory memoryToStore) {
 		initialiseWriter();
 		String jsonString = exportAsJson(memoryToStore);
