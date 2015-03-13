@@ -26,12 +26,12 @@ public class Signal {
 			+ System.lineSeparator()
 			+ "\t Supported formats:"
 			+ System.lineSeparator()
-			+ "\t Floating tasks: add <title>"
+			+ "\t Floating tasks: add <name>"
 			+ System.lineSeparator()
-			+ "\t Deadlines: add <title> by/on/at <date>"
+			+ "\t Deadlines: add <name> by/on/at <date>"
 			+ System.lineSeparator()
-			+ "\t Events: add <title> from <time> to <time> on <date>"
-			+ System.lineSeparator() + "\t\t add <title> from <date> to <date>";
+			+ "\t Events: add <name> from <time> on <date> to <time> on <date>"
+			+ System.lineSeparator() + "\t\t add <name> from <date> to <date>";
 
 	/**
 	 * Delete Command Signals
@@ -62,12 +62,12 @@ public class Signal {
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator()
-			+ "\t edit <indexNumber> [title <newTitle>] [start <newStartTime>] [end <newEndTime>]";
+			+ "\t edit <indexNumber> [name <newName>] [start <newStartTime>] [end <newEndTime>]";
 
 	/**
 	 * Exit Command Signals
 	 */
-	public static final String EXIT_SUCCESS = "Exit successfuly.";
+	public static final String EXIT_SUCCESS = "Exit successfully.";
 	public static final String EXIT_INVALLID_PARAMS = "Exit command should not be accompanied by additional paramters.";
 
 	/**
@@ -87,7 +87,7 @@ public class Signal {
 	public static final String UNDO_INVALID_PARAMS = "Error: The number of parameters is invalid."
 			+ System.lineSeparator()
 			+ "\t Supported format:"
-			+ System.lineSeparator() + "\t undo <indexNumber>";
+			+ System.lineSeparator() + "\t undo";
 
 	/**
 	 * Redo Command Signals
@@ -96,7 +96,7 @@ public class Signal {
 	public static final String REDO_INVALID_PARAMS = "Error: The number of parameters is invalid"
 			+ System.lineSeparator()
 			+ "\t Supported format:"
-			+ System.lineSeparator() + "\t redo <indexNumber>";
+			+ System.lineSeparator() + "\t redo";
 
 	/**
 	 * Search Command Signals

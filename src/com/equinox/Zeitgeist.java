@@ -26,10 +26,10 @@ public class Zeitgeist {
 
     public static Signal handleInput(String input) {
         ParsedInput c = Parser.parseInput(input);
-        return execute(c, memory);
+        return execute(c);
     }
 
-	private static Signal execute(ParsedInput userInput, Memory memory) {
+	private static Signal execute(ParsedInput userInput) {
 		Signal processSignal;
 		Command c;
 
