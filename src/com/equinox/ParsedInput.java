@@ -10,6 +10,16 @@ public class ParsedInput {
 	private ArrayList<KeyParamPair> keyParamPairList;
 	private List<DateTime> dateTimeList;
     
+    /**
+	 * Creates a ParsedInput object with the type of command, a list of
+	 * KeyParamPair objects and a list of DateTime objects derived from the user
+	 * input String.
+	 * 
+	 * @param userInput the original String read from the user.
+	 * @param type KEYWORDS specifying the type of the command.
+	 * @param keyParamPairList the list of KeyParamPair objects parsed from the input.
+	 * @param dateTimeList the list of DateTime objects parsed from the input.
+	 */
     public ParsedInput(String userInput, KEYWORDS type, ArrayList<KeyParamPair> keyParamPairList, List<DateTime> dateTimeList) {
     	this.userInput = userInput;
     	this.type = type;
@@ -17,14 +27,29 @@ public class ParsedInput {
     	this.dateTimeList = dateTimeList;
 	}
     
+    /**
+     * Retrieves the type of command specified by the input.
+     * 
+     * @return KEYWORDS specifying the type of the command.
+     */
     public KEYWORDS getType() {
 		return type;
 		}
 
+	/**
+	 * Retrieves the list of KeyParamPair objects parsed from the input if any.
+	 * 
+	 * @return the list of KeyParamPair objects parsed from the input.
+	 */
 	public ArrayList<KeyParamPair> getParamPairList() {
 		return keyParamPairList;
 	}
 	
+	/**
+	 * Retrieves the list of DateTime objects parsed from the input if any.
+	 * 
+	 * @return the list of DateTime objects parsed from the input.
+	 */
 	public List<DateTime> getDateTimeList() {
 		return dateTimeList;
 	}
@@ -43,6 +68,9 @@ public class ParsedInput {
 		return false;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if(o.getClass().equals(this.getClass())) {
