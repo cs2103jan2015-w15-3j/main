@@ -1,4 +1,7 @@
 package com.equinox;
+
+import com.equinox.exceptions.StateUndefinedException;
+
 /**
  * Restores the last stored state in memory.
  * 

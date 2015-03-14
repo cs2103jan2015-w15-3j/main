@@ -1,4 +1,4 @@
-package com.equinox;
+package com.equinox.exceptions;
 
 public class StateUndefinedException extends Exception {
 

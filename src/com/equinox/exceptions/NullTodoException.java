@@ -1,4 +1,4 @@
-package com.equinox;
+package com.equinox.exceptions;
 
 public class NullTodoException extends Exception {
 	private static final long serialVersionUID = 1L;

@@ -6,6 +6,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.equinox.exceptions.DateUndefinedException;
+import com.equinox.exceptions.NullTodoException;
+import com.equinox.exceptions.StateUndefinedException;
+
 public class MemoryTest {
 
 	private static final String TASK_1 = "Read book";
