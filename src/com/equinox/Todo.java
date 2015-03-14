@@ -49,7 +49,7 @@ public class Todo{
 	/**
 	 * Constructs a Todo of type: TASK.
 	 * 
-	 * @param userTitle title of the task.
+	 * @param title title of the task.
 	 */
 	public Todo(int id, String title) {
 		this.id = id;
@@ -68,7 +68,7 @@ public class Todo{
 	 * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
 	 * dates.
 	 * 
-	 * @param userTitle title of the task.
+	 * @param title title of the task.
 	 */
 	public Todo(int id, String title, List<DateTime> dateTimeList) {
 		this.id = id;

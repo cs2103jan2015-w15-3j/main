@@ -15,6 +15,13 @@ import org.joda.time.format.PeriodFormatterBuilder;
 
 public class DisplayCommand extends Command {
 	
+	/**
+	 * Creates a DisplayCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
 	public DisplayCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}
@@ -137,7 +144,7 @@ public class DisplayCommand extends Command {
      * 
      * @param currentDate
      * @param dateTime
-     * @return
+     * @return	true if date has already been displayed, false otherwise.
      */
     private static boolean dateAlreadyDisplayed(DateTime currentDate,
             DateTime dateTime) {

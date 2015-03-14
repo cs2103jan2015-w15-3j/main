@@ -10,6 +10,13 @@ import com.equinox.exceptions.StateUndefinedException;
  */
 public class RedoCommand extends Command {
 
+	/**
+	 * Creates an RedoCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
 	public RedoCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}
@@ -18,9 +25,6 @@ public class RedoCommand extends Command {
 	 * Processes a ParsedInput object containing the delete command and its
 	 * accompanying parameters and commits those changes to the memory.
 	 * 
-	 * @param input the ParsedInput object containing the parameters.
-	 * @param memory the memory containing the Todos to which the changes should
-	 *            be committed.
 	 * @return a Signal object with a message denoting success or failure in
 	 *         processing.
 	 */
