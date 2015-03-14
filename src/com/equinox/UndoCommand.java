@@ -10,6 +10,13 @@ import com.equinox.exceptions.StateUndefinedException;
  */
 public class UndoCommand extends Command{
 	
+	/**
+	 * Creates an UndoCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */	
 	public UndoCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}

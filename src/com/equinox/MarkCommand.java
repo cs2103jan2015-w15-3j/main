@@ -13,6 +13,13 @@ import com.equinox.exceptions.NullTodoException;
 
 public class MarkCommand extends Command {
 	
+	/**
+	 * Creates a MarkCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
 	public MarkCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}
@@ -21,11 +28,6 @@ public class MarkCommand extends Command {
 	 * Retrieves the Todo object specified by index in ParsedInput from Memory
 	 * and marks it as done.
 	 * 
-	 * @param input
-	 *            A ParsedInput object that contains a KEYWORDS type and an
-	 *            ArrayList<KeyParamPair>
-	 * @param memory
-	 *            A memory object that stores Todo objects
 	 * @return It returns a Signal object to indicate success or failure.
 	 */
 	@Override

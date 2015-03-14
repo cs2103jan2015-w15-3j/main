@@ -11,6 +11,13 @@ import com.equinox.exceptions.StateUndefinedException;
  */
 public class EditCommand extends Command{
 
+	/**
+	 * Creates an EditCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
 	public EditCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}
@@ -21,9 +28,6 @@ public class EditCommand extends Command{
 	 * 
 	 * Reverts the Todo to its original state if the changes are invalid.
 	 * 
-	 * @param input the ParsedInput object containing the parameters.
-	 * @param memory the memory containing the Todos to which the changes should
-	 *            be committed.
 	 * @return a Signal object with a message denoting success or failure in
 	 *         processing.
 	 */

@@ -1,6 +1,14 @@
 package com.equinox;
 
 public class ExitCommand extends Command {
+	
+	/**
+	 * Creates an ExitCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
 	public ExitCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}

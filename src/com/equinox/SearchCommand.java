@@ -22,6 +22,13 @@ public class SearchCommand extends Command {
 
 	private static final String REGEX_SPACE = "\\s";
 
+	/**
+	 * Creates a SearchCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
 	public SearchCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}

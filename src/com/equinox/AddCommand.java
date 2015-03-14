@@ -10,6 +10,13 @@ package com.equinox;
 
 public class AddCommand extends Command {
 
+	/**
+	 * Creates an AddCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
 	public AddCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}
@@ -22,11 +29,6 @@ public class AddCommand extends Command {
 	 * It returns a Signal object to indicate success or failure (if exception
 	 * is thrown).
 	 * 
-	 * @param input
-	 *            A ParsedInput object that contains a KEYWORDS type and an
-	 *            ArrayList<KeyParamPair>
-	 * @param memory
-	 *            A Memory object that stores Todo objects
 	 * @return It returns a Signal object to indicate success or failure.
 	 */
 	@Override
