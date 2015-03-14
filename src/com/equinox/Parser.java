@@ -16,6 +16,14 @@ public class Parser {
 	private static final String STRING_EMPTY = "";
 	private static final String REGEX_SPACE = "\\s";
 
+	/**
+	 * Parses the specified String, for the command type, keywords, dates and
+	 * other parameters.
+	 * 
+	 * @param input the String read from the user.
+	 * @return a ParsedInput object containing the command type,
+	 *         keyword-parameter pairs and dates identified.
+	 */
 	public static ParsedInput parseInput(String input) {
 		ArrayList<String> wordList = tokenize(input);
 		KEYWORDS cType = getCommandType(wordList);
@@ -30,7 +38,7 @@ public class Parser {
 		// Pre-process ADD command parameters for date
 		if(cType == KEYWORDS.ADD) {
 			try {
-				int lastDateKeywordIndex = findLastAddKeyword(wordList);
+				int lastDateKeywordIndex = findLastDateKeyword(wordList);
 				String dateString = getDateString(lastDateKeywordIndex,
 						wordList);
 				dateTimeList = parseDates(dateString);
@@ -65,11 +73,10 @@ public class Parser {
 
 	/**
 	 * Takes in a user input string and puts individual words into elements in a
-	 * String array.
+	 * String ArrayList.
 	 *
-	 * @param input Input string from Zeitgeist class
-	 * @return An ArrayList<String> where each element is a word from the
-	 *         original string
+	 * @param input the String read from the user.
+	 * @return an ArrayList of words from the input String.
 	 */
 	public static ArrayList<String> tokenize(String input) {
 		input = input.trim();
@@ -82,6 +89,14 @@ public class Parser {
 		return wordList;
 	}
 	
+	/**
+	 * Retrieves the String representing the date(s) entered by the user using
+	 * the index of the first occurrence of the date keyword.
+	 * 
+	 * @param lastDateKeywordIndex the index of the first occurrence of the date keyword.
+	 * @param wordList the ArrayList of words from the input String.
+	 * @return the String containing only the dates specified by the user.
+	 */
 	private static String getDateString(int lastDateKeywordIndex, ArrayList<String> wordList) {
 		// Append 'on' keyword and following parameters at the end of the
 		// ArrayList
@@ -97,6 +112,12 @@ public class Parser {
 		return dateString.toString().trim();
 	}
 
+	/**
+	 * Remove the 
+	 * 
+	 * @param lastDateKeywordIndex
+	 * @param wordList
+	 */
 	private static void removeDates(int lastDateKeywordIndex,
 			ArrayList<String> wordList) {
 		// Remove dateString from wordList
@@ -105,7 +126,20 @@ public class Parser {
 		}
 	}
 
-	private static int findLastAddKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
+	/**
+	 * Locates the last date keyword in the tokenized input stored in wordList
+	 * by iterating through the entire ArrayList once. This method selects
+	 * "from" and "by" preferentially over "on" and at" which are ignored if the
+	 * former are present. In the event the former are absent, the latter is
+	 * chosen, whichever comes later to ensure that part of the title is not
+	 * mistakenly parsed as date.
+	 * 
+	 * @param wordList the ArrayList of words from the input String.
+	 * @return the index of the first date keyword.
+	 * @throws NoDateKeywordException if no date keywords are found in the
+	 *             tokenized input.
+	 */
+	private static int findLastDateKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
 		LinkedList<Integer> onIndices = new LinkedList<Integer>();
 		LinkedList<Integer> atIndices = new LinkedList<Integer>();
 		
@@ -123,9 +157,11 @@ public class Parser {
 				}
 			}
 		}
+		// FLAW: "add look for max at the park on 9 March"
+		// FIXED: Look for the later keyword in absence of from or by
 		// If there are no instances of from, at or by, take the last on or last at whichever is earlier.
 		if(!onIndices.isEmpty() && !atIndices.isEmpty()) {
-			return Math.min(onIndices.poll(), atIndices.poll());
+			return Math.max(onIndices.poll(), atIndices.poll());
 		} else if (!onIndices.isEmpty()) {
 			return onIndices.poll();
 		} else if (!atIndices.isEmpty()){
@@ -136,14 +172,13 @@ public class Parser {
 	}
 
 	/**
-	 * Processes the inputArray to fill up an ArrayList with KeyParamPair
-	 * objects. This method assumes that the first word in user input is a
-	 * keyword.
+	 * Parses the tokenized input, wordList for keywords and their associated
+	 * parameters, stores them in KeyParamPair objects and adds all KeyParamPair
+	 * objects to an ArrayList which is returned. 
+	 * ASSUMPTION: The first word in user input is a keyword.
 	 * 
-	 * @param wordList
-	 *            An ArrayList<String> with the user input split into individual
-	 *            words.
-	 * @return An ArrayList<KeyParamPair> object with KeyParamPair objects
+	 * @param wordList the ArrayList of words from the input String.
+	 * @return an ArrayList of KeyParamPair objects.
 	 */
 	public static ArrayList<KeyParamPair> extractParam(
 			ArrayList<String> wordList) {
@@ -222,11 +257,12 @@ public class Parser {
 	}
 
 	/**
-	 * This operation gets the type of command of the user input assuming that
-	 * the keyword of command type is input by the user as the first word.
+	 * This operation gets the type of command of the user input.
 	 * 
-	 * @param wordList
-	 * @return
+	 * ASSUMPTION: the first word in user input is the command type keyword.
+	 * 
+	 * @param wordList the ArrayList of words from the input String.
+	 * @return an ArrayList of KeyParamPair objects.
 	 */
 	public static KEYWORDS getCommandType(ArrayList<String> wordList) {
 		String typeString = wordList.get(0);
@@ -235,15 +271,14 @@ public class Parser {
 
 	/**
 	 * This operation checks if type string corresponds to the listed command
-	 * types. Returns the command type or type error if the command type is not
-	 * listed.
+	 * types. 
 	 * 
-	 * @param typeString
+	 * @param typeString String specifying the type of command.
 	 * @return KEYWORDS specifying the type, null if typeString does not contain
 	 *         command.
 	 */
 	private static KEYWORDS determineCommandType(String typeString) {
-		KEYWORDS type = null;
+		KEYWORDS type = null; // TODO: Suggest throwing exception instead of returning null.
 		if (InputStringKeyword.isCommand(typeString)) {
 			type = InputStringKeyword.getCommand(typeString);
 		}

@@ -290,6 +290,7 @@ public class Todo{
         }
     }
 
+	// TODO: Refactor out of Todo.
     private String formatDateTime(DateTime dateTime) {
         if (dateTime == null) {
             return "";
