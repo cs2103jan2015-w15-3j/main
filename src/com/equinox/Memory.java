@@ -53,9 +53,6 @@ public class Memory {
 	/**
 	 * Constructs an empty Memory object.
 	 */
-	/**
-	 * 
-	 */
 	public Memory() {
 		this.startingId = 0;
 		this.memoryMap = new HashMap<Integer, Todo>();
@@ -73,8 +70,7 @@ public class Memory {
 	 * Adds the specified Todo to memory. The current state is saved prior to
 	 * any operation.
 	 * 
-	 * @param todo
-	 *            the Todo to be added.
+	 * @param todo the Todo to be added.
 	 */
 	public void add(Todo todo) {
 		int id = todo.getId();
@@ -83,6 +79,7 @@ public class Memory {
 		memoryMap.put(id, todo);
 
 		// inserts fields in Todo into various hashmaps
+		// TODO: Propose refactoring into nested class.
 		insertToNameMap(todo.getTitle(), id);
 		DateTime startDateTime = todo.getStartTime();
 		DateTime endDateTime = todo.getEndTime();
@@ -205,11 +202,10 @@ public class Memory {
 	/**
 	 * Retrieves the Todo identified by the specified ID from the memory.
 	 * 
-	 * @param id
-	 *            the ID of the Todo to be retrieved.
+	 * @param id the ID of the Todo to be retrieved.
 	 * @return the Todo object identified by the specified ID.
-	 * @throws NullTodoException
-	 *             if the Todo identified by the specified ID does not exist.
+	 * @throws NullTodoException if the Todo identified by the specified ID does
+	 *             not exist.
 	 */
 	public Todo get(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -223,11 +219,10 @@ public class Memory {
 	 * Retrieves the Todo identified by the specified ID from the memory for
 	 * editing. The current state is saved prior to any operation.
 	 * 
-	 * @param id
-	 *            the ID of the Todo to be retrieved.
+	 * @param id the ID of the Todo to be retrieved.
 	 * @return the Todo object identified by the specified ID.
-	 * @throws NullTodoException
-	 *             if the Todo identified by the specified ID does not exist.
+	 * @throws NullTodoException if the Todo identified by the specified ID does
+	 *             not exist.
 	 */
 	public Todo setterGet(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -243,10 +238,9 @@ public class Memory {
 	 * Removes the Todo identified by the specified id from the memory. The
 	 * current state is saved prior to any operation.
 	 * 
-	 * @param id
-	 *            the ID of the Todo to be removed.
-	 * @throws NullTodoException
-	 *             if the Todo identified by the specified ID does not exist.
+	 * @param id the ID of the Todo to be removed.
+	 * @throws NullTodoException if the Todo identified by the specified ID does
+	 *             not exist.
 	 */
 	public Todo remove(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -261,13 +255,14 @@ public class Memory {
 
 	/**
 	 * Saves the a copy of the state of a Todo into the undo stack. If the Todo
-	 * specified is null, a placeholder is used instead. The stack never
-	 * contains null values. If the maximum stack size is reached, the earliest
-	 * state is discarded. If the stack and memory no longer contains a
-	 * particular Todo, its ID is returned to the pool of available indices.
+	 * specified is null, a placeholder is used instead.
+	 * <p>
+	 * The stack never contains null values. <br>
+	 * If the maximum stack size is reached, the earliest state is discarded. <br>
+	 * If the stack and memory no longer contains a particular Todo, its ID is
+	 * returned to the pool of available indices.
 	 * 
-	 * @param toBeSaved
-	 *            the Todo to be saved.
+	 * @param toBeSaved the Todo to be saved.
 	 */
 	private void save(Todo toBeSaved) {
 		// If undo stack has exceeded max size, discard earliest state.
@@ -282,6 +277,9 @@ public class Memory {
 		undoStack.add(toBeSavedCopy);
 	}
 
+	/**
+	 * Flushes the redoStack of all states of Todos.
+	 */
 	private void flushRedoStack() {
 		while (!redoStack.isEmpty()) {
 			int id = redoStack.pollLast().getId();
@@ -296,8 +294,8 @@ public class Memory {
 	 * Restores the latest history state of the memory. Also known as the undo
 	 * operation.
 	 * 
-	 * @throws StateUndefinedException
-	 *             if there are no history states to restore to.
+	 * @throws StateUndefinedException if there are no history states to restore
+	 *             to.
 	 */
 	public void restoreHistoryState() throws StateUndefinedException {
 		Todo fromStack;
@@ -332,8 +330,8 @@ public class Memory {
 	 * Restores the latest future state of the memory. Also known as the redo
 	 * operation.
 	 * 
-	 * @throws StateUndefinedException
-	 *             if there are no future states to restore to.
+	 * @throws StateUndefinedException if there are no future states to restore
+	 *             to.
 	 */
 	public void restoreFutureState() throws StateUndefinedException {
 		Todo fromStack;
@@ -364,7 +362,7 @@ public class Memory {
 	}
 
 	/**
-	 * Method to get all the Todos for displaying purposes
+	 * Method to get all the Todos for displaying purposes.
 	 * 
 	 * @return all Todos as Collection
 	 */
@@ -385,8 +383,7 @@ public class Memory {
 	 * Releases the specified ID number to the pool of available ID numbers for
 	 * future use by new Todos.
 	 * 
-	 * @param id
-	 *            the ID to be released.
+	 * @param id the ID to be released.
 	 */
 	public void releaseId(int id) {
 		idBuffer.put(id);
@@ -408,21 +405,21 @@ public class Memory {
 			}
 		}
 
-		protected int get() {
+		private int get() {
 			if (buffer.size() == 1) {
 				loadToSize();
 			}
 			return buffer.pollFirst();
 		}
 
-		protected void put(int id) {
+		private void put(int id) {
 			buffer.add(id);
 			if (buffer.size() > ID_BUFFER_MAX_SIZE) {
 				unloadToSize();
 			}
 		}
 
-		private void loadToSize() { // Bug: Remove 5 elements or so from a
+		private void loadToSize() { //TODO: Bug: Remove 5 elements or so from a
 									// memory of size 10. Will load duplicate ID
 									// unnecessarily
 			int largestId = buffer.last();
