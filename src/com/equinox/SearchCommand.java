@@ -9,6 +9,9 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import com.equinox.exceptions.DateUndefinedException;
+import com.equinox.exceptions.NullTodoException;
+
 /**
  * The SearchCommand class handles user input with search commands.
  * 

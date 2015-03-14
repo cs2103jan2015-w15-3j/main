@@ -44,48 +44,38 @@ public class AddCommand extends Command {
 		
 		String todoName = keyParamPairList.get(0).getParam();
 
-		try {
+		int numberOfDates = keyParamPairList.size();
 
-			int numberOfDates = keyParamPairList.size();
+		switch (numberOfDates) { // TODO: Used to catch dateUndefinedException. Lack of dates is now represented by an empty dateList
+		// Floating task
+		// Example:
+		// KeyParamPair 0: add <task>
+			case 0:
+				Todo floatingTask = new Todo(memory.obtainFreshId(), todoName);
+				memory.add(floatingTask);
+				return new Signal(String.format(
+		                Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask),
+		                true);
 
-			switch (numberOfDates) {
-			// Floating task
-			// Example:
-			// KeyParamPair 0: add <task>
-				case 0:
-					Todo floatingTask = new Todo(memory.obtainFreshId(), todoName);
-					memory.add(floatingTask);
+				// Deadline
+				// Example:
+				// KeyParamPair 0: add <task>, KeyParamPair 1: by <date>
+
+				// Event
+				// Example:
+				// KeyParamPair 0: add <event>, KeyParamPair 1: from
+				// <startDate to endDate>
+
+			case 1: case 2:
+				Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
+					dateTimeList);
+				if (timedTodo.isValid()) {
+					memory.add(timedTodo);
 					return new Signal(String.format(
-                            Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask),
-                            true);
-
-					// Deadline
-					// Example:
-					// KeyParamPair 0: add <task>, KeyParamPair 1: by <date>
-
-					// Event
-					// Example:
-					// KeyParamPair 0: add <event>, KeyParamPair 1: from
-					// <startDate to endDate>
-
-				case 1: case 2:
-					Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
-						dateTimeList);
-					if (timedTodo.isValid()) {
-						memory.add(timedTodo);
-						return new Signal(String.format(
-							Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
-					} else {
-						return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
-					}	
-			}
-
-		} catch (DateUndefinedException e) {
-			e.printStackTrace();
-			String exceptionMessage = e.getMessage();
-			return new Signal(String.format(Signal.GENERIC_DATE_UNDEFINED_FORMAT,
- exceptionMessage),
-                    false);
+						Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
+				} else {
+					return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
+				}	
 		}
 
         return new Signal(Signal.ADD_UNKNOWN_ERROR, false);

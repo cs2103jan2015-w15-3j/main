@@ -1,8 +1,11 @@
 package com.equinox;
 
 import static org.junit.Assert.*;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
+
+import com.equinox.exceptions.DateUndefinedException;
 
 
 public class TodoTest {

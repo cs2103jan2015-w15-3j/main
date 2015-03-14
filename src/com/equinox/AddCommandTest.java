@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-<<<<<<< HEAD:src/com/equinox/AddHandlerTest.java
-public class AddHandlerTest {
-=======
 import java.util.ArrayList;
 
 public class AddCommandTest {

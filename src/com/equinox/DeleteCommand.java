@@ -1,5 +1,7 @@
 package com.equinox;
 
+import com.equinox.exceptions.NullTodoException;
+
 /**
  * Houses a method which processes the delete request from the user. 
  * 

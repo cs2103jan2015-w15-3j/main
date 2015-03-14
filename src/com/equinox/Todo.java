@@ -1,5 +1,6 @@
 package com.equinox;
 import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeComparator;
 import org.joda.time.DateTimeFieldType;
@@ -49,7 +50,6 @@ public class Todo{
 	 * Constructs a Todo of type: TASK.
 	 * 
 	 * @param userTitle title of the task.
-	 * @throws DateUndefinedException 
 	 */
 	public Todo(int id, String title) {
 		this.id = id;
@@ -69,7 +69,6 @@ public class Todo{
 	 * dates.
 	 * 
 	 * @param userTitle title of the task.
-	 * @throws DateUndefinedException
 	 */
 	public Todo(int id, String title, List<DateTime> dateTimeList) {
 		this.id = id;

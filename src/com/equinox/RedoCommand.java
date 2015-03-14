@@ -1,5 +1,7 @@
 package com.equinox;
 
+import com.equinox.exceptions.StateUndefinedException;
+
 /**
  * Houses a method which processes the redo request from the user. 
  * 

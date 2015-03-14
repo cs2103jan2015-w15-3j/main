@@ -3,7 +3,11 @@ package com.equinox;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+
 import org.junit.Test;
+
+import com.equinox.exceptions.DateUndefinedException;
+import com.equinox.exceptions.NullTodoException;
 
 public class EditCommandTest {
 	Memory memory = new Memory();

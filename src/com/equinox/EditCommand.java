@@ -1,5 +1,8 @@
 package com.equinox;
 
+import com.equinox.exceptions.NullTodoException;
+import com.equinox.exceptions.StateUndefinedException;
+
 /**
  * Houses a method which processes the edit request from the user. 
  * 
@@ -28,7 +31,7 @@ public class EditCommand extends Command{
 	public Signal execute() {
 		Todo preEdit, postEdit;
 		try {
-			if(input.containsEmptyParams()) {
+			if(input.containsEmptyParams()) { // TODO: Check for empty dateList.
 				return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 			}
 			int userIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
@@ -65,8 +68,6 @@ public class EditCommand extends Command{
 				}
                 return new Signal(Signal.EDIT_INVALID_TIME, false);
 			}
-		} catch (DateUndefinedException e) {
-            return new Signal(e.getMessage(), false);
 		} catch (NullTodoException e) {
             return new Signal(e.getMessage(), false);
 		} catch (NumberFormatException e) {
