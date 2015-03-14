@@ -11,6 +11,13 @@ public abstract class Command {
 	ArrayList<KeyParamPair> keyParamPairList;
 	List<DateTime> dateTimeList;
 	
+	/**
+	 * Constructs a new Command object with the given parameters and reference
+	 * to the memory that stores the Todos.
+	 * 
+	 * @param input
+	 * @param memory
+	 */
 	public Command(ParsedInput input, Memory memory) {
 		this.keyParamPairList = input.getParamPairList();
 		this.dateTimeList = input.getDateTimeList();
