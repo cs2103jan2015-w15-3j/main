@@ -51,7 +51,7 @@ public class Todo{
 	 * @param userTitle title of the task.
 	 * @throws DateUndefinedException 
 	 */
-	public Todo(int id, String title) throws DateUndefinedException {
+	public Todo(int id, String title) {
 		this.id = id;
 		this.title = title;
 		this.createdOn = new DateTime();
@@ -65,10 +65,13 @@ public class Todo{
 	/**
 	 * Constructs a Todo of type: DEADLINE or EVENT.
 	 * 
+	 * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
+	 * dates.
+	 * 
 	 * @param userTitle title of the task.
-	 * @throws DateUndefinedException 
+	 * @throws DateUndefinedException
 	 */
-	public Todo(int id, String title, List<DateTime> dateTimeList) throws DateUndefinedException {
+	public Todo(int id, String title, List<DateTime> dateTimeList) {
 		this.id = id;
 		this.title = title;
 		this.createdOn = new DateTime();
@@ -137,7 +140,8 @@ public class Todo{
 	}
 
 	/**
-	 * Replaces the title with the specified String and updates the last modified field of the Todo.
+	 * Replaces the title with the specified String and updates the last
+	 * modified time.
 	 * 
 	 * @param title the new title of the Todo.
 	 */
@@ -157,7 +161,7 @@ public class Todo{
 
 	/**
 	 * Replaces the start time with the date encoded in the specified
-	 * startTimeString and updates the last modified field of the Todo.
+	 * startTimeString and updates the last modified time.
 	 * 
 	 * @param startTime DateTime of the new startTime
 	 */
@@ -176,12 +180,12 @@ public class Todo{
 	}
 
 	/**
-	 * Replaces the end time with the specified DateTime and updates the last modified field of the Todo.
+	 * Replaces the end time with the specified DateTime and updates the last
+	 * modified field of the Todo.
 	 * 
 	 * @param endTime String containing the new end time of the Todo.
-	 * @throws DateUndefinedException if endTimeString does not contain a valid date, is empty, or null
 	 */
-	public void setEndTime(DateTime endTime) throws DateUndefinedException {
+	public void setEndTime(DateTime endTime) {
 		this.endTime = endTime;
 		modifiedOn = new DateTime();
 	}
@@ -196,7 +200,7 @@ public class Todo{
 	}
 
 	/**
-	 * Marks the Todo as done or undone and updates the last modified field.
+	 * Marks the Todo as done or undone and updates the last modified time.
 	 * 
 	 * @param isDone the new status of the Todo.
 	 */
@@ -233,13 +237,22 @@ public class Todo{
 	}
 	
 	/**
-	 * Returns the placeholder Todo constructed from the ID of this Todo.
+	 * Returns the placeholder Todo constructed from the ID of this Todo. 
+	 * For use in Undo and Redo stacks in Memory.
 	 * 
 	 */
 	protected Todo getPlaceholder() {
 		return new Todo(id);
 	}
 	
+	/**
+	 * Checks if the Todo has valid parameters and type. Specifically, checks
+	 * for the presence of startTime and endTime and sets the type accordingly.
+	 * If both are present, startTime is checked to determine if it elapses
+	 * before endTime. Used in AddCommand and EditCommand operations.
+	 * 
+	 * @return true if Todo has valid parameters and type, false otherwise.
+	 */
 	protected boolean isValid() {
 		if(startTime != null && endTime != null) {
 			type = TYPE.EVENT;
@@ -287,15 +300,12 @@ public class Todo{
     }
 
     /**
-     * Method to return a DateTime of the todo for ordering them chronologically
+     * Method to return a DateTime of the Todo for ordering them chronologically
      * The order of preference: start time > end time > null
-     * For events, start time will be returned
-     * For deadlines, end time will be returned
-     * For floating todos, null will be returned
      * 
      * @author paradite
      * 
-     * @return DateTime object
+     * @return start time for events; end time for deadlines; null for tasks.
      */
     public DateTime getDateTime() {
         if (this.startTime != null) {
@@ -309,13 +319,10 @@ public class Todo{
     
     /**
      * Method to compare two DateTime objects at the minute resolution
-     * Returns -1 if the first object is smaller (earlier)
-     * Returns 0 if the two objects are equal
-     * Returns 1 if the first object is larger(later)
      * 
      * @author Jonathan Lim Siu Chi || ign3sc3nc3
      * 
-     * @return int
+     * @return -1 if the first object is smaller (earlier), 0 if the two objects are equal, 1 if the first object is larger(later).
      */
     public int compareDateTime(DateTime first, DateTime second){
     	DateTimeComparator comparator = DateTimeComparator.getInstance(DateTimeFieldType.minuteOfDay());
@@ -326,8 +333,6 @@ public class Todo{
 	 * Overriding the equals method. 
 	 * Compares the title, startTime, endTime and isDone parameters between this Todo object
 	 * and the other Todo object being compared to.
-	 * 
-	 * Returns true if the parameters being compared to are equal, false otherwise.
 	 * 
 	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 	 */

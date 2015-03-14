@@ -14,6 +14,13 @@ public class Zeitgeist {
     public static Storage storage = new Storage();
     public static Memory memory = storage.retrieveMemoryFromFile();
 
+	/**
+	 * The main logic unit of Zeitgeist. Reads the input from Zeitgeist and
+	 * passes it to the Parser, the first element in the flow of component calls
+	 * present in all operations.
+	 * 
+	 * @param args contains arguments from the command line at launch. (Not used)
+	 */
 	public static void main(String[] args) {
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
 		String input = scn.nextLine();
@@ -29,6 +36,13 @@ public class Zeitgeist {
         return execute(c);
     }
 
+	/**
+	 * Creates a Command object with the given ParsedInput and executes it.
+	 * 
+	 * @param userInput input from user, parsed by the Parser.
+	 * @return a Signal containing a message to be printed, denoting success or
+	 *         failure of the execution.
+	 */
 	private static Signal execute(ParsedInput userInput) {
 		Signal processSignal;
 		Command c;
