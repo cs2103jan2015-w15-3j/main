@@ -66,26 +66,62 @@ public class InputStringKeyword {
         keywords.put(KEY_YEAR, KEYWORDS.YEAR);
     }
 
+    /**
+     * Checks if the String encodes a keyword
+     * 
+     * @param s String to be checked
+     * @return the enum constant representing the keyword.
+     */
     public static boolean isKeyword(String s) {
         return keywords.containsKey(s);
     }
 
+    /**
+     * Retrieves the enum constant that represents the keyword encoded in the String.
+     * 
+     * @param s String containing the keyword.
+     * @return the enum constant representing the command.
+     */
     public static KEYWORDS getKeyword(String s) {
         return keywords.get(s);
     }
     
+    /**
+     * Checks if the String encodes a command.
+     * 
+     * @param s
+     * @return
+     */
     public static boolean isCommand(String s) {
     	return commands.containsKey(s);
     }
     
+    /**
+     * Retrieves the enum constant that represents the command encoded in the String.
+     * 
+     * @param s String containing the keyword.
+     * @return the enum constant representing the command.
+     */
     public static KEYWORDS getCommand(String s) {
     	return commands.get(s);
     }
     
+    /**
+     * Checks if the String encodes an add keyword.
+     * 
+     * @param s String to be checked.
+     * @return the enum constant representing the keyword.
+     */
     public static boolean isAddKeyword(String s) {
     	return addKeywords.containsKey(s);
     }
     
+    /**
+     * Retrieves the enum constant that represents the add keyword encoded in the String.
+     * 
+     * @param s String containing the keyword
+     * @return the enum constant representing the add keyword
+     */
     public static KEYWORDS getAddKeyword(String s) {
     	return addKeywords.get(s);
     }
