@@ -40,7 +40,7 @@ public class Memory {
 //	private HashMap<Integer, ArrayList<Integer>> yearMap;
 	private HashMap<Integer, ArrayList<Integer>> monthMap;
 	private HashMap<Integer, ArrayList<Integer>> dayMap;
-
+	
 	/**
 	 * Constructs an empty Memory object.
 	 */
