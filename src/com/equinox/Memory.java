@@ -70,7 +70,7 @@ public class Memory {
 
 		// inserts fields in Todo into various hashmaps
 		// TODO: Propose refactoring into nested class.
-		insertToNameMap(todo.getTitle(), id);
+		insertToNameMap(todo.getName(), id);
 		DateTime startDateTime = todo.getStartTime();
 		DateTime endDateTime = todo.getEndTime();
 		if (startDateTime != null) {
