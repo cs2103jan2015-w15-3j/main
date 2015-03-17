@@ -27,10 +27,10 @@ public class Memory {
 
 	private static final String REGEX_SPACE = "\\s";
 	private static final int STACK_MAX_SIZE = 5;
+	private static final int ID_INITIAL = 0;
 	private static final int ID_BUFFER_INITIAL_SIZE = 5;
 	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
 	private final IDBuffer idBuffer = new IDBuffer();
-	private int startingId;
 	private HashMap<Integer, Todo> memoryMap;
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
@@ -45,7 +45,6 @@ public class Memory {
 	 * Constructs an empty Memory object.
 	 */
 	public Memory() {
-		this.startingId = 0;
 		this.memoryMap = new HashMap<Integer, Todo>();
 		this.undoStack = new LinkedList<Todo>();
 		this.redoStack = new LinkedList<Todo>();
@@ -386,23 +385,29 @@ public class Memory {
 	 */
 	private class IDBuffer {
 		private TreeSet<Integer> buffer;
+		private int minFreeId;
 
 		private IDBuffer() {
 			buffer = new TreeSet<Integer>();
-			for (int i = startingId; i < startingId + ID_BUFFER_INITIAL_SIZE; i++) {
+			minFreeId = ID_INITIAL;
+			for (int i = ID_INITIAL; i < ID_INITIAL + ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.add(i);
 			}
 		}
 
 		private int get() {
-			
 			if (buffer.size() == 1) {
 				loadToSize();
 			}
-			return buffer.pollFirst();
+			int returnId = buffer.pollFirst();
+			minFreeId = buffer.first();
+			return returnId;
 		}
 
 		private void put(int id) {
+			if(id < minFreeId) {
+				minFreeId = id;
+			}
 			buffer.add(id);
 			if (buffer.size() > ID_BUFFER_MAX_SIZE) {
 				unloadToSize();
@@ -410,14 +415,15 @@ public class Memory {
 		}
 
 		private void loadToSize() {
-			int firstId = buffer.last() + 1;
-			int i = firstId;
-			while(i < firstId + ID_BUFFER_INITIAL_SIZE) {
-				if(!memoryMap.containsKey(i)) {
+			int minUnloadedId = minFreeId + 1;
+			int i = minUnloadedId;
+			
+			while(i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
+				if(memoryMap.containsKey(i)) {
+					minUnloadedId++;
+				} else {
 					buffer.add(i);
 					i++;
-				} else {
-					firstId++;
 				}
 			}
 		}
