@@ -57,8 +57,9 @@ public class Signal {
 	 * Edit Command Signals
 	 */
 	public static final String EDIT_SUCCESS_FORMAT = "%1$s successfully modified to %2$s";
-	public static final String EDIT_INVALID_TIME = "Error: The start time must be before the end time.";
-	public static final String EDIT_INVALID_PARAMS = "Error: The number or format of parameters is invalid."
+	public static final String EDIT_END_BEFORE_START = "The start time must be before the end time.";
+	public static final String EDIT_INVALID_DATE = "Date(s) specified is/are invalid";
+	public static final String EDIT_INVALID_PARAMS = "The number or format of parameters is invalid."
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator()
@@ -117,8 +118,6 @@ public class Signal {
 	public static final String GENERIC_INVALID_COMMAND_FORMAT = "Error: %1$s command is invalid!"
 			+ System.lineSeparator()
 			+ "Supported commands: add, mark, delete, edit, undo, etc...";
-	public static final String GENERIC_DATE_UNDEFINED_FORMAT = "Error: Date is undefined; %1$s";
-	public static final String GENERIC_EXCEPTIONS_FORMAT = "Error: %1$s";
 	public static final String GENERIC_FATAL_ERROR = "Fatal error.";
 
 	public static final String ERROR_PREFIX = "Error: ";
