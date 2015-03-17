@@ -40,7 +40,7 @@ public class AddCommand extends Command {
 
 		// Check for valid number of keywords
 		int numberOfKeywords = keyParamPairList.size() + dateTimeList.size();
-		if (numberOfKeywords > 3) { // TODO: Check if dates are in order.
+		if (numberOfKeywords > 3) {
             return new Signal(Signal.ADD_INVALID_PARAMS, false);
 		}
 		
@@ -48,7 +48,7 @@ public class AddCommand extends Command {
 
 		int numberOfDates = keyParamPairList.size();
 
-		switch (numberOfDates) { // TODO: Used to catch dateUndefinedException. Lack of dates is now represented by an empty dateList
+		switch (numberOfDates) {
 		// Floating task
 		// Example:
 		// KeyParamPair 0: add <task>
