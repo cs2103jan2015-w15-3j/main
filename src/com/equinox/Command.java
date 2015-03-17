@@ -8,8 +8,8 @@ import org.joda.time.DateTime;
 public abstract class Command {
 	ParsedInput input;
 	Memory memory;
-	ArrayList<KeyParamPair> keyParamPairList;
-	List<DateTime> dateTimeList;
+	ArrayList<KeyParamPair> keyParamPairs;
+	List<DateTime> dateTimes;
 	
 	/**
 	 * Constructs a new Command object with the given parameters and reference
@@ -20,8 +20,8 @@ public abstract class Command {
 	 *            be committed.
 	 */
 	public Command(ParsedInput input, Memory memory) {
-		this.keyParamPairList = input.getParamPairList();
-		this.dateTimeList = input.getDateTimeList();
+		this.keyParamPairs = input.getParamPairList();
+		this.dateTimes = input.getDateTimeList();
 		this.input = input;
 		this.memory = memory;
 	}

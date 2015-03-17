@@ -39,14 +39,14 @@ public class AddCommand extends Command {
 		}
 
 		// Check for valid number of keywords
-		int numberOfKeywords = keyParamPairList.size() + dateTimeList.size();
+		int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
 		if (numberOfKeywords > 3) {
             return new Signal(Signal.ADD_INVALID_PARAMS, false);
 		}
 		
-		String todoName = keyParamPairList.get(0).getParam();
+		String todoName = keyParamPairs.get(0).getParam();
 
-		int numberOfDates = keyParamPairList.size();
+		int numberOfDates = keyParamPairs.size();
 
 		switch (numberOfDates) {
 		// Floating task
@@ -70,7 +70,7 @@ public class AddCommand extends Command {
 
 			case 1: case 2:
 				Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
-					dateTimeList);
+					dateTimes);
 				if (timedTodo.isValid()) {
 					memory.add(timedTodo);
 					return new Signal(String.format(
