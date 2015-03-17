@@ -55,6 +55,18 @@ public class ParsedInput {
 	}
 	
 	/**
+	 * Checks if there are no keywords other than one specifying the command type.
+	 * 
+	 * @return true if there are no keywords other than one specifying the command type.
+	 */
+	public boolean containsNoOtherKeywords() {
+		if(keyParamPairList.size() == 1) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Iterates through the keyParamPair ArrayList and checks if any parameter is an empty string.
 	 * 
 	 * @return boolean If there is at least one empty string parameter, return true. Else, return false.
@@ -64,6 +76,18 @@ public class ParsedInput {
 			if(pair.getParam().equals("")){
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if no dates are parsed.
+	 * 
+	 * @return true if no dates are parsed.
+	 */
+	public boolean containsNoDates() {
+		if(dateTimeList.isEmpty()) {
+			return true;
 		}
 		return false;
 	}
