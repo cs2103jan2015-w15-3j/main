@@ -30,20 +30,19 @@ public class DeleteCommand extends Command {
 	 */
 	@Override
 	public Signal execute() {
+		// Ensure that there is only one KeyParamPair in inputList
+		if (!input.containsOnlyCommand()) {
+			return new Signal(Signal.DELETE_INVALID_PARAMS, false);
+		}
+		
 		if(input.containsEmptyParams()) {
             return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 		}
-		
-		//Check for valid number of keywords
-    	int numberOfKeywords = keyParamPairList.size();
-    	if(numberOfKeywords > 1){
-            return new Signal(Signal.DELETE_INVALID_PARAMS, false);
-    	}
     	
     	int deleteIndex;
     	Todo deleted;
 		try {
-			deleteIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
+			deleteIndex = Integer.parseInt(keyParamPairs.get(0).getParam());
 			deleted = memory.remove(deleteIndex);
 		} catch (NumberFormatException e) {
             return new Signal(Signal.DELETE_INVALID_PARAMS, false);

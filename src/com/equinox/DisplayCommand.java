@@ -76,7 +76,7 @@ public class DisplayCommand extends Command {
 		if (todos.size() == 0) {
             return new Signal(Signal.DISPLAY_EMPTY_SIGNAL, true);
 		}
-		String param = keyParamPairList.get(0).getParam();
+		String param = keyParamPairs.get(0).getParam();
 		if (param.equals("completed") || param.equals("complete")
 				|| param.equals("c")) {
 			displayString = getDisplayChrono(todos, showCompleted);
