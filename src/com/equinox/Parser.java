@@ -40,11 +40,11 @@ public class Parser {
 		// Pre-process ADD command parameters for date
 		if (cType == KEYWORDS.ADD) {
 			try {
-				int lastDateKeywordIndex = findLastDateKeyword(wordList);
-				String dateString = getDateString(lastDateKeywordIndex,
+				int lastAddKeywordIndex = findLastAddKeyword(wordList);
+				String dateString = getDateString(lastAddKeywordIndex,
 						wordList);
 				dateTimeList = parseDates(dateString);
-				removeDates(lastDateKeywordIndex, wordList);
+				removeDates(lastAddKeywordIndex, wordList);
 			} catch (NoDateKeywordException e) {
 				// Ignore empty date list will be returned
 			} catch (DateUndefinedException e) {
@@ -163,7 +163,7 @@ public class Parser {
 	 * @throws NoDateKeywordException if no date keywords are found in the
 	 *             tokenized input.
 	 */
-	private static int findLastDateKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
+	private static int findLastAddKeyword(ArrayList<String> wordList) throws NoDateKeywordException {
 		LinkedList<Integer> onIndices = new LinkedList<Integer>();
 		LinkedList<Integer> atIndices = new LinkedList<Integer>();
 		
@@ -326,7 +326,7 @@ public class Parser {
 		try {
 			parsedDate = parser.parse(dateString).get(0);
 		} catch (IndexOutOfBoundsException e) {
-			throw new DateUndefinedException(ExceptionMessages.UNDEFINED_DATE_STRING_EXCEPTION);
+			throw new DateUndefinedException(ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
 		}
 		List<Date> dateList = parsedDate.getDates();
 		for (Date date : dateList) {
