@@ -19,7 +19,8 @@ public class ExitCommand extends Command {
         if (!param.isEmpty()) {
             return new Signal(Signal.EXIT_INVALLID_PARAMS, false);
         }
-
+        
+        memory.flushStacks();
         return new Signal(Signal.EXIT_SUCCESS, true);
     }
 }
