@@ -47,7 +47,7 @@ public class Zeitgeist {
 		Signal processSignal;
 		Command c;
 
-		KEYWORDS commandType = userInput.getType();
+		Keywords commandType = userInput.getType();
 		if (commandType == null) {
             return new Signal(String.format(Signal.GENERIC_INVALID_COMMAND_FORMAT, ""), false);
 		} else {

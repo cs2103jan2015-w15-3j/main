@@ -20,8 +20,8 @@ public abstract class Command {
 	 *            be committed.
 	 */
 	public Command(ParsedInput input, Memory memory) {
-		this.keyParamPairs = input.getParamPairList();
-		this.dateTimes = input.getDateTimeList();
+		this.keyParamPairs = input.getParamPairs();
+		this.dateTimes = input.getDateTimes();
 		this.input = input;
 		this.memory = memory;
 	}

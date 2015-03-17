@@ -43,7 +43,7 @@ public class EditCommand extends Command{
 			postEdit = memory.setterGet(userIndex);
 			
 			for (int i = 1; i < keyParamPairs.size(); i++) {
-				KEYWORDS keyword = keyParamPairs.get(i).getKeyword();
+				Keywords keyword = keyParamPairs.get(i).getKeyword();
 				String param = keyParamPairs.get(i).getParam();
 
 				switch (keyword) {

@@ -27,7 +27,7 @@ public class EditCommandTest {
 		paramList.add(new KeyParamPair("title", title));
 		paramList.add(new KeyParamPair("start", editedStart));
 		paramList.add(new KeyParamPair("end", editedEnd));
-		ParsedInput input = new ParsedInput(KEYWORDS.EDIT, paramList);
+		ParsedInput input = new ParsedInput(Keywords.EDIT, paramList);
 		EditCommand c = new EditCommand(input, memory);
 		c.execute();
 		

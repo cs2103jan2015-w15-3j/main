@@ -35,10 +35,10 @@ public class SearchCommand extends Command {
 
 	@Override
 	public Signal execute() {
-		ArrayList<KeyParamPair> inputList = input.getParamPairList();
+		ArrayList<KeyParamPair> inputList = input.getParamPairs();
 		Set<Integer> resultSet = new HashSet<Integer>();
 		KeyParamPair pair;
-		KEYWORDS typeKey;
+		Keywords typeKey;
 		String param;
 
 		// Iterates through every KeyParamPair
@@ -50,7 +50,7 @@ public class SearchCommand extends Command {
 			// assumes that if no flag input, assume that user is searching in
 			// Todo name
 			if (i == 0) {
-				typeKey = KEYWORDS.NAME;
+				typeKey = Keywords.NAME;
 			}
 
 			// checks if param behind a flag is an empty string
@@ -111,7 +111,7 @@ public class SearchCommand extends Command {
 	 * @param paramArray
 	 * @throws DateUndefinedException
 	 */
-	private void searchIndex(Set<Integer> resultSet, KEYWORDS typeKey,
+	private void searchIndex(Set<Integer> resultSet, Keywords typeKey,
 			String param) throws DateUndefinedException {
 		ArrayList<Integer> tempResult;
 		switch (typeKey) {
