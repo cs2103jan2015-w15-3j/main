@@ -61,9 +61,9 @@ public class ParsedInput {
 	 */
 	public boolean containsOnlyCommand() {
 		if(keyParamPairList.size() == 1) {
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	/**
