@@ -12,9 +12,13 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DisplayCommand extends Command {
-	
+    private static Logger logger = LoggerFactory
+            .getLogger(DisplayCommand.class);
+
 	/**
 	 * Creates a DisplayCommand object.
 	 * 
@@ -114,6 +118,10 @@ public class DisplayCommand extends Command {
 
 		while (iterator.hasNext()) {
 			Todo todo = iterator.next();
+            assert (todo != null);
+            assert (todo.getTitle() != null);
+            logger.info("adding todo with title {} into display",
+                    todo.getTitle());
             // Show pending, skip the completed tasks
             if (signal == showPending && todo.isDone()) {
                 continue;
