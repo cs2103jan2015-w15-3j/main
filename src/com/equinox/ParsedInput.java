@@ -6,9 +6,9 @@ import org.joda.time.DateTime;
 public class ParsedInput {
 	
 	private String userInput;
-	private KEYWORDS type;
-	private ArrayList<KeyParamPair> keyParamPairList;
-	private List<DateTime> dateTimeList;
+	private Keywords type;
+	private ArrayList<KeyParamPair> keyParamPairs;
+	private List<DateTime> dateTimes;
     
     /**
 	 * Creates a ParsedInput object with the type of command, a list of
@@ -20,11 +20,11 @@ public class ParsedInput {
 	 * @param keyParamPairList the list of KeyParamPair objects parsed from the input.
 	 * @param dateTimeList the list of DateTime objects parsed from the input.
 	 */
-    public ParsedInput(String userInput, KEYWORDS type, ArrayList<KeyParamPair> keyParamPairList, List<DateTime> dateTimeList) {
+    public ParsedInput(String userInput, Keywords type, ArrayList<KeyParamPair> keyParamPairList, List<DateTime> dateTimeList) {
     	this.userInput = userInput;
     	this.type = type;
-    	this.keyParamPairList = keyParamPairList;
-    	this.dateTimeList = dateTimeList;
+    	this.keyParamPairs = keyParamPairList;
+    	this.dateTimes = dateTimeList;
 	}
     
     /**
@@ -32,7 +32,7 @@ public class ParsedInput {
      * 
      * @return KEYWORDS specifying the type of the command.
      */
-    public KEYWORDS getType() {
+    public Keywords getType() {
 		return type;
 		}
 
@@ -41,8 +41,8 @@ public class ParsedInput {
 	 * 
 	 * @return the list of KeyParamPair objects parsed from the input.
 	 */
-	public ArrayList<KeyParamPair> getParamPairList() {
-		return keyParamPairList;
+	public ArrayList<KeyParamPair> getParamPairs() {
+		return keyParamPairs;
 	}
 	
 	/**
@@ -50,8 +50,8 @@ public class ParsedInput {
 	 * 
 	 * @return the list of DateTime objects parsed from the input.
 	 */
-	public List<DateTime> getDateTimeList() {
-		return dateTimeList;
+	public List<DateTime> getDateTimes() {
+		return dateTimes;
 	}
 	
 	/**
@@ -60,7 +60,7 @@ public class ParsedInput {
 	 * @return true if there only the command keyword and its parameter is present.
 	 */
 	public boolean containsOnlyCommand() {
-		if(keyParamPairList.size() == 1) {
+		if(keyParamPairs.size() == 1) {
 			return true;
 		}
 		return false;
@@ -72,7 +72,7 @@ public class ParsedInput {
 	 * @return boolean If there is at least one empty string parameter, return true. Else, return false.
 	 */
 	public boolean containsEmptyParams() {
-		for(KeyParamPair pair : keyParamPairList){
+		for(KeyParamPair pair : keyParamPairs){
 			if(pair.getParam().equals("")){
 				return true;
 			}
@@ -86,7 +86,7 @@ public class ParsedInput {
 	 * @return true if at least one date has been parsed.
 	 */
 	public boolean containDates() {
-		if(dateTimeList.isEmpty()) {
+		if(dateTimes.isEmpty()) {
 			return false;
 		}
 		return true;
@@ -99,7 +99,7 @@ public class ParsedInput {
 	public boolean equals(Object o) {
 		if(o.getClass().equals(this.getClass())) {
 			return this.getType().equals(((ParsedInput) o).getType()) &&
-					this.getParamPairList().equals(((ParsedInput) o).getParamPairList());
+					this.getParamPairs().equals(((ParsedInput) o).getParamPairs());
 		}
 		return false;
 	}

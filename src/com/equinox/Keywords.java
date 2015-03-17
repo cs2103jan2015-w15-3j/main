@@ -1,6 +1,6 @@
 package com.equinox;
 
-public enum KEYWORDS {
+public enum Keywords {
 	// Commands
 	ADD,
 	MARK,

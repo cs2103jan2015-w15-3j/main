@@ -1,19 +1,19 @@
 package com.equinox;
 
 public class KeyParamPair {
-	private KEYWORDS keyword;
+	private Keywords keyword;
 	private String param;
 	
-	KeyParamPair(KEYWORDS commandKeyword, String commandParam) {
+	KeyParamPair(Keywords commandKeyword, String commandParam) {
 		keyword = commandKeyword; // TODO: Propose using KEYOWRDS keyword = InputStringKeyword.getKeyword(commandKeyword); 
 		param = commandParam;
 	}
 
-	public KEYWORDS getKeyword() {
+	public Keywords getKeyword() {
 		return keyword;
 	}
 
-	public void setKeyword(KEYWORDS keyword) { // TODO: Propose removal if unnecessary due to security of private fields
+	public void setKeyword(Keywords keyword) { // TODO: Propose removal if unnecessary due to security of private fields
 		this.keyword = keyword;
 	}
 
@@ -28,8 +28,8 @@ public class KeyParamPair {
 	@Override
 	public boolean equals(Object other) {
 		if(other.getClass() == this.getClass()) {
-			KEYWORDS xKeyword = this.getKeyword();
-			KEYWORDS yKeyword = ((KeyParamPair) other).getKeyword();
+			Keywords xKeyword = this.getKeyword();
+			Keywords yKeyword = ((KeyParamPair) other).getKeyword();
 			String xParam = this.getParam();
 			String yParam = ((KeyParamPair) other).getParam();
 			return xKeyword.equals(yKeyword) && xParam.equals(yParam);

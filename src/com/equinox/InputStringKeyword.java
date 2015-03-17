@@ -30,40 +30,40 @@ public class InputStringKeyword {
 	private static final String KEY_MONTH = "-m";
 	private static final String KEY_YEAR = "-y";
 
-    private static Map<String, KEYWORDS> keywords;
-    private static Map<String, KEYWORDS> addKeywords;
-    private static Map<String, KEYWORDS> commands;
+    private static Map<String, Keywords> keywords;
+    private static Map<String, Keywords> addKeywords;
+    private static Map<String, Keywords> commands;
 
     static {
-    	commands = new HashMap<String, KEYWORDS>();
-    	commands.put(KEY_ADD, KEYWORDS.ADD);
-        commands.put(KEY_MARK, KEYWORDS.MARK);
-        commands.put(KEY_DELETE, KEYWORDS.DELETE);
-        commands.put(KEY_SEARCH, KEYWORDS.SEARCH);
-        commands.put(KEY_EDIT, KEYWORDS.EDIT);
-        commands.put(KEY_DISPLAY, KEYWORDS.DISPLAY);
-        commands.put(KEY_UNDO, KEYWORDS.UNDO);
-        commands.put(KEY_REDO, KEYWORDS.REDO);
-        commands.put(KEY_EXIT, KEYWORDS.EXIT);
+    	commands = new HashMap<String, Keywords>();
+    	commands.put(KEY_ADD, Keywords.ADD);
+        commands.put(KEY_MARK, Keywords.MARK);
+        commands.put(KEY_DELETE, Keywords.DELETE);
+        commands.put(KEY_SEARCH, Keywords.SEARCH);
+        commands.put(KEY_EDIT, Keywords.EDIT);
+        commands.put(KEY_DISPLAY, Keywords.DISPLAY);
+        commands.put(KEY_UNDO, Keywords.UNDO);
+        commands.put(KEY_REDO, Keywords.REDO);
+        commands.put(KEY_EXIT, Keywords.EXIT);
         
-        addKeywords = new HashMap<String, KEYWORDS>();
-        addKeywords.put(KEY_BY, KEYWORDS.BY);
-        addKeywords.put(KEY_FROM, KEYWORDS.FROM);
-        addKeywords.put(KEY_ON, KEYWORDS.ON);
-        addKeywords.put(KEY_AT, KEYWORDS.AT);
+        addKeywords = new HashMap<String, Keywords>();
+        addKeywords.put(KEY_BY, Keywords.BY);
+        addKeywords.put(KEY_FROM, Keywords.FROM);
+        addKeywords.put(KEY_ON, Keywords.ON);
+        addKeywords.put(KEY_AT, Keywords.AT);
     	
-        keywords = new HashMap<String, KEYWORDS>(commands);
-        keywords.put(KEY_START, KEYWORDS.START);
-        keywords.put(KEY_START_ABV, KEYWORDS.START);
-        keywords.put(KEY_END, KEYWORDS.END);
-        keywords.put(KEY_END_ABV, KEYWORDS.END);
-        keywords.put(KEY_NAME, KEYWORDS.NAME);
-        keywords.put(KEY_NAME_ABV, KEYWORDS.NAME);
-        keywords.put(KEY_DATE, KEYWORDS.DATE);
-        keywords.put(KEY_TIME, KEYWORDS.TIME);
-        keywords.put(KEY_DAY, KEYWORDS.DAY);
-        keywords.put(KEY_MONTH, KEYWORDS.MONTH);
-        keywords.put(KEY_YEAR, KEYWORDS.YEAR);
+        keywords = new HashMap<String, Keywords>(commands);
+        keywords.put(KEY_START, Keywords.START);
+        keywords.put(KEY_START_ABV, Keywords.START);
+        keywords.put(KEY_END, Keywords.END);
+        keywords.put(KEY_END_ABV, Keywords.END);
+        keywords.put(KEY_NAME, Keywords.NAME);
+        keywords.put(KEY_NAME_ABV, Keywords.NAME);
+        keywords.put(KEY_DATE, Keywords.DATE);
+        keywords.put(KEY_TIME, Keywords.TIME);
+        keywords.put(KEY_DAY, Keywords.DAY);
+        keywords.put(KEY_MONTH, Keywords.MONTH);
+        keywords.put(KEY_YEAR, Keywords.YEAR);
     }
 
     /**
@@ -82,7 +82,7 @@ public class InputStringKeyword {
      * @param s String containing the keyword.
      * @return the enum constant representing the command.
      */
-    public static KEYWORDS getKeyword(String s) {
+    public static Keywords getKeyword(String s) {
         return keywords.get(s);
     }
     
@@ -102,7 +102,7 @@ public class InputStringKeyword {
      * @param s String containing the keyword.
      * @return the enum constant representing the command.
      */
-    public static KEYWORDS getCommand(String s) {
+    public static Keywords getCommand(String s) {
     	return commands.get(s);
     }
     
@@ -122,7 +122,7 @@ public class InputStringKeyword {
      * @param s String containing the keyword
      * @return the enum constant representing the add keyword
      */
-    public static KEYWORDS getAddKeyword(String s) {
+    public static Keywords getAddKeyword(String s) {
     	return addKeywords.get(s);
     }
 }

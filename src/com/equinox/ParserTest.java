@@ -37,10 +37,10 @@ public class ParserTest {
 	@Test
 	public void testGetCommandType() {
 		assertEquals(null, Parser.getCommandType(a0));
-		assertEquals(KEYWORDS.ADD, Parser.getCommandType(a1));
-		assertEquals(KEYWORDS.DELETE, Parser.getCommandType(a2));
-		assertEquals(KEYWORDS.DELETE, Parser.getCommandType(a3));
-		assertEquals(KEYWORDS.MARK, Parser.getCommandType(a4));
+		assertEquals(Keywords.ADD, Parser.getCommandType(a1));
+		assertEquals(Keywords.DELETE, Parser.getCommandType(a2));
+		assertEquals(Keywords.DELETE, Parser.getCommandType(a3));
+		assertEquals(Keywords.MARK, Parser.getCommandType(a4));
 		assertEquals(null, Parser.getCommandType(a5));
 	}
 
