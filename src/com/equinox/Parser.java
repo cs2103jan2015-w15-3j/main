@@ -210,7 +210,7 @@ public class Parser {
 		String tempParam = STRING_EMPTY;
 		ArrayList<KeyParamPair> resultList = new ArrayList<KeyParamPair>();
 		KEYWORDS keyword;
-		EnumSet<KEYWORDS> keywordOccurrence = EnumSet.of(InputStringKeyword.getCommand(key));
+		EnumSet<KEYWORDS> keywordOccurrence = EnumSet.noneOf(KEYWORDS.class);
 
 		for (int i = 1; i < wordList.size(); i++) {
 			String currentParam = wordList.get(i);
