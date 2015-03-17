@@ -26,6 +26,8 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import com.equinox.Memory.IDBuffer;
+
 /**
  * Handles the storing of an instance of Memory into a file in JSON formatting, 
  * as well as the retrieving of an instance of Memory from a file in JSON formatting.
@@ -128,6 +130,7 @@ public class Storage {
 				new LocalDateTypeConverter());
 		gsonBuilder.registerTypeAdapter(LocalTime.class,
 				new LocalTimeTypeConverter());
+		gsonBuilder.registerTypeAdapter(IDBuffer.class, new IDBufferInstanceCreator());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String jsonString = gson.toJson(mem);
 		return jsonString;
@@ -150,6 +153,7 @@ public class Storage {
 				new LocalDateTypeConverter());
 		gsonBuilder.registerTypeAdapter(LocalTime.class,
 				new LocalTimeTypeConverter());
+		gsonBuilder.registerTypeAdapter(IDBuffer.class, new IDBufferInstanceCreator());
 		Gson gson = gsonBuilder.create();
 		return gson.fromJson(jsonString, Memory.class);
 	}

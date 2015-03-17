@@ -383,11 +383,11 @@ public class Memory {
 	 * @author Ikarus
 	 *
 	 */
-	private class IDBuffer {
+	protected class IDBuffer {
 		private TreeSet<Integer> buffer;
 		private int minFreeId;
 
-		private IDBuffer() {
+		protected IDBuffer() {
 			buffer = new TreeSet<Integer>();
 			minFreeId = ID_INITIAL;
 			for (int i = ID_INITIAL; i < ID_INITIAL + ID_BUFFER_INITIAL_SIZE; i++) {
