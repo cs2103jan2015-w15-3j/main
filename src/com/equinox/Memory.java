@@ -262,7 +262,6 @@ public class Memory {
 			int id = undoStack.removeFirst().getId();
 			if (!memoryMap.containsKey(id)) {
 				releaseId(id);
-				;
 			}
 		}
 		undoStack.add(toBeSavedCopy);
@@ -276,7 +275,6 @@ public class Memory {
 			int id = redoStack.pollLast().getId();
 			if (!memoryMap.containsKey(id)) {
 				releaseId(id);
-				;
 			}
 		}
 	}
@@ -397,6 +395,7 @@ public class Memory {
 		}
 
 		private int get() {
+			
 			if (buffer.size() == 1) {
 				loadToSize();
 			}
@@ -410,12 +409,16 @@ public class Memory {
 			}
 		}
 
-		private void loadToSize() { //TODO: Bug: Remove 5 elements or so from a
-									// memory of size 10. Will load duplicate ID
-									// unnecessarily
-			int largestId = buffer.last();
-			for (int i = largestId; i < largestId + ID_BUFFER_INITIAL_SIZE; i++) {
-				buffer.add(i);
+		private void loadToSize() {
+			int firstId = buffer.last() + 1;
+			int i = firstId;
+			while(i < firstId + ID_BUFFER_INITIAL_SIZE) {
+				if(!memoryMap.containsKey(i)) {
+					buffer.add(i);
+					i++;
+				} else {
+					firstId++;
+				}
 			}
 		}
 
