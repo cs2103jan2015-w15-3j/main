@@ -55,15 +55,15 @@ public class ParsedInput {
 	}
 	
 	/**
-	 * Checks if there are no keywords other than one specifying the command type.
+	 * Checks if only the command keyword and its parameter is present.
 	 * 
-	 * @return true if there are no keywords other than one specifying the command type.
+	 * @return true if there only the command keyword and its parameter is present.
 	 */
-	public boolean containsNoOtherKeywords() {
+	public boolean containsOnlyCommand() {
 		if(keyParamPairList.size() == 1) {
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 	
 	/**
@@ -81,15 +81,15 @@ public class ParsedInput {
 	}
 	
 	/**
-	 * Checks if no dates are parsed.
+	 * Checks if any dates are parsed.
 	 * 
-	 * @return true if no dates are parsed.
+	 * @return true if at least one date has been parsed.
 	 */
-	public boolean containsNoDates() {
+	public boolean containDates() {
 		if(dateTimeList.isEmpty()) {
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 	
 	/* (non-Javadoc)

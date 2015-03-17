@@ -35,7 +35,7 @@ public class EditCommand extends Command{
 	public Signal execute() {
 		Todo preEdit, postEdit;
 		try {
-			if(input.containsEmptyParams() || input.containsNoOtherKeywords()) {
+			if(input.containsEmptyParams() || input.containsOnlyCommand()) {
 				return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 			}
 			int userIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
@@ -51,13 +51,13 @@ public class EditCommand extends Command{
 					postEdit.setName(param);
 					break;
 				case START:
-					if(input.containsNoDates()) {
+					if(!input.containDates()) {
 						return new Signal(Signal.EDIT_INVALID_DATE, false);
 					}
 					postEdit.setStartTime(dateTimeList.remove(0));
 					break;
 				case END:
-					if(input.containsNoDates()) {
+					if(!input.containDates()) {
 						return new Signal(Signal.EDIT_INVALID_DATE, false);
 					}
 					postEdit.setEndTime(dateTimeList.remove(0));
