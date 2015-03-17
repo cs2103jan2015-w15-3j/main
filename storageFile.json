@@ -1,0 +1,20 @@
+{
+  "idBuffer": {
+    "buffer": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "minFreeId": 0
+  },
+  "memoryMap": {},
+  "undoStack": [],
+  "redoStack": [],
+  "nameMap": {},
+  "dateMap": {},
+  "timeMap": {},
+  "monthMap": {},
+  "dayMap": {}
+}
