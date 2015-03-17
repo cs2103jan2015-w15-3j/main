@@ -259,7 +259,9 @@ public class Todo{
 				return false;
 			}
 		} else if (startTime != null && endTime == null) {
-			return false;
+			endTime = startTime;
+			startTime = null;
+			type = TYPE.DEADLINE;
 		} else if(startTime == null && endTime != null) {
 			type = TYPE.DEADLINE;
 		} else if(startTime == null && endTime == null) {
