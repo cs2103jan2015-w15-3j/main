@@ -265,6 +265,26 @@ public class Memory {
 		}
 		undoStack.add(toBeSavedCopy);
 	}
+	
+	/**
+	 * Flushes both undo and redo stacks. For use with exit command.
+	 */
+	void flushStacks() {
+		flushRedoStack();
+		flushUndoStack();
+	}
+	
+	/**
+	 * Flushes the undoStack of all states of Todos.
+	 */
+	private void flushUndoStack() {
+		while (!undoStack.isEmpty()) {
+			int id = undoStack.pollLast().getId();
+			if (!memoryMap.containsKey(id)) {
+				releaseId(id);
+			}
+		}	
+	}
 
 	/**
 	 * Flushes the redoStack of all states of Todos.
