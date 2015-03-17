@@ -1,9 +1,7 @@
 package com.equinox;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -12,6 +10,7 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
 
@@ -30,8 +29,8 @@ public class Memory {
 	private static final int ID_INITIAL = 0;
 	private static final int ID_BUFFER_INITIAL_SIZE = 5;
 	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
-	private final IDBuffer idBuffer = new IDBuffer();
 	private HashMap<Integer, Todo> memoryMap;
+	private IDBuffer idBuffer;
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
 	private HashMap<String, ArrayList<Integer>> nameMap;
@@ -46,6 +45,7 @@ public class Memory {
 	 */
 	public Memory() {
 		this.memoryMap = new HashMap<Integer, Todo>();
+		this.idBuffer  = new IDBuffer();
 		this.undoStack = new LinkedList<Todo>();
 		this.redoStack = new LinkedList<Todo>();
 		this.nameMap = new HashMap<String, ArrayList<Integer>>();
