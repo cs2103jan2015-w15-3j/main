@@ -72,7 +72,7 @@ public class InputStringKeyword {
      * @return the enum constant representing the keyword.
      */
     public static boolean isKeyword(String s) {
-        return keywords.containsKey(s);
+        return keywords.containsKey(s.toLowerCase());
     }
 
     /**
@@ -82,7 +82,7 @@ public class InputStringKeyword {
      * @return the enum constant representing the command.
      */
     public static Keywords getKeyword(String s) {
-        return keywords.get(s);
+        return keywords.get(s.toLowerCase());
     }
     
     /**
@@ -92,7 +92,7 @@ public class InputStringKeyword {
      * @return
      */
     public static boolean isCommand(String s) {
-    	return commands.containsKey(s);
+    	return commands.containsKey(s.toLowerCase());
     }
     
     /**
@@ -102,7 +102,7 @@ public class InputStringKeyword {
      * @return the enum constant representing the command.
      */
     public static Keywords getCommand(String s) {
-    	return commands.get(s);
+    	return commands.get(s.toLowerCase());
     }
     
     /**
@@ -112,7 +112,7 @@ public class InputStringKeyword {
      * @return the enum constant representing the keyword.
      */
     public static boolean isAddKeyword(String s) {
-    	return addKeywords.containsKey(s);
+    	return addKeywords.containsKey(s.toLowerCase());
     }
     
     /**
@@ -122,6 +122,6 @@ public class InputStringKeyword {
      * @return the enum constant representing the add keyword
      */
     public static Keywords getAddKeyword(String s) {
-    	return addKeywords.get(s);
+    	return addKeywords.get(s.toLowerCase());
     }
 }

@@ -37,7 +37,7 @@ public class Signal {
 	 * Delete Command Signals
 	 */
 	public static final String DELETE_SUCCESS_FORMAT = "%1$s successfully deleted.";
-	public static final String DELETE_INVALID_PARAMS = "Error: The number of parameters is invalid."
+    public static final String DELETE_INVALID_PARAMS = "The number of parameters is invalid."
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator() + "\t delete <indexNumber>";
@@ -75,8 +75,8 @@ public class Signal {
 	 * Mark Command Signals
 	 */
 	public static final String MARK_SUCCESS_SIGNAL_FORMAT = "%1$s successfully marked as done.";
-	public static final String MARK_UNKNOWN_ERROR = "Error: Unknown mark error.";
-	public static final String MARK_INVALID_PARAMS = "Error: The number of parameters is invalid."
+    public static final String MARK_UNKNOWN_ERROR = "Unknown mark error.";
+    public static final String MARK_INVALID_PARAMS = "The number of parameters is invalid."
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator() + "\t mark <indexNumber>";
@@ -85,7 +85,7 @@ public class Signal {
 	 * Undo Command Signals
 	 */
 	public static final String UNDO_SUCCESS = "Undo operation successful.";
-	public static final String UNDO_INVALID_PARAMS = "Error: The number of parameters is invalid."
+    public static final String UNDO_INVALID_PARAMS = "The number of parameters is invalid."
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator() + "\t undo";
@@ -94,7 +94,7 @@ public class Signal {
 	 * Redo Command Signals
 	 */
 	public static final String REDO_SUCCESS = "Redo operation successful.";
-	public static final String REDO_INVALID_PARAMS = "Error: The number of parameters is invalid"
+    public static final String REDO_INVALID_PARAMS = "The number of parameters is invalid"
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator() + "\t redo";
@@ -105,7 +105,7 @@ public class Signal {
 
 	public static final String SEARCH_SUCCESS_SIGNAL = "";
 	public static final String SEARCH_EMPTY_SIGNAL = "No result found.";
-	public static final String SEARCH_INVALID_PARAMS = "Error: The type of parameters is invalid"
+    public static final String SEARCH_INVALID_PARAMS = "The type of parameters is invalid"
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator()
@@ -114,8 +114,8 @@ public class Signal {
 	/**
 	 * Generic Signals
 	 */
-	public static final String GENERIC_EMPTY_PARAM = "Error: At least one parameter is unspecified and empty.";
-	public static final String GENERIC_INVALID_COMMAND_FORMAT = "Error: %1$s command is invalid!"
+    public static final String GENERIC_EMPTY_PARAM = "At least one parameter is unspecified and empty.";
+    public static final String GENERIC_INVALID_COMMAND_FORMAT = "%1$s command is invalid!"
 			+ System.lineSeparator()
 			+ "Supported commands: add, mark, delete, edit, undo, etc...";
 	public static final String GENERIC_FATAL_ERROR = "Fatal error.";
