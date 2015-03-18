@@ -59,8 +59,6 @@ public class EditCommand extends Command{
 					} else {
 						postEdit.setStartTime(dateTimes.remove(0));
 					}
-
-					postEdit.setStartTime(dateTimes.remove(0));
 					memory.saveToFile();
 					break;
 				case END:
@@ -71,8 +69,6 @@ public class EditCommand extends Command{
 					} else {
 						postEdit.setEndTime(dateTimes.remove(0));
 					}
-
-					postEdit.setEndTime(dateTimes.remove(0));
 					memory.saveToFile();
 					break;
 				case DONE:
