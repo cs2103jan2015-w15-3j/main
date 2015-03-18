@@ -23,11 +23,12 @@ public class Zeitgeist {
 	 */
 	public static void main(String[] args) {
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
-		String input = scn.nextLine();
+        String input;
 		while (true) {
+            SignalHandler.printCommandPrefix();
+            input = scn.nextLine();
             Signal signal = handleInput(input);
             SignalHandler.printSignal(signal);
-			input = scn.nextLine();
 		}
 	}
 
