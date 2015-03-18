@@ -35,7 +35,7 @@ import com.equinox.Memory.IDBuffer;
  *
  */
 
-public class Storage {
+public class StorageHandler {
 	private static String DEFAULT_FILE_PATH = "storageFile.json";
 
 	private File storageFile;
@@ -43,12 +43,12 @@ public class Storage {
 	private static PrintWriter writer;
 	private static Scanner reader;
 
-	public Storage() {
+	public StorageHandler() {
 		this.storageFile = new File(DEFAULT_FILE_PATH);
 		createFileIfNonExistent();
 	}
 
-	public Storage(String filePath) {
+	public StorageHandler(String filePath) {
 		this.storageFile = new File(filePath);
 		createFileIfNonExistent();
 	}
