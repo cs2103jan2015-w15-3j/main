@@ -36,6 +36,7 @@ public class UndoCommand extends Command{
 		
 		try{
 			memory.restoreHistoryState();
+			memory.saveToFile();
 		} catch (StateUndefinedException e) {
             return new Signal(e.getMessage(), false);
 		}

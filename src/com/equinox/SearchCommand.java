@@ -39,6 +39,7 @@ public class SearchCommand extends Command {
 		KeyParamPair pair;
 		Keywords typeKey;
 		String param;
+		List<DateTime> dateTimes = input.getDateTimes();
 
 		// Iterates through every KeyParamPair
 		for (int i = 0; i < inputList.size(); i++) {
@@ -58,7 +59,7 @@ public class SearchCommand extends Command {
 			}
 
 			try {
-				searchIndex(resultSet, typeKey, param);
+				searchIndex(resultSet, typeKey, param, dateTimes);
 			} catch (DateUndefinedException e) {
 				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
 			} catch (InvalidParamException e) {
@@ -114,7 +115,7 @@ public class SearchCommand extends Command {
 	 * @throws InvalidParamException 
 	 */
 	private void searchIndex(Set<Integer> resultSet, Keywords typeKey,
-			String param) throws DateUndefinedException, InvalidParamException {
+			String param, List<DateTime> dateTimes) throws DateUndefinedException, InvalidParamException {
 		ArrayList<Integer> tempResult;
 		
 		if(typeKey == Keywords.NAME) {
@@ -124,9 +125,8 @@ public class SearchCommand extends Command {
 				addToSet(tempResult, resultSet);
 			}
 		} else { //assumes if typeKey != NAME, user wants to search for dateTime
-			List<DateTime> dateList = Parser.parseDates(param);
-			assert (dateList.size() == 1);
-			tempResult = memory.search(typeKey, dateList.get(0));
+			assert (dateTimes.size() == 1);
+			tempResult = memory.search(typeKey, dateTimes.remove(0));
 			addToSet(tempResult, resultSet);
 		}
 		
