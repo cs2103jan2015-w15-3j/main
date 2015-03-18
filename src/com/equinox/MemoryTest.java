@@ -1,11 +1,8 @@
 package com.equinox;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import com.equinox.exceptions.DateUndefinedException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
@@ -19,13 +16,13 @@ public class MemoryTest {
 	Todo todo1, todo2, todo3;
 
 	@Before
-	public void setUp() throws DateUndefinedException{
+	public void setUp() throws DateUndefinedException {
 		memory = new Memory();
-		todo1 = new Todo(memory, TASK_1);
+		todo1 = new Todo(0, TASK_1);
 		memory.add(todo1);
-		todo2 = new Todo(memory, TASK_2);
+		todo2 = new Todo(1, TASK_2);
 		memory.add(todo2);
-		todo3 = new Todo(memory, TASK_3);
+		todo3 = new Todo(2, TASK_3);
 		memory.add(todo3);
 	}
 
@@ -37,7 +34,8 @@ public class MemoryTest {
 	}
 
 	@Test
-	public void testSetterGetUndo() throws StateUndefinedException, NullTodoException {
+	public void testSetterGetUndo() throws StateUndefinedException,
+			NullTodoException {
 		memory.setterGet(todo1.getId());
 		Todo todo1Copy = new Todo(todo1);
 		todo1.setDone(true);
@@ -47,9 +45,10 @@ public class MemoryTest {
 		memory.restoreHistoryState();
 		assertEquals("Todo1 Undo Mark", todo1Copy, memory.get(todo1.getId()));
 	}
-	
+
 	@Test
-	public void testSetterGetUndoRedo() throws StateUndefinedException, NullTodoException {
+	public void testSetterGetUndoRedo() throws StateUndefinedException,
+			NullTodoException {
 		memory.setterGet(todo1.getId());
 		Todo todo1Copy = new Todo(todo1);
 		todo1.setDone(true);
@@ -60,11 +59,13 @@ public class MemoryTest {
 		memory.restoreHistoryState();
 		assertEquals("Todo1 Undo Mark", todo1Copy, memory.get(todo1.getId()));
 		memory.restoreFutureState();
-		assertEquals("Todo1 Redo Mark", todo1MarkCopy, memory.get(todo1.getId()));
+		assertEquals("Todo1 Redo Mark", todo1MarkCopy,
+				memory.get(todo1.getId()));
 	}
 
-	@Test (expected = NullTodoException.class)
-	public void testRemoveUndo() throws StateUndefinedException, NullTodoException {
+	@Test(expected = NullTodoException.class)
+	public void testRemoveUndo() throws StateUndefinedException,
+			NullTodoException {
 		memory.remove(todo2.getId());
 		assertEquals("Todo1", todo1, memory.get(todo1.getId()));
 		memory.get(todo2.getId()); // Exception
@@ -74,7 +75,8 @@ public class MemoryTest {
 	}
 
 	@Test
-	public void testRemoveUndoRedo() throws StateUndefinedException, NullTodoException {
+	public void testRemoveUndoRedo() throws StateUndefinedException,
+			NullTodoException {
 		memory.remove(todo2.getId());
 		memory.remove(todo1.getId());
 		memory.restoreHistoryState();
@@ -83,30 +85,28 @@ public class MemoryTest {
 		memory.restoreFutureState();
 		assertEquals("Todo3", todo3, memory.get(todo3.getId()));
 	}
-	
-	@Test (expected = NullTodoException.class)
+
+	@Test(expected = NullTodoException.class)
 	public void testAddUndo() throws StateUndefinedException, NullTodoException {
 		memory.restoreHistoryState();
 		memory.get(todo3.getId()); // Exception
 	}
-	
+
 	@Test
-	public void testAddUndoRedo() throws StateUndefinedException, NullTodoException {
+	public void testAddUndoRedo() throws StateUndefinedException,
+			NullTodoException {
 		memory.restoreHistoryState();
 		assertEquals("Todo1", todo1, memory.get(todo1.getId()));
 		assertEquals("Todo2", todo2, memory.get(todo2.getId()));
 		memory.restoreFutureState();
 		assertEquals("Todo3", todo3, memory.get(todo3.getId()));
 	}
-
-    @Test
-    public void testExternalStorage() throws NullTodoException {
-        String jsonString = memory.exportAsJson();
-        Memory importedMemory = Memory.importFromJson(jsonString);
-        Todo[] originalArray = (Todo[]) memory.getAllTodos().toArray(
-                new Todo[0]);
-        Todo[] importedArray = (Todo[]) importedMemory.getAllTodos().toArray(
-                new Todo[0]);
-        assertArrayEquals(originalArray, importedArray);
-    }
+	/*
+	 * @Test public void testExternalStorage() throws NullTodoException { String
+	 * jsonString = memory.exportAsJson(); Memory importedMemory =
+	 * Memory.importFromJson(jsonString); Todo[] originalArray = (Todo[])
+	 * memory.getAllTodos().toArray( new Todo[0]); Todo[] importedArray =
+	 * (Todo[]) importedMemory.getAllTodos().toArray( new Todo[0]);
+	 * assertArrayEquals(originalArray, importedArray); }
+	 */
 }

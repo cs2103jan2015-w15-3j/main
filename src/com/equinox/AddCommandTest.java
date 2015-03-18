@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class AddCommandTest {
 	Memory memory;
 	ParsedInput input;
-	KEYWORDS addCommand = KEYWORDS.ADD;
+	Keywords addCommand = Keywords.ADD;
 	
 	private static final String userInputFloatingTask1 = "add study CS2105";
 	

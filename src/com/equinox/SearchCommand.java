@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 import com.equinox.exceptions.DateUndefinedException;
+import com.equinox.exceptions.InvalidParamException;
 import com.equinox.exceptions.NullTodoException;
 
 /**
@@ -35,10 +34,10 @@ public class SearchCommand extends Command {
 
 	@Override
 	public Signal execute() {
-		ArrayList<KeyParamPair> inputList = input.getParamPairList();
+		ArrayList<KeyParamPair> inputList = input.getParamPairs();
 		Set<Integer> resultSet = new HashSet<Integer>();
 		KeyParamPair pair;
-		KEYWORDS typeKey;
+		Keywords typeKey;
 		String param;
 
 		// Iterates through every KeyParamPair
@@ -50,7 +49,7 @@ public class SearchCommand extends Command {
 			// assumes that if no flag input, assume that user is searching in
 			// Todo name
 			if (i == 0) {
-				typeKey = KEYWORDS.NAME;
+				typeKey = Keywords.NAME;
 			}
 
 			// checks if param behind a flag is an empty string
@@ -61,6 +60,8 @@ public class SearchCommand extends Command {
 			try {
 				searchIndex(resultSet, typeKey, param);
 			} catch (DateUndefinedException e) {
+				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
+			} catch (InvalidParamException e) {
 				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
 			}
 
@@ -110,59 +111,25 @@ public class SearchCommand extends Command {
 	 * @param key
 	 * @param paramArray
 	 * @throws DateUndefinedException
+	 * @throws InvalidParamException 
 	 */
-	private void searchIndex(Set<Integer> resultSet, KEYWORDS typeKey,
-			String param) throws DateUndefinedException {
+	private void searchIndex(Set<Integer> resultSet, Keywords typeKey,
+			String param) throws DateUndefinedException, InvalidParamException {
 		ArrayList<Integer> tempResult;
-		switch (typeKey) {
-			case NAME:
-				String[] paramArray = param.split(REGEX_SPACE);
-				for (String searchKey : paramArray) {
-					tempResult = memory.searchName(searchKey);
-					addToSet(tempResult, resultSet);
-				}
-				break;
-			case DATE:
-				List<DateTime> dateList = Parser.parseDates(param);
-				assert (dateList.size() == 1);
-				LocalDate searchDate = dateList.get(0).toLocalDate();
-				tempResult = memory.searchDate(searchDate);
+		
+		if(typeKey == Keywords.NAME) {
+			String[] paramArray = param.split(REGEX_SPACE);
+			for (String searchKey : paramArray) {
+				tempResult = memory.search(typeKey, searchKey);
 				addToSet(tempResult, resultSet);
-				break;
-			case TIME:
-				List<DateTime> timeList = Parser.parseDates(param);
-				assert (timeList.size() == 1);
-				LocalTime searchTime = timeList.get(0).toLocalTime();
-				tempResult = memory.searchTime(searchTime);
-				addToSet(tempResult, resultSet);
-				break;
-				
-//			case YEAR:
-//				List<DateTime> yearList = Parser.parseDates(param);
-//				assert (yearList.size() == 1);
-//				int searchYear = yearList.get(0).getYear();
-//				tempResult = memory.searchYear(searchYear);
-//				addToSet(tempResult, resultSet);
-//				break;
-			case MONTH:
-				List<DateTime> monthList = Parser.parseDates(param);
-				assert (monthList.size() == 1);
-				int searchMonth = monthList.get(0).getMonthOfYear();
-				tempResult = memory.searchMonth(searchMonth);
-				addToSet(tempResult, resultSet);
-				break;
-			case DAY:
-				List<DateTime> dayList = Parser.parseDates(param);
-				assert (dayList.size() == 1);
-				int searchDay = dayList.get(0).getDayOfWeek();
-				tempResult = memory.searchDay(searchDay);
-				addToSet(tempResult, resultSet);
-				break;
-				
-			default:
-				//TODO: Invalid params flag is unrecognised
-				break;
+			}
+		} else { //assumes if typeKey != NAME, user wants to search for dateTime
+			List<DateTime> dateList = Parser.parseDates(param);
+			assert (dateList.size() == 1);
+			tempResult = memory.search(typeKey, dateList.get(0));
+			addToSet(tempResult, resultSet);
 		}
+		
 	}
 
 	/**
@@ -198,10 +165,13 @@ public class SearchCommand extends Command {
 
 		Zeitgeist.handleInput("add CS3333 project 2 on 7 Apr 10am");
 
+		Zeitgeist.handleInput("display");
+		
 		Zeitgeist.handleInput("mark 0");
 
 		Zeitgeist.handleInput("mark 2");
 
+		Zeitgeist.handleInput("display");
 		Zeitgeist.handleInput("search -n floating deadline");
 
 		Zeitgeist.handleInput("search deadline");

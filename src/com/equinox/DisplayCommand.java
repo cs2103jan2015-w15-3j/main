@@ -76,7 +76,7 @@ public class DisplayCommand extends Command {
 		if (todos.size() == 0) {
             return new Signal(Signal.DISPLAY_EMPTY_SIGNAL, true);
 		}
-		String param = keyParamPairList.get(0).getParam();
+		String param = keyParamPairs.get(0).getParam();
 		if (param.equals("completed") || param.equals("complete")
 				|| param.equals("c")) {
 			displayString = getDisplayChrono(todos, showCompleted);
@@ -119,9 +119,9 @@ public class DisplayCommand extends Command {
 		while (iterator.hasNext()) {
 			Todo todo = iterator.next();
             assert (todo != null);
-            assert (todo.getTitle() != null);
+            assert (todo.getName() != null);
             logger.info("adding todo with title {} into display",
-                    todo.getTitle());
+                    todo.getName());
             // Show pending, skip the completed tasks
             if (signal == showPending && todo.isDone()) {
                 continue;
@@ -218,7 +218,7 @@ public class DisplayCommand extends Command {
 	}
 
 	private static String formatFloatingTask(Todo todo) {
-		String title = todo.getTitle();
+		String title = todo.getName();
 		title = messageFloating + shortenTitle(title);
 		String id = String.valueOf(todo.getId());
         return String.format(floatingFormat, id, title)
@@ -226,7 +226,7 @@ public class DisplayCommand extends Command {
 	}
 
 	private static String formatDeadline(Todo todo) {
-		String title = todo.getTitle();
+		String title = todo.getName();
 		title = messageDeadline + shortenTitle(title);
 		String id = String.valueOf(todo.getId());
 		DateTime endTime = todo.getEndTime();
@@ -237,7 +237,7 @@ public class DisplayCommand extends Command {
 	}
 
 	private static String formatEvent(Todo todo) {
-		String title = todo.getTitle();
+		String title = todo.getName();
 		title = messageEvent + shortenTitle(title);
 		String id = String.valueOf(todo.getId());
 		DateTime startTime = todo.getStartTime();
@@ -256,7 +256,7 @@ public class DisplayCommand extends Command {
 			// Floating tasks with no time will be sorted in lexicographical
 			// order
 			if (o1.getDateTime() == null && o2.getDateTime() == null) {
-				return o1.getTitle().compareTo(o2.getTitle());
+				return o1.getName().compareTo(o2.getName());
 			}
 			// If only one todo has time, the other with no time will be sorted
 			// to the back
