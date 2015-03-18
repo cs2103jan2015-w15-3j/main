@@ -109,7 +109,7 @@ public class Signal {
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator()
-			+ "\t search [<keyword>] [ -n <keyword> ] [ -dt <dateKeyword> ]";
+			+ "\t search [<keyword>] [ -n <keyword> ] [ -dt <dateKeyword> ] [ -d <dayKeyword] [-t <timeKeyword>] [-m <monthKeyword>]";
 
 	/**
 	 * Generic Signals
