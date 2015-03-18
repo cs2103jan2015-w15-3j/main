@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Zeitgeist {
 
     public static Scanner scn = new Scanner(System.in);
-    public static Storage storage = new Storage();
+    public static StorageHandler storage = new StorageHandler();
     public static Memory memory = storage.retrieveMemoryFromFile();
 
 	/**
@@ -97,7 +97,6 @@ public class Zeitgeist {
                 case EXIT :
                 	c = new ExitCommand(userInput, memory);
                 	processSignal = c.execute();
-                	storage.storeMemoryToFile(memory);
                     break;
 
                 default :

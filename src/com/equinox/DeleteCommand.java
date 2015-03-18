@@ -44,6 +44,7 @@ public class DeleteCommand extends Command {
 		try {
 			deleteIndex = Integer.parseInt(keyParamPairs.get(0).getParam());
 			deleted = memory.remove(deleteIndex);
+			memory.saveToFile();
 		} catch (NumberFormatException e) {
             return new Signal(Signal.DELETE_INVALID_PARAMS, false);
 		} catch (NullTodoException e) {
