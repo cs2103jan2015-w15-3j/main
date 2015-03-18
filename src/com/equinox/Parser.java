@@ -101,7 +101,6 @@ public class Parser {
 	 */
 	public static ArrayList<String> tokenize(String input) {
 		input = input.trim();
-		input = input.toLowerCase();
 		String[] inputArray = input.split(REGEX_SPACE);
 		ArrayList<String> words = new ArrayList<String>();
 		for (int i = 0; i < inputArray.length; i++) {
