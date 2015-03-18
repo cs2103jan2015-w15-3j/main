@@ -17,6 +17,8 @@ public enum Keywords {
 	FROM,
 	ON,
 	AT,
+	EVERY,
+	UNTIL,
 	
 	// Keywords for parameters in EDIT command
 	// NAME,
@@ -30,4 +32,5 @@ public enum Keywords {
 	TIME,
 	DAY,
 	MONTH,
+	
 }
