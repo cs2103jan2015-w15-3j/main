@@ -18,16 +18,16 @@ public class InputStringKeyword {
 	private static final String KEY_ON = "on";
 	private static final String KEY_AT = "at";
 	private static final String KEY_NAME = "name";
-	private static final String KEY_NAME_ABV = "-n"; // TODO: Propose using suffix _ABV to denote abbreviated forms.
+	private static final String KEY_NAME_ABV = "-n";
 	private static final String KEY_START = "start";
 	private static final String KEY_START_ABV = "-s";
 	private static final String KEY_END = "end";
 	private static final String KEY_END_ABV = "-e";
 	private static final String KEY_EXIT = "exit";
-	private static final String KEY_DATE = "-dt";
-	private static final String KEY_TIME = "-t";
-	private static final String KEY_DAY = "-d";
-	private static final String KEY_MONTH = "-m";
+	private static final String KEY_DATE_ABV = "-dt";
+	private static final String KEY_TIME_ABV = "-t";
+	private static final String KEY_DAY_ABV = "-d";
+	private static final String KEY_MONTH_ABV = "-m";
 
     private static Map<String, Keywords> keywords;
     private static Map<String, Keywords> addKeywords;
@@ -58,10 +58,10 @@ public class InputStringKeyword {
         keywords.put(KEY_END_ABV, Keywords.END);
         keywords.put(KEY_NAME, Keywords.NAME);
         keywords.put(KEY_NAME_ABV, Keywords.NAME);
-        keywords.put(KEY_DATE, Keywords.DATE);
-        keywords.put(KEY_TIME, Keywords.TIME);
-        keywords.put(KEY_DAY, Keywords.DAY);
-        keywords.put(KEY_MONTH, Keywords.MONTH);
+        keywords.put(KEY_DATE_ABV, Keywords.DATE);
+        keywords.put(KEY_TIME_ABV, Keywords.TIME);
+        keywords.put(KEY_DAY_ABV, Keywords.DAY);
+        keywords.put(KEY_MONTH_ABV, Keywords.MONTH);
 
     }
 
