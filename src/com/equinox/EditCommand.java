@@ -51,16 +51,22 @@ public class EditCommand extends Command{
 					postEdit.setName(param);
 					break;
 				case START:
-					if(!input.containDates()) {
+					if(param.equals("null")) {
+						postEdit.setStartTime(null);
+					} else if(!input.containDates()) {
 						return new Signal(Signal.EDIT_INVALID_DATE, false);
+					} else {
+						postEdit.setStartTime(dateTimes.remove(0));
 					}
-					postEdit.setStartTime(dateTimes.remove(0));
 					break;
 				case END:
-					if(!input.containDates()) {
+					if(param.equals("null")) {
+						postEdit.setEndTime(null);
+					} else if(!input.containDates()) {
 						return new Signal(Signal.EDIT_INVALID_DATE, false);
+					} else {
+						postEdit.setEndTime(dateTimes.remove(0));
 					}
-					postEdit.setEndTime(dateTimes.remove(0));
 					break;
 				case DONE:
 					postEdit.setDone(Boolean.parseBoolean(param));
