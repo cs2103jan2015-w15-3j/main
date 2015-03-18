@@ -3,6 +3,7 @@ package com.equinox;
 public class SignalHandler {
 
     private static final String PREFIX = "Zeitgeist: ";
+    private static final String COMMAND_PREFIX = "Command: ";
 
     public static void printSignal(Signal signal) {
         assert (signal != null);
@@ -15,4 +16,8 @@ public class SignalHandler {
             System.out.println(PREFIX + message);
         }
 	}
+
+    public static void printCommandPrefix() {
+        System.out.print(COMMAND_PREFIX);
+    }
 }
