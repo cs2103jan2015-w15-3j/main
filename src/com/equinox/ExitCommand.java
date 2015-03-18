@@ -21,6 +21,7 @@ public class ExitCommand extends Command {
         }
         
         memory.flushStacks();
+        memory.saveToFile();
         return new Signal(Signal.EXIT_SUCCESS, true);
     }
 }
