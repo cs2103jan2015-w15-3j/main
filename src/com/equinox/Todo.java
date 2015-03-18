@@ -28,6 +28,7 @@ public class Todo{
 	}
 
 	private final int id;
+	private final Integer recurringId;
 	private String name;
 	private final DateTime createdOn;
 	private DateTime modifiedOn, startTime, endTime;
@@ -49,11 +50,12 @@ public class Todo{
 	/**
 	 * Constructs a Todo of type: TASK.
 	 * 
-	 * @param id 
+	 * @param id the ID of the Todo.
 	 * @param name name of the task.
 	 */
 	public Todo(int id, String name) {
 		this.id = id;
+		this.recurringId = null;
 		this.name = name;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
@@ -69,12 +71,13 @@ public class Todo{
 	 * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
 	 * dates.
 	 * 
-	 * @param id
+	 * @param id the ID of the Todo.
 	 * @param name name of the task.
-	 * @param dateTimes
+	 * @param dateTimes a List of DateTimes specifying the end and/or start times.
 	 */
 	public Todo(int id, String name, List<DateTime> dateTimes) {
 		this.id = id;
+		this.recurringId = null;
 		this.name = name;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
@@ -87,7 +90,33 @@ public class Todo{
 			this.startTime = dateTimes.get(0);
 			this.endTime = dateTimes.get(1);
 			this.type = TYPE.EVENT;
-		} // Catch DateList more than 2 DateTimes (optional)
+		}
+	}
+	
+	/**
+	 * Constructs a Recurring Todo of type: DEADLINE or EVENT
+	 * 
+	 * @param id the ID of the Todo.
+	 * @param recurringId the RecurringID of the Todo.
+	 * @param name name of the task.
+	 * @param dateTimes a List of DateTimes specifying the end and/or start times.
+	 */
+	public Todo(int id, int recurringId, String name, List<DateTime> dateTimes) {
+		this.id = id;
+		this.recurringId = recurringId;
+		this.name = name;
+		this.createdOn = new DateTime();
+		this.modifiedOn = this.createdOn;
+		this.isDone = false;
+		if(dateTimes.size() == 1) {
+			this.startTime = null;
+			this.endTime = dateTimes.get(0);
+			this.type = TYPE.DEADLINE;
+		} else if(dateTimes.size() == 2) {
+			this.startTime = dateTimes.get(0);
+			this.endTime = dateTimes.get(1);
+			this.type = TYPE.EVENT;
+		}
 	}
 
 	/**
@@ -97,6 +126,7 @@ public class Todo{
 	 */
 	protected Todo(Todo todo) {
 		this.id = todo.id;
+		this.recurringId = todo.recurringId;
 		this.name = todo.name;
 		this.createdOn = todo.createdOn;
 		this.modifiedOn = todo.modifiedOn;
@@ -114,6 +144,7 @@ public class Todo{
 	 */
 	private Todo(int id) {
 		this.id = id;
+		this.recurringId = null;
 		this.name = null;
 		this.createdOn = null;
 		this.modifiedOn = null;
@@ -130,6 +161,28 @@ public class Todo{
 	 */
 	public int getId() {
 		return id;
+	}
+	
+
+	/**
+	 * Returns the RecurringID of the Todo.
+	 * 
+	 * @return the RecurringID of the Todo.
+	 */
+	public Integer getRecurringId() {
+		return recurringId;
+	}
+	
+	/**
+	 * Checks if the Todo recurs.
+	 * 
+	 * @return true if the Todo recurs.
+	 */
+	public boolean isRecurring() {
+		if(recurringId == null) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
