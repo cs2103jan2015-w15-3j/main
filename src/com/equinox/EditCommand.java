@@ -49,6 +49,7 @@ public class EditCommand extends Command{
 				switch (keyword) {
 				case NAME:
 					postEdit.setName(param);
+					memory.saveToFile();
 					break;
 				case START:
 					if(param.equals("null")) {
@@ -58,6 +59,9 @@ public class EditCommand extends Command{
 					} else {
 						postEdit.setStartTime(dateTimes.remove(0));
 					}
+
+					postEdit.setStartTime(dateTimes.remove(0));
+					memory.saveToFile();
 					break;
 				case END:
 					if(param.equals("null")) {
@@ -67,9 +71,13 @@ public class EditCommand extends Command{
 					} else {
 						postEdit.setEndTime(dateTimes.remove(0));
 					}
+
+					postEdit.setEndTime(dateTimes.remove(0));
+					memory.saveToFile();
 					break;
 				case DONE:
 					postEdit.setDone(Boolean.parseBoolean(param));
+					memory.saveToFile();
 					break;
 				default:
 					// Invalid Params
