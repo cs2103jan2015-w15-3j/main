@@ -9,4 +9,5 @@ final class ExceptionMessages {
 	static final String NO_FUTURE_STATES_EXCEPTION = "No redoable states exist";
 	static final String DATE_UNDEFINED_EXCEPTION = "Date String is empty or does not contain dates.";
 	static final String NO_DATE_KEYWORD_EXCEPTION = "Date keywords cannot be found in input string";
+	static final String INVALID_SEARCH_TYPE_EXCEPTION = "Specified search type does not exist.";
 }

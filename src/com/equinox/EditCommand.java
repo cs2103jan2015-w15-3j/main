@@ -35,26 +35,32 @@ public class EditCommand extends Command{
 	public Signal execute() {
 		Todo preEdit, postEdit;
 		try {
-			if(input.containsEmptyParams()) { // TODO: Check for empty dateList.
+			if(input.containsEmptyParams() || input.containsOnlyCommand()) {
 				return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 			}
-			int userIndex = Integer.parseInt(keyParamPairList.get(0).getParam());
+			int userIndex = Integer.parseInt(keyParamPairs.get(0).getParam());
 			preEdit = new Todo(memory.get(userIndex));
 			postEdit = memory.setterGet(userIndex);
 			
-			for (int i = 1; i < keyParamPairList.size(); i++) {
-				KEYWORDS keyword = keyParamPairList.get(i).getKeyword();
-				String param = keyParamPairList.get(i).getParam();
+			for (int i = 1; i < keyParamPairs.size(); i++) {
+				Keywords keyword = keyParamPairs.get(i).getKeyword();
+				String param = keyParamPairs.get(i).getParam();
 
 				switch (keyword) {
 				case NAME:
 					postEdit.setName(param);
 					break;
 				case START:
-					postEdit.setStartTime(dateTimeList.remove(0));
+					if(!input.containDates()) {
+						return new Signal(Signal.EDIT_INVALID_DATE, false);
+					}
+					postEdit.setStartTime(dateTimes.remove(0));
 					break;
 				case END:
-					postEdit.setEndTime(dateTimeList.remove(0));
+					if(!input.containDates()) {
+						return new Signal(Signal.EDIT_INVALID_DATE, false);
+					}
+					postEdit.setEndTime(dateTimes.remove(0));
 					break;
 				case DONE:
 					postEdit.setDone(Boolean.parseBoolean(param));
@@ -70,7 +76,7 @@ public class EditCommand extends Command{
 				} catch (StateUndefinedException e) {
 					e.printStackTrace();
 				}
-                return new Signal(Signal.EDIT_INVALID_TIME, false);
+                return new Signal(Signal.EDIT_END_BEFORE_START, false);
 			}
 		} catch (NullTodoException e) {
             return new Signal(e.getMessage(), false);

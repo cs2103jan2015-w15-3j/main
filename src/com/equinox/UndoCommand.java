@@ -21,11 +21,16 @@ public class UndoCommand extends Command{
 		super(input, memory);
 	}
 
+	/**
+	 * Reverses the last modifying operation.
+	 * 
+	 * @return a Signal object with a message denoting success or failure in
+	 *         processing.
+	 */
 	@Override
 	public Signal execute() {
 		//check if the number of parameters is correct
-		int numberOfKeywords = keyParamPairList.size();
-		if(numberOfKeywords != 1){
+		if(!(input.containsOnlyCommand() && input.containsEmptyParams())){
             return new Signal(Signal.UNDO_INVALID_PARAMS, false);
 		}
 		

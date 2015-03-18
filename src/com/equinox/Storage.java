@@ -9,8 +9,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonObject;
 
 import java.io.File;
 import java.io.BufferedWriter;
@@ -29,8 +27,9 @@ import org.joda.time.LocalTime;
 import com.equinox.Memory.IDBuffer;
 
 /**
- * Handles the storing of an instance of Memory into a file in JSON formatting, 
- * as well as the retrieving of an instance of Memory from a file in JSON formatting.
+ * Handles the storing of an instance of Memory into a file in JSON formatting,
+ * as well as the retrieving of an instance of Memory from a file in JSON
+ * formatting.
  * 
  * @author Jonathan Lim Siu Chi || ign3sc3nc3
  *
@@ -130,7 +129,8 @@ public class Storage {
 				new LocalDateTypeConverter());
 		gsonBuilder.registerTypeAdapter(LocalTime.class,
 				new LocalTimeTypeConverter());
-		gsonBuilder.registerTypeAdapter(IDBuffer.class, new IDBufferInstanceCreator());
+		gsonBuilder.registerTypeAdapter(IDBuffer.class,
+				new IDBufferInstanceCreator());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String jsonString = gson.toJson(mem);
 		return jsonString;
@@ -141,8 +141,7 @@ public class Storage {
 	 * Method to parse a json String representing an instance of memory into an
 	 * instance of Memory class
 	 * 
-	 * @param jsonString
-	 *            JSON representation of an instance of memory as String
+	 * @param jsonString JSON representation of an instance of memory as String
 	 * @return an instance of Memory class
 	 */
 	public static Memory importFromJson(String jsonString) {
@@ -153,7 +152,8 @@ public class Storage {
 				new LocalDateTypeConverter());
 		gsonBuilder.registerTypeAdapter(LocalTime.class,
 				new LocalTimeTypeConverter());
-		gsonBuilder.registerTypeAdapter(IDBuffer.class, new IDBufferInstanceCreator());
+		gsonBuilder.registerTypeAdapter(IDBuffer.class,
+				new IDBufferInstanceCreator());
 		Gson gson = gsonBuilder.create();
 		return gson.fromJson(jsonString, Memory.class);
 	}

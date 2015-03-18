@@ -15,11 +15,12 @@ public class ExitCommand extends Command {
 
 	@Override
     public Signal execute() {
-        String param = keyParamPairList.get(0).getParam();
+        String param = keyParamPairs.get(0).getParam();
         if (!param.isEmpty()) {
             return new Signal(Signal.EXIT_INVALLID_PARAMS, false);
         }
-
+        
+        memory.flushStacks();
         return new Signal(Signal.EXIT_SUCCESS, true);
     }
 }

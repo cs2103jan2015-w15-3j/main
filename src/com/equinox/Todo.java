@@ -28,7 +28,7 @@ public class Todo{
 	}
 
 	private final int id;
-	private String title;
+	private String name;
 	private final DateTime createdOn;
 	private DateTime modifiedOn, startTime, endTime;
 	private boolean isDone;
@@ -49,11 +49,12 @@ public class Todo{
 	/**
 	 * Constructs a Todo of type: TASK.
 	 * 
-	 * @param title title of the task.
+	 * @param id 
+	 * @param name name of the task.
 	 */
-	public Todo(int id, String title) {
+	public Todo(int id, String name) {
 		this.id = id;
-		this.title = title;
+		this.name = name;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.startTime = null;
@@ -68,21 +69,23 @@ public class Todo{
 	 * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
 	 * dates.
 	 * 
-	 * @param title title of the task.
+	 * @param id
+	 * @param name name of the task.
+	 * @param dateTimes
 	 */
-	public Todo(int id, String title, List<DateTime> dateTimeList) {
+	public Todo(int id, String name, List<DateTime> dateTimes) {
 		this.id = id;
-		this.title = title;
+		this.name = name;
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.isDone = false;
-		if(dateTimeList.size() == 1) {
+		if(dateTimes.size() == 1) {
 			this.startTime = null;
-			this.endTime = dateTimeList.get(0);
+			this.endTime = dateTimes.get(0);
 			this.type = TYPE.DEADLINE;
-		} else if(dateTimeList.size() == 2) {
-			this.startTime = dateTimeList.get(0);
-			this.endTime = dateTimeList.get(1);
+		} else if(dateTimes.size() == 2) {
+			this.startTime = dateTimes.get(0);
+			this.endTime = dateTimes.get(1);
 			this.type = TYPE.EVENT;
 		} // Catch DateList more than 2 DateTimes (optional)
 	}
@@ -94,7 +97,7 @@ public class Todo{
 	 */
 	protected Todo(Todo todo) {
 		this.id = todo.id;
-		this.title = todo.title;
+		this.name = todo.name;
 		this.createdOn = todo.createdOn;
 		this.modifiedOn = todo.modifiedOn;
 		this.startTime = todo.startTime;
@@ -111,7 +114,7 @@ public class Todo{
 	 */
 	private Todo(int id) {
 		this.id = id;
-		this.title = null;
+		this.name = null;
 		this.createdOn = null;
 		this.modifiedOn = null;
 		this.startTime = null;
@@ -130,12 +133,12 @@ public class Todo{
 	}
 
 	/**
-	 * Returns the title of the Todo.
+	 * Returns the name of the Todo.
 	 * 
-	 * @return the title of the Todo.
+	 * @return the name of the Todo.
 	 */
-	public String getTitle() {
-		return title;
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -145,7 +148,7 @@ public class Todo{
 	 * @param title the new title of the Todo.
 	 */
 	public void setName(String title) {
-		this.title = title;
+		this.name = title;
 		modifiedOn = new DateTime();
 	}
 
@@ -259,7 +262,9 @@ public class Todo{
 				return false;
 			}
 		} else if (startTime != null && endTime == null) {
-			return false;
+			endTime = startTime;
+			startTime = null;
+			type = TYPE.DEADLINE;
 		} else if(startTime == null && endTime != null) {
 			type = TYPE.DEADLINE;
 		} else if(startTime == null && endTime == null) {
@@ -277,12 +282,12 @@ public class Todo{
 
         switch (type) {
             case TASK :
-                return String.format(FloatingTaskStringFormat, title);
+                return String.format(FloatingTaskStringFormat, name);
             case DEADLINE :
-                return String.format(DeadlineStringFormat, title,
+                return String.format(DeadlineStringFormat, name,
                         endDateTimeString);
             case EVENT :
-                return String.format(EventStringFormat, title,
+                return String.format(EventStringFormat, name,
                         startDateTimeString, endDateTimeString);
             default :
                 return "";
@@ -381,7 +386,7 @@ public class Todo{
 		}
 		
 		//Comparing title
-				if(!this.title.equals(other.title)){
+				if(!this.name.equals(other.name)){
 					return false;
 				}
 				

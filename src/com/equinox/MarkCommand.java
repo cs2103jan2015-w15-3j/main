@@ -32,28 +32,23 @@ public class MarkCommand extends Command {
 	 */
 	@Override
 	public Signal execute() {
+		// Ensure that there is only one KeyParamPair in inputList
+		if (!input.containsOnlyCommand()) {
+			return new Signal(Signal.MARK_INVALID_PARAMS, false);
+		}
+		
 		if(input.containsEmptyParams()) {
             return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 		}
 
-		// Ensure that there is only one KeyParamPair in inputList
-        if (keyParamPairList.size() > 1) {
-            return new Signal(Signal.MARK_INVALID_PARAMS, false);
-		}
-		
-        if (keyParamPairList.get(0).getParam().isEmpty()) {
-            return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
-		}
-
 		try {
-			int index = Integer.parseInt(keyParamPairList.get(0).getParam());
+			int index = Integer.parseInt(keyParamPairs.get(0).getParam());
 			Todo todoToMark = memory.setterGet(index);
 			todoToMark.setDone(true);
             return new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT,
                     todoToMark), true);
 		} catch (NullTodoException e) {
-            return new Signal(String.format(Signal.GENERIC_EXCEPTIONS_FORMAT,
-                    e.getMessage()), false);
+            return new Signal(e.getMessage(), false);
 		} catch (NumberFormatException e) {
             return new Signal(
 String.format(Signal.MARK_INVALID_PARAMS),
