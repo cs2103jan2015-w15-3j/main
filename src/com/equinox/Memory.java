@@ -71,8 +71,6 @@ public class Memory {
 			searchMap.insertToDateMap(startDate, id);
 			LocalTime startTime = startDateTime.toLocalTime();
 			searchMap.insertToTimeMap(startTime, id);
-			// int startYear = startDateTime.getYear();
-			// insertToYearMap(startYear, id);
 			int startMonth = startDateTime.getMonthOfYear();
 			searchMap.insertToMonthMap(startMonth, id);
 			int startDay = startDateTime.getDayOfWeek();
@@ -83,8 +81,6 @@ public class Memory {
 			searchMap.insertToDateMap(endDate, id);
 			LocalTime endTime = endDateTime.toLocalTime();
 			searchMap.insertToTimeMap(endTime, id);
-			// int endYear = endDateTime.getYear();
-			// searchMap.insertToYearMap(endYear, id);
 			int endMonth = endDateTime.getMonthOfYear();
 			searchMap.insertToMonthMap(endMonth, id);
 			int endDay = endDateTime.getDayOfWeek();
@@ -361,62 +357,6 @@ public class Memory {
 				buffer.pollLast();
 			}
 		}
-	}
-
-	/**
-	 * Gets the arrayList of Todo ids from the nameMap based on searchKey given
-	 * 
-	 * @param searchKey
-	 * @return ArrayList of Todo ids if searchkey is in nameMap, empty ArrayList
-	 *         otherwise
-	 */
-	public ArrayList<Integer> searchName(String searchKey) {
-		if (searchMap.nameMap.containsKey(searchKey)) {
-			return searchMap.nameMap.get(searchKey);
-		}
-		return new ArrayList<Integer>();
-	}
-
-	/**
-	 * Gets the arrayList of Todo ids from the dateMap based on searchDate given
-	 * 
-	 * @param searchDate
-	 * @return ArrayList of Todo ids if searchDate is in dateMap, empty
-	 *         ArrayList otherwise
-	 */
-	public ArrayList<Integer> searchDate(LocalDate searchDate) {
-		if (searchMap.dateMap.containsKey(searchDate)) {
-			return searchMap.dateMap.get(searchDate);
-		}
-		return new ArrayList<Integer>();
-	}
-
-	/**
-	 * Gets the arrayList of Todo ids from the timeMap based on searchTime given
-	 * 
-	 * @param searchTime
-	 * @return ArrayList of Todo ids if searchkey is in timeMap, empty ArrayList
-	 *         otherwise
-	 */
-	public ArrayList<Integer> searchTime(LocalTime searchTime) {
-		if (searchMap.timeMap.containsKey(searchTime)) {
-			return searchMap.timeMap.get(searchTime);
-		}
-		return new ArrayList<Integer>();
-	}
-
-	public ArrayList<Integer> searchMonth(int searchMonth) {
-		if (searchMap.monthMap.containsKey(searchMonth)) {
-			return searchMap.monthMap.get(searchMonth);
-		}
-		return new ArrayList<Integer>();
-	}
-
-	public ArrayList<Integer> searchDay(int searchDay) {
-		if (searchMap.dayMap.containsKey(searchDay)) {
-			return searchMap.dayMap.get(searchDay);
-		}
-		return new ArrayList<Integer>();
 	}
 
 	private class SearchMap {
