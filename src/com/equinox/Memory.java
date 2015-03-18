@@ -35,6 +35,7 @@ public class Memory {
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
 	private SearchMap searchMap;
+	private StorageHandler storageHandler = new StorageHandler();
 
 	/**
 	 * Constructs an empty Memory object.
@@ -579,5 +580,15 @@ public class Memory {
 	public ArrayList<Integer> search(Keywords typeKey, DateTime dateTime)
 			throws InvalidParamException {
 		return searchMap.getResult(typeKey, dateTime);
+	}
+	
+	/**
+	 * Saves this instance of memory to file by calling the storeMemoryToFile method 
+	 * in the StorageHandler object.
+	 * 
+	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
+	 */
+	public void saveToFile(){
+		storageHandler.storeMemoryToFile(this);
 	}
 }

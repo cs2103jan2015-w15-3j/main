@@ -35,6 +35,7 @@ public class RedoCommand extends Command {
 		
 		try{
 			memory.restoreFutureState();
+			memory.saveToFile();
 		} catch (StateUndefinedException e) {
             return new Signal(e.getMessage(), false);
 		}
