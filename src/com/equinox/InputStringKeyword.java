@@ -17,6 +17,8 @@ public class InputStringKeyword {
 	private static final String KEY_FROM = "from";
 	private static final String KEY_ON = "on";
 	private static final String KEY_AT = "at";
+	private static final String KEY_EVERY = "every";
+	private static final String KEY_UNTIL = "until";
 	private static final String KEY_NAME = "name";
 	private static final String KEY_NAME_ABV = "-n";
 	private static final String KEY_START = "start";
@@ -50,6 +52,8 @@ public class InputStringKeyword {
         addKeywords.put(KEY_FROM, Keywords.FROM);
         addKeywords.put(KEY_ON, Keywords.ON);
         addKeywords.put(KEY_AT, Keywords.AT);
+        addKeywords.put(KEY_EVERY, Keywords.EVERY);
+        addKeywords.put(KEY_UNTIL, Keywords.UNTIL);
     	
         keywords = new HashMap<String, Keywords>(commands);
         keywords.put(KEY_START, Keywords.START);
