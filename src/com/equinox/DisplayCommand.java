@@ -19,6 +19,8 @@ public class DisplayCommand extends Command {
     private static Logger logger = LoggerFactory
             .getLogger(DisplayCommand.class);
 
+    private static final boolean LOGGING = false;
+
 	/**
 	 * Creates a DisplayCommand object.
 	 * 
@@ -36,31 +38,41 @@ public class DisplayCommand extends Command {
 	private static final int showAll = 2;
 
 	// Messages for different categories based on completeness
-	private static final String messagePending = "Pending:";
-	private static final String messageCompleted = "Completed:";
-	private static final String messageAll = "All:";
+    private static final String MESSAGE_PENDING = "Showing pending todos:";
+    private static final String MESSAGE_COMPLETED = "Showing completed todos:";
+    private static final String MESSAGE_ALL = "Showing all todos:";
 
     // Heading for dates and floating tasks
     private static final String FLOATING_TASK_HEADING = "Anytime";
     private static final Object HEADING_PREFIX = System.lineSeparator();
 
-	// Messages for different types of todos (event, deadline, floating)
-	private static final String messageEvent = "E ";
-	private static final String messageDeadline = "D ";
-	private static final String messageFloating = "F ";
+    // Symbols for different types of todos (event, deadline, floating)
+    private static final String SYMBOL_EVENT = " E  ";
+    private static final String SYMBOL_DEADLINE = " D  ";
+    private static final String SYMBOL_FLOATING = " F  ";
 
 	// Max length for the title of todo to be displayed
-    private static final int MAX_CHAR = 25;
+    private static final int MAX_CHAR = 30;
+    private static final int TOTAL_LENGTH = 20;
 
-    private static final String eventFormat = "%1$-2s %2$-30s %3$s - %4$s";
-    private static final String deadLineFormat = "%1$-2s %2$-30s %3$s";
-    private static final String floatingFormat = "%1$-2s %2$-30s";
+    private static final String HEADING_ID = "ID";
+    private static final String HEADING_NAME = "Name";
+    private static final String HEADING_TIME = "Time";
+
+    private static final String DATE_DECO = ".";
+    private static final String EMPTY_FIELD = "NIL";
+
+    private static final String eventFormat = "%1$-2s | %2$-30s | %3$s - %4$s";
+    private static final String deadLineFormat = "%1$-2s | %2$-30s | %3$s";
+    private static final String floatingFormat = "%1$-2s | %2$-30s | %3$s";
+
+    private static final String headingFormat = "%1$-2s | %2$-30s | %3$s";
 
     private static DateTime now = new DateTime();
     private static DateTime inOneDay = new DateTime().plusDays(1);
 
 	private static final DateTimeFormatter DateFormatter = DateTimeFormat
-			.forPattern("dd MMM");
+            .forPattern("EEE dd MMM");
 	private static final DateTimeFormatter TimeFormatter = DateTimeFormat
 			.forPattern("HH:mm");
 
@@ -114,14 +126,17 @@ public class DisplayCommand extends Command {
 		Iterator<Todo> iterator = todos.iterator();
 		StringBuilder sBuilder = new StringBuilder();
         DateTime currentDate = new DateTime(0);
-		appendCategory(signal, sBuilder);
+		appendHeading(signal, sBuilder);
 
 		while (iterator.hasNext()) {
 			Todo todo = iterator.next();
             assert (todo != null);
             assert (todo.getName() != null);
-            logger.info("adding todo with title {} into display",
-                    todo.getName());
+            if (LOGGING) {
+                logger.info("adding todo with title {} into display",
+                        todo.getName());
+            }
+
             // Show pending, skip the completed tasks
             if (signal == showPending && todo.isDone()) {
                 continue;
@@ -190,21 +205,29 @@ public class DisplayCommand extends Command {
         sBuilder.append(HEADING_PREFIX);
         if (dateTime == null) {
             // Floating task, add heading
-            sBuilder.append(FLOATING_TASK_HEADING + System.lineSeparator());
+            sBuilder.append(addDecoForDate(FLOATING_TASK_HEADING)
+                    + System.lineSeparator());
         } else {
-            sBuilder.append(formatDateForDisplay(dateTime)
+            sBuilder.append(addDecoForDate(formatDateForDisplay(dateTime))
                     + System.lineSeparator());
         }
     }
 
-    private static void appendCategory(int signal, StringBuilder sBuilder) {
+    private static String addDecoForDate(String s) {
+        return StringUtils.center(s, TOTAL_LENGTH, DATE_DECO);
+    }
+
+    private static void appendHeading(int signal, StringBuilder sBuilder) {
         if (signal == showAll) {
-			sBuilder.append(messageAll + System.lineSeparator());
+			sBuilder.append(MESSAGE_ALL + System.lineSeparator());
 		} else if (signal == showCompleted) {
-			sBuilder.append(messageCompleted + System.lineSeparator());
+			sBuilder.append(MESSAGE_COMPLETED + System.lineSeparator());
 		} else if (signal == showPending) {
-			sBuilder.append(messagePending + System.lineSeparator());
+			sBuilder.append(MESSAGE_PENDING + System.lineSeparator());
 		}
+        sBuilder.append(String.format(headingFormat, HEADING_ID,
+                HEADING_NAME, HEADING_TIME)
+                + System.lineSeparator());
     }
 
     private static void appendTodo(StringBuilder sBuilder, Todo todo) {
@@ -219,15 +242,15 @@ public class DisplayCommand extends Command {
 
 	private static String formatFloatingTask(Todo todo) {
 		String title = todo.getName();
-		title = messageFloating + shortenTitle(title);
+        title = shortenTitle(title);
 		String id = String.valueOf(todo.getId());
-        return String.format(floatingFormat, id, title)
+        return String.format(floatingFormat, id, title, EMPTY_FIELD)
 				+ System.lineSeparator();
 	}
 
 	private static String formatDeadline(Todo todo) {
 		String title = todo.getName();
-		title = messageDeadline + shortenTitle(title);
+        title = shortenTitle(title);
 		String id = String.valueOf(todo.getId());
 		DateTime endTime = todo.getEndTime();
         String endDateString = formatDateForDisplay(endTime);
@@ -238,7 +261,7 @@ public class DisplayCommand extends Command {
 
 	private static String formatEvent(Todo todo) {
 		String title = todo.getName();
-		title = messageEvent + shortenTitle(title);
+        title = shortenTitle(title);
 		String id = String.valueOf(todo.getId());
 		DateTime startTime = todo.getStartTime();
 		DateTime endTime = todo.getEndTime();
@@ -291,6 +314,32 @@ public class DisplayCommand extends Command {
     private static String formatDateForDisplay(DateTime time) {
         String dateString = DateFormatter.print(time);
         return dateString;
+    }
+
+    static class StringUtils {
+
+        public static String center(String s, int size) {
+            return center(s, size, " ");
+        }
+
+        public static String center(String s, int size, String pad) {
+            if (pad == null)
+                throw new NullPointerException("pad cannot be null");
+            if (pad.length() <= 0)
+                throw new IllegalArgumentException("pad cannot be empty");
+            if (s == null || size <= s.length())
+                return s;
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < (size - s.length()) / 2; i++) {
+                sb.append(pad);
+            }
+            sb.append(s);
+            while (sb.length() < size) {
+                sb.append(pad);
+            }
+            return sb.toString();
+        }
     }
 
 	public static void main(String[] args) {
