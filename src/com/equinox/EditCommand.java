@@ -35,7 +35,10 @@ public class EditCommand extends Command{
 	public Signal execute() {
 		Todo preEdit, postEdit;
 		try {
-			if(input.containsEmptyParams() || input.containsOnlyCommand()) {
+			if (input.containsOnlyCommand()) {
+				return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+			}
+			if(input.containsEmptyParams()) {
 				return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 			}
 			int userIndex = Integer.parseInt(keyParamPairs.get(0).getParam());

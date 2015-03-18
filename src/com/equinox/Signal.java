@@ -63,7 +63,9 @@ public class Signal {
 			+ System.lineSeparator()
 			+ "\t Supported format:"
 			+ System.lineSeparator()
-			+ "\t edit <indexNumber> [name <newName>] [start <newStartTime>] [end <newEndTime>]";
+			+ "\t edit <indexNumber> [name <newName>] [start <newStartTime>] [end <newEndTime>]"
+			+ System.lineSeparator()
+			+ "\t Hint: Use null as value to remove a field.";
 
 	/**
 	 * Exit Command Signals
