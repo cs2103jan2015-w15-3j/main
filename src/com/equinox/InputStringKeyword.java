@@ -28,7 +28,6 @@ public class InputStringKeyword {
 	private static final String KEY_TIME = "-t";
 	private static final String KEY_DAY = "-d";
 	private static final String KEY_MONTH = "-m";
-	private static final String KEY_YEAR = "-y";
 
     private static Map<String, Keywords> keywords;
     private static Map<String, Keywords> addKeywords;
@@ -63,7 +62,7 @@ public class InputStringKeyword {
         keywords.put(KEY_TIME, Keywords.TIME);
         keywords.put(KEY_DAY, Keywords.DAY);
         keywords.put(KEY_MONTH, Keywords.MONTH);
-        keywords.put(KEY_YEAR, Keywords.YEAR);
+
     }
 
     /**
