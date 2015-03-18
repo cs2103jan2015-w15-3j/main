@@ -183,7 +183,7 @@ public class Signal {
 		}
 		final Signal other = (Signal) obj;
 
-		if (!(this.message == other.message)) {
+		if (!(this.message.equals(other.message))) {
 			return false;
 		}
 		return true;
