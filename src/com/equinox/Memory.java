@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import com.equinox.exceptions.InvalidParamException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
 
@@ -33,34 +34,25 @@ public class Memory {
 	private IDBuffer idBuffer;
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
-	private HashMap<String, ArrayList<Integer>> nameMap;
-	private HashMap<LocalDate, ArrayList<Integer>> dateMap;
-	private HashMap<LocalTime, ArrayList<Integer>> timeMap;
-//	private HashMap<Integer, ArrayList<Integer>> yearMap;
-	private HashMap<Integer, ArrayList<Integer>> monthMap;
-	private HashMap<Integer, ArrayList<Integer>> dayMap;
-	
+	private SearchMap searchMap;
+
 	/**
 	 * Constructs an empty Memory object.
 	 */
 	public Memory() {
 		this.memoryMap = new HashMap<Integer, Todo>();
-		this.idBuffer  = new IDBuffer();
+		this.idBuffer = new IDBuffer();
 		this.undoStack = new LinkedList<Todo>();
 		this.redoStack = new LinkedList<Todo>();
-		this.nameMap = new HashMap<String, ArrayList<Integer>>();
-		this.dateMap = new HashMap<LocalDate, ArrayList<Integer>>();
-		this.timeMap = new HashMap<LocalTime, ArrayList<Integer>>();
-//		this.yearMap = new HashMap<Integer, ArrayList<Integer>>();
-		this.monthMap = new HashMap<Integer, ArrayList<Integer>>();
-		this.dayMap = new HashMap<Integer, ArrayList<Integer>>();
+		searchMap = new SearchMap();
 	}
 
 	/**
 	 * Adds the specified Todo to memory. The current state is saved prior to
 	 * any operation.
 	 * 
-	 * @param todo the Todo to be added.
+	 * @param todo
+	 *            the Todo to be added.
 	 */
 	public void add(Todo todo) {
 		int id = todo.getId();
@@ -68,134 +60,45 @@ public class Memory {
 		flushRedoStack();
 		memoryMap.put(id, todo);
 
-		// inserts fields in Todo into various hashmaps
-		// TODO: Propose refactoring into nested class.
-		insertToNameMap(todo.getName(), id);
+		// inserts fields in Todo into searchMap
+		
+		searchMap.insertToNameMap(todo.getName(), id);
 		DateTime startDateTime = todo.getStartTime();
 		DateTime endDateTime = todo.getEndTime();
 		if (startDateTime != null) {
 			LocalDate startDate = startDateTime.toLocalDate();
-			insertToDateMap(startDate, id);
+			searchMap.insertToDateMap(startDate, id);
 			LocalTime startTime = startDateTime.toLocalTime();
-			insertToTimeMap(startTime, id);
-//			int startYear = startDateTime.getYear();
-//			insertToYearMap(startYear, id);
+			searchMap.insertToTimeMap(startTime, id);
+			// int startYear = startDateTime.getYear();
+			// insertToYearMap(startYear, id);
 			int startMonth = startDateTime.getMonthOfYear();
-			insertToMonthMap(startMonth, id);
+			searchMap.insertToMonthMap(startMonth, id);
 			int startDay = startDateTime.getDayOfWeek();
-			insertToDayMap(startDay, id);
+			searchMap.insertToDayMap(startDay, id);
 		}
 		if (endDateTime != null) {
 			LocalDate endDate = endDateTime.toLocalDate();
-			insertToDateMap(endDate, id);
+			searchMap.insertToDateMap(endDate, id);
 			LocalTime endTime = endDateTime.toLocalTime();
-			insertToTimeMap(endTime, id);
-//			int endYear = endDateTime.getYear();
-//			insertToYearMap(endYear, id);
+			searchMap.insertToTimeMap(endTime, id);
+			// int endYear = endDateTime.getYear();
+			// searchMap.insertToYearMap(endYear, id);
 			int endMonth = endDateTime.getMonthOfYear();
-			insertToMonthMap(endMonth, id);
+			searchMap.insertToMonthMap(endMonth, id);
 			int endDay = endDateTime.getDayOfWeek();
-			insertToDayMap(endDay, id);
-		}
-	}
-
-	private void insertToDayMap(int day, int id) {
-		if (dayMap.containsKey(day)) {
-			dayMap.get(day).add(id);
-		} else {
-			ArrayList<Integer> newIdList = new ArrayList<Integer>();
-			newIdList.add(id);
-			dayMap.put(day, newIdList);
-		}
-	}
-
-	private void insertToMonthMap(int month, int id) {
-		if (monthMap.containsKey(month)) {
-			monthMap.get(month).add(id);
-		} else {
-			ArrayList<Integer> newIdList = new ArrayList<Integer>();
-			newIdList.add(id);
-			monthMap.put(month, newIdList);
-		}
-	}
-
-//	/**
-//	 * Inserts year property of Todo into timeMap along with the Todo's id
-//	 * 
-//	 * @param time
-//	 * @param id
-//	 */
-//	private void insertToYearMap(int year, int id) {
-//		if (yearMap.containsKey(year)) {
-//			yearMap.get(year).add(id);
-//		} else {
-//			ArrayList<Integer> newIdList = new ArrayList<Integer>();
-//			newIdList.add(id);
-//			yearMap.put(year, newIdList);
-//		}
-//	}
-
-	/**
-	 * Inserts time property of Todo into timeMap along with the Todo's id
-	 * 
-	 * @param time
-	 * @param id
-	 */
-	private void insertToTimeMap(LocalTime time, int id) {
-		if (timeMap.containsKey(time)) {
-			timeMap.get(time).add(id);
-		} else {
-			ArrayList<Integer> newIdList = new ArrayList<Integer>();
-			newIdList.add(id);
-			timeMap.put(time, newIdList);
-		}
-
-	}
-
-	/**
-	 * Inserts date property of Todo into dateMap along with the Todo's id
-	 * 
-	 * @param date
-	 * @param id
-	 */
-	private void insertToDateMap(LocalDate date, int id) {
-		if (dateMap.containsKey(date)) {
-			dateMap.get(date).add(id);
-		} else {
-			ArrayList<Integer> newIdList = new ArrayList<Integer>();
-			newIdList.add(id);
-			dateMap.put(date, newIdList);
-		}
-
-	}
-
-	/**
-	 * Inserts each word in Todo name string into nameMap along with the Todo's
-	 * id
-	 * 
-	 * @param name
-	 * @param id
-	 */
-	private void insertToNameMap(String name, int id) {
-		String[] nameArray = name.split(REGEX_SPACE);
-		for (String x : nameArray) {
-			if (nameMap.containsKey(x)) {
-				nameMap.get(x).add(id);
-			} else {
-				ArrayList<Integer> newIdList = new ArrayList<Integer>();
-				newIdList.add(id);
-				nameMap.put(x, newIdList);
-			}
+			searchMap.insertToDayMap(endDay, id);
 		}
 	}
 
 	/**
 	 * Retrieves the Todo identified by the specified ID from the memory.
 	 * 
-	 * @param id the ID of the Todo to be retrieved.
+	 * @param id
+	 *            the ID of the Todo to be retrieved.
 	 * @return the Todo object identified by the specified ID.
-	 * @throws NullTodoException if the Todo identified by the specified ID does
-	 *             not exist.
+	 * @throws NullTodoException
+	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo get(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -209,10 +112,11 @@ public class Memory {
 	 * Retrieves the Todo identified by the specified ID from the memory for
 	 * editing. The current state is saved prior to any operation.
 	 * 
-	 * @param id the ID of the Todo to be retrieved.
+	 * @param id
+	 *            the ID of the Todo to be retrieved.
 	 * @return the Todo object identified by the specified ID.
-	 * @throws NullTodoException if the Todo identified by the specified ID does
-	 *             not exist.
+	 * @throws NullTodoException
+	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo setterGet(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -228,9 +132,10 @@ public class Memory {
 	 * Removes the Todo identified by the specified id from the memory. The
 	 * current state is saved prior to any operation.
 	 * 
-	 * @param id the ID of the Todo to be removed.
-	 * @throws NullTodoException if the Todo identified by the specified ID does
-	 *             not exist.
+	 * @param id
+	 *            the ID of the Todo to be removed.
+	 * @throws NullTodoException
+	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo remove(int id) throws NullTodoException {
 		Todo returnTodo = memoryMap.get(id);
@@ -252,7 +157,8 @@ public class Memory {
 	 * If the stack and memory no longer contains a particular Todo, its ID is
 	 * returned to the pool of available indices.
 	 * 
-	 * @param toBeSaved the Todo to be saved.
+	 * @param toBeSaved
+	 *            the Todo to be saved.
 	 */
 	private void save(Todo toBeSaved) {
 		// If undo stack has exceeded max size, discard earliest state.
@@ -265,7 +171,7 @@ public class Memory {
 		}
 		undoStack.add(toBeSavedCopy);
 	}
-	
+
 	/**
 	 * Flushes both undo and redo stacks. For use with exit command.
 	 */
@@ -273,7 +179,7 @@ public class Memory {
 		flushRedoStack();
 		flushUndoStack();
 	}
-	
+
 	/**
 	 * Flushes the undoStack of all states of Todos.
 	 */
@@ -283,7 +189,7 @@ public class Memory {
 			if (!memoryMap.containsKey(id)) {
 				releaseId(id);
 			}
-		}	
+		}
 	}
 
 	/**
@@ -302,8 +208,8 @@ public class Memory {
 	 * Restores the latest history state of the memory. Also known as the undo
 	 * operation.
 	 * 
-	 * @throws StateUndefinedException if there are no history states to restore
-	 *             to.
+	 * @throws StateUndefinedException
+	 *             if there are no history states to restore to.
 	 */
 	public void restoreHistoryState() throws StateUndefinedException {
 		Todo fromStack;
@@ -338,8 +244,8 @@ public class Memory {
 	 * Restores the latest future state of the memory. Also known as the redo
 	 * operation.
 	 * 
-	 * @throws StateUndefinedException if there are no future states to restore
-	 *             to.
+	 * @throws StateUndefinedException
+	 *             if there are no future states to restore to.
 	 */
 	public void restoreFutureState() throws StateUndefinedException {
 		Todo fromStack;
@@ -391,7 +297,8 @@ public class Memory {
 	 * Releases the specified ID number to the pool of available ID numbers for
 	 * future use by new Todos.
 	 * 
-	 * @param id the ID to be released.
+	 * @param id
+	 *            the ID to be released.
 	 */
 	public void releaseId(int id) {
 		idBuffer.put(id);
@@ -425,7 +332,7 @@ public class Memory {
 		}
 
 		private void put(int id) {
-			if(id < minFreeId) {
+			if (id < minFreeId) {
 				minFreeId = id;
 			}
 			buffer.add(id);
@@ -437,9 +344,9 @@ public class Memory {
 		private void loadToSize() {
 			int minUnloadedId = minFreeId + 1;
 			int i = minUnloadedId;
-			
-			while(i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
-				if(memoryMap.containsKey(i)) {
+
+			while (i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
+				if (memoryMap.containsKey(i)) {
 					minUnloadedId++;
 				} else {
 					buffer.add(i);
@@ -463,22 +370,22 @@ public class Memory {
 	 *         otherwise
 	 */
 	public ArrayList<Integer> searchName(String searchKey) {
-		if (nameMap.containsKey(searchKey)) {
-			return nameMap.get(searchKey);
+		if (searchMap.nameMap.containsKey(searchKey)) {
+			return searchMap.nameMap.get(searchKey);
 		}
 		return new ArrayList<Integer>();
 	}
-	
+
 	/**
 	 * Gets the arrayList of Todo ids from the dateMap based on searchDate given
 	 * 
 	 * @param searchDate
-	 * @return ArrayList of Todo ids if searchDate is in dateMap, empty ArrayList
-	 *         otherwise
+	 * @return ArrayList of Todo ids if searchDate is in dateMap, empty
+	 *         ArrayList otherwise
 	 */
 	public ArrayList<Integer> searchDate(LocalDate searchDate) {
-		if (dateMap.containsKey(searchDate)) {
-			return dateMap.get(searchDate);
+		if (searchMap.dateMap.containsKey(searchDate)) {
+			return searchMap.dateMap.get(searchDate);
 		}
 		return new ArrayList<Integer>();
 	}
@@ -491,30 +398,186 @@ public class Memory {
 	 *         otherwise
 	 */
 	public ArrayList<Integer> searchTime(LocalTime searchTime) {
-		if (timeMap.containsKey(searchTime)) {
-			return timeMap.get(searchTime);
+		if (searchMap.timeMap.containsKey(searchTime)) {
+			return searchMap.timeMap.get(searchTime);
 		}
 		return new ArrayList<Integer>();
 	}
 
-//	public ArrayList<Integer> searchYear(int searchYear) {
-//		if (yearMap.containsKey(searchYear)) {
-//			return yearMap.get(searchYear);
-//		}
-//		return new ArrayList<Integer>();
-//	}
-
 	public ArrayList<Integer> searchMonth(int searchMonth) {
-		if (monthMap.containsKey(searchMonth)) {
-			return monthMap.get(searchMonth);
+		if (searchMap.monthMap.containsKey(searchMonth)) {
+			return searchMap.monthMap.get(searchMonth);
 		}
 		return new ArrayList<Integer>();
 	}
 
 	public ArrayList<Integer> searchDay(int searchDay) {
-		if (dayMap.containsKey(searchDay)) {
-			return dayMap.get(searchDay);
+		if (searchMap.dayMap.containsKey(searchDay)) {
+			return searchMap.dayMap.get(searchDay);
 		}
 		return new ArrayList<Integer>();
+	}
+
+	private class SearchMap {
+		private HashMap<String, ArrayList<Integer>> nameMap;
+		private HashMap<LocalDate, ArrayList<Integer>> dateMap;
+		private HashMap<LocalTime, ArrayList<Integer>> timeMap;
+		private HashMap<Integer, ArrayList<Integer>> monthMap;
+		private HashMap<Integer, ArrayList<Integer>> dayMap;
+
+		SearchMap() {
+			this.nameMap = new HashMap<String, ArrayList<Integer>>();
+			this.dateMap = new HashMap<LocalDate, ArrayList<Integer>>();
+			this.timeMap = new HashMap<LocalTime, ArrayList<Integer>>();
+			this.monthMap = new HashMap<Integer, ArrayList<Integer>>();
+			this.dayMap = new HashMap<Integer, ArrayList<Integer>>();
+		}
+
+		private void insertToDayMap(int day, int id) {
+			if (dayMap.containsKey(day)) {
+				dayMap.get(day).add(id);
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				dayMap.put(day, newIdList);
+			}
+		}
+
+		private void insertToMonthMap(int month, int id) {
+			if (monthMap.containsKey(month)) {
+				monthMap.get(month).add(id);
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				monthMap.put(month, newIdList);
+			}
+		}
+
+		/**
+		 * Inserts time property of Todo into timeMap along with the Todo's id
+		 * 
+		 * @param time
+		 * @param id
+		 */
+		private void insertToTimeMap(LocalTime time, int id) {
+			if (timeMap.containsKey(time)) {
+				timeMap.get(time).add(id);
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				timeMap.put(time, newIdList);
+			}
+
+		}
+
+		/**
+		 * Inserts date property of Todo into dateMap along with the Todo's id
+		 * 
+		 * @param date
+		 * @param id
+		 */
+		private void insertToDateMap(LocalDate date, int id) {
+			if (dateMap.containsKey(date)) {
+				dateMap.get(date).add(id);
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				dateMap.put(date, newIdList);
+			}
+
+		}
+
+		/**
+		 * Inserts each word in Todo name string into nameMap along with the
+		 * Todo's id
+		 * 
+		 * @param name
+		 * @param id
+		 */
+		private void insertToNameMap(String name, int id) {
+			String[] nameArray = name.split(REGEX_SPACE);
+			for (String x : nameArray) {
+				if (nameMap.containsKey(x)) {
+					nameMap.get(x).add(id);
+				} else {
+					ArrayList<Integer> newIdList = new ArrayList<Integer>();
+					newIdList.add(id);
+					nameMap.put(x, newIdList);
+				}
+			}
+		}
+
+		public ArrayList<Integer> getResult(Keywords typeKey, String searchKey) {
+			// searchKey can only be String if searchType is name
+			assert (typeKey == Keywords.NAME);
+			ArrayList<Integer> toDoIds = new ArrayList<Integer>();
+
+			if (nameMap.containsKey(searchKey)) {
+				toDoIds = nameMap.get(searchKey);
+			}
+			return toDoIds;
+		}
+
+		public ArrayList<Integer> getResult(Keywords typeKey, DateTime dateTime)
+				throws InvalidParamException {
+			ArrayList<Integer> toDoIds = new ArrayList<Integer>();
+			switch (typeKey) {
+				case DATE:
+					LocalDate searchDate = dateTime.toLocalDate();
+					if (dateMap.containsKey(searchDate)) {
+						toDoIds = dateMap.get(searchDate);
+					} // else searchDate is not in dateMap, toDoIds is empty
+						// List
+					break;
+				case DAY:
+					int searchDay = dateTime.getDayOfWeek();
+					if (dayMap.containsKey(searchDay)) {
+						toDoIds = dayMap.get(searchDay);
+					}// else searchDay is not in dayMap, toDoIds is empty List
+					break;
+				case MONTH:
+					int searchMonth = dateTime.getMonthOfYear();
+					if (monthMap.containsKey(searchMonth)) {
+						toDoIds = monthMap.get(searchMonth);
+					}// else searchMonth is not in monthMap, toDoIds is empty
+						// List
+					break;
+				case TIME:
+					LocalTime searchTime = dateTime.toLocalTime();
+					if (timeMap.containsKey(searchTime)) {
+						toDoIds = timeMap.get(searchTime);
+					}// else searchTime is not in timeMap, toDoIds is empty List
+				default:
+					throw new InvalidParamException(
+							ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
+			}
+			return toDoIds;
+		}
+	}
+
+	public ArrayList<Integer> search(Keywords typeKey, String searchString) {
+		// search method with String type search key is only for search in Todo
+		// names
+		assert (typeKey == Keywords.NAME);
+
+		ArrayList<Integer> tempResult;
+		ArrayList<Integer> resultList = new ArrayList<Integer>();
+		String[] paramArray = searchString.split(REGEX_SPACE);
+		for (String searchKey : paramArray) {
+			tempResult = searchMap.getResult(typeKey, searchKey);
+			resultList.addAll(tempResult);
+		}
+
+		if (resultList.isEmpty()) {
+			return new ArrayList<Integer>();
+		} else {
+			return resultList;
+		}
+
+	}
+
+	public ArrayList<Integer> search(Keywords typeKey, DateTime dateTime)
+			throws InvalidParamException {
+		return searchMap.getResult(typeKey, dateTime);
 	}
 }
