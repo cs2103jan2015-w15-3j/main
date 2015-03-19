@@ -32,8 +32,9 @@ public class Memory {
 	private static final int ID_BUFFER_INITIAL_SIZE = 5;
 	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
 	private static final int RECURRING_MAX_INSTANCES = 7;
-	private HashMap<Integer, Todo> todoMap;
-	private HashMap<Integer, List<Todo>> recurringMap;
+	private HashMap<Integer, Todo> allTodos;
+	private HashMap<Integer, List<Todo>> recurringTodos;
+	private HashMap<Integer, DateTime> recurrenceLimits;
 	private final IDBuffer idBuffer;
 	private final IDBuffer recurringIdBuffer;
 	private LinkedList<Todo> undoStack;
@@ -45,8 +46,9 @@ public class Memory {
 	 * Constructs an empty Memory object.
 	 */
 	public Memory() {
-		this.todoMap = new HashMap<Integer, Todo>();
-		this.recurringMap = new HashMap<Integer, List<Todo>>();
+		this.allTodos = new HashMap<Integer, Todo>();
+		this.recurringTodos = new HashMap<Integer, List<Todo>>();
+		this.recurrenceLimits = new HashMap<Integer, DateTime>();
 		this.idBuffer = new IDBuffer();
 		this.recurringIdBuffer = new IDBuffer();
 		this.undoStack = new LinkedList<Todo>();
@@ -68,9 +70,7 @@ public class Memory {
 		int id = todo.getId();
 		save(todo.getPlaceholder());
 		flushRedoStack();
-		
-		// TODO: If todo is recurring, then instantiate.
-		todoMap.put(id, todo);
+		allTodos.put(id, todo);
 
 		// inserts fields in Todo into searchMap
 		
@@ -98,6 +98,13 @@ public class Memory {
 			searchMap.insertToDayMap(endDay, id);
 		}
 	}
+	
+	public void add(Todo recurringTodo, DateTime limit) {
+		add(recurringTodo);
+		recurrenceLimits.put(recurringTodo.getRecurringId(), limit);
+		// TODO: Instantiate Recurring Todos to max instances in recurringTodos map.
+		
+	}
 
 	/**
 	 * Retrieves the Todo identified by the specified ID from the memory.
@@ -109,7 +116,7 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo get(int id) throws NullTodoException {
-		Todo returnTodo = todoMap.get(id);
+		Todo returnTodo = allTodos.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
@@ -127,7 +134,7 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo setterGet(int id) throws NullTodoException {
-		Todo returnTodo = todoMap.get(id);
+		Todo returnTodo = allTodos.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
@@ -146,13 +153,13 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo remove(int id) throws NullTodoException {
-		Todo returnTodo = todoMap.get(id);
+		Todo returnTodo = allTodos.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
 		save(returnTodo);
 		flushRedoStack();
-		todoMap.remove(id);
+		allTodos.remove(id);
 		return returnTodo;
 	}
 
@@ -173,7 +180,7 @@ public class Memory {
 		Todo toBeSavedCopy = new Todo(toBeSaved);
 		if (undoStack.size() > STATE_STACK_MAX_SIZE) {
 			int id = undoStack.removeFirst().getId();
-			if (!todoMap.containsKey(id)) {
+			if (!allTodos.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -194,7 +201,7 @@ public class Memory {
 	private void flushUndoStack() {
 		while (!undoStack.isEmpty()) {
 			int id = undoStack.pollLast().getId();
-			if (!todoMap.containsKey(id)) {
+			if (!allTodos.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -206,7 +213,7 @@ public class Memory {
 	private void flushRedoStack() {
 		while (!redoStack.isEmpty()) {
 			int id = redoStack.pollLast().getId();
-			if (!todoMap.containsKey(id)) {
+			if (!allTodos.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -229,7 +236,7 @@ public class Memory {
 		}
 
 		int id = fromStack.getId();
-		Todo inMemory = todoMap.get(id);
+		Todo inMemory = allTodos.get(id);
 
 		// If Todo does not exist in memory, use placeholder.
 		if (inMemory == null) {
@@ -242,9 +249,9 @@ public class Memory {
 		// If Todo from stack is a placeholder, delete Todo indicated by its
 		// ID in the memory.
 		if (fromStack.getCreatedOn() == null) {
-			todoMap.remove(id);
+			allTodos.remove(id);
 		} else {
-			todoMap.put(id, fromStack);
+			allTodos.put(id, fromStack);
 		}
 	}
 
@@ -265,7 +272,7 @@ public class Memory {
 		}
 
 		int id = fromStack.getId();
-		Todo inMemory = todoMap.get(id);
+		Todo inMemory = allTodos.get(id);
 
 		// If Todo does not exist in memory, use placeholder.
 		if (inMemory == null) {
@@ -277,9 +284,9 @@ public class Memory {
 		// If Todo from stack is a placeholder, delete Todo indicated by its
 		// ID in the memory.
 		if (fromStack.getCreatedOn() == null) {
-			todoMap.remove(id);
+			allTodos.remove(id);
 		} else {
-			todoMap.put(id, fromStack);
+			allTodos.put(id, fromStack);
 		}
 	}
 
@@ -289,7 +296,7 @@ public class Memory {
 	 * @return all Todos as Collection
 	 */
 	public Collection<Todo> getAllTodos() {
-		return todoMap.values();
+		return allTodos.values();
 	}
 
 	/**
@@ -362,7 +369,7 @@ public class Memory {
 			int i = minUnloadedId;
 
 			while (i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
-				if (todoMap.containsKey(i)) {
+				if (allTodos.containsKey(i)) {
 					minUnloadedId++;
 				} else {
 					buffer.add(i);
