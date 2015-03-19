@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 
@@ -18,7 +19,7 @@ import com.equinox.exceptions.StateUndefinedException;
 /**
  * Stores all Todos and keeps state information allowing Undo and Redo
  * operations. Maximum number of states that can be stored by Memory is
- * {@value #STACK_MAX_SIZE}.
+ * {@value #STATE_STACK_MAX_SIZE}.
  * 
  * @author Ho Wei Li || IkarusWill
  *
@@ -26,12 +27,15 @@ import com.equinox.exceptions.StateUndefinedException;
 public class Memory {
 
 	private static final String REGEX_SPACE = "\\s";
-	private static final int STACK_MAX_SIZE = 5;
+	private static final int STATE_STACK_MAX_SIZE = 5;
 	private static final int ID_INITIAL = 0;
 	private static final int ID_BUFFER_INITIAL_SIZE = 5;
 	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
-	private HashMap<Integer, Todo> memoryMap;
-	private IDBuffer idBuffer;
+	private static final int RECURRING_MAX_INSTANCES = 7;
+	private HashMap<Integer, Todo> todoMap;
+	private HashMap<Integer, List<Todo>> recurringMap;
+	private final IDBuffer idBuffer;
+	private final IDBuffer recurringIdBuffer;
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
 	private SearchMap searchMap;
@@ -41,8 +45,10 @@ public class Memory {
 	 * Constructs an empty Memory object.
 	 */
 	public Memory() {
-		this.memoryMap = new HashMap<Integer, Todo>();
+		this.todoMap = new HashMap<Integer, Todo>();
+		this.recurringMap = new HashMap<Integer, List<Todo>>();
 		this.idBuffer = new IDBuffer();
+		this.recurringIdBuffer = new IDBuffer();
 		this.undoStack = new LinkedList<Todo>();
 		this.redoStack = new LinkedList<Todo>();
 		searchMap = new SearchMap();
@@ -50,16 +56,21 @@ public class Memory {
 
 	/**
 	 * Adds the specified Todo to memory. The current state is saved prior to
-	 * any operation.
+	 * any operation. Since add is a memory modifying command, the redoStack is
+	 * flushed.
+	 * <p>
+	 * This operation also adds all parameters of the Todo specified into the
+	 * SearchMap for indexing.
 	 * 
-	 * @param todo
-	 *            the Todo to be added.
+	 * @param todo the Todo to be added.
 	 */
 	public void add(Todo todo) {
 		int id = todo.getId();
 		save(todo.getPlaceholder());
 		flushRedoStack();
-		memoryMap.put(id, todo);
+		
+		// TODO: If todo is recurring, then instantiate.
+		todoMap.put(id, todo);
 
 		// inserts fields in Todo into searchMap
 		
@@ -98,7 +109,7 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo get(int id) throws NullTodoException {
-		Todo returnTodo = memoryMap.get(id);
+		Todo returnTodo = todoMap.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
@@ -116,7 +127,7 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo setterGet(int id) throws NullTodoException {
-		Todo returnTodo = memoryMap.get(id);
+		Todo returnTodo = todoMap.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
@@ -135,13 +146,13 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo remove(int id) throws NullTodoException {
-		Todo returnTodo = memoryMap.get(id);
+		Todo returnTodo = todoMap.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
 		save(returnTodo);
 		flushRedoStack();
-		memoryMap.remove(id);
+		todoMap.remove(id);
 		return returnTodo;
 	}
 
@@ -160,9 +171,9 @@ public class Memory {
 	private void save(Todo toBeSaved) {
 		// If undo stack has exceeded max size, discard earliest state.
 		Todo toBeSavedCopy = new Todo(toBeSaved);
-		if (undoStack.size() > STACK_MAX_SIZE) {
+		if (undoStack.size() > STATE_STACK_MAX_SIZE) {
 			int id = undoStack.removeFirst().getId();
-			if (!memoryMap.containsKey(id)) {
+			if (!todoMap.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -183,7 +194,7 @@ public class Memory {
 	private void flushUndoStack() {
 		while (!undoStack.isEmpty()) {
 			int id = undoStack.pollLast().getId();
-			if (!memoryMap.containsKey(id)) {
+			if (!todoMap.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -195,7 +206,7 @@ public class Memory {
 	private void flushRedoStack() {
 		while (!redoStack.isEmpty()) {
 			int id = redoStack.pollLast().getId();
-			if (!memoryMap.containsKey(id)) {
+			if (!todoMap.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -218,7 +229,7 @@ public class Memory {
 		}
 
 		int id = fromStack.getId();
-		Todo inMemory = memoryMap.get(id);
+		Todo inMemory = todoMap.get(id);
 
 		// If Todo does not exist in memory, use placeholder.
 		if (inMemory == null) {
@@ -231,9 +242,9 @@ public class Memory {
 		// If Todo from stack is a placeholder, delete Todo indicated by its
 		// ID in the memory.
 		if (fromStack.getCreatedOn() == null) {
-			memoryMap.remove(id);
+			todoMap.remove(id);
 		} else {
-			memoryMap.put(id, fromStack);
+			todoMap.put(id, fromStack);
 		}
 	}
 
@@ -254,7 +265,7 @@ public class Memory {
 		}
 
 		int id = fromStack.getId();
-		Todo inMemory = memoryMap.get(id);
+		Todo inMemory = todoMap.get(id);
 
 		// If Todo does not exist in memory, use placeholder.
 		if (inMemory == null) {
@@ -266,9 +277,9 @@ public class Memory {
 		// If Todo from stack is a placeholder, delete Todo indicated by its
 		// ID in the memory.
 		if (fromStack.getCreatedOn() == null) {
-			memoryMap.remove(id);
+			todoMap.remove(id);
 		} else {
-			memoryMap.put(id, fromStack);
+			todoMap.put(id, fromStack);
 		}
 	}
 
@@ -278,7 +289,7 @@ public class Memory {
 	 * @return all Todos as Collection
 	 */
 	public Collection<Todo> getAllTodos() {
-		return memoryMap.values();
+		return todoMap.values();
 	}
 
 	/**
@@ -288,6 +299,10 @@ public class Memory {
 	 */
 	public int obtainFreshId() {
 		return idBuffer.get();
+	}
+	
+	public int obtainFreshRecurringId() {
+		return recurringIdBuffer.get();
 	}
 
 	/**
@@ -299,6 +314,10 @@ public class Memory {
 	 */
 	public void releaseId(int id) {
 		idBuffer.put(id);
+	}
+	
+	public void releaseRecurringId(int recurringId) {
+		recurringIdBuffer.put(recurringId);
 	}
 
 	/**
@@ -343,7 +362,7 @@ public class Memory {
 			int i = minUnloadedId;
 
 			while (i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
-				if (memoryMap.containsKey(i)) {
+				if (todoMap.containsKey(i)) {
 					minUnloadedId++;
 				} else {
 					buffer.add(i);
