@@ -15,7 +15,7 @@ import com.joestelmach.natty.DateGroup;
 
 public class Parser {
 
-	private static final String STRING_EMPTY = "";
+	private static final char CHAR_SPACE = ' ';
 	private static final String REGEX_SPACE = "\\s";
 
 	/**
@@ -41,9 +41,13 @@ public class Parser {
 		if (cType == Keywords.ADD) {
 			try {
 				int lastAddKeywordIndex = findLastAddKeyword(words);
+				
+				// will not be executed if no date keyword found
 				String dateString = getDateString(lastAddKeywordIndex,
 						words);
 				dateTimes = parseDates(dateString);
+				
+				//will not be executed if string is not parse-able as date
 				removeDates(lastAddKeywordIndex, words);
 			} catch (NoDateKeywordException e) {
 				// Ignore empty date list will be returned
@@ -120,10 +124,6 @@ public class Parser {
 	 */
 	private static String getDateString(int lastDateKeywordIndex,
 			ArrayList<String> words) {
-		// Append 'on' keyword and following parameters at the end of the
-		// ArrayList
-		// appendOnParamsAtEnd(wordList);
-		// TODO: No longer works. Suggest removal.
 		StringBuilder dateString = new StringBuilder();
 
 		// Build dateString
@@ -205,77 +205,44 @@ public class Parser {
 	public static ArrayList<KeyParamPair> extractParam(
 			ArrayList<String> words) {
 		String key = words.get(0);
-		String tempParam = STRING_EMPTY;
 		ArrayList<KeyParamPair> results = new ArrayList<KeyParamPair>();
 		Keywords keyword;
 		EnumSet<Keywords> keywordOccurrence = EnumSet.noneOf(Keywords.class);
-
+		StringBuilder paramBuilder = new StringBuilder();
 		for (int i = 1; i < words.size(); i++) {
 			String currentParam = words.get(i);
 
-			// wordList.get(i) is a keyword. Create a KeyParamPair with previous
-			// param
-			// and tempParam and add to ArrayList. Update key and tempParam.
+			// wordList.get(i) is a keyword. Create a KeyParamPair with previous param
+			// and paramStringBuilder and add to ArrayList. Update key and paramBuilder.
 			// If currentParam is a keyword:
 			if (InputStringKeyword.isKeyword(currentParam)) {
 				keyword = InputStringKeyword.getKeyword(key);
 				// Ignore and append keyword if it has occurred before
 				if(!keywordOccurrence.contains(keyword)){
 					keywordOccurrence.add(keyword);
-					results.add(new KeyParamPair(keyword, tempParam));
+					results.add(new KeyParamPair(keyword, paramBuilder.toString()));
 					key = currentParam;
-					tempParam = STRING_EMPTY;
-				} else { // wordList.get(i) is a repeated keyword; concat with tempParam.
-					tempParam = combineParamString(tempParam, currentParam); // TODO: Suggest using StringBuilder for simplicity
+					paramBuilder = new StringBuilder();
+				} else { // wordList.get(i) is a repeated keyword; append to paramString
+					buildParam(paramBuilder, currentParam);
+					
 				}
-			} else { // wordList.get(i) is not a keyword; concat with tempParam.
-				tempParam = combineParamString(tempParam, currentParam); // TODO: Suggest using StringBuilder for simplicity
+			} else { // wordList.get(i) is not a keyword; append to paramString
+				buildParam(paramBuilder, currentParam);
 			}
 		}
 		// last KeyParamPair to be added to ArrayList
 		keyword = InputStringKeyword.getKeyword(key);
-		results.add(new KeyParamPair(keyword, tempParam));
+		results.add(new KeyParamPair(keyword, paramBuilder.toString()));
 		return results;
 	}
-/*
-	private static void appendOnParamsAtEnd(ArrayList<String> wordList) {
-		// Process the wordList to append [on <date>] to the end of the
-		// ArrayList
-		for (int i = 0; i < wordList.size(); i++) {
-			String word = wordList.get(i);
 
-			// Append to the end if 'on' appears and is not the last keyword
-			if (InputStringKeyword.getAddKeyword(word) == KEYWORDS.ON
-					&& !isLastKeyword(wordList, i + 1)) {
-
-				do {
-					String removed = wordList.remove(i);
-					wordList.add(removed);
-					word = wordList.get(i);
-				} while (!InputStringKeyword.isAddKeyword(word));
-
-				break;
-			}
-		}
-	}
-
-	private static boolean isLastKeyword(ArrayList<String> wordList, int index) {
-		for (int i = index; i < wordList.size(); i++) {
-			String word = wordList.get(i);
-			if (InputStringKeyword.isAddKeyword(word)) {
-				return false;
-			}
-		}
-		return true;
-	}
-*/
-	public static String combineParamString(String tempParam,
+	private static void buildParam(StringBuilder paramBuilder,
 			String currentParam) {
-		if (tempParam.length() == 0) {
-			return currentParam;
-		} else {
-			return tempParam.concat(" ".concat(currentParam));
+		if(paramBuilder.length()!=0) {
+			paramBuilder.append(CHAR_SPACE);
 		}
+		paramBuilder.append(currentParam); 
 	}
 
 	/**
