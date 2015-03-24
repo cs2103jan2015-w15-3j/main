@@ -1,14 +1,11 @@
 package com.equinox;
 
-import java.util.List;
-
-import org.joda.time.DateTime;
 import org.joda.time.Period;
 
 import com.equinox.exceptions.DateUndefinedException;
 
 public class RecurringTodo extends Todo {
-    private RecurrenceRule recurrenceRule;
+    private RecurringTodoRule recurrenceRule;
     private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
 
     /**
@@ -19,13 +16,10 @@ public class RecurringTodo extends Todo {
      * @param name name of the task.
      * @param dateTimes a List of DateTimes specifying the end and/or start times.
      */
-    public RecurringTodo(int id, int recurringId, String name,
-            List<DateTime> dateTimes, Period period) {
+    public RecurringTodo(int id, RecurringTodoRule rule) {
         // Pass in the constructor for normal event and deadline
-        super(id, name, dateTimes);
-        DateTime limit = new DateTime().plus(DEFAULT_RECURRENCE_LIMIT_PERIOD);
-        this.recurrenceRule = new RecurrenceRule(period, recurringId, limit);
-
+        super(id, rule.getName(), rule.getDateTimes());
+        this.recurrenceRule = rule;
     }
     
     /**
@@ -64,18 +58,18 @@ public class RecurringTodo extends Todo {
     }
 
     public static void main(String[] args) throws DateUndefinedException {
-        Todo recurringTodo = new RecurringTodo(2, 0, "first Recur",
-                Parser.parseDates("tuesday"), new Period(0).withDays(2));
+        Period period = new Period().withDays(2);
+        Todo recurringTodo = new RecurringTodo(2, new RecurringTodoRule(0, 2,
+                "recurring", Parser.parseDates("tuesday"), period));
 
         System.out.println(recurringTodo.getName());
         System.out.println(recurringTodo.toString());
+        System.out.println();
 
         Todo another = new Todo(recurringTodo);
         System.out.println(another.getName());
         System.out.println(another.toString());
-
-        System.out.println(recurringTodo instanceof Todo);
-        System.out.println(recurringTodo instanceof RecurringTodo);
+        System.out.println();
         
         Todo anotherrecurring = new RecurringTodo((RecurringTodo) recurringTodo);
         System.out.println(anotherrecurring.getName());
