@@ -82,8 +82,9 @@ public class Memory {
      * @param rule
      */
 	public void add(RecurringTodoRule rule) {
+        // TODO: Handle the change in ID for multiple todos created
         rule.updateTodoList(obtainFreshId());
-        recurringRules.put(obtainFreshRecurringId(), rule);
+        recurringRules.put(rule.getRecurringId(), rule);
 	}
 
 	/**
