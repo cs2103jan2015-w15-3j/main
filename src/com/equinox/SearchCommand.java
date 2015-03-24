@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 
-import com.equinox.exceptions.DateUndefinedException;
+import com.equinox.exceptions.InvalidDateException;
 import com.equinox.exceptions.InvalidParamException;
 import com.equinox.exceptions.NullTodoException;
 
@@ -60,7 +60,7 @@ public class SearchCommand extends Command {
 
 			try {
 				searchIndex(resultSet, typeKey, param, dateTimes);
-			} catch (DateUndefinedException e) {
+			} catch (InvalidDateException e) {
 				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
 			} catch (InvalidParamException e) {
 				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
@@ -111,11 +111,11 @@ public class SearchCommand extends Command {
 	 * @param resultSet
 	 * @param key
 	 * @param paramArray
-	 * @throws DateUndefinedException
+	 * @throws InvalidDateException
 	 * @throws InvalidParamException 
 	 */
 	private void searchIndex(Set<Integer> resultSet, Keywords typeKey,
-			String param, List<DateTime> dateTimes) throws DateUndefinedException, InvalidParamException {
+			String param, List<DateTime> dateTimes) throws InvalidDateException, InvalidParamException {
 		ArrayList<Integer> tempResult;
 		
 		if(typeKey == Keywords.NAME) {
