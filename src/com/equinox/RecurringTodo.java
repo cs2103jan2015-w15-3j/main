@@ -70,6 +70,17 @@ public class RecurringTodo extends Todo {
         System.out.println(recurringTodo.getName());
         System.out.println(recurringTodo.toString());
 
+        Todo another = new Todo(recurringTodo);
+        System.out.println(another.getName());
+        System.out.println(another.toString());
+
+        System.out.println(recurringTodo instanceof Todo);
+        System.out.println(recurringTodo instanceof RecurringTodo);
+        
+        Todo anotherrecurring = new RecurringTodo((RecurringTodo) recurringTodo);
+        System.out.println(anotherrecurring.getName());
+        System.out.println(anotherrecurring.toString());
+
     }
 
 }
