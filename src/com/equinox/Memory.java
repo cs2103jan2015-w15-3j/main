@@ -34,6 +34,7 @@ public class Memory {
 	private static final int RECURRING_MAX_INSTANCES = 7;
 	private HashMap<Integer, Todo> allTodos;
 	private HashMap<Integer, List<Todo>> recurringTodos;
+    private HashMap<Integer, RecurringTodoRule> recurringRules;
 	private HashMap<Integer, DateTime> recurrenceLimits;
 	private final IDBuffer idBuffer;
 	private final IDBuffer recurringIdBuffer;
@@ -75,12 +76,14 @@ public class Memory {
 		searchMap.add(todo);
 	}
 
-	public void add(Todo recurringTodo, DateTime limit) {
-		add(recurringTodo);
-		recurrenceLimits.put(recurringTodo.getRecurringId(), limit);
-		// TODO: Instantiate Recurring Todos to max instances in recurringTodos
-		// map.
-
+    /**
+     * Handle adding of recurring tasks as rules
+     * 
+     * @param rule
+     */
+	public void add(RecurringTodoRule rule) {
+        rule.updateTodoList(obtainFreshId());
+        recurringRules.put(obtainFreshRecurringId(), rule);
 	}
 
 	/**
