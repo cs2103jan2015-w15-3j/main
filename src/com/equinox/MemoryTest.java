@@ -3,7 +3,7 @@ package com.equinox;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
-import com.equinox.exceptions.DateUndefinedException;
+import com.equinox.exceptions.InvalidDateException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
 
@@ -16,7 +16,7 @@ public class MemoryTest {
 	Todo todo1, todo2, todo3;
 
 	@Before
-	public void setUp() throws DateUndefinedException {
+	public void setUp() throws InvalidDateException {
 		memory = new Memory();
 		todo1 = new Todo(0, TASK_1);
 		memory.add(todo1);
