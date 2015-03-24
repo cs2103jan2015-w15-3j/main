@@ -28,12 +28,11 @@ public class ParsedInput {
 	 * @param dateTimes
 	 *            the list of DateTime objects parsed from the input.
 	 * @param isRecurring
-	 * 			  whether the todo is recurring
+	 *            whether the todo is recurring
 	 * @param period
-	 * 			  the period for the recurring todo
+	 *            the period for the recurring todo
 	 */
-	public ParsedInput(Keywords type,
-			ArrayList<KeyParamPair> keyParamPairs,
+	public ParsedInput(Keywords type, ArrayList<KeyParamPair> keyParamPairs,
 			List<DateTime> dateTimes, Period period, boolean isRecurring) {
 		this.type = type;
 		this.keyParamPairs = keyParamPairs;
@@ -126,11 +125,13 @@ public class ParsedInput {
 	@Override
 	public boolean equals(Object o) {
 		if (o.getClass().equals(this.getClass())) {
-			return this.getType().equals(((ParsedInput) o).getType())
-					&& this.getParamPairs().equals(
-							((ParsedInput) o).getParamPairs());
+			ParsedInput other = (ParsedInput) o;
+			return this.getType().equals(other.getType())
+					&& this.getParamPairs().equals(other.getParamPairs())
+					&& this.getDateTimes().size() == other.getDateTimes().size()
+					&& this.getPeriod().equals(other.getPeriod())
+					&& this.isRecurring() ==other.isRecurring();
 		}
 		return false;
 	}
-
 }
