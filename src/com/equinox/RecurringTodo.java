@@ -8,8 +8,8 @@ import org.joda.time.Period;
 import com.equinox.exceptions.DateUndefinedException;
 
 public class RecurringTodo extends Todo {
-    private Period recurringPeriod;
-    protected final int recurringId;
+    private RecurrenceRule recurrenceRule;
+    private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
 
     /**
      * Constructs a Recurring Todo of type: DEADLINE or EVENT
@@ -23,8 +23,8 @@ public class RecurringTodo extends Todo {
             List<DateTime> dateTimes, Period period) {
         // Pass in the constructor for normal event and deadline
         super(id, name, dateTimes);
-        this.recurringId = recurringId;
-        this.recurringPeriod = period;
+        DateTime limit = new DateTime().plus(DEFAULT_RECURRENCE_LIMIT_PERIOD);
+        this.recurrenceRule = new RecurrenceRule(period, recurringId, limit);
 
     }
     
@@ -35,13 +35,13 @@ public class RecurringTodo extends Todo {
      */
     protected RecurringTodo(RecurringTodo todo) {
         super(todo);
-        this.recurringId = todo.recurringId;
-        this.recurringPeriod = todo.recurringPeriod;
+        this.recurrenceRule = todo.recurrenceRule;
     }
 
     @Override
     public String toString() {
-        return this.recurringId + " " + this.recurringPeriod.toString();
+        return this.getName() + this.recurrenceRule.getRecurringId() + " "
+                + this.recurrenceRule.getRecurringInterval().toString();
     }
 
     /**
@@ -60,7 +60,7 @@ public class RecurringTodo extends Todo {
      * @return the RecurringID of the Todo.
      */
     public int getRecurringId() {
-        return recurringId;
+        return recurrenceRule.getRecurringId();
     }
 
     public static void main(String[] args) throws DateUndefinedException {
