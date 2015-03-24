@@ -23,7 +23,7 @@ public class ParserTest {
 						Keywords.ADD, "test 1"))), new ArrayList<DateTime>());
 		assertEquals(parsed1, Parser.parseInput(add1));
 
-		// floating task with keyword 'on'
+		// floating task with 'one keyword + invalid datetime'
 		String add2 = "add study for test on algorithms";
 		ParsedInput parsed2 = new ParsedInput(add2, Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
@@ -31,47 +31,6 @@ public class ParserTest {
 				new ArrayList<DateTime>());
 		assertEquals(parsed2, Parser.parseInput(add2));
 
-		// floating task with keyword 'by'
-		String add3 = "add read paper by Jimmy";
-		ParsedInput parsed3 = new ParsedInput(add3, Keywords.ADD,
-				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "read paper by Jimmy"))),
-				new ArrayList<DateTime>());
-		assertEquals(parsed3, Parser.parseInput(add3));
-
-		// floating task with keyword 'at'
-		String add4 = "add meet friends at NTU";
-		ParsedInput parsed4 = new ParsedInput(add4, Keywords.ADD,
-				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "meet friends at NTU"))),
-				new ArrayList<DateTime>());
-		assertEquals(parsed4, Parser.parseInput(add4));
-
-		// floating task with keyword 'from'
-		String add5 = "add meet friends from Malaysia";
-		ParsedInput parsed5 = new ParsedInput(add5, Keywords.ADD,
-				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "meet friends from Malaysia"))),
-				new ArrayList<DateTime>());
-		assertEquals(parsed5, Parser.parseInput(add5));
-
-		// floating task with keyword 'every'
-		String add6 = "add make friends with every single person";
-		ParsedInput parsed6 = new ParsedInput(
-				add6,
-				Keywords.ADD,
-				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "make friends with every single person"))),
-				new ArrayList<DateTime>());
-		assertEquals(parsed6, Parser.parseInput(add6));
-
-		// floating task with keyword 'until'
-		String add7 = "add study until I die";
-		ParsedInput parsed7 = new ParsedInput(add7, Keywords.ADD,
-				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "study until I die"))),
-				new ArrayList<DateTime>());
-		assertEquals(parsed7, Parser.parseInput(add7));
 	}
 
 	@Test
@@ -86,34 +45,13 @@ public class ParserTest {
 			dateTimes0.add(new DateTime(d));
 		}
 
-		// deadline task default 'by'
+		// deadline task with 'one keyword + one datetime'
 		String add0 = "add test 0 by Friday";
 
 		ParsedInput parsed0 = new ParsedInput(add0, Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 0"))), dateTimes0);
 		assertEquals(parsed0, Parser.parseInput(add0));
-
-		// deadline task default 'on'
-		String add1 = "add test 1 on Friday";
-		ParsedInput parsed1 = new ParsedInput(add1, Keywords.ADD,
-				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 1"))), dateTimes0);
-		assertEquals(parsed1, Parser.parseInput(add1));
-
-		// deadline task default 'at'
-		String add2 = "add test 2 at Friday";
-		ParsedInput parsed2 = new ParsedInput(add2, Keywords.ADD,
-				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 2"))), dateTimes0);
-		assertEquals(parsed2, Parser.parseInput(add2));
-
-		// deadline task default 'from'
-		String add3 = "add test 3 from Friday";
-		ParsedInput parsed3 = new ParsedInput(add3, Keywords.ADD,
-				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 3"))), dateTimes0);
-		assertEquals(parsed3, Parser.parseInput(add3));
 
 		// deadline task 'at x on date'
 		String add5 = "add test 5 at NTU on Friday";
@@ -171,7 +109,7 @@ public class ParserTest {
 			dateTimes0.add(new DateTime(d));
 		}
 
-		// event task default 'from x to y'
+		// event task default 'one keyword + 2 datetime'
 		String add0 = "add test 0 from Friday to Sunday";
 		ParsedInput parsed0 = new ParsedInput(add0, Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
