@@ -27,6 +27,46 @@ public class RecurringTodoRule {
 
     private ArrayList<Todo> recurringTodos = new ArrayList<Todo>();
 
+    /**
+     * Constructor for the RecurringTodoRule without specifying limit
+     * 
+     * @param id
+     * @param recurringId
+     * @param name
+     * @param dateTimes
+     * @param period
+     */
+    public RecurringTodoRule(int id, int recurringId, String name,
+            List<DateTime> dateTimes, Period period) {
+        super();
+        this.name = name;
+        this.dateTimes = dateTimes;
+        this.recurringInterval = period;
+        this.recurringId = recurringId;
+        this.recurrenceLimit = new DateTime()
+                .plus(DEFAULT_RECURRENCE_LIMIT_PERIOD);
+    }
+
+    /**
+     * Constructor for the RecurringTodoRule with limit
+     * 
+     * @param id
+     * @param recurringId
+     * @param name
+     * @param dateTimes
+     * @param period
+     * @param limit
+     */
+    public RecurringTodoRule(int id, int recurringId, String name,
+            List<DateTime> dateTimes, Period period, DateTime limit) {
+        super();
+        this.name = name;
+        this.dateTimes = dateTimes;
+        this.recurringInterval = period;
+        this.recurringId = recurringId;
+        this.recurrenceLimit = limit;
+    }
+
     public String getName() {
         return name;
     }
@@ -49,17 +89,6 @@ public class RecurringTodoRule {
 
     public DateTime getRecurrenceLimit() {
         return recurrenceLimit;
-    }
-
-    public RecurringTodoRule(int id, int recurringId, String name,
-            List<DateTime> dateTimes, Period period) {
-        super();
-        this.name = name;
-        this.dateTimes = dateTimes;
-        this.recurringInterval = period;
-        this.recurringId = recurringId;
-        this.recurrenceLimit = new DateTime()
-                .plus(DEFAULT_RECURRENCE_LIMIT_PERIOD);
     }
 
     /**
