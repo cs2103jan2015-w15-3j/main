@@ -1,6 +1,6 @@
 package com.equinox;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -23,11 +23,13 @@ public class RecurringTodoRule {
     private DateTime recurrenceLimit;
 
     private String name;
+    private String originalName;
+
     private List<DateTime> dateTimes;
 
-    private HashMap<Integer, Todo> recurringTodos = new HashMap<Integer, Todo>();
+    private ArrayList<Todo> recurringTodos = new ArrayList<Todo>();
 
-    private String RECURRING_TODO_PREIX = "*R*";
+    private String RECURRING_TODO_PREIX = "(Recurring) ";
 
     protected static final String recurringTodoStringFormat = "Recurring todos \"%1$s\"";
 
@@ -43,6 +45,7 @@ public class RecurringTodoRule {
     public RecurringTodoRule(int recurringId, String name,
             List<DateTime> dateTimes, Period period) {
         super();
+        this.originalName = name;
         this.name = RECURRING_TODO_PREIX + name;
         this.dateTimes = dateTimes;
         this.recurringInterval = period;
@@ -79,7 +82,7 @@ public class RecurringTodoRule {
         return dateTimes;
     }
 
-    public HashMap<Integer, Todo> getRecurringTodos() {
+    public ArrayList<Todo> getRecurringTodos() {
         return recurringTodos;
     }
 
@@ -134,7 +137,7 @@ public class RecurringTodoRule {
     }
 
     private void addRecurringTodo(Memory memory, int currentID, Todo newTodo) {
-        recurringTodos.put(currentID, newTodo);
+        recurringTodos.add(newTodo);
         memory.add(newTodo);
     }
 
@@ -147,7 +150,7 @@ public class RecurringTodoRule {
     }
 
     public String toString() {
-        return String.format(recurringTodoStringFormat, name);
+        return String.format(recurringTodoStringFormat, originalName);
     }
 
 }
