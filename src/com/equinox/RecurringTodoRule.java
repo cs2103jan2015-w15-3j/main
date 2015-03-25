@@ -36,7 +36,7 @@ public class RecurringTodoRule {
      * @param dateTimes
      * @param period
      */
-    public RecurringTodoRule(int id, int recurringId, String name,
+    public RecurringTodoRule(int recurringId, String name,
             List<DateTime> dateTimes, Period period) {
         super();
         this.name = name;
@@ -57,7 +57,7 @@ public class RecurringTodoRule {
      * @param period
      * @param limit
      */
-    public RecurringTodoRule(int id, int recurringId, String name,
+    public RecurringTodoRule(int recurringId, String name,
             List<DateTime> dateTimes, Period period, DateTime limit) {
         super();
         this.name = name;
@@ -99,28 +99,37 @@ public class RecurringTodoRule {
     public int updateTodoList(int currentID) {
         if (recurringTodos.isEmpty()) {
             recurringTodos.add(new Todo(currentID, name, dateTimes));
+            currentID++;
         }
 
         Todo lastTodo = recurringTodos.get(recurringTodos.size() - 1);
         DateTime now = new DateTime();
-        while (lastTodo.getStartTime().compareTo(now) < 0) {
-            updateDateTime();
+        DateTime nextOccurrence = now.plus(getRecurringInterval());
+        // Update until next occurrence or the limit, whichever is earlier
+        DateTime updateLimit = nextOccurrence;
+        if (nextOccurrence.compareTo(getRecurrenceLimit()) > 0) {
+            updateLimit = getRecurrenceLimit();
+        }
 
+        updateDateTime();
+        while (lastTodo.getDateTime().plus(recurringInterval)
+                .compareTo(updateLimit) <= 0) {
             Todo newTodo = new Todo(currentID, name, dateTimes);
+            currentID++;
             recurringTodos.add(newTodo);
             lastTodo = recurringTodos.get(recurringTodos.size() - 1);
+            updateDateTime();
         }
 
         return recurringTodos.size();
     }
 
     private void updateDateTime() {
-        for (DateTime dateTime : dateTimes) {
-            if (dateTime != null) {
-                dateTime = dateTime.plus(recurringInterval);
+        for (int i = 0; i < dateTimes.size(); i++) {
+            if (dateTimes.get(i) != null) {
+                dateTimes.set(i, dateTimes.get(i).plus(recurringInterval));
             }
         }
-
     }
 
 }
