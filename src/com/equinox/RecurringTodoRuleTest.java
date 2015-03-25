@@ -9,12 +9,12 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.junit.Test;
 
-import com.equinox.exceptions.DateUndefinedException;
+import com.equinox.exceptions.InvalidDateException;
 
 public class RecurringTodoRuleTest {
 
     @Test
-    public void testUpdateTodoList() throws DateUndefinedException {
+    public void testUpdateTodoList() throws InvalidDateException {
         Period periodWeek = new Period().withWeeks(1);
         Period periodMonth = new Period().withMonths(1);
         List<DateTime> pastArrayList;
