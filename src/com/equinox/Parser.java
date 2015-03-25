@@ -15,6 +15,10 @@ import com.joestelmach.natty.DateGroup;
 
 public class Parser {
 
+	private static final String STRING_DAY = "day";
+	private static final String STRING_WEEK = "week";
+	private static final String STRING_MONTH = "month";
+	private static final String STRING_YEAR = "year";
 	private static final char CHAR_SPACE = ' ';
 	private static final String REGEX_SPACE = "\\s";
 
@@ -57,8 +61,8 @@ public class Parser {
 				if (isRecurring) { // check if there is a recurring limit
 					if (key == Keywords.UNTIL) {
 						try {
-							recurringLimit = parseDates(
-									currentPair.getParam()).get(0);
+							recurringLimit = parseDates(currentPair.getParam())
+									.get(0);
 							hasLimit = true;
 						} catch (InvalidDateException e) { // no valid date
 															// given
@@ -130,7 +134,7 @@ public class Parser {
 		if (isRecurring) {
 			if (!isValidRecurring(dateTimes)) {
 				isRecurring = false;
-				
+
 				for (int i = 1; i < keyParamPairs.size(); i++) {
 					if (keyParamPairs.get(i).getKeyword() == Keywords.EVERY) {
 						String newName = appendParameters(keyParamPairs, 0, i);
@@ -139,12 +143,12 @@ public class Parser {
 						String newName = appendParameters(keyParamPairs, 0, i);
 						keyParamPairs.get(0).setParam(newName);
 					}
-					
+
 				}
-				
+
 			} else {
-				if(hasLimit) {
-					dateTimes.add(recurringLimit);	
+				if (hasLimit) {
+					dateTimes.add(recurringLimit);
 				}
 			}
 		}
@@ -153,10 +157,29 @@ public class Parser {
 		return returnInput;
 	}
 
+	/**
+	 * Check if given dateTimes has enough elements for todo to be a valid
+	 * recurring todo
+	 * 
+	 * @param dateTimes
+	 * @return isValidRecurring
+	 */
 	private static boolean isValidRecurring(List<DateTime> dateTimes) {
 		return dateTimes.size() > 0;
 	}
 
+	/**
+	 * Adds parsedDate to dateTimes depending on number of elements in
+	 * dateTimes. If dateTimes already contains some elements, method tries to
+	 * combine the parameters and re-parse them as dates to check if resulting
+	 * dateTime is different
+	 * 
+	 * @param parsedDate
+	 * @param dateTimes
+	 * @param keyParamPairs
+	 * @param dateIndexes
+	 * @param currentIndex
+	 */
 	private static void addToDateTimes(List<DateTime> parsedDate,
 			List<DateTime> dateTimes, ArrayList<KeyParamPair> keyParamPairs,
 			ArrayList<Integer> dateIndexes, int currentIndex) {
@@ -236,20 +259,28 @@ public class Parser {
 		return sBuilder.toString();
 	}
 
+	/**
+	 * Retrieves period given string
+	 * 
+	 * @param param
+	 * @return period for recurrence
+	 * @throws InvalidPeriodException
+	 */
 	private static Period retrieveRecurringPeriod(String param)
 			throws InvalidPeriodException {
 		param.toLowerCase();
 		Period period = new Period();
-		if (param.equals("year")) {
-			return period.withYears(1);
-		} else if (param.equals("month")) {
-			return period.withMonths(1);
-		} else if (param.equals("week")) {
-			return period.withWeeks(1);
-		} else if (param.equals("day")) {
-			return period.withDays(1);
-		} else {
-			throw new InvalidPeriodException();
+		switch (param) {
+			case STRING_YEAR:
+				return period.withYears(1);
+			case STRING_MONTH:
+				return period.withMonths(1);
+			case STRING_WEEK:
+				return period.withWeeks(1);
+			case STRING_DAY:
+				return period.withDays(1);
+			default:
+				throw new InvalidPeriodException();
 		}
 	}
 
@@ -261,7 +292,7 @@ public class Parser {
 	 *            the String read from the user.
 	 * @return an ArrayList of words from the input String.
 	 */
-	public static ArrayList<String> tokenize(String input) {
+	private static ArrayList<String> tokenize(String input) {
 		input = input.trim();
 		String[] inputArray = input.split(REGEX_SPACE);
 		ArrayList<String> words = new ArrayList<String>();
@@ -281,7 +312,7 @@ public class Parser {
 	 *            the ArrayList of words from the input String.
 	 * @return an ArrayList of KeyParamPair objects.
 	 */
-	public static ArrayList<KeyParamPair> extractParam(ArrayList<String> words) {
+	private static ArrayList<KeyParamPair> extractParam(ArrayList<String> words) {
 		String key = words.get(0);
 		ArrayList<KeyParamPair> results = new ArrayList<KeyParamPair>();
 		Keywords keyword;
@@ -336,7 +367,7 @@ public class Parser {
 	 *            the ArrayList of words from the input String.
 	 * @return an ArrayList of KeyParamPair objects.
 	 */
-	public static Keywords getCommandType(ArrayList<String> words) {
+	private static Keywords getCommandType(ArrayList<String> words) {
 		String typeString = words.get(0);
 		return determineCommandType(typeString);
 	}
