@@ -348,7 +348,7 @@ public class DisplayCommand extends Command {
             final String os = System.getProperty("os.name");
 
             if (os.contains("Windows")) {
-                for (int i = 0; i < 25; i++) {
+                for (int i = 0; i < 105; i++) {
                     System.out.println();
                 }
             } else {
