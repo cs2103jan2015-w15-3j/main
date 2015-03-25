@@ -50,30 +50,25 @@ public class AddCommand extends Command {
 
 		// Event
 		// Example:
-		// KeyParamPair 0: add <event>, KeyParamPair 1: from <startDate to endDate>
+		// KeyParamPair 0: add <event>, KeyParamPair 1: from <startDate to
+		// endDate>
 		// KeyParamPair 2: every <date>, KeyParamPair 3: until <date>
-		
+
 		if (input.isRecurring()) {
-			//Check for valid number of keywords
-			if(numberOfKeywords > 8){
+			// Check for valid number of keywords
+			if (numberOfKeywords > 8) {
 				return new Signal(Signal.ADD_INVALID_PARAMS, false);
 			}
-			
-			//Create recurrence rule
-			RecurringTodoRule rule = new RecurringTodoRule(memory.obtainFreshRecurringId(), todoName, dateTimes, input.getPeriod());
-			Todo recurringTodo = new RecurringTodo(memory.obtainFreshId(), rule);
-			
-			if (recurringTodo.isValid()) {
-				//Create Todo and add rule to Memory
-				memory.add(recurringTodo);
-				memory.add(rule);
-				memory.saveToFile();
-				return new Signal(String.format(
-						Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurringTodo), true);
-			} else {
-				memory.saveToFile();
-				return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
-			}
+
+			// Create recurrence rule
+			RecurringTodoRule rule = new RecurringTodoRule(
+					memory.obtainFreshRecurringId(), todoName, dateTimes,
+					input.getPeriod());
+			memory.add(rule);
+			memory.saveToFile();
+			return new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+					rule.toString()), true);
+
 		}
 		// Not recurring task
 		else {
