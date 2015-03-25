@@ -96,11 +96,13 @@ public class RecurringTodoRule {
      * 
      * @return the number of new Todos created due to the update
      */
-    public int updateTodoList(int currentID) {
-        int oldID = currentID;
+    public int updateTodoList(Memory memory) {
+        int currentID = memory.obtainFreshId();
+        int newTodoCount = 0;
         if (recurringTodos.isEmpty()) {
             recurringTodos.add(new Todo(currentID, name, dateTimes));
-            currentID++;
+            currentID = memory.obtainFreshId();
+            newTodoCount++;
         }
 
         Todo lastTodo = recurringTodos.get(recurringTodos.size() - 1);
@@ -116,13 +118,14 @@ public class RecurringTodoRule {
         while (lastTodo.getDateTime().plus(recurringInterval)
                 .compareTo(updateLimit) <= 0) {
             Todo newTodo = new Todo(currentID, name, dateTimes);
-            currentID++;
+            currentID = memory.obtainFreshId();
+            newTodoCount++;
             recurringTodos.add(newTodo);
             lastTodo = recurringTodos.get(recurringTodos.size() - 1);
             updateDateTime();
         }
 
-        return currentID - oldID;
+        return newTodoCount;
     }
 
     private void updateDateTime() {
