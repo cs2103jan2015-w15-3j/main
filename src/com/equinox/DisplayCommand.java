@@ -83,7 +83,6 @@ public class DisplayCommand extends Command {
 
 	@Override
 	public Signal execute() {
-        clearConsole();
 		String displayString;
 		Collection<Todo> todos = memory.getAllTodos();
 		if (todos.size() == 0) {
@@ -340,25 +339,6 @@ public class DisplayCommand extends Command {
                 sb.append(pad);
             }
             return sb.toString();
-        }
-    }
-
-    public final static void clearConsole() {
-        try {
-            final String os = System.getProperty("os.name");
-
-            if (os.contains("Windows")) {
-                for (int i = 0; i < 105; i++) {
-                    System.out.println();
-                }
-            } else {
-                final String ANSI_CLS = "\u001b[2J";
-                final String ANSI_HOME = "\u001b[H";
-                System.out.print(ANSI_CLS + ANSI_HOME);
-                System.out.flush();
-            }
-        } catch (final Exception e) {
-            System.out.println("error in clearing");
         }
     }
 

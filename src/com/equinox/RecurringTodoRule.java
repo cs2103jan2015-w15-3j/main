@@ -1,6 +1,6 @@
 package com.equinox;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -25,7 +25,11 @@ public class RecurringTodoRule {
     private String name;
     private List<DateTime> dateTimes;
 
-    private ArrayList<Todo> recurringTodos = new ArrayList<Todo>();
+    private HashMap<Integer, Todo> recurringTodos = new HashMap<Integer, Todo>();
+
+    private String RECURRING_TODO_PREIX = "*R*";
+
+    protected static final String recurringTodoStringFormat = "Recurring todos \"%1$s\"";
 
     /**
      * Constructor for the RecurringTodoRule without specifying limit
@@ -39,7 +43,7 @@ public class RecurringTodoRule {
     public RecurringTodoRule(int recurringId, String name,
             List<DateTime> dateTimes, Period period) {
         super();
-        this.name = name;
+        this.name = RECURRING_TODO_PREIX + name;
         this.dateTimes = dateTimes;
         this.recurringInterval = period;
         this.recurringId = recurringId;
@@ -60,7 +64,7 @@ public class RecurringTodoRule {
     public RecurringTodoRule(int recurringId, String name,
             List<DateTime> dateTimes, Period period, DateTime limit) {
         super();
-        this.name = name;
+        this.name = RECURRING_TODO_PREIX + name;
         this.dateTimes = dateTimes;
         this.recurringInterval = period;
         this.recurringId = recurringId;
@@ -75,7 +79,7 @@ public class RecurringTodoRule {
         return dateTimes;
     }
 
-    public ArrayList<Todo> getRecurringTodos() {
+    public HashMap<Integer, Todo> getRecurringTodos() {
         return recurringTodos;
     }
 
@@ -97,11 +101,12 @@ public class RecurringTodoRule {
      * @return the number of new Todos created due to the update
      */
     public int updateTodoList(Memory memory) {
-        int currentID = memory.obtainFreshId();
+        int currentID;
         int newTodoCount = 0;
         if (recurringTodos.isEmpty()) {
-            recurringTodos.add(new Todo(currentID, name, dateTimes));
             currentID = memory.obtainFreshId();
+            Todo newTodo = new Todo(currentID, name, dateTimes);
+            addRecurringTodo(memory, currentID, newTodo);
             newTodoCount++;
         }
 
@@ -117,15 +122,20 @@ public class RecurringTodoRule {
         updateDateTime();
         while (lastTodo.getDateTime().plus(recurringInterval)
                 .compareTo(updateLimit) <= 0) {
-            Todo newTodo = new Todo(currentID, name, dateTimes);
             currentID = memory.obtainFreshId();
+            Todo newTodo = new Todo(currentID, name, dateTimes);
+            addRecurringTodo(memory, currentID, newTodo);
             newTodoCount++;
-            recurringTodos.add(newTodo);
             lastTodo = recurringTodos.get(recurringTodos.size() - 1);
             updateDateTime();
         }
 
         return newTodoCount;
+    }
+
+    private void addRecurringTodo(Memory memory, int currentID, Todo newTodo) {
+        recurringTodos.put(currentID, newTodo);
+        memory.add(newTodo);
     }
 
     private void updateDateTime() {
@@ -134,6 +144,10 @@ public class RecurringTodoRule {
                 dateTimes.set(i, dateTimes.get(i).plus(recurringInterval));
             }
         }
+    }
+
+    public String toString() {
+        return String.format(recurringTodoStringFormat, name);
     }
 
 }

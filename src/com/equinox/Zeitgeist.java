@@ -14,6 +14,25 @@ public class Zeitgeist {
     public static StorageHandler storage = new StorageHandler();
     public static Memory memory = storage.retrieveMemoryFromFile();
 
+    public final static void clearConsole() {
+        try {
+            final String os = System.getProperty("os.name");
+
+            if (os.contains("Windows")) {
+                for (int i = 0; i < 105; i++) {
+                    System.out.println();
+                }
+            } else {
+                final String ANSI_CLS = "\u001b[2J";
+                final String ANSI_HOME = "\u001b[H";
+                System.out.print(ANSI_CLS + ANSI_HOME);
+                System.out.flush();
+            }
+        } catch (final Exception e) {
+            System.out.println("error in clearing");
+        }
+    }
+
 	/**
 	 * The main logic unit of Zeitgeist. Reads the input from Zeitgeist and
 	 * passes it to the Parser, the first element in the flow of component calls
@@ -27,6 +46,7 @@ public class Zeitgeist {
 		while (true) {
             SignalHandler.printCommandPrefix();
             input = scn.nextLine();
+            clearConsole();
             Signal signal = handleInput(input);
             SignalHandler.printSignal(signal);
 		}

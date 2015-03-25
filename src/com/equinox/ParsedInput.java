@@ -96,6 +96,16 @@ public class ParsedInput {
 		}
 		return false;
 	}
+	
+	public boolean containsFromKeyword(){
+		for(KeyParamPair pair : keyParamPairs){
+			if(pair.getKeyword() == Keywords.FROM){
+				return true;
+			}
+		}
+			return false;
+		
+	}
 
 	/**
 	 * Checks if any dates are parsed.
