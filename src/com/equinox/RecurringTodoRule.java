@@ -94,9 +94,10 @@ public class RecurringTodoRule {
     /**
      * Update the list of Todos stored in the rule
      * 
-     * @return
+     * @return the number of new Todos created due to the update
      */
     public int updateTodoList(int currentID) {
+        int oldID = currentID;
         if (recurringTodos.isEmpty()) {
             recurringTodos.add(new Todo(currentID, name, dateTimes));
             currentID++;
@@ -121,7 +122,7 @@ public class RecurringTodoRule {
             updateDateTime();
         }
 
-        return recurringTodos.size();
+        return currentID - oldID;
     }
 
     private void updateDateTime() {
