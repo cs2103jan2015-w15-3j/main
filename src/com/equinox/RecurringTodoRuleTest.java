@@ -28,7 +28,7 @@ public class RecurringTodoRuleTest {
         DateTime pastLimitBefore = past.minus(2);
         RecurringTodoRule ruleBefore = new RecurringTodoRule(0,
                 "past deadline", pastArrayList, periodWeek, pastLimitBefore);
-        assertEquals(1, ruleBefore.updateTodoList(0));
+        assertEquals(1, ruleBefore.updateTodoList(new Memory()));
 
         // Test the case where the limit is in the past and is immediately after
         // the initial date, the todo does not recur no new todos should be
@@ -38,7 +38,7 @@ public class RecurringTodoRuleTest {
         DateTime pastLimitImmediate = past.plus(2);
         RecurringTodoRule ruleImmediate = new RecurringTodoRule(0,
                 "past deadline", pastArrayList, periodWeek, pastLimitImmediate);
-        assertEquals(1, ruleImmediate.updateTodoList(0));
+        assertEquals(1, ruleImmediate.updateTodoList(new Memory()));
         
         // Test the case where the limit is in the past and is after the initial
         // date, the rule recurs once, 2 new todos should be added
@@ -47,7 +47,7 @@ public class RecurringTodoRuleTest {
         DateTime pastLimitOneWeek = past.plus(periodWeek).plus(2);
         RecurringTodoRule ruleOneWeek = new RecurringTodoRule(0,
                 "past deadline", pastArrayList, periodWeek, pastLimitOneWeek);
-        assertEquals(2, ruleOneWeek.updateTodoList(0));
+        assertEquals(2, ruleOneWeek.updateTodoList(new Memory()));
 
         // Test the case where the limit is in distant future, initial todo is
         // in near past, add 2 new todos until the next occurrence in the future
@@ -57,7 +57,7 @@ public class RecurringTodoRuleTest {
         DateTime futureLimitOneMonth = past.plus(periodMonth).plus(2);
         RecurringTodoRule ruleFuture = new RecurringTodoRule(0,
                 "past deadline", pastArrayList, periodWeek, futureLimitOneMonth);
-        assertEquals(2, ruleFuture.updateTodoList(0));
+        assertEquals(2, ruleFuture.updateTodoList(new Memory()));
 
         // Test the case where the limit is in distant future, initial todo is
         // in distance past, add 4 new todos until the next occurrence in the
@@ -67,7 +67,7 @@ public class RecurringTodoRuleTest {
         pastArrayList.add(past);
         RecurringTodoRule ruleFuture2 = new RecurringTodoRule(0,
                 "past deadline", pastArrayList, periodWeek, futureLimitOneMonth);
-        assertEquals(4, ruleFuture2.updateTodoList(0));
+        assertEquals(4, ruleFuture2.updateTodoList(new Memory()));
 
     }
 
