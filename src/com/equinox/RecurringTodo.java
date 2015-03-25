@@ -59,7 +59,7 @@ public class RecurringTodo extends Todo {
 
     public static void main(String[] args) throws InvalidDateException {
         Period period = new Period().withDays(2);
-        Todo recurringTodo = new RecurringTodo(2, new RecurringTodoRule(0, 2,
+        Todo recurringTodo = new RecurringTodo(2, new RecurringTodoRule(2,
                 "recurring", Parser.parseDates("tuesday"), period));
 
         System.out.println(recurringTodo.getName());
