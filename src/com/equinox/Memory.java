@@ -50,6 +50,7 @@ public class Memory {
 	public Memory() {
         this.allTodos = new HashMap<Integer, Todo>();
 		this.recurringTodos = new HashMap<Integer, List<Todo>>();
+        this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
 		this.recurrenceLimits = new HashMap<Integer, DateTime>();
 		this.idBuffer = new IDBuffer();
 		this.recurringIdBuffer = new IDBuffer();
