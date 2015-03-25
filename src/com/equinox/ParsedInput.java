@@ -1,40 +1,54 @@
 package com.equinox;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 
 public class ParsedInput {
-	
-	private String userInput;
+
 	private Keywords type;
 	private ArrayList<KeyParamPair> keyParamPairs;
 	private List<DateTime> dateTimes;
-    
-    /**
+	private boolean isRecurring;
+	private Period period;
+
+	/**
 	 * Creates a ParsedInput object with the type of command, a list of
 	 * KeyParamPair objects and a list of DateTime objects derived from the user
 	 * input String.
 	 * 
-	 * @param userInput the original String read from the user.
-	 * @param type KEYWORDS specifying the type of the command.
-	 * @param keyParamPairList the list of KeyParamPair objects parsed from the input.
-	 * @param dateTimeList the list of DateTime objects parsed from the input.
+	 * @param userInput
+	 *            the original String read from the user.
+	 * @param type
+	 *            KEYWORDS specifying the type of the command.
+	 * @param keyParamPairs
+	 *            the list of KeyParamPair objects parsed from the input.
+	 * @param dateTimes
+	 *            the list of DateTime objects parsed from the input.
+	 * @param isRecurring
+	 *            whether the todo is recurring
+	 * @param period
+	 *            the period for the recurring todo
 	 */
-    public ParsedInput(String userInput, Keywords type, ArrayList<KeyParamPair> keyParamPairList, List<DateTime> dateTimeList) {
-    	this.userInput = userInput;
-    	this.type = type;
-    	this.keyParamPairs = keyParamPairList;
-    	this.dateTimes = dateTimeList;
+	public ParsedInput(Keywords type, ArrayList<KeyParamPair> keyParamPairs,
+			List<DateTime> dateTimes, Period period, boolean isRecurring) {
+		this.type = type;
+		this.keyParamPairs = keyParamPairs;
+		this.dateTimes = dateTimes;
+		this.period = period;
+		this.isRecurring = isRecurring;
 	}
-    
-    /**
-     * Retrieves the type of command specified by the input.
-     * 
-     * @return KEYWORDS specifying the type of the command.
-     */
-    public Keywords getType() {
+
+	/**
+	 * Retrieves the type of command specified by the input.
+	 * 
+	 * @return KEYWORDS specifying the type of the command.
+	 */
+	public Keywords getType() {
 		return type;
-		}
+	}
 
 	/**
 	 * Retrieves the list of KeyParamPair objects parsed from the input if any.
@@ -44,7 +58,7 @@ public class ParsedInput {
 	public ArrayList<KeyParamPair> getParamPairs() {
 		return keyParamPairs;
 	}
-	
+
 	/**
 	 * Retrieves the list of DateTime objects parsed from the input if any.
 	 * 
@@ -53,53 +67,70 @@ public class ParsedInput {
 	public List<DateTime> getDateTimes() {
 		return dateTimes;
 	}
-	
+
 	/**
 	 * Checks if only the command keyword and its parameter is present.
 	 * 
-	 * @return true if there only the command keyword and its parameter is present.
+	 * @return true if there only the command keyword and its parameter is
+	 *         present.
 	 */
 	public boolean containsOnlyCommand() {
-		if(keyParamPairs.size() == 1) {
+		if (keyParamPairs.size() == 1) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Iterates through the keyParamPair ArrayList and checks if any parameter is an empty string.
+	 * Iterates through the keyParamPair ArrayList and checks if any parameter
+	 * is an empty string.
 	 * 
-	 * @return boolean If there is at least one empty string parameter, return true. Else, return false.
+	 * @return boolean If there is at least one empty string parameter, return
+	 *         true. Else, return false.
 	 */
 	public boolean containsEmptyParams() {
-		for(KeyParamPair pair : keyParamPairs){
-			if(pair.getParam().equals("")){
+		for (KeyParamPair pair : keyParamPairs) {
+			if (pair.getParam().equals("")) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Checks if any dates are parsed.
 	 * 
 	 * @return true if at least one date has been parsed.
 	 */
 	public boolean containDates() {
-		if(dateTimes.isEmpty()) {
+		if (dateTimes.isEmpty()) {
 			return false;
 		}
 		return true;
 	}
-	
-	/* (non-Javadoc)
+
+	public boolean isRecurring() {
+		return isRecurring;
+	}
+
+	public Period getPeriod() {
+		return period;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object o) {
-		if(o.getClass().equals(this.getClass())) {
-			return this.getType().equals(((ParsedInput) o).getType()) &&
-					this.getParamPairs().equals(((ParsedInput) o).getParamPairs());
+		if (o.getClass().equals(this.getClass())) {
+			ParsedInput other = (ParsedInput) o;
+			return this.getType().equals(other.getType())
+					&& this.getParamPairs().equals(other.getParamPairs())
+					&& this.getDateTimes().size() == other.getDateTimes().size()
+					&& this.getPeriod().equals(other.getPeriod())
+					&& this.isRecurring() ==other.isRecurring();
 		}
 		return false;
 	}

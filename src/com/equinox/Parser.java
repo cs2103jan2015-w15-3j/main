@@ -3,18 +3,22 @@ package com.equinox;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TimeZone;
 
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 
-import com.equinox.exceptions.DateUndefinedException;
-import com.equinox.exceptions.NoDateKeywordException;
+import com.equinox.exceptions.InvalidDateException;
+import com.equinox.exceptions.InvalidPeriodException;
 import com.joestelmach.natty.DateGroup;
 
 public class Parser {
 
+	private static final String STRING_DAY = "day";
+	private static final String STRING_WEEK = "week";
+	private static final String STRING_MONTH = "month";
+	private static final String STRING_YEAR = "year";
 	private static final char CHAR_SPACE = ' ';
 	private static final String REGEX_SPACE = "\\s";
 
@@ -22,41 +26,78 @@ public class Parser {
 	 * Parses the specified String, for the command type, keywords, dates and
 	 * other parameters.
 	 * 
-	 * @param input the String read from the user.
+	 * @param input
+	 *            the String read from the user.
 	 * @return a ParsedInput object containing the command type,
 	 *         keyword-parameter pairs and dates identified.
 	 */
 	public static ParsedInput parseInput(String input) {
+		boolean hasLimit = false;
+		boolean isRecurring = false;
+		Period period = new Period();
 		ArrayList<String> words = tokenize(input);
 		Keywords cType = getCommandType(words);
+		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
+		DateTime recurringLimit = null;
 
 		// if command type is error
 		if (cType == null) {
-			return new ParsedInput(null, null, null, null);
+			return new ParsedInput(null, null, null, null, false);
 		}
 
 		List<DateTime> dateTimes = new ArrayList<DateTime>();
 		ParsedInput returnInput;
-		// Pre-process ADD command parameters for date
+
+		ArrayList<KeyParamPair> keyParamPairs = extractParam(words);
+
 		if (cType == Keywords.ADD) {
-			try {
-				int lastAddKeywordIndex = findLastAddKeyword(words);
-				
-				// will not be executed if no date keyword found
-				String dateString = getDateString(lastAddKeywordIndex,
-						words);
-				dateTimes = parseDates(dateString);
-				
-				//will not be executed if string is not parse-able as date
-				removeDates(lastAddKeywordIndex, words);
-			} catch (NoDateKeywordException e) {
-				// Ignore empty date list will be returned
-			} catch (DateUndefinedException e) {
-				// Ignore as keywords identified without dates might be part of
-				// title, empty date list will still be returned
+			for (int i = 1; i < keyParamPairs.size(); i++) {
+				// ignores the first pair as it is assumed to be the name of the
+				// todo
+				KeyParamPair currentPair = keyParamPairs.get(i);
+				Keywords key = currentPair.getKeyword();
+
+				// assumes that 'every _ until _' is at the end of user input
+				if (isRecurring) { // check if there is a recurring limit
+					if (key == Keywords.UNTIL) {
+						try {
+							recurringLimit = parseDates(currentPair.getParam())
+									.get(0);
+							hasLimit = true;
+						} catch (InvalidDateException e) { // no valid date
+															// given
+							// appends every keyword + its param back to title
+							String newName = appendParameters(keyParamPairs, 0,
+									i);
+							keyParamPairs.get(0).setParam(newName);
+						}
+					}
+				} else if (key == Keywords.EVERY) {
+					// tries to detect if there is a period in user input
+					try {
+						period = retrieveRecurringPeriod(currentPair.getParam());
+						isRecurring = true;
+					} catch (InvalidPeriodException e) { // no valid period
+															// given
+						// appends every keyword + its param back to title
+						String newName = appendParameters(keyParamPairs, i, 0);
+						keyParamPairs.get(0).setParam(newName);
+					}
+				} else {
+					// tries to parse param as date
+					try {
+						List<DateTime> parsedDate = parseDates(currentPair
+								.getParam());
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
+					} catch (InvalidDateException e) { // no valid date given
+						// appends every keyword + its param back to title
+						String newName = appendParameters(keyParamPairs, 0, i);
+						keyParamPairs.get(0).setParam(newName);
+					}
+				}
 			}
 		}
-		ArrayList<KeyParamPair> keyParamPairs = extractParam(words);
 
 		// Post-process EDIT command parameters
 		if (cType == Keywords.EDIT) {
@@ -64,10 +105,10 @@ public class Parser {
 				Keywords key = keyParamPair.getKeyword();
 				if (key == Keywords.START || key == Keywords.END) {
 					try {
-						DateTime parsedDate = parseDates(keyParamPair.getParam())
-								.get(0);
+						DateTime parsedDate = parseDates(
+								keyParamPair.getParam()).get(0);
 						dateTimes.add(parsedDate);
-					} catch (DateUndefinedException e) {
+					} catch (InvalidDateException e) {
 						// Ignore empty date list will be returned
 					}
 				}
@@ -81,18 +122,166 @@ public class Parser {
 				if (key == Keywords.DATE || key == Keywords.TIME
 						|| key == Keywords.DAY || key == Keywords.MONTH) {
 					try {
-						DateTime parsedDate = parseDates(keyParamPair.getParam())
-								.get(0);
+						DateTime parsedDate = parseDates(
+								keyParamPair.getParam()).get(0);
 						dateTimes.add(parsedDate);
-					} catch (DateUndefinedException e) {
+					} catch (InvalidDateException e) {
 						// Ignore empty date list will be returned
 					}
 				}
 			}
 		}
+		if (isRecurring) {
+			if (!isValidRecurring(dateTimes)) {
+				isRecurring = false;
 
-		returnInput = new ParsedInput(input, cType, keyParamPairs, dateTimes);
+				for (int i = 1; i < keyParamPairs.size(); i++) {
+					if (keyParamPairs.get(i).getKeyword() == Keywords.EVERY) {
+						String newName = appendParameters(keyParamPairs, 0, i);
+						keyParamPairs.get(0).setParam(newName);
+					} else if (keyParamPairs.get(i).getKeyword() == Keywords.UNTIL) {
+						String newName = appendParameters(keyParamPairs, 0, i);
+						keyParamPairs.get(0).setParam(newName);
+					}
+
+				}
+
+			} else {
+				if (hasLimit) {
+					dateTimes.add(recurringLimit);
+				}
+			}
+		}
+		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
+				isRecurring);
 		return returnInput;
+	}
+
+	/**
+	 * Check if given dateTimes has enough elements for todo to be a valid
+	 * recurring todo
+	 * 
+	 * @param dateTimes
+	 * @return isValidRecurring
+	 */
+	private static boolean isValidRecurring(List<DateTime> dateTimes) {
+		return dateTimes.size() > 0;
+	}
+
+	/**
+	 * Adds parsedDate to dateTimes depending on number of elements in
+	 * dateTimes. If dateTimes already contains some elements, method tries to
+	 * combine the parameters and re-parse them as dates to check if resulting
+	 * dateTime is different
+	 * 
+	 * @param parsedDate
+	 * @param dateTimes
+	 * @param keyParamPairs
+	 * @param dateIndexes
+	 * @param currentIndex
+	 */
+	private static void addToDateTimes(List<DateTime> parsedDate,
+			List<DateTime> dateTimes, ArrayList<KeyParamPair> keyParamPairs,
+			ArrayList<Integer> dateIndexes, int currentIndex) {
+
+		if (dateTimes.size() > 0) {
+			int appendedPairIndex = dateIndexes.get(0);
+			List<DateTime> newDateTimes = new ArrayList<DateTime>();
+
+			assert (dateTimes.size() < 3); // There should be at the most 2
+											// dates only
+			assert (dateIndexes.size() == 1); // There should be at the most 1
+												// date param
+
+			String newDateParam = appendParameters(keyParamPairs,
+					appendedPairIndex, currentIndex);
+			try {
+				newDateTimes = parseDates(newDateParam);
+
+			} catch (InvalidDateException e) {
+				// should never enter this catch block as old date parameters
+				// were parse-able
+				e.printStackTrace(); // TODO: handle this exception
+			}
+			if (!newDateTimes.isEmpty() && newDateTimes.equals(dateTimes)) {
+				// natty could not parse in the first order, try appending the
+				// other way
+				appendedPairIndex = currentIndex;
+				currentIndex = dateIndexes.get(0);
+				newDateParam = appendParameters(keyParamPairs, currentIndex,
+						appendedPairIndex);
+				try {
+					newDateTimes = parseDates(newDateParam);
+
+				} catch (InvalidDateException e) {
+					// should never enter this catch block as old date
+					// parameters were parse-able
+					e.printStackTrace(); // TODO: handle this exception
+				}
+			}
+			// dateTime generated were different
+			assert (!newDateTimes.isEmpty()); // shouldn't be empty because
+												// parameters should be
+												// parse-able
+			dateTimes.clear(); // removes all elements in dateTimes
+			dateTimes.addAll(newDateTimes);
+			keyParamPairs.get(appendedPairIndex).setParam(newDateParam);
+			keyParamPairs.remove(currentIndex);
+			dateIndexes.remove(0);
+
+		} else {
+			dateTimes.addAll(parsedDate);
+		}
+		dateIndexes.add(currentIndex);
+	}
+
+	/**
+	 * Appends the keyword and parameter of the second keyParamPair to the
+	 * parameters of the first keyParamPair.
+	 * 
+	 * @param keyParamPairs
+	 * @param indexOfFirstPair
+	 * @param indexOfSecondPair
+	 * @return appended string
+	 */
+	private static String appendParameters(
+			ArrayList<KeyParamPair> keyParamPairs, int indexOfFirstPair,
+			int indexOfSecondPair) {
+		KeyParamPair firstPair = keyParamPairs.get(indexOfFirstPair);
+		KeyParamPair secondPair = keyParamPairs.get(indexOfSecondPair);
+		Keywords key = secondPair.getKeyword();
+
+		StringBuilder sBuilder = new StringBuilder(firstPair.getParam());
+		sBuilder.append(CHAR_SPACE);
+		sBuilder.append(key.toString().toLowerCase());
+		sBuilder.append(CHAR_SPACE);
+		sBuilder.append(secondPair.getParam());
+		return sBuilder.toString();
+	}
+
+	/**
+	 * Retrieves period given string
+	 * 
+	 * @param param
+	 * @return period for recurrence
+	 * @throws InvalidPeriodException
+	 */
+	private static Period retrieveRecurringPeriod(String param)
+			throws InvalidPeriodException {
+		param.toLowerCase();
+		Period period = new Period();
+		switch (param) {
+			case STRING_YEAR:
+				return period.withYears(1);
+			case STRING_MONTH:
+				return period.withMonths(1);
+			case STRING_WEEK:
+				return period.withWeeks(1);
+			case STRING_DAY:
+				return period.withDays(1);
+			default:
+				throw new InvalidPeriodException();
+		}
 	}
 
 	/**
@@ -103,7 +292,7 @@ public class Parser {
 	 *            the String read from the user.
 	 * @return an ArrayList of words from the input String.
 	 */
-	public static ArrayList<String> tokenize(String input) {
+	private static ArrayList<String> tokenize(String input) {
 		input = input.trim();
 		String[] inputArray = input.split(REGEX_SPACE);
 		ArrayList<String> words = new ArrayList<String>();
@@ -114,96 +303,16 @@ public class Parser {
 	}
 
 	/**
-	 * Retrieves the String representing the date(s) entered by the user using
-	 * the index of the first occurrence of the date keyword.
-	 * 
-	 * @param lastDateKeywordIndex the index of the first occurrence of the date
-	 *            keyword.
-	 * @param words the ArrayList of words from the input String.
-	 * @return the String containing only the dates specified by the user.
-	 */
-	private static String getDateString(int lastDateKeywordIndex,
-			ArrayList<String> words) {
-		StringBuilder dateString = new StringBuilder();
-
-		// Build dateString
-		for (int i = lastDateKeywordIndex; i < words.size(); i++) {
-			String word = words.get(i);
-			dateString.append(word + " ");
-		}
-		return dateString.toString().trim();
-	}
-
-	/**
-	 * Remove the tokens that represent dates for easy title parsing.
-	 * 
-	 * @param lastDateKeywordIndex the index of the first occurrence of the date keyword.
-	 * @param words the ArrayList of words from the input String.
-	 */
-	private static void removeDates(int lastDateKeywordIndex,
-			ArrayList<String> words) {
-		// Remove dateString from wordList
-		for (int i = words.size() - 1; i >= lastDateKeywordIndex; i--) {
-			words.remove(i);
-		}
-	}
-
-	/**
-	 * Locates the last date keyword in the tokenized input stored in wordList
-	 * by iterating through the entire ArrayList once. This method selects
-	 * "from" and "by" preferentially over "on" and at" which are ignored if the
-	 * former are present. In the event the former are absent, the latter is
-	 * chosen, whichever comes later to ensure that part of the title is not
-	 * mistakenly parsed as date.
-	 * 
-	 * @param words the ArrayList of words from the input String.
-	 * @return the index of the first date keyword.
-	 * @throws NoDateKeywordException if no date keywords are found in the
-	 *             tokenized input.
-	 */
-	private static int findLastAddKeyword(ArrayList<String> words) throws NoDateKeywordException {
-		LinkedList<Integer> onIndices = new LinkedList<Integer>();
-		LinkedList<Integer> atIndices = new LinkedList<Integer>();
-		
-		// Find index of from, at, by, on keywords whichever is earlier
-		for(int i = words.size() - 1; i >= 0; i--) {
-			String word = words.get(i);
-			if(InputStringKeyword.isAddKeyword(word)) {
-				Keywords dateKeyword = InputStringKeyword.getAddKeyword(word);
-				if(dateKeyword == Keywords.ON) {
-					onIndices.offer(i);
-				} else if(dateKeyword == Keywords.AT) {
-					atIndices.offer(i);
-				} else {
-					return i;
-				}
-			}
-		}
-		// FLAW: "add look for max at the park on 9 March"
-		// FIXED: Look for the later keyword in absence of from or by
-		// If there are no instances of from, at or by, take the last on or last at whichever is earlier.
-		if(!onIndices.isEmpty() && !atIndices.isEmpty()) {
-			return Math.max(onIndices.poll(), atIndices.poll());
-		} else if (!onIndices.isEmpty()) {
-			return onIndices.poll();
-		} else if (!atIndices.isEmpty()){
-			return atIndices.poll();
-		}
-		
-		throw new NoDateKeywordException(ExceptionMessages.NO_DATE_KEYWORD_EXCEPTION);
-	}
-
-	/**
 	 * Parses the tokenized input, wordList for keywords and their associated
 	 * parameters, stores them in KeyParamPair objects and adds all KeyParamPair
-	 * objects to an ArrayList which is returned. 
-	 * ASSUMPTION: The first word in user input is a keyword.
+	 * objects to an ArrayList which is returned. ASSUMPTION: The first word in
+	 * user input is a keyword.
 	 * 
-	 * @param words the ArrayList of words from the input String.
+	 * @param words
+	 *            the ArrayList of words from the input String.
 	 * @return an ArrayList of KeyParamPair objects.
 	 */
-	public static ArrayList<KeyParamPair> extractParam(
-			ArrayList<String> words) {
+	private static ArrayList<KeyParamPair> extractParam(ArrayList<String> words) {
 		String key = words.get(0);
 		ArrayList<KeyParamPair> results = new ArrayList<KeyParamPair>();
 		Keywords keyword;
@@ -212,20 +321,24 @@ public class Parser {
 		for (int i = 1; i < words.size(); i++) {
 			String currentParam = words.get(i);
 
-			// wordList.get(i) is a keyword. Create a KeyParamPair with previous param
-			// and paramStringBuilder and add to ArrayList. Update key and paramBuilder.
+			// wordList.get(i) is a keyword. Create a KeyParamPair with previous
+			// param
+			// and paramStringBuilder and add to ArrayList. Update key and
+			// paramBuilder.
 			// If currentParam is a keyword:
 			if (InputStringKeyword.isKeyword(currentParam)) {
 				keyword = InputStringKeyword.getKeyword(key);
 				// Ignore and append keyword if it has occurred before
-				if(!keywordOccurrence.contains(keyword)){
+				if (!keywordOccurrence.contains(keyword)) {
 					keywordOccurrence.add(keyword);
-					results.add(new KeyParamPair(keyword, paramBuilder.toString()));
+					results.add(new KeyParamPair(keyword, paramBuilder
+							.toString()));
 					key = currentParam;
 					paramBuilder = new StringBuilder();
-				} else { // wordList.get(i) is a repeated keyword; append to paramString
+				} else { // wordList.get(i) is a repeated keyword; append to
+							// paramString
 					buildParam(paramBuilder, currentParam);
-					
+
 				}
 			} else { // wordList.get(i) is not a keyword; append to paramString
 				buildParam(paramBuilder, currentParam);
@@ -239,10 +352,10 @@ public class Parser {
 
 	private static void buildParam(StringBuilder paramBuilder,
 			String currentParam) {
-		if(paramBuilder.length()!=0) {
+		if (paramBuilder.length() != 0) {
 			paramBuilder.append(CHAR_SPACE);
 		}
-		paramBuilder.append(currentParam); 
+		paramBuilder.append(currentParam);
 	}
 
 	/**
@@ -250,39 +363,47 @@ public class Parser {
 	 * 
 	 * ASSUMPTION: the first word in user input is the command type keyword.
 	 * 
-	 * @param words the ArrayList of words from the input String.
+	 * @param words
+	 *            the ArrayList of words from the input String.
 	 * @return an ArrayList of KeyParamPair objects.
 	 */
-	public static Keywords getCommandType(ArrayList<String> words) {
+	private static Keywords getCommandType(ArrayList<String> words) {
 		String typeString = words.get(0);
 		return determineCommandType(typeString);
 	}
 
 	/**
 	 * This operation checks if type string corresponds to the listed command
-	 * types. 
+	 * types.
 	 * 
-	 * @param typeString String specifying the type of command.
+	 * @param typeString
+	 *            String specifying the type of command.
 	 * @return KEYWORDS specifying the type, null if typeString does not contain
 	 *         command.
 	 */
 	private static Keywords determineCommandType(String typeString) {
-		Keywords type = null; // TODO: Suggest throwing exception instead of returning null.
+		Keywords type = null; // TODO: Suggest throwing exception instead of
+								// returning null.
 		if (InputStringKeyword.isCommand(typeString)) {
 			type = InputStringKeyword.getCommand(typeString);
 		}
 		return type;
 	}
-	
 
 	/**
-	 * Parses a String with multiple dates provided to the DateParser, and returns a DateTime ArrayList.
+	 * Parses a String with multiple dates provided to the DateParser, and
+	 * returns a DateTime ArrayList.
 	 * 
-	 * @param dateString String containing the date to be parsed
-	 * @return A list of all immutable DateTime objects representing dates processed in the string.
-	 * @throws DateUndefinedException if dateString does not contain a valid date, is empty, or null
+	 * @param dateString
+	 *            String containing the date to be parsed
+	 * @return A list of all immutable DateTime objects representing dates
+	 *         processed in the string.
+	 * @throws InvalidDateException
+	 *             if dateString does not contain a valid date, is empty, or
+	 *             null
 	 */
-	public static List<DateTime> parseDates(String dateString) throws DateUndefinedException {
+	public static List<DateTime> parseDates(String dateString)
+			throws InvalidDateException {
 		List<DateTime> dateTimes = new ArrayList<DateTime>();
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
@@ -291,7 +412,8 @@ public class Parser {
 		try {
 			parsedDate = parser.parse(dateString).get(0);
 		} catch (IndexOutOfBoundsException e) {
-			throw new DateUndefinedException(ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
+			throw new InvalidDateException(
+					ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
 		}
 		List<Date> dateList = parsedDate.getDates();
 		for (Date date : dateList) {

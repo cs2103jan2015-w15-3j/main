@@ -2,7 +2,7 @@ package com.equinox;
 
 import org.joda.time.Period;
 
-import com.equinox.exceptions.DateUndefinedException;
+import com.equinox.exceptions.InvalidDateException;
 
 public class RecurringTodo extends Todo {
     private RecurringTodoRule recurrenceRule;
@@ -57,7 +57,7 @@ public class RecurringTodo extends Todo {
         return recurrenceRule.getRecurringId();
     }
 
-    public static void main(String[] args) throws DateUndefinedException {
+    public static void main(String[] args) throws InvalidDateException {
         Period period = new Period().withDays(2);
         Todo recurringTodo = new RecurringTodo(2, new RecurringTodoRule(2,
                 "recurring", Parser.parseDates("tuesday"), period));
