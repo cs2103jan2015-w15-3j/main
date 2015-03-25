@@ -60,6 +60,9 @@ public class AddCommandTest {
 		
 	}
 	
+	//What it tests for
+	//What it takes in
+	//What it expects
 	@Test
 	public void testEvent(){
 		/*
