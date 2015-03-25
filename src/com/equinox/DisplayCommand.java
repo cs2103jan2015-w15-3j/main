@@ -348,7 +348,9 @@ public class DisplayCommand extends Command {
             final String os = System.getProperty("os.name");
 
             if (os.contains("Windows")) {
-                Runtime.getRuntime().exec("cls");
+                for (int i = 0; i < 105; i++) {
+                    System.out.println();
+                }
             } else {
                 final String ANSI_CLS = "\u001b[2J";
                 final String ANSI_HOME = "\u001b[H";
