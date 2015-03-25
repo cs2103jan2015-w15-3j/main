@@ -32,7 +32,7 @@ public class RecurringTodoRuleTest {
 
         // Test the case where the limit is in the past and is immediately after
         // the initial date, the todo does not recur no new todos should be
-        // added
+        // added except the initial one
         pastArrayList = Parser.parseDates("4 March 4pm");
         past = pastArrayList.get(0);
         DateTime pastLimitImmediate = past.plus(2);
@@ -41,7 +41,7 @@ public class RecurringTodoRuleTest {
         assertEquals(1, ruleImmediate.updateTodoList(0));
         
         // Test the case where the limit is in the past and is after the initial
-        // date, the rule recurs once, one new todo should be added
+        // date, the rule recurs once, 2 new todos should be added
         pastArrayList = Parser.parseDates("4 March 4pm");
         past = pastArrayList.get(0);
         DateTime pastLimitOneWeek = past.plus(periodWeek).plus(2);
@@ -50,7 +50,7 @@ public class RecurringTodoRuleTest {
         assertEquals(2, ruleOneWeek.updateTodoList(0));
 
         // Test the case where the limit is in distant future, initial todo is
-        // in near past, update until the next occurrence in the future
+        // in near past, add 2 new todos until the next occurrence in the future
         past = new DateTime().minus(2);
         pastArrayList = new ArrayList<DateTime>();
         pastArrayList.add(past);
@@ -60,7 +60,8 @@ public class RecurringTodoRuleTest {
         assertEquals(2, ruleFuture.updateTodoList(0));
 
         // Test the case where the limit is in distant future, initial todo is
-        // in distance past, update until the next occurrence in the future
+        // in distance past, add 4 new todos until the next occurrence in the
+        // future
         past = new DateTime().minus(periodWeek).minus(periodWeek).minus(2);
         pastArrayList = new ArrayList<DateTime>();
         pastArrayList.add(past);
