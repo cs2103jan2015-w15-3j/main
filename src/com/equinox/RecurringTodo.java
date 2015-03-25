@@ -4,18 +4,29 @@ import org.joda.time.Period;
 
 import com.equinox.exceptions.InvalidDateException;
 
+@Deprecated
 public class RecurringTodo extends Todo {
     private RecurringTodoRule recurrenceRule;
     private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
 
+
     /**
-     * Constructs a Recurring Todo of type: DEADLINE or EVENT
+     * @deprecated The {@link RecurringTodoRule} will handle the creation of
+     *             normal todos
      * 
-     * @param id the ID of the Todo.
-     * @param recurringId the RecurringID of the Todo.
-     * @param name name of the task.
-     * @param dateTimes a List of DateTimes specifying the end and/or start times.
+     *             Constructs a Recurring Todo of type: DEADLINE or EVENT
+     * 
+     * 
+     * @param id
+     *            the ID of the Todo.
+     * @param recurringId
+     *            the RecurringID of the Todo.
+     * @param name
+     *            name of the task.
+     * @param dateTimes
+     *            a List of DateTimes specifying the end and/or start times.
      */
+    @Deprecated
     public RecurringTodo(int id, RecurringTodoRule rule) {
         // Pass in the constructor for normal event and deadline
         super(id, rule.getName(), rule.getDateTimes());
@@ -27,6 +38,7 @@ public class RecurringTodo extends Todo {
      * 
      * @param todo the Todo to be copied.
      */
+    @Deprecated
     protected RecurringTodo(RecurringTodo todo) {
         super(todo);
         this.recurrenceRule = todo.recurrenceRule;
