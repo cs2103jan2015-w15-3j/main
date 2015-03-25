@@ -203,13 +203,14 @@ public class Parser {
 				// were parse-able
 				e.printStackTrace(); // TODO: handle this exception
 			}
-			if (!newDateTimes.isEmpty() && newDateTimes.equals(dateTimes)) {
+			if (!newDateTimes.isEmpty() &&( newDateTimes.equals(dateTimes)
+					|| newDateTimes.size() <= dateTimes.size())) {
 				// natty could not parse in the first order, try appending the
 				// other way
 				appendedPairIndex = currentIndex;
 				currentIndex = dateIndexes.get(0);
-				newDateParam = appendParameters(keyParamPairs, currentIndex,
-						appendedPairIndex);
+				newDateParam = appendParameters(keyParamPairs, appendedPairIndex,
+						currentIndex);
 				try {
 					newDateTimes = parseDates(newDateParam);
 
