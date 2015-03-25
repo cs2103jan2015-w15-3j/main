@@ -36,7 +36,7 @@ public class RecurringTodoRule {
      * @param dateTimes
      * @param period
      */
-    public RecurringTodoRule(int id, int recurringId, String name,
+    public RecurringTodoRule(int recurringId, String name,
             List<DateTime> dateTimes, Period period) {
         super();
         this.name = name;
@@ -57,7 +57,7 @@ public class RecurringTodoRule {
      * @param period
      * @param limit
      */
-    public RecurringTodoRule(int id, int recurringId, String name,
+    public RecurringTodoRule(int recurringId, String name,
             List<DateTime> dateTimes, Period period, DateTime limit) {
         super();
         this.name = name;
@@ -94,33 +94,46 @@ public class RecurringTodoRule {
     /**
      * Update the list of Todos stored in the rule
      * 
-     * @return
+     * @return the number of new Todos created due to the update
      */
-    public int updateTodoList(int currentID) {
+    public int updateTodoList(Memory memory) {
+        int currentID = memory.obtainFreshId();
+        int newTodoCount = 0;
         if (recurringTodos.isEmpty()) {
             recurringTodos.add(new Todo(currentID, name, dateTimes));
+            currentID = memory.obtainFreshId();
+            newTodoCount++;
         }
 
         Todo lastTodo = recurringTodos.get(recurringTodos.size() - 1);
         DateTime now = new DateTime();
-        while (lastTodo.getStartTime().compareTo(now) < 0) {
-            updateDateTime();
-
-            Todo newTodo = new Todo(currentID, name, dateTimes);
-            recurringTodos.add(newTodo);
-            lastTodo = recurringTodos.get(recurringTodos.size() - 1);
+        DateTime nextOccurrence = now.plus(getRecurringInterval());
+        // Update until next occurrence or the limit, whichever is earlier
+        DateTime updateLimit = nextOccurrence;
+        if (nextOccurrence.compareTo(getRecurrenceLimit()) > 0) {
+            updateLimit = getRecurrenceLimit();
         }
 
-        return recurringTodos.size();
+        updateDateTime();
+        while (lastTodo.getDateTime().plus(recurringInterval)
+                .compareTo(updateLimit) <= 0) {
+            Todo newTodo = new Todo(currentID, name, dateTimes);
+            currentID = memory.obtainFreshId();
+            newTodoCount++;
+            recurringTodos.add(newTodo);
+            lastTodo = recurringTodos.get(recurringTodos.size() - 1);
+            updateDateTime();
+        }
+
+        return newTodoCount;
     }
 
     private void updateDateTime() {
-        for (DateTime dateTime : dateTimes) {
-            if (dateTime != null) {
-                dateTime = dateTime.plus(recurringInterval);
+        for (int i = 0; i < dateTimes.size(); i++) {
+            if (dateTimes.get(i) != null) {
+                dateTimes.set(i, dateTimes.get(i).plus(recurringInterval));
             }
         }
-
     }
 
 }
