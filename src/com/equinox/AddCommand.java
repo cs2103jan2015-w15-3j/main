@@ -39,14 +39,14 @@ public class AddCommand extends Command {
 		}
 
 		// Check for valid number of keywords
-		int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
+		int numberOfKeywords = keyParamPairs.size();
 		if (numberOfKeywords > 3) {
             return new Signal(Signal.ADD_INVALID_PARAMS, false);
 		}
 		
 		String todoName = keyParamPairs.get(0).getParam();
 
-		int numberOfDates = keyParamPairs.size();
+		int numberOfDates = dateTimes.size();
 
 		switch (numberOfDates) {
 		// Floating task

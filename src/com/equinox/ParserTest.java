@@ -50,21 +50,10 @@ public class ParserTest {
 
 		// deadline task with 'one keyword + one datetime'
 		String add0 = "add test 0 by Friday";
-
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 0"), new KeyParamPair(Keywords.BY,
 						"Friday"))), dateTimes0, new Period(), false);
-		// ParsedInput parsed = Parser.parseInput(add0);
-		// System.out.println(parsed.getType().equals(parsed0.getType()));
-		// System.out.println(parsed.getParamPairs().equals(
-		// parsed0.getParamPairs()));
-		// System.out.println(parsed.getDateTimes());
-		// System.out.println(parsed0.getDateTimes());
-		// System.out
-		// .println(parsed.getDateTimes().equals(parsed0.getDateTimes()));
-		// System.out.println(parsed.getPeriod().equals(parsed0.getPeriod()));
-		// System.out.println(parsed.isRecurring() == parsed0.isRecurring());
 		assertEquals(parsed0, Parser.parseInput(add0));
 
 		// deadline task 'at x on date'
@@ -120,21 +109,36 @@ public class ParserTest {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
-		// dates: Friday to Sunday
-		List<Date> dates0 = parser.parse("Friday to Sunday").get(0).getDates();
+		// dates: 3pm to 4pm
+		List<Date> dates0 = parser.parse("3pm to 4pm").get(0).getDates();
 		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
 		for (Date d : dates0) {
 			dateTimes0.add(new DateTime(d));
 		}
 
+		// dates: 3pm to 4pm on Sunday
+		List<Date> dates1 = parser.parse("3pm to 4pm on Sunday").get(0).getDates();
+		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
+		for (Date d : dates1) {
+			dateTimes1.add(new DateTime(d));
+		}
+
 		// event task default 'one keyword + 2 datetime'
-		String add0 = "add test 0 from Friday to Sunday";
+		String add0 = "add test 0 from 3pm to 4pm";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 0"), new KeyParamPair(
-						Keywords.FROM, "Friday to Sunday"))), dateTimes0,
+						Keywords.FROM, "3pm to 4pm"))), dateTimes0,
 				new Period(), false);
 		assertEquals(parsed0, Parser.parseInput(add0));
+
+		// event task default 'keyword + day + keyword + 2 datetime'
+		String add1 = "add test 1 on Sunday from 3pm to 4pm";
+		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "test 1"), new KeyParamPair(Keywords.FROM, "3pm to 4pm on Sunday"))),
+				dateTimes1, new Period(), false);
+		assertEquals(parsed1, Parser.parseInput(add1));
 	}
 
 	@Test
@@ -216,14 +220,14 @@ public class ParserTest {
 				new Period().withMonths(1), true);
 		assertEquals(parsed4, Parser.parseInput(add4));
 
-		// invalid recurring command: name + every <valid period> 
+		// invalid recurring command: name + every <valid period>
 		String add5 = "add test 5 every month until 4 Dec 2015";
 		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 5 every month until 4 Dec 2015"), new KeyParamPair(
-						Keywords.EVERY, "month"), new KeyParamPair(
-						Keywords.UNTIL, "4 Dec 2015"))), new ArrayList<DateTime>(),
-				new Period().withMonths(1), false);
+						Keywords.ADD, "test 5 every month until 4 Dec 2015"),
+						new KeyParamPair(Keywords.EVERY, "month"),
+						new KeyParamPair(Keywords.UNTIL, "4 Dec 2015"))),
+				new ArrayList<DateTime>(), new Period().withMonths(1), false);
 		assertEquals(parsed5, Parser.parseInput(add5));
 	}
 }
