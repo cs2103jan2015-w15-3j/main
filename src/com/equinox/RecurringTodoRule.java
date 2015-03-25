@@ -29,6 +29,8 @@ public class RecurringTodoRule {
 
     private String RECURRING_TODO_PREIX = "*R*";
 
+    protected static final String recurringTodoStringFormat = "Recurring todos \"%1$s\"";
+
     /**
      * Constructor for the RecurringTodoRule without specifying limit
      * 
@@ -142,6 +144,10 @@ public class RecurringTodoRule {
                 dateTimes.set(i, dateTimes.get(i).plus(recurringInterval));
             }
         }
+    }
+
+    public String toString() {
+        return String.format(recurringTodoStringFormat, name);
     }
 
 }
