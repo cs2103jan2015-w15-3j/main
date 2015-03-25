@@ -28,11 +28,13 @@ public class Parser {
 	 *         keyword-parameter pairs and dates identified.
 	 */
 	public static ParsedInput parseInput(String input) {
+		boolean hasLimit = false;
 		boolean isRecurring = false;
 		Period period = new Period();
 		ArrayList<String> words = tokenize(input);
 		Keywords cType = getCommandType(words);
 		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
+		DateTime recurringLimit = null;
 
 		// if command type is error
 		if (cType == null) {
@@ -55,15 +57,14 @@ public class Parser {
 				if (isRecurring) { // check if there is a recurring limit
 					if (key == Keywords.UNTIL) {
 						try {
-							DateTime parsedDate = parseDates(
+							recurringLimit = parseDates(
 									currentPair.getParam()).get(0);
-							dateTimes.add(parsedDate);
-							dateIndexes.add(i);
+							hasLimit = true;
 						} catch (InvalidDateException e) { // no valid date
 															// given
 							// appends every keyword + its param back to title
-							String newName = appendParameters(keyParamPairs, i,
-									0);
+							String newName = appendParameters(keyParamPairs, 0,
+									i);
 							keyParamPairs.get(0).setParam(newName);
 						}
 					}
@@ -81,7 +82,8 @@ public class Parser {
 				} else {
 					// tries to parse param as date
 					try {
-						List<DateTime> parsedDate = parseDates(currentPair.getParam());
+						List<DateTime> parsedDate = parseDates(currentPair
+								.getParam());
 						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
 								dateIndexes, i);
 					} catch (InvalidDateException e) { // no valid date given
@@ -128,10 +130,21 @@ public class Parser {
 		if (isRecurring) {
 			if (!isValidRecurring(dateTimes)) {
 				isRecurring = false;
+				
 				for (int i = 1; i < keyParamPairs.size(); i++) {
 					if (keyParamPairs.get(i).getKeyword() == Keywords.EVERY) {
-						appendParameters(keyParamPairs, 0, i);
+						String newName = appendParameters(keyParamPairs, 0, i);
+						keyParamPairs.get(0).setParam(newName);
+					} else if (keyParamPairs.get(i).getKeyword() == Keywords.UNTIL) {
+						String newName = appendParameters(keyParamPairs, 0, i);
+						keyParamPairs.get(0).setParam(newName);
 					}
+					
+				}
+				
+			} else {
+				if(hasLimit) {
+					dateTimes.add(recurringLimit);	
 				}
 			}
 		}

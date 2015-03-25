@@ -149,7 +149,7 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testAddRecurring() {
+	public void testAddRecurringCommands() {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -215,5 +215,15 @@ public class ParserTest {
 						Keywords.UNTIL, "4 Dec 2015"))), dateTimes1,
 				new Period().withMonths(1), true);
 		assertEquals(parsed4, Parser.parseInput(add4));
+
+		// invalid recurring command: name + every <valid period> 
+		String add5 = "add test 5 every month until 4 Dec 2015";
+		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "test 5 every month until 4 Dec 2015"), new KeyParamPair(
+						Keywords.EVERY, "month"), new KeyParamPair(
+						Keywords.UNTIL, "4 Dec 2015"))), new ArrayList<DateTime>(),
+				new Period().withMonths(1), false);
+		assertEquals(parsed5, Parser.parseInput(add5));
 	}
 }
