@@ -530,10 +530,13 @@ public class Memory {
 		 * @param id
 		 */
 		private void removeIdFromNames(String name, int id) {
-			int todoIdIndex = nameMap.get(name).indexOf(id);
-			nameMap.get(name).remove(todoIdIndex);
-			if (nameMap.get(name).isEmpty()) {
-				nameMap.remove(name);
+			String[] nameArray = name.split(REGEX_SPACE);
+			for (String x : nameArray) {
+				int todoIdIndex = nameMap.get(x).indexOf(id);
+				nameMap.remove(todoIdIndex);
+				if (nameMap.get(x).isEmpty()) {
+					nameMap.remove(x);
+				}
 			}
 		}
 
