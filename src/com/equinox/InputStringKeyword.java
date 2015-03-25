@@ -32,7 +32,6 @@ public class InputStringKeyword {
 	private static final String KEY_MONTH_ABV = "-m";
 
     private static Map<String, Keywords> keywords;
-    private static Map<String, Keywords> addKeywords;
     private static Map<String, Keywords> commands;
 
     static {
@@ -46,14 +45,6 @@ public class InputStringKeyword {
         commands.put(KEY_UNDO, Keywords.UNDO);
         commands.put(KEY_REDO, Keywords.REDO);
         commands.put(KEY_EXIT, Keywords.EXIT);
-        
-        addKeywords = new HashMap<String, Keywords>();
-        addKeywords.put(KEY_BY, Keywords.BY);
-        addKeywords.put(KEY_FROM, Keywords.FROM);
-        addKeywords.put(KEY_ON, Keywords.ON);
-        addKeywords.put(KEY_AT, Keywords.AT);
-        addKeywords.put(KEY_EVERY, Keywords.EVERY);
-        addKeywords.put(KEY_UNTIL, Keywords.UNTIL);
     	
         keywords = new HashMap<String, Keywords>(commands);
         keywords.put(KEY_START, Keywords.START);
@@ -66,6 +57,12 @@ public class InputStringKeyword {
         keywords.put(KEY_TIME_ABV, Keywords.TIME);
         keywords.put(KEY_DAY_ABV, Keywords.DAY);
         keywords.put(KEY_MONTH_ABV, Keywords.MONTH);
+        keywords.put(KEY_BY, Keywords.BY);
+        keywords.put(KEY_FROM, Keywords.FROM);
+        keywords.put(KEY_ON, Keywords.ON);
+        keywords.put(KEY_AT, Keywords.AT);
+        keywords.put(KEY_EVERY, Keywords.EVERY);
+        keywords.put(KEY_UNTIL, Keywords.UNTIL);
 
     }
 
@@ -107,25 +104,5 @@ public class InputStringKeyword {
      */
     public static Keywords getCommand(String s) {
     	return commands.get(s.toLowerCase());
-    }
-    
-    /**
-     * Checks if the String encodes an add keyword.
-     * 
-     * @param s String to be checked.
-     * @return the enum constant representing the keyword.
-     */
-    public static boolean isAddKeyword(String s) {
-    	return addKeywords.containsKey(s.toLowerCase());
-    }
-    
-    /**
-     * Retrieves the enum constant that represents the add keyword encoded in the String.
-     * 
-     * @param s String containing the keyword
-     * @return the enum constant representing the add keyword
-     */
-    public static Keywords getAddKeyword(String s) {
-    	return addKeywords.get(s.toLowerCase());
     }
 }
