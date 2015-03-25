@@ -77,6 +77,7 @@ public class AddCommand extends Command {
 				return new Signal(Signal.ADD_INVALID_PARAMS, false);
 			}
 
+
 			int numberOfDates = dateTimes.size();
 
 			switch (numberOfDates) {
