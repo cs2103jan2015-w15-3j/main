@@ -89,7 +89,7 @@ public class Parser {
 				} else if (key == Keywords.EVERY) {
 					// tries to detect if there is a period in user input
 					try {
-						period = retrieveRecurringPeriod(currentPair.getParam());
+						period = retrieveRecurringPeriod(currentPair.getParam().toLowerCase());
 						isRecurring = true;
 					} catch (InvalidPeriodException e) { // no valid period
 															// given
