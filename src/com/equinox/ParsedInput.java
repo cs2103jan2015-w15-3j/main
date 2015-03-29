@@ -135,10 +135,11 @@ public class ParsedInput {
 	public boolean hasLimit() {
 		return hasLimit;
 	}
-	
+
 	public DateTime getLimit() {
 		return limit;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -148,12 +149,14 @@ public class ParsedInput {
 	public boolean equals(Object o) {
 		if (o.getClass().equals(this.getClass())) {
 			ParsedInput other = (ParsedInput) o;
+
 			return this.getType().equals(other.getType())
 					&& this.getParamPairs().equals(other.getParamPairs())
-					&& this.getDateTimes().size() == other.getDateTimes()
-							.size()
+					&& this.getDateTimes().equals(other.getDateTimes())
 					&& this.getPeriod().equals(other.getPeriod())
-					&& this.isRecurring() == other.isRecurring();
+					&& this.isRecurring() == other.isRecurring()
+					&& this.hasLimit() == other.hasLimit()
+					&& this.getLimit().equals(other.getLimit());
 		}
 		return false;
 	}
