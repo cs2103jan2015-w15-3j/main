@@ -12,10 +12,12 @@ import java.util.Scanner;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.joda.time.DurationFieldType;
 
 import com.equinox.Memory.IDBuffer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -152,6 +154,7 @@ public class StorageHandler {
 				new LocalTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(IDBuffer.class,
 				new IDBufferInstanceCreator());
+		gsonBuilder.registerTypeAdapter(DurationFieldType.class, new DurationFieldTypeInstanceCreator());
 		Gson gson = gsonBuilder.create();
 		return gson.fromJson(jsonString, Memory.class);
 	}
@@ -243,5 +246,18 @@ public class StorageHandler {
 		}
 
 	}
-
+	/**
+	 * 
+	 * Instance creator for JodaTime's DurationFieldType for proper 
+	 * Json deserialisation
+	 * 
+	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
+	 *
+	 */
+	
+	private static class DurationFieldTypeInstanceCreator implements InstanceCreator<DurationFieldType>{
+		public DurationFieldType createInstance(Type type) {
+		     return DurationFieldType.minutes();
+		   }
+	}
 }
