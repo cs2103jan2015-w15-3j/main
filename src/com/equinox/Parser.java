@@ -1,6 +1,7 @@
 package com.equinox;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -52,12 +53,11 @@ public class Parser {
 		ArrayList<String> words = tokenize(input);
 		Keywords cType = getCommandType(words);
 		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
-		DateTime limit = null;
-		
+		DateTime limit = new DateTime(0);
 
 		// if command type is error
 		if (cType == null) {
-			return new ParsedInput(null, null, null, null, false, false ,null);
+			return new ParsedInput(null, null, null, null, false, false, null);
 		}
 
 		List<DateTime> dateTimes = new ArrayList<DateTime>();
@@ -76,8 +76,7 @@ public class Parser {
 				if (isRecurring) { // check if there is a recurring limit
 					if (key == Keywords.UNTIL) {
 						try {
-							limit = parseDates(currentPair.getParam())
-									.get(0);
+							limit = parseDates(currentPair.getParam()).get(0);
 							hasLimit = true;
 						} catch (InvalidDateException e) { // no valid date
 															// given
@@ -147,12 +146,11 @@ public class Parser {
 				Keywords key = keyParamPair.getKeyword();
 				if (!(key == Keywords.NAME || key == Keywords.SEARCH)) {
 					String dateParam = keyParamPair.getParam();
-					if(key == Keywords.YEAR) {
+					if (key == Keywords.YEAR) {
 						dateParam = "march ".concat(keyParamPair.getParam());
-					} 
+					}
 					try {
-						DateTime parsedDate = parseDates(
-								dateParam).get(0);
+						DateTime parsedDate = parseDates(dateParam).get(0);
 						dateTimes.add(parsedDate);
 					} catch (InvalidDateException e) {
 						// Ignore empty date list will be returned
@@ -232,9 +230,12 @@ public class Parser {
 				// were parse-able
 				e.printStackTrace(); // TODO: handle this exception
 			}
+			System.out.println(newDateTimes.get(0).toString());
+			System.out.println(dateTimes.get(0).toString());
+			System.out.println(newDateTimes.equals(dateTimes));
 			if (!newDateTimes.isEmpty()
-					&& (newDateTimes.equals(dateTimes) || newDateTimes.size() <= dateTimes
-							.size())) {
+					&& newDateTimes.equals(dateTimes)) {
+				
 				// natty could not parse in the first order, try appending the
 				// other way
 				appendedPairIndex = currentIndex;
@@ -257,13 +258,12 @@ public class Parser {
 			dateTimes.clear(); // removes all elements in dateTimes
 			dateTimes.addAll(newDateTimes);
 			keyParamPairs.get(appendedPairIndex).setParam(newDateParam);
-			keyParamPairs.remove(currentIndex);
 			dateIndexes.remove(0);
-
+			dateIndexes.add(appendedPairIndex);
 		} else {
 			dateTimes.addAll(parsedDate);
+			dateIndexes.add(currentIndex);
 		}
-		dateIndexes.add(currentIndex);
 	}
 
 	/**
@@ -475,8 +475,11 @@ public class Parser {
 					ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
 		}
 		List<Date> dateList = parsedDate.getDates();
-		for (Date date : dateList) {
+		for (int i = 0; i< dateList.size(); i++) {
+			Date date = dateList.get(i);
 			dateTimes.add(new DateTime(date));
+			dateTimes.set(i, dateTimes.get(i).withMillisOfSecond(0));
+			dateTimes.set(i, dateTimes.get(i).withSecondOfMinute(0));
 		}
 		return dateTimes;
 	}
