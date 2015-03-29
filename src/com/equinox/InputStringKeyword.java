@@ -30,6 +30,7 @@ public class InputStringKeyword {
 	private static final String KEY_TIME_ABV = "-t";
 	private static final String KEY_DAY_ABV = "-d";
 	private static final String KEY_MONTH_ABV = "-m";
+	private static final String KEY_YEAR_ABV = "-y";
 
     private static Map<String, Keywords> keywords;
     private static Map<String, Keywords> commands;
@@ -57,6 +58,7 @@ public class InputStringKeyword {
         keywords.put(KEY_TIME_ABV, Keywords.TIME);
         keywords.put(KEY_DAY_ABV, Keywords.DAY);
         keywords.put(KEY_MONTH_ABV, Keywords.MONTH);
+        keywords.put(KEY_YEAR_ABV,  Keywords.YEAR);
         keywords.put(KEY_BY, Keywords.BY);
         keywords.put(KEY_FROM, Keywords.FROM);
         keywords.put(KEY_ON, Keywords.ON);
