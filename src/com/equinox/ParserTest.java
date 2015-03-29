@@ -178,7 +178,7 @@ public class ParserTest {
 			dateTimes2.add(new DateTime(d));
 		}
 
-		// recurring deadline task
+		// recurring deadline task 'KEYWORD <valid date> + EVERY <valid period>
 		String add0 = "add test 0 on Friday every week";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
@@ -186,6 +186,14 @@ public class ParserTest {
 						"Friday"), new KeyParamPair(Keywords.EVERY, "week"))),
 				dateTimes0, new Period().withWeeks(1), true);
 		assertEquals(parsed0, Parser.parseInput(add0));
+		
+		// recurring deadline task 'EVERY <valid day of week>'
+		String add6 = "add test 6 every Friday";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "test 6"), new KeyParamPair(Keywords.EVERY, "Friday"))),
+				dateTimes0, new Period().withWeeks(1), true);
+		assertEquals(parsed6, Parser.parseInput(add6));
 
 		// recurring event task
 		String add1 = "add test 1 from Friday to Sunday every month";
@@ -220,7 +228,7 @@ public class ParserTest {
 				new Period().withMonths(1), true);
 		assertEquals(parsed4, Parser.parseInput(add4));
 
-		// invalid recurring command: name + every <valid period>
+		// invalid recurring command: name + every <valid period> + <valid limit>
 		String add5 = "add test 5 every month until 4 Dec 2015";
 		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
