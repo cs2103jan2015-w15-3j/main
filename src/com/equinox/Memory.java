@@ -631,6 +631,7 @@ public class Memory {
 					if (timeMap.containsKey(searchTime)) {
 						toDoIds = timeMap.get(searchTime);
 					}// else searchTime is not in timeMap, toDoIds is empty List
+					break;
 				default:
 					throw new InvalidParamException(
 							ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
