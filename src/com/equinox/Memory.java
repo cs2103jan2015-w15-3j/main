@@ -551,7 +551,7 @@ public class Memory {
 			String[] nameArray = name.split(REGEX_SPACE);
 			for (String x : nameArray) {
 				int todoIdIndex = nameMap.get(x).indexOf(id);
-				nameMap.remove(todoIdIndex);
+				nameMap.get(x).remove(todoIdIndex);
 				if (nameMap.get(x).isEmpty()) {
 					nameMap.remove(x);
 				}
@@ -634,11 +634,23 @@ public class Memory {
 					if (timeMap.containsKey(searchTime)) {
 						toDoIds = timeMap.get(searchTime);
 					}// else searchTime is not in timeMap, toDoIds is empty List
+					break;
 				default:
 					throw new InvalidParamException(
 							ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
 			}
 			return toDoIds;
+		}
+
+		public void update(int userIndex, String param, String originalParam) {
+			removeIdFromNames(originalParam, userIndex);
+			addToNameMap(param, userIndex);
+		}
+		
+		public void update(int userIndex, DateTime param, DateTime originalParam) {
+			removeIdFromAllDateMaps(originalParam, userIndex);
+			addToAllDateMaps(originalParam, userIndex);
+			
 		}
 	}
 
@@ -694,6 +706,15 @@ public class Memory {
 		storageHandler.storeMemoryToFile(this);
 	}
 
+	public void updateMaps(int userIndex, String param, String originalParam) {
+		searchMap.update(userIndex, param, originalParam);
+		
+	}
+
+	public void updateMaps(int userIndex, DateTime date, DateTime originalDate) {
+		searchMap.update(userIndex, date, originalDate);
+	}
+	
     /**
      * Method for Memory singleton pattern
      * 
@@ -707,4 +728,5 @@ public class Memory {
         }
         return memory;
     }
+
 }
