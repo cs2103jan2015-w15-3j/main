@@ -33,6 +33,7 @@ public class Todo{
     protected DateTime modifiedOn, startTime, endTime;
     protected boolean isDone;
     protected TYPE type;
+    protected Integer recurringId;
 
     protected static final DateTimeFormatter DateFormatter = DateTimeFormat
             .forPattern("dd MMM");
@@ -61,6 +62,7 @@ public class Todo{
 		this.endTime = null;
 		this.isDone = false;
 		this.type = TYPE.TASK;
+        this.recurringId = null;
 	}
 	
 	/**
@@ -88,8 +90,44 @@ public class Todo{
 			this.endTime = dateTimes.get(1);
 			this.type = TYPE.EVENT;
 		}
+        this.recurringId = null;
 	}
 	
+    /**
+     * Constructs a Recurring Todo of type: DEADLINE or EVENT.
+     * 
+     * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
+     * dates.
+     * 
+     * @param id
+     *            the ID of the Todo.
+     * @param name
+     *            name of the task.
+     * @param dateTimes
+     *            a List of DateTimes specifying the end and/or start times.
+     * @param recurringId
+     *            the ID for the recurring rule
+     */
+    public Todo(int id, String name, List<DateTime> dateTimes,
+            int recurringId) {
+        this.id = id;
+        this.name = name;
+        this.createdOn = new DateTime();
+        this.modifiedOn = this.createdOn;
+        this.isDone = false;
+        if (dateTimes.size() == 1) {
+            this.startTime = null;
+            this.endTime = dateTimes.get(0);
+            this.type = TYPE.DEADLINE;
+        } else if (dateTimes.size() == 2) {
+            this.startTime = dateTimes.get(0);
+            this.endTime = dateTimes.get(1);
+            this.type = TYPE.EVENT;
+        }
+        this.recurringId = recurringId;
+
+    }
+
 	/**
 	 * Makes an exact copy of another Todo.
 	 * 
@@ -104,6 +142,7 @@ public class Todo{
 		this.endTime = todo.endTime;
 		this.isDone = todo.isDone;
 		this.type = todo.type;
+        this.recurringId = todo.recurringId;
 	}
 	
 	/**
@@ -121,6 +160,7 @@ public class Todo{
 		this.endTime = null;
 		this.isDone = false;
 		this.type = null;
+        this.recurringId = null;
 	}
 
     /**
