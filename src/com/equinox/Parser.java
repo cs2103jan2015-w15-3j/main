@@ -89,7 +89,18 @@ public class Parser {
 				} else if (key == Keywords.EVERY) {
 					// tries to detect if there is a period in user input
 					try {
-						period = retrieveRecurringPeriod(currentPair.getParam().toLowerCase());
+						// tries to parse param as date to extract the date
+						List<DateTime> parsedDate = parseDates(currentPair
+								.getParam());
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
+					} catch (InvalidDateException e) {
+						// if parameters cannot be parsed as dates, just ignores
+					}
+					try {
+						// tries to parse as period
+						period = retrieveRecurringPeriod(currentPair.getParam()
+								.toLowerCase());
 						isRecurring = true;
 					} catch (InvalidPeriodException e) { // no valid period
 															// given
@@ -217,14 +228,15 @@ public class Parser {
 				// were parse-able
 				e.printStackTrace(); // TODO: handle this exception
 			}
-			if (!newDateTimes.isEmpty() &&( newDateTimes.equals(dateTimes)
-					|| newDateTimes.size() <= dateTimes.size())) {
+			if (!newDateTimes.isEmpty()
+					&& (newDateTimes.equals(dateTimes) || newDateTimes.size() <= dateTimes
+							.size())) {
 				// natty could not parse in the first order, try appending the
 				// other way
 				appendedPairIndex = currentIndex;
 				currentIndex = dateIndexes.get(0);
-				newDateParam = appendParameters(keyParamPairs, appendedPairIndex,
-						currentIndex);
+				newDateParam = appendParameters(keyParamPairs,
+						appendedPairIndex, currentIndex);
 				try {
 					newDateTimes = parseDates(newDateParam);
 
