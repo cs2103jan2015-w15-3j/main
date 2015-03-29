@@ -163,6 +163,10 @@ public class Todo{
         this.recurringId = null;
 	}
 
+    public Integer getRecurringId() {
+        return recurringId;
+    }
+
     /**
      * Returns the ID of the Todo.
      * 
