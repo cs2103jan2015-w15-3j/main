@@ -124,11 +124,11 @@ public class RecurringTodoRule {
         // updateDateTime();
         while (getDateTime().plus(recurringInterval)
                 .compareTo(updateLimit) <= 0) {
+            updateDateTime();
             currentID = memory.obtainFreshId();
             Todo newTodo = new Todo(currentID, name, dateTimes, recurringId);
             addRecurringTodo(memory, newTodo);
             newTodoCount++;
-            updateDateTime();
         }
 
         return newTodoCount;
