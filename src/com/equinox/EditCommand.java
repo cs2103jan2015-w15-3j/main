@@ -52,6 +52,7 @@ public class EditCommand extends Command{
 				switch (keyword) {
 				case NAME:
 					postEdit.setName(param);
+					memory.updateMaps(userIndex, param, preEdit.getName());
 					memory.saveToFile();
 					break;
 				case START:
@@ -61,6 +62,7 @@ public class EditCommand extends Command{
 						return new Signal(Signal.EDIT_INVALID_DATE, false);
 					} else {
 						postEdit.setStartTime(dateTimes.remove(0));
+						memory.updateMaps(userIndex, dateTimes.remove(0), preEdit.getStartTime());
 					}
 					memory.saveToFile();
 					break;
@@ -71,6 +73,7 @@ public class EditCommand extends Command{
 						return new Signal(Signal.EDIT_INVALID_DATE, false);
 					} else {
 						postEdit.setEndTime(dateTimes.remove(0));
+						memory.updateMaps(userIndex, dateTimes.remove(0), preEdit.getEndTime());
 					}
 					memory.saveToFile();
 					break;
