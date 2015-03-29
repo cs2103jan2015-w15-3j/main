@@ -21,7 +21,7 @@ public class Zeitgeist {
         memory = storage.retrieveMemoryFromFile();
     }
 
-    private static Zeitgeist getInstance() {
+    public static Zeitgeist getInstance() {
         if (logic == null) {
             logic = new Zeitgeist();
         }
