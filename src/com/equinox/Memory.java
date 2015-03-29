@@ -655,6 +655,12 @@ public class Memory {
 						toDoIds = timeMap.get(searchTime);
 					}// else searchTime is not in timeMap, toDoIds is empty List
 					break;
+				case YEAR:
+					int searchYear = dateTime.getYear();
+					if(yearMap.containsKey(searchYear)) {
+						toDoIds = yearMap.get(searchYear);
+					} // else searchYear is not in yearMap, todoIds is empty List
+					break;
 				default:
 					throw new InvalidParamException(
 							ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
