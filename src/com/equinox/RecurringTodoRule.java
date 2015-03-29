@@ -108,8 +108,8 @@ public class RecurringTodoRule {
         int newTodoCount = 0;
         if (recurringTodos.isEmpty()) {
             currentID = memory.obtainFreshId();
-            Todo newTodo = new Todo(currentID, name, dateTimes);
-            addRecurringTodo(memory, currentID, newTodo);
+            Todo newTodo = new Todo(currentID, name, dateTimes, recurringId);
+            addRecurringTodo(memory, newTodo);
             newTodoCount++;
         }
 
@@ -125,13 +125,22 @@ public class RecurringTodoRule {
         while (getDateTime().plus(recurringInterval)
                 .compareTo(updateLimit) <= 0) {
             currentID = memory.obtainFreshId();
-            Todo newTodo = new Todo(currentID, name, dateTimes);
-            addRecurringTodo(memory, currentID, newTodo);
+            Todo newTodo = new Todo(currentID, name, dateTimes, recurringId);
+            addRecurringTodo(memory, newTodo);
             newTodoCount++;
             updateDateTime();
         }
 
         return newTodoCount;
+    }
+
+    public void setRecurrenceLimit(DateTime recurrenceLimit) {
+        this.recurrenceLimit = recurrenceLimit;
+    }
+
+    public void setOriginalName(String originalName) {
+        this.originalName = originalName;
+        this.name = RECURRING_TODO_PREIX + originalName;
     }
 
     public void setRecurringInterval(Period recurringInterval) {
@@ -142,7 +151,7 @@ public class RecurringTodoRule {
         this.dateTimes = dateTimes;
     }
 
-    private void addRecurringTodo(Memory memory, int currentID, Todo newTodo) {
+    private void addRecurringTodo(Memory memory, Todo newTodo) {
         recurringTodos.add(newTodo);
         memory.add(newTodo);
     }
