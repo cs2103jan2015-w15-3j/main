@@ -163,10 +163,6 @@ public class Todo{
         this.recurringId = null;
 	}
 
-    public Integer getRecurringId() {
-        return recurringId;
-    }
-
     /**
      * Returns the ID of the Todo.
      * 
@@ -281,6 +277,17 @@ public class Todo{
 	public TYPE getType() {
 		return type;
 	}
+	
+    public Integer getRecurringId() {
+        return recurringId;
+    }
+    
+    public boolean isRecurring() {
+    	if(recurringId == null) {
+    		return false;
+    	}
+    	return true;
+    }
 	
 	/**
 	 * Returns the placeholder Todo constructed from the ID of this Todo. 
