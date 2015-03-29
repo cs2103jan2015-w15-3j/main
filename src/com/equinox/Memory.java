@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 
@@ -35,11 +34,8 @@ public class Memory {
 	private static final int ID_INITIAL = 0;
 	private static final int ID_BUFFER_INITIAL_SIZE = 5;
 	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
-	private static final int RECURRING_MAX_INSTANCES = 7;
 	private HashMap<Integer, Todo> allTodos;
-	private HashMap<Integer, List<Todo>> recurringTodos;
 	private HashMap<Integer, RecurringTodoRule> recurringRules;
-	private HashMap<Integer, DateTime> recurrenceLimits;
 	private final IDBuffer idBuffer;
 	private final IDBuffer recurringIdBuffer;
 	private LinkedList<Todo> undoStack;
@@ -52,9 +48,7 @@ public class Memory {
 	 */
 	public Memory() {
 		this.allTodos = new HashMap<Integer, Todo>();
-		this.recurringTodos = new HashMap<Integer, List<Todo>>();
 		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
-		this.recurrenceLimits = new HashMap<Integer, DateTime>();
 		this.idBuffer = new IDBuffer();
 		this.recurringIdBuffer = new IDBuffer();
 		this.undoStack = new LinkedList<Todo>();

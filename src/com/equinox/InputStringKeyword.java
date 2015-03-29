@@ -25,6 +25,8 @@ public class InputStringKeyword {
 	private static final String KEY_START_ABV = "-s";
 	private static final String KEY_END = "end";
 	private static final String KEY_END_ABV = "-e";
+	// private static final String KEY_RULE = "rule";
+	private static final String KEY_RULE_ABV = "-r";
 	private static final String KEY_EXIT = "exit";
 	private static final String KEY_DATE_ABV = "-dt";
 	private static final String KEY_TIME_ABV = "-t";
@@ -52,6 +54,8 @@ public class InputStringKeyword {
         keywords.put(KEY_START_ABV, Keywords.START);
         keywords.put(KEY_END, Keywords.END);
         keywords.put(KEY_END_ABV, Keywords.END);
+        // keywords.put(KEY_RULE, Keywords.RULE);
+        keywords.put(KEY_RULE_ABV, Keywords.RULE);
         keywords.put(KEY_NAME, Keywords.NAME);
         keywords.put(KEY_NAME_ABV, Keywords.NAME);
         keywords.put(KEY_DATE_ABV, Keywords.DATE);
