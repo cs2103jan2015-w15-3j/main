@@ -52,11 +52,12 @@ public class Parser {
 		ArrayList<String> words = tokenize(input);
 		Keywords cType = getCommandType(words);
 		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
-		DateTime recurringLimit = null;
+		DateTime limit = null;
+		
 
 		// if command type is error
 		if (cType == null) {
-			return new ParsedInput(null, null, null, null, false);
+			return new ParsedInput(null, null, null, null, false, false ,null);
 		}
 
 		List<DateTime> dateTimes = new ArrayList<DateTime>();
@@ -75,7 +76,7 @@ public class Parser {
 				if (isRecurring) { // check if there is a recurring limit
 					if (key == Keywords.UNTIL) {
 						try {
-							recurringLimit = parseDates(currentPair.getParam())
+							limit = parseDates(currentPair.getParam())
 									.get(0);
 							hasLimit = true;
 						} catch (InvalidDateException e) { // no valid date
@@ -176,12 +177,12 @@ public class Parser {
 
 			} else {
 				if (hasLimit) {
-					dateTimes.add(recurringLimit);
+					dateTimes.add(limit);
 				}
 			}
 		}
 		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
-				isRecurring);
+				isRecurring, hasLimit, limit);
 		return returnInput;
 	}
 
