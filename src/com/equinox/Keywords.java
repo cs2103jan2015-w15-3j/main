@@ -25,6 +25,7 @@ public enum Keywords {
 	START,
 	END,
 	DONE,
+	RULE,
 	
 	//Keywords for parameters in SEARCH command
 	NAME,
