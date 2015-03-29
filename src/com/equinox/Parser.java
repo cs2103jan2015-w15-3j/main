@@ -21,6 +21,20 @@ public class Parser {
 	private static final String STRING_YEAR = "year";
 	private static final char CHAR_SPACE = ' ';
 	private static final String REGEX_SPACE = "\\s";
+	private static final String STRING_MON = "mon";
+	private static final String STRING_TUE = "tue";
+	private static final String STRING_WED = "wed";
+	private static final String STRING_THU = "thu";
+	private static final String STRING_FRI = "fri";
+	private static final String STRING_SAT = "sat";
+	private static final String STRING_SUN = "sun";
+	private static final String STRING_MONDAY = "monday";
+	private static final String STRING_TUESDAY = "tuesday";
+	private static final String STRING_WEDNESDAY = "wednesday";
+	private static final String STRING_THURSDAY = "thursday";
+	private static final String STRING_FRIDAY = "friday";
+	private static final String STRING_SATURDAY = "saturday";
+	private static final String STRING_SUNDAY = "sunday";
 
 	/**
 	 * Parses the specified String, for the command type, keywords, dates and
@@ -280,6 +294,34 @@ public class Parser {
 				return period.withWeeks(1);
 			case STRING_DAY:
 				return period.withDays(1);
+			case STRING_MON:
+				return period.withWeeks(1);
+			case STRING_TUE:
+				return period.withWeeks(1);
+			case STRING_WED:
+				return period.withWeeks(1);
+			case STRING_THU:
+				return period.withWeeks(1);
+			case STRING_FRI:
+				return period.withWeeks(1);
+			case STRING_SAT:
+				return period.withWeeks(1);
+			case STRING_SUN:
+				return period.withWeeks(1);
+			case STRING_MONDAY:
+				return period.withWeeks(1);
+			case STRING_TUESDAY:
+				return period.withWeeks(1);
+			case STRING_WEDNESDAY:
+				return period.withWeeks(1);
+			case STRING_THURSDAY:
+				return period.withWeeks(1);
+			case STRING_FRIDAY:
+				return period.withWeeks(1);
+			case STRING_SATURDAY:
+				return period.withWeeks(1);
+			case STRING_SUNDAY:
+				return period.withWeeks(1);
 			default:
 				throw new InvalidPeriodException();
 		}
