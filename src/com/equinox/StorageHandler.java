@@ -1,5 +1,19 @@
 package com.equinox;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.Scanner;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
+import com.equinox.Memory.IDBuffer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -9,22 +23,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-
-import java.io.File;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.lang.reflect.Type;
-
-import java.util.Date;
-import java.util.Scanner;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-
-import com.equinox.Memory.IDBuffer;
 
 /**
  * Handles the storing of an instance of Memory into a file in JSON formatting,
@@ -80,7 +78,7 @@ public class StorageHandler {
 		try {
 			if (!storageFile.exists()) {
 				storageFile.createNewFile();
-				storeMemoryToFile(new Memory());
+                storeMemoryToFile(Memory.getInstance());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
