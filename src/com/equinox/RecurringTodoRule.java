@@ -113,7 +113,6 @@ public class RecurringTodoRule {
             newTodoCount++;
         }
 
-        Todo lastTodo = recurringTodos.get(recurringTodos.size() - 1);
         DateTime now = new DateTime();
         DateTime nextOccurrence = now.plus(getRecurringInterval());
         // Update until next occurrence or the limit, whichever is earlier
@@ -122,18 +121,25 @@ public class RecurringTodoRule {
             updateLimit = getRecurrenceLimit();
         }
 
-        updateDateTime();
-        while (lastTodo.getDateTime().plus(recurringInterval)
+        // updateDateTime();
+        while (getDateTime().plus(recurringInterval)
                 .compareTo(updateLimit) <= 0) {
             currentID = memory.obtainFreshId();
             Todo newTodo = new Todo(currentID, name, dateTimes);
             addRecurringTodo(memory, currentID, newTodo);
             newTodoCount++;
-            lastTodo = recurringTodos.get(recurringTodos.size() - 1);
             updateDateTime();
         }
 
         return newTodoCount;
+    }
+
+    public void setRecurringInterval(Period recurringInterval) {
+        this.recurringInterval = recurringInterval;
+    }
+
+    public void setDateTimes(List<DateTime> dateTimes) {
+        this.dateTimes = dateTimes;
     }
 
     private void addRecurringTodo(Memory memory, int currentID, Todo newTodo) {
@@ -153,4 +159,21 @@ public class RecurringTodoRule {
         return String.format(recurringTodoStringFormat, originalName);
     }
 
+    /**
+     * Method to return a DateTime of the Recurring rule's last occurrence. The
+     * order of preference: start time > end time > null
+     * 
+     * @author paradite
+     * 
+     * @return start time for events; end time for deadlines; null for tasks.
+     */
+    public DateTime getDateTime() {
+        if (dateTimes.get(0) != null) {
+            return dateTimes.get(0);
+        } else if (dateTimes.get(1) != null) {
+            return dateTimes.get(1);
+        } else {
+            return null;
+        }
+    }
 }
