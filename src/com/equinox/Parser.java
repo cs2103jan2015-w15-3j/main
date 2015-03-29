@@ -144,11 +144,14 @@ public class Parser {
 		if (cType == Keywords.SEARCH) {
 			for (KeyParamPair keyParamPair : keyParamPairs) {
 				Keywords key = keyParamPair.getKeyword();
-				if (key == Keywords.DATE || key == Keywords.TIME
-						|| key == Keywords.DAY || key == Keywords.MONTH) {
+				if (!(key == Keywords.NAME || key == Keywords.SEARCH)) {
+					String dateParam = keyParamPair.getParam();
+					if(key == Keywords.YEAR) {
+						dateParam = "march ".concat(keyParamPair.getParam());
+					} 
 					try {
 						DateTime parsedDate = parseDates(
-								keyParamPair.getParam()).get(0);
+								dateParam).get(0);
 						dateTimes.add(parsedDate);
 					} catch (InvalidDateException e) {
 						// Ignore empty date list will be returned

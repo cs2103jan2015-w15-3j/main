@@ -117,7 +117,8 @@ public class ParserTest {
 		}
 
 		// dates: 3pm to 4pm on Sunday
-		List<Date> dates1 = parser.parse("3pm to 4pm on Sunday").get(0).getDates();
+		List<Date> dates1 = parser.parse("3pm to 4pm on Sunday").get(0)
+				.getDates();
 		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
 		for (Date d : dates1) {
 			dateTimes1.add(new DateTime(d));
@@ -136,8 +137,9 @@ public class ParserTest {
 		String add1 = "add test 1 on Sunday from 3pm to 4pm";
 		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 1"), new KeyParamPair(Keywords.FROM, "3pm to 4pm on Sunday"))),
-				dateTimes1, new Period(), false);
+						Keywords.ADD, "test 1"), new KeyParamPair(
+						Keywords.FROM, "3pm to 4pm on Sunday"))), dateTimes1,
+				new Period(), false);
 		assertEquals(parsed1, Parser.parseInput(add1));
 	}
 
@@ -186,13 +188,14 @@ public class ParserTest {
 						"Friday"), new KeyParamPair(Keywords.EVERY, "week"))),
 				dateTimes0, new Period().withWeeks(1), true);
 		assertEquals(parsed0, Parser.parseInput(add0));
-		
+
 		// recurring deadline task 'EVERY <valid day of week>'
 		String add6 = "add test 6 every Friday";
 		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 6"), new KeyParamPair(Keywords.EVERY, "Friday"))),
-				dateTimes0, new Period().withWeeks(1), true);
+						Keywords.ADD, "test 6"), new KeyParamPair(
+						Keywords.EVERY, "Friday"))), dateTimes0,
+				new Period().withWeeks(1), true);
 		assertEquals(parsed6, Parser.parseInput(add6));
 
 		// recurring event task
@@ -228,7 +231,8 @@ public class ParserTest {
 				new Period().withMonths(1), true);
 		assertEquals(parsed4, Parser.parseInput(add4));
 
-		// invalid recurring command: name + every <valid period> + <valid limit>
+		// invalid recurring command: name + every <valid period> + <valid
+		// limit>
 		String add5 = "add test 5 every month until 4 Dec 2015";
 		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
@@ -237,5 +241,26 @@ public class ParserTest {
 						new KeyParamPair(Keywords.UNTIL, "4 Dec 2015"))),
 				new ArrayList<DateTime>(), new Period().withMonths(1), false);
 		assertEquals(parsed5, Parser.parseInput(add5));
+	}
+
+	@Test 
+	public void testSearchYear() {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 2016
+		List<Date> dates0 = parser.parse("march 2016").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (Date d : dates0) {
+			dateTimes0.add(new DateTime(d));
+		}
+		
+		String search0 = "search -y 2016";
+		ParsedInput parsed0 = new ParsedInput(Keywords.SEARCH,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.SEARCH, ""),
+						new KeyParamPair(Keywords.YEAR, "2016"))),
+				dateTimes0, new Period(), false);
+		assertEquals(parsed0, Parser.parseInput(search0));
 	}
 }
