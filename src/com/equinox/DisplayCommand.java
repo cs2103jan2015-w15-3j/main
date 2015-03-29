@@ -68,7 +68,6 @@ public class DisplayCommand extends Command {
 
     private static final String headingFormat = "%1$-2s | %2$-30s | %3$s";
 
-    private static DateTime now = new DateTime();
     private static DateTime inOneDay = new DateTime().plusDays(1);
 
 	private static final DateTimeFormatter DateFormatter = DateTimeFormat
@@ -301,6 +300,7 @@ public class DisplayCommand extends Command {
 	}
 
     private static String formatTimeForDisplay(DateTime time) {
+        DateTime now = new DateTime();
         String periodString = "";
         if (time.isAfter(now) && time.isBefore(inOneDay)) {
             Period period = new Period(now, time);
