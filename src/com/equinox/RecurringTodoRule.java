@@ -121,7 +121,7 @@ public class RecurringTodoRule {
             updateLimit = getRecurrenceLimit();
         }
 
-        updateDateTime();
+        // updateDateTime();
         while (getDateTime().plus(recurringInterval)
                 .compareTo(updateLimit) <= 0) {
             currentID = memory.obtainFreshId();
