@@ -10,9 +10,23 @@ import java.util.Scanner;
 
 public class Zeitgeist {
 
+    private static Zeitgeist logic;
+
     public static Scanner scn = new Scanner(System.in);
-    public static StorageHandler storage = new StorageHandler();
-    public static Memory memory = storage.retrieveMemoryFromFile();
+    public static StorageHandler storage;
+    public Memory memory;
+
+    public Zeitgeist() {
+        storage = new StorageHandler();
+        memory = storage.retrieveMemoryFromFile();
+    }
+
+    public static Zeitgeist getInstance() {
+        if (logic == null) {
+            logic = new Zeitgeist();
+        }
+        return logic;
+    }
 
     public final static void clearConsole() {
         try {
@@ -43,16 +57,17 @@ public class Zeitgeist {
 	public static void main(String[] args) {
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
         String input;
+        Zeitgeist logic = getInstance();
 		while (true) {
             SignalHandler.printCommandPrefix();
             input = scn.nextLine();
             clearConsole();
-            Signal signal = handleInput(input);
+            Signal signal = logic.handleInput(input);
             SignalHandler.printSignal(signal);
 		}
 	}
 
-    public static Signal handleInput(String input) {
+    public Signal handleInput(String input) {
         ParsedInput c = Parser.parseInput(input);
         return execute(c);
     }
@@ -64,7 +79,7 @@ public class Zeitgeist {
 	 * @return a Signal containing a message to be printed, denoting success or
 	 *         failure of the execution.
 	 */
-	private static Signal execute(ParsedInput userInput) {
+    private Signal execute(ParsedInput userInput) {
 		Signal processSignal;
 		Command c;
 

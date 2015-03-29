@@ -163,7 +163,7 @@ public class SearchCommand extends Command {
 
 //		Zeitgeist.handleInput("add CS3243 project deadline by 7 March at 9am");
 
-		Zeitgeist.handleInput("add CS3333 project 2 on 7 Apr 10am");
+//		Zeitgeist.handleInput("add CS3333 project 2 on 7 Apr 10am");
 
 //		Zeitgeist.handleInput("display");
 		
@@ -178,7 +178,7 @@ public class SearchCommand extends Command {
 
 //		Zeitgeist.handleInput("search -dt 3 march -dt 1/1");
 		
-		Zeitgeist.handleInput("search -t 10am");
+//		Zeitgeist.handleInput("search -t 10am");
 		
 //		Zeitgeist.handleInput("search -m march");
 		
