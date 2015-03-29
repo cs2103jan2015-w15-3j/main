@@ -134,6 +134,15 @@ public class RecurringTodoRule {
         return newTodoCount;
     }
 
+    public void setRecurrenceLimit(DateTime recurrenceLimit) {
+        this.recurrenceLimit = recurrenceLimit;
+    }
+
+    public void setOriginalName(String originalName) {
+        this.originalName = originalName;
+        this.name = RECURRING_TODO_PREIX + originalName;
+    }
+
     public void setRecurringInterval(Period recurringInterval) {
         this.recurringInterval = recurringInterval;
     }
