@@ -47,7 +47,7 @@ public class Zeitgeist {
     	
     	//build settings file path
     	settingsFilePath = defaultFileDirectory + "/" + SETTINGS_FILE_NAME;
-    	System.out.println(settingsFilePath);
+
     	//check if settings file exists
     	File settingsFile = new File(settingsFilePath);
     	BufferedWriter writer;
@@ -88,7 +88,7 @@ public class Zeitgeist {
     }
     
     public static Boolean isValidFilePath(String fileDirectoryString){
-    	if(fileDirectoryString.length()==0){
+    	if(fileDirectoryString == null || fileDirectoryString == ""){
     		return false;
     	}
     	
