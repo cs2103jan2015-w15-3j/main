@@ -28,12 +28,12 @@ public class Zeitgeist {
     public Memory memory;
 
     public Zeitgeist() {
-    	//Builder builds StorageHandler with user-specified file path
     	storage = new StorageHandler.Builder()
-    		.setDirectoryPath(defaultFileDirectory)
+    		.setDirectoryPath(fileDirectory)
     		.setFilePath()
     		.build();
         memory = storage.retrieveMemoryFromFile();
+        memory.setStorageHandler(storage);
     }
     
     public static void setDefaultFileDirectory(){

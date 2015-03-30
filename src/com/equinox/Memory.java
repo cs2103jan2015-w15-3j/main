@@ -45,8 +45,7 @@ public class Memory {
 	private LinkedList<Todo> undoStack;
 	private LinkedList<Todo> redoStack;
 	private SearchMap searchMap;
-	private StorageHandler storageHandler = new StorageHandler();
-
+	private StorageHandler storage;
 	/**
 	 * Constructs an empty Memory object.
 	 */
@@ -691,7 +690,10 @@ public class Memory {
 	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 	 */
 	public void saveToFile() {
-		storageHandler.storeMemoryToFile(this);
+		storage.storeMemoryToFile(this);
+	}
+	public void setStorageHandler(StorageHandler storage){
+		this.storage = storage;
 	}
 
     /**
