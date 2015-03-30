@@ -25,11 +25,18 @@ public class InputStringKeyword {
 	private static final String KEY_START_ABV = "-s";
 	private static final String KEY_END = "end";
 	private static final String KEY_END_ABV = "-e";
+	// private static final String KEY_RULE = "rule";
+	private static final String KEY_RULE_ABV = "-r";
+	private static final String KEY_FREQ = "freq";
+	private static final String KEY_FREQ_ABV = "-f";
+	private static final String KEY_LIMIT = "limit";
+	private static final String KEY_LIMIT_ABV = "-l";
 	private static final String KEY_EXIT = "exit";
 	private static final String KEY_DATE_ABV = "-dt";
 	private static final String KEY_TIME_ABV = "-t";
 	private static final String KEY_DAY_ABV = "-d";
 	private static final String KEY_MONTH_ABV = "-m";
+	private static final String KEY_YEAR_ABV = "-y";
 
     private static Map<String, Keywords> keywords;
     private static Map<String, Keywords> commands;
@@ -51,12 +58,19 @@ public class InputStringKeyword {
         keywords.put(KEY_START_ABV, Keywords.START);
         keywords.put(KEY_END, Keywords.END);
         keywords.put(KEY_END_ABV, Keywords.END);
+        // keywords.put(KEY_RULE, Keywords.RULE);
+        keywords.put(KEY_RULE_ABV, Keywords.RULE);
+        keywords.put(KEY_FREQ, Keywords.FREQUENCY);
+        keywords.put(KEY_FREQ_ABV, Keywords.FREQUENCY);
+        keywords.put(KEY_LIMIT, Keywords.LIMIT);
+        keywords.put(KEY_LIMIT_ABV, Keywords.LIMIT);
         keywords.put(KEY_NAME, Keywords.NAME);
         keywords.put(KEY_NAME_ABV, Keywords.NAME);
         keywords.put(KEY_DATE_ABV, Keywords.DATE);
         keywords.put(KEY_TIME_ABV, Keywords.TIME);
         keywords.put(KEY_DAY_ABV, Keywords.DAY);
         keywords.put(KEY_MONTH_ABV, Keywords.MONTH);
+        keywords.put(KEY_YEAR_ABV,  Keywords.YEAR);
         keywords.put(KEY_BY, Keywords.BY);
         keywords.put(KEY_FROM, Keywords.FROM);
         keywords.put(KEY_ON, Keywords.ON);

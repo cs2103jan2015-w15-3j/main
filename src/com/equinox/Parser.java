@@ -1,6 +1,7 @@
 package com.equinox;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -52,18 +53,17 @@ public class Parser {
 		ArrayList<String> words = tokenize(input);
 		Keywords cType = getCommandType(words);
 		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
-		DateTime recurringLimit = null;
+		DateTime limit = new DateTime(0);
 
 		// if command type is error
 		if (cType == null) {
-			return new ParsedInput(null, null, null, null, false);
+			return new ParsedInput(null, null, null, null, false, false, null);
 		}
 
 		List<DateTime> dateTimes = new ArrayList<DateTime>();
 		ParsedInput returnInput;
 
 		ArrayList<KeyParamPair> keyParamPairs = extractParam(words);
-
 		if (cType == Keywords.ADD) {
 			for (int i = 1; i < keyParamPairs.size(); i++) {
 				// ignores the first pair as it is assumed to be the name of the
@@ -75,8 +75,7 @@ public class Parser {
 				if (isRecurring) { // check if there is a recurring limit
 					if (key == Keywords.UNTIL) {
 						try {
-							recurringLimit = parseDates(currentPair.getParam())
-									.get(0);
+							limit = parseDates(currentPair.getParam()).get(0);
 							hasLimit = true;
 						} catch (InvalidDateException e) { // no valid date
 															// given
@@ -89,7 +88,18 @@ public class Parser {
 				} else if (key == Keywords.EVERY) {
 					// tries to detect if there is a period in user input
 					try {
-						period = retrieveRecurringPeriod(currentPair.getParam());
+						// tries to parse param as date to extract the date
+						List<DateTime> parsedDate = parseDates(currentPair
+								.getParam());
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
+					} catch (InvalidDateException e) {
+						// if parameters cannot be parsed as dates, just ignores
+					}
+					try {
+						// tries to parse as period
+						period = retrieveRecurringPeriod(currentPair.getParam()
+								.toLowerCase());
 						isRecurring = true;
 					} catch (InvalidPeriodException e) { // no valid period
 															// given
@@ -110,6 +120,9 @@ public class Parser {
 						keyParamPairs.get(0).setParam(newName);
 					}
 				}
+			}
+			for(int i = keyParamPairs.size() - 1; i > 0; i--) {
+				keyParamPairs.remove(i);
 			}
 		}
 
@@ -133,11 +146,13 @@ public class Parser {
 		if (cType == Keywords.SEARCH) {
 			for (KeyParamPair keyParamPair : keyParamPairs) {
 				Keywords key = keyParamPair.getKeyword();
-				if (key == Keywords.DATE || key == Keywords.TIME
-						|| key == Keywords.DAY || key == Keywords.MONTH) {
+				if (!(key == Keywords.NAME || key == Keywords.SEARCH)) {
+					String dateParam = keyParamPair.getParam();
+					if (key == Keywords.YEAR) {
+						dateParam = "march ".concat(keyParamPair.getParam());
+					}
 					try {
-						DateTime parsedDate = parseDates(
-								keyParamPair.getParam()).get(0);
+						DateTime parsedDate = parseDates(dateParam).get(0);
 						dateTimes.add(parsedDate);
 					} catch (InvalidDateException e) {
 						// Ignore empty date list will be returned
@@ -145,6 +160,7 @@ public class Parser {
 				}
 			}
 		}
+
 		if (isRecurring) {
 			if (!isValidRecurring(dateTimes)) {
 				isRecurring = false;
@@ -162,12 +178,12 @@ public class Parser {
 
 			} else {
 				if (hasLimit) {
-					dateTimes.add(recurringLimit);
+					dateTimes.add(limit);
 				}
 			}
 		}
 		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
-				isRecurring);
+				isRecurring, hasLimit, limit);
 		return returnInput;
 	}
 
@@ -217,14 +233,17 @@ public class Parser {
 				// were parse-able
 				e.printStackTrace(); // TODO: handle this exception
 			}
-			if (!newDateTimes.isEmpty() &&( newDateTimes.equals(dateTimes)
-					|| newDateTimes.size() <= dateTimes.size())) {
+			System.out.println(newDateTimes.get(0).toString());
+			System.out.println(dateTimes.get(0).toString());
+			System.out.println(newDateTimes.equals(dateTimes));
+			if (!newDateTimes.isEmpty() && newDateTimes.equals(dateTimes)) {
+
 				// natty could not parse in the first order, try appending the
 				// other way
 				appendedPairIndex = currentIndex;
 				currentIndex = dateIndexes.get(0);
-				newDateParam = appendParameters(keyParamPairs, appendedPairIndex,
-						currentIndex);
+				newDateParam = appendParameters(keyParamPairs,
+						appendedPairIndex, currentIndex);
 				try {
 					newDateTimes = parseDates(newDateParam);
 
@@ -241,13 +260,12 @@ public class Parser {
 			dateTimes.clear(); // removes all elements in dateTimes
 			dateTimes.addAll(newDateTimes);
 			keyParamPairs.get(appendedPairIndex).setParam(newDateParam);
-			keyParamPairs.remove(currentIndex);
 			dateIndexes.remove(0);
-
+			dateIndexes.add(appendedPairIndex);
 		} else {
 			dateTimes.addAll(parsedDate);
+			dateIndexes.add(currentIndex);
 		}
-		dateIndexes.add(currentIndex);
 	}
 
 	/**
@@ -452,15 +470,26 @@ public class Parser {
 				TimeZone.getDefault());
 
 		DateGroup parsedDate;
+		DateGroup dateNow;
 		try {
 			parsedDate = parser.parse(dateString).get(0);
+			dateNow = parser.parse(dateString).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			throw new InvalidDateException(
 					ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
 		}
+
 		List<Date> dateList = parsedDate.getDates();
-		for (Date date : dateList) {
-			dateTimes.add(new DateTime(date));
+		List<Date> nowList = dateNow.getDates();
+		for (int i = 0; i < dateList.size(); i++) {
+			Date date = dateList.get(i);
+			DateTime dateTime = new DateTime(date);
+			if (!date.equals(nowList.get(i))) {
+				dateTime = dateTime.withTime(23, 59, 0, 0);
+			} else {
+				dateTime = dateTime.withSecondOfMinute(0).withMillisOfSecond(0);
+			}
+			dateTimes.add(dateTime);
 		}
 		return dateTimes;
 	}
