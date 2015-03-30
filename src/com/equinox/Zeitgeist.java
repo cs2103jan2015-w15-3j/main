@@ -54,20 +54,20 @@ public class Zeitgeist {
     	try{
 	    	if(!settingsFile.exists()){
 	    		settingsFile.createNewFile();
-	    		//write default file directory to settings file
+	    		//write default storage file directory path to settings file
 	    		writer = new BufferedWriter(new FileWriter(settingsFile));
 	    		writer.write(defaultFileDirectory);
 	    		fileDirectory = defaultFileDirectory;
 	    		writer.close();
 	    	}
-	    	//Settings file exists. Read fileDirectory from file.
+	    	//Settings file exists. Read storage file directory path from file.
 	    	else {
 	    		BufferedReader reader = new BufferedReader(new FileReader(settingsFile));
 		    	//read storage directory file path
 		    	String fileDirectoryString = reader.readLine();
 		    	
 		    	//if storage directory file path is invalid, overwrite settings file
-		    	//with default directory path and set the storage file directory to default
+		    	//with default directory path and set the storage file directory path to default
 		    	if(!isValidFilePath(fileDirectoryString)){
 		    		writer = new BufferedWriter(new FileWriter(settingsFile, false));
 		    		writer.write(defaultFileDirectory);
@@ -129,14 +129,7 @@ public class Zeitgeist {
 	 * @param args contains arguments from the command line at launch. (Not used)
 	 */
 	public static void main(String[] args) {
-		/*
-		//Check for filePath argument
-		//If args.length is 1, take in the user-specified file path string
-		if(args.length == 1){
-			filePath = args[0];
-			
-		}
-		*/
+		
     	readSettingsFile();
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
         String input;
