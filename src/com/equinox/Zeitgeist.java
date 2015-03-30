@@ -7,9 +7,20 @@ package com.equinox;
  *
  */
 import java.util.Scanner;
+import java.io.File;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+
 
 public class Zeitgeist {
-
+	private static final String SETTINGS_FILE_NAME = "settings.txt";
+	
+	private static String defaultFileDirectory;
+	private static String fileDirectory;
+	private static String settingsFilePath;
     private static Zeitgeist logic;
 
     public static Scanner scn = new Scanner(System.in);
@@ -17,10 +28,73 @@ public class Zeitgeist {
     public Memory memory;
 
     public Zeitgeist() {
-        storage = new StorageHandler();
+    	//Builder builds StorageHandler with user-specified file path
+    	storage = new StorageHandler.Builder()
+    		.setDirectoryPath(defaultFileDirectory)
+    		.setFilePath()
+    		.build();
         memory = storage.retrieveMemoryFromFile();
     }
-
+    
+    public static void setDefaultFileDirectory(){
+    	defaultFileDirectory = new File("").getAbsolutePath();
+    }
+    
+    
+    public static void readSettingsFile(){
+    	//set default file directory
+    	setDefaultFileDirectory();
+    	
+    	//build settings file path
+    	settingsFilePath = defaultFileDirectory + "/" + SETTINGS_FILE_NAME;
+    	System.out.println(settingsFilePath);
+    	//check if settings file exists
+    	File settingsFile = new File(settingsFilePath);
+    	BufferedWriter writer;
+    	try{
+	    	if(!settingsFile.exists()){
+	    		settingsFile.createNewFile();
+	    		//write default file directory to settings file
+	    		writer = new BufferedWriter(new FileWriter(settingsFile));
+	    		writer.write(defaultFileDirectory);
+	    		fileDirectory = defaultFileDirectory;
+	    		writer.close();
+	    	}
+	    	//Settings file exists. Read fileDirectory from file.
+	    	else {
+	    		BufferedReader reader = new BufferedReader(new FileReader(settingsFile));
+		    	//read storage directory file path
+		    	String fileDirectoryString = reader.readLine();
+		    	
+		    	//if storage directory file path is invalid, overwrite settings file
+		    	//with default directory path and set the storage file directory to default
+		    	if(!isValidFilePath(fileDirectoryString)){
+		    		writer = new BufferedWriter(new FileWriter(settingsFile, false));
+		    		writer.write(defaultFileDirectory);
+		    		writer.close();
+		    		fileDirectory = defaultFileDirectory;
+		    	}
+		    	//if storage file path is valid, set it as file directory
+		    	else{
+		    		fileDirectory = fileDirectoryString;
+		    	}
+		    	
+		    	reader.close();
+	    	}
+	    	
+    	} catch(IOException e){
+    		e.printStackTrace();
+    	}
+    }
+    
+    public static Boolean isValidFilePath(String fileDirectoryString){
+    	if(fileDirectoryString.length()==0){
+    		return false;
+    	}
+    	
+    	return new File(fileDirectoryString).isDirectory();
+ 
+    }
     public static Zeitgeist getInstance() {
         if (logic == null) {
             logic = new Zeitgeist();
@@ -55,6 +129,15 @@ public class Zeitgeist {
 	 * @param args contains arguments from the command line at launch. (Not used)
 	 */
 	public static void main(String[] args) {
+		/*
+		//Check for filePath argument
+		//If args.length is 1, take in the user-specified file path string
+		if(args.length == 1){
+			filePath = args[0];
+			
+		}
+		*/
+    	readSettingsFile();
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
         String input;
         Zeitgeist logic = getInstance();

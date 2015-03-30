@@ -36,19 +36,34 @@ import com.google.gson.JsonSerializer;
  */
 
 public class StorageHandler {
-	private static String DEFAULT_FILE_PATH = "storageFile.json";
-
+	private static final String FILE_NAME = "storageFile.json";
+	
 	private File storageFile;
 
 	private static PrintWriter writer;
 	private static Scanner reader;
+	private static String filePath;
 
-	public StorageHandler() {
-		this.storageFile = new File(DEFAULT_FILE_PATH);
-		createFileIfNonExistent();
+	public static class Builder{
+		private String fileDirectory;
+		private String filePath;
+		
+		public Builder setDirectoryPath(String fileDirectory){
+			this.fileDirectory = fileDirectory;
+			return this;
+		}
+		
+		public Builder setFilePath(){
+			this.filePath = fileDirectory + "/" + FILE_NAME;
+			return this;
+		}
+		public StorageHandler build(){
+			return new StorageHandler(this);
+		}
 	}
-
-	public StorageHandler(String filePath) {
+		
+	private StorageHandler(Builder builder) {
+	    filePath = builder.filePath;
 		this.storageFile = new File(filePath);
 		createFileIfNonExistent();
 	}
