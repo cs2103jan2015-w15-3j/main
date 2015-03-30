@@ -64,7 +64,6 @@ public class Parser {
 		ParsedInput returnInput;
 
 		ArrayList<KeyParamPair> keyParamPairs = extractParam(words);
-
 		if (cType == Keywords.ADD) {
 			for (int i = 1; i < keyParamPairs.size(); i++) {
 				// ignores the first pair as it is assumed to be the name of the
@@ -122,6 +121,9 @@ public class Parser {
 					}
 				}
 			}
+			for(int i = keyParamPairs.size() - 1; i > 0; i--) {
+				keyParamPairs.remove(i);
+			}
 		}
 
 		// Post-process EDIT command parameters
@@ -158,6 +160,7 @@ public class Parser {
 				}
 			}
 		}
+
 		if (isRecurring) {
 			if (!isValidRecurring(dateTimes)) {
 				isRecurring = false;
@@ -233,9 +236,8 @@ public class Parser {
 			System.out.println(newDateTimes.get(0).toString());
 			System.out.println(dateTimes.get(0).toString());
 			System.out.println(newDateTimes.equals(dateTimes));
-			if (!newDateTimes.isEmpty()
-					&& newDateTimes.equals(dateTimes)) {
-				
+			if (!newDateTimes.isEmpty() && newDateTimes.equals(dateTimes)) {
+
 				// natty could not parse in the first order, try appending the
 				// other way
 				appendedPairIndex = currentIndex;
@@ -468,18 +470,26 @@ public class Parser {
 				TimeZone.getDefault());
 
 		DateGroup parsedDate;
+		DateGroup dateNow;
 		try {
 			parsedDate = parser.parse(dateString).get(0);
+			dateNow = parser.parse(dateString).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			throw new InvalidDateException(
 					ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
 		}
+
 		List<Date> dateList = parsedDate.getDates();
-		for (int i = 0; i< dateList.size(); i++) {
+		List<Date> nowList = dateNow.getDates();
+		for (int i = 0; i < dateList.size(); i++) {
 			Date date = dateList.get(i);
-			dateTimes.add(new DateTime(date));
-			dateTimes.set(i, dateTimes.get(i).withMillisOfSecond(0));
-			dateTimes.set(i, dateTimes.get(i).withSecondOfMinute(0));
+			DateTime dateTime = new DateTime(date);
+			if (!date.equals(nowList.get(i))) {
+				dateTime = dateTime.withTime(23, 59, 0, 0);
+			} else {
+				dateTime = dateTime.withSecondOfMinute(0).withMillisOfSecond(0);
+			}
+			dateTimes.add(dateTime);
 		}
 		return dateTimes;
 	}
