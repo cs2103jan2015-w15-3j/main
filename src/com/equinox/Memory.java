@@ -557,17 +557,17 @@ public class Memory {
 			// remove id from dayMap
 			int day = dateTime.getDayOfWeek();
 			int todoIdDayIndex = dayMap.get(day).indexOf(id);
-			timeMap.get(day).remove(todoIdDayIndex);
-			if (timeMap.get(day).isEmpty()) {
-				timeMap.remove(day);
+			dayMap.get(day).remove(todoIdDayIndex);
+			if (dayMap.get(day).isEmpty()) {
+				dayMap.remove(day);
 			}
 
 			// remove id from monthMap
 			int month = dateTime.getMonthOfYear();
 			int todoIdMonthIndex = monthMap.get(month).indexOf(id);
-			timeMap.get(month).remove(todoIdMonthIndex);
-			if (timeMap.get(month).isEmpty()) {
-				timeMap.remove(month);
+			monthMap.get(month).remove(todoIdMonthIndex);
+			if (monthMap.get(month).isEmpty()) {
+				monthMap.remove(month);
 			}
 
 			// remove id from yearMap
