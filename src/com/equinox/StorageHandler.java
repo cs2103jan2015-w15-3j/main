@@ -45,8 +45,8 @@ public class StorageHandler {
 	private static String filePath;
 
 	public static class Builder{
-		private String fileDirectory;
-		private String filePath;
+		 String fileDirectory;
+		 String filePath;
 		
 		public Builder setDirectoryPath(String fileDirectory){
 			this.fileDirectory = fileDirectory;
@@ -95,6 +95,7 @@ public class StorageHandler {
 		try {
 			if (!storageFile.exists()) {
 				storageFile.createNewFile();
+				//write a null Memory in JSON format to file
                 storeMemoryToFile(Memory.getInstance());
 			}
 		} catch (IOException e) {
