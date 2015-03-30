@@ -60,10 +60,20 @@ public class AddCommand extends Command {
 				return new Signal(Signal.ADD_INVALID_PARAMS, false);
 			}
 
-			// Create recurrence rule
-			RecurringTodoRule rule = new RecurringTodoRule(
-					memory.obtainFreshRecurringId(), todoName, dateTimes,
-					input.getPeriod());
+			RecurringTodoRule rule;
+
+			// If recurrence rule has a limit
+			if (input.hasLimit()) {
+				rule = new RecurringTodoRule(memory.obtainFreshRecurringId(),
+						todoName, dateTimes, input.getPeriod(),
+						input.getLimit());
+				memory.add(rule);
+			}
+			// If recurrence rule has no limit
+			else {
+				rule = new RecurringTodoRule(memory.obtainFreshRecurringId(),
+						todoName, dateTimes, input.getPeriod());
+			}
 			memory.add(rule);
 			memory.saveToFile();
 			return new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
@@ -76,7 +86,6 @@ public class AddCommand extends Command {
 			if (numberOfKeywords > 4) {
 				return new Signal(Signal.ADD_INVALID_PARAMS, false);
 			}
-
 
 			int numberOfDates = dateTimes.size();
 

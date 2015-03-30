@@ -36,65 +36,7 @@ public class Zeitgeist {
         memory.setStorageHandler(storage);
     }
     
-    public static void setDefaultFileDirectory(){
-    	defaultFileDirectory = new File("").getAbsolutePath();
-    }
-    
-    
-    public static void readSettingsFile(){
-    	//set default file directory
-    	setDefaultFileDirectory();
-    	
-    	//build settings file path
-    	settingsFilePath = defaultFileDirectory + "/" + SETTINGS_FILE_NAME;
-
-    	//check if settings file exists
-    	File settingsFile = new File(settingsFilePath);
-    	BufferedWriter writer;
-    	try{
-	    	if(!settingsFile.exists()){
-	    		settingsFile.createNewFile();
-	    		//write default storage file directory path to settings file
-	    		writer = new BufferedWriter(new FileWriter(settingsFile));
-	    		writer.write(defaultFileDirectory);
-	    		fileDirectory = defaultFileDirectory;
-	    		writer.close();
-	    	}
-	    	//Settings file exists. Read storage file directory path from file.
-	    	else {
-	    		BufferedReader reader = new BufferedReader(new FileReader(settingsFile));
-		    	//read storage directory file path
-		    	String fileDirectoryString = reader.readLine();
-		    	
-		    	//if storage directory file path is invalid, overwrite settings file
-		    	//with default directory path and set the storage file directory path to default
-		    	if(!isValidFilePath(fileDirectoryString)){
-		    		writer = new BufferedWriter(new FileWriter(settingsFile, false));
-		    		writer.write(defaultFileDirectory);
-		    		writer.close();
-		    		fileDirectory = defaultFileDirectory;
-		    	}
-		    	//if storage file path is valid, set it as file directory
-		    	else{
-		    		fileDirectory = fileDirectoryString;
-		    	}
-		    	
-		    	reader.close();
-	    	}
-	    	
-    	} catch(IOException e){
-    		e.printStackTrace();
-    	}
-    }
-    
-    public static Boolean isValidFilePath(String fileDirectoryString){
-    	if(fileDirectoryString == null || fileDirectoryString == ""){
-    		return false;
-    	}
-    	
-    	return new File(fileDirectoryString).isDirectory();
- 
-    }
+   
     public static Zeitgeist getInstance() {
         if (logic == null) {
             logic = new Zeitgeist();
@@ -223,4 +165,63 @@ public class Zeitgeist {
 		}
 		
 	}
+    public static void setDefaultFileDirectory(){
+    	defaultFileDirectory = new File("").getAbsolutePath();
+    }
+    
+    
+    public static void readSettingsFile(){
+    	// Set default file directory
+    	setDefaultFileDirectory();
+    	
+    	// Build settings file path
+    	settingsFilePath = defaultFileDirectory + "/" + SETTINGS_FILE_NAME;
+
+    	// Check if settings file exists
+    	File settingsFile = new File(settingsFilePath);
+    	BufferedWriter writer;
+    	try{
+	    	if(!settingsFile.exists()){
+	    		settingsFile.createNewFile();
+	    		// Write default storage file directory path to settings file
+	    		writer = new BufferedWriter(new FileWriter(settingsFile));
+	    		writer.write(defaultFileDirectory);
+	    		fileDirectory = defaultFileDirectory;
+	    		writer.close();
+	    	}
+	    	// Settings file exists. Read storage file directory path from file.
+	    	else {
+	    		BufferedReader reader = new BufferedReader(new FileReader(settingsFile));
+		    	//Read storage directory file path
+		    	String fileDirectoryString = reader.readLine();
+		    	
+		    	// If storage directory file path is invalid, overwrite settings file
+		    	// with default directory path and set the storage file directory path to default
+		    	if(!isValidFilePath(fileDirectoryString)){
+		    		writer = new BufferedWriter(new FileWriter(settingsFile, false));
+		    		writer.write(defaultFileDirectory);
+		    		writer.close();
+		    		fileDirectory = defaultFileDirectory;
+		    	}
+		    	// If storage file path is valid, set it as file directory
+		    	else{
+		    		fileDirectory = fileDirectoryString;
+		    	}
+		    	
+		    	reader.close();
+	    	}
+	    	
+    	} catch(IOException e){
+    		e.printStackTrace();
+    	}
+    }
+    
+    public static Boolean isValidFilePath(String fileDirectoryString){
+    	if(fileDirectoryString == null || fileDirectoryString == ""){
+    		return false;
+    	}
+    	
+    	return new File(fileDirectoryString).isDirectory();
+ 
+    }
 }
