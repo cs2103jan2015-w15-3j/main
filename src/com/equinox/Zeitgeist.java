@@ -165,11 +165,20 @@ public class Zeitgeist {
 		}
 		
 	}
-    public static void setDefaultFileDirectory(){
-    	defaultFileDirectory = new File("").getAbsolutePath();
-    }
     
     
+    /**
+     * Attempt to read settings.txt in the default directory. 
+     * 
+     * If settings.txt does not exist, it will be created and the default directory 
+     * path string will be written into it.
+     * 
+     * If settings.txt exists, the directory for saving storageFile.json will be read
+     * from the file. If the directory read is invalid, the directory of storageFile.json
+     * will be reverted to the default. 
+     * 
+     * @author Jonathan Lim Siu Chi || ign3sc3nc3
+     */
     public static void readSettingsFile(){
     	// Set default file directory
     	setDefaultFileDirectory();
@@ -216,6 +225,25 @@ public class Zeitgeist {
     	}
     }
     
+    /**
+     * Sets the default file directory where storageFile.json is saved as the same
+     * directory the program is being run from.
+     * 
+     * @author Jonathan Lim Siu Chi || ign3sc3nc3
+     * 
+     */
+    public static void setDefaultFileDirectory(){
+    	defaultFileDirectory = new File("").getAbsolutePath();
+    }
+    
+    /**
+     * Checks if the string is a valid file directory.
+     * 
+     * @author Jonathan Lim Siu Chi || ign3sc3nc3
+     * 
+     * @param fileDirectoryString
+     * @return True if string is a valid directory, false otherwise.
+     */
     public static Boolean isValidFilePath(String fileDirectoryString){
     	if(fileDirectoryString == null || fileDirectoryString == ""){
     		return false;
