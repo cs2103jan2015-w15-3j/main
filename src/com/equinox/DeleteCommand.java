@@ -34,9 +34,11 @@ public class DeleteCommand extends Command {
 		boolean isRecurringRule = false;
 		
 		// Check 2nd Keyword for -r flag
-		if (keyParamPairs.get(1).getKeyword() == Keywords.RULE) {
-			keyParamPairs.remove(1);
-			isRecurringRule = true;
+		if (keyParamPairs.size() == 2) {
+			if (keyParamPairs.get(1).getKeyword() == Keywords.RULE) {
+				keyParamPairs.remove(1);
+				isRecurringRule = true;
+			}
 		}
 		
 		// Ensure that there is only one KeyParamPair in inputList
