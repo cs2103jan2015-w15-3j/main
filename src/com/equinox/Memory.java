@@ -161,6 +161,21 @@ public class Memory {
 		searchMap.remove(returnTodo);
 		return returnTodo;
 	}
+	
+	public RecurringTodoRule removeRecurringRule(int id) throws NullRuleException {
+		Integer recurringId = allTodos.get(id).getRecurringId();
+		if (recurringId == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		RecurringTodoRule returnRule = recurringRules.get(recurringId);
+		if(returnRule == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		// TODO Save, flush redo stack
+		recurringRules.remove(recurringId);
+		// TODO Remove from search map
+		return returnRule;
+	}
 
 	/**
 	 * Saves the a copy of the state of a Todo into the undo stack. If the Todo
