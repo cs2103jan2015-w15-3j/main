@@ -33,15 +33,15 @@ public class DeleteCommand extends Command {
 	public Signal execute() {
 		boolean isRecurringRule = false;
 		
-		// Ensure that there is only one KeyParamPair in inputList
-		if (!input.containsOnlyCommand()) {
-			return new Signal(Signal.DELETE_INVALID_PARAMS, false);
-		}
-
 		// Check 2nd Keyword for -r flag
 		if (keyParamPairs.get(1).getKeyword() == Keywords.RULE) {
 			keyParamPairs.remove(1);
 			isRecurringRule = true;
+		}
+		
+		// Ensure that there is only one KeyParamPair in inputList
+		if (!input.containsOnlyCommand()) {
+			return new Signal(Signal.DELETE_INVALID_PARAMS, false);
 		}
 		
 		if(input.containsEmptyParams()) {
