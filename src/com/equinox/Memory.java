@@ -13,6 +13,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import com.equinox.exceptions.InvalidParamException;
+import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
 
@@ -129,6 +130,15 @@ public class Memory {
 		save(returnTodo);
 		flushRedoStack();
 		return returnTodo;
+	}
+	
+	public RecurringTodoRule getRule(int recurringId) throws NullRuleException {
+		RecurringTodoRule returnRule = recurringRules.get(recurringId);
+		if (returnRule == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		// TODO Save state
+		return returnRule;
 	}
 
 	/**
