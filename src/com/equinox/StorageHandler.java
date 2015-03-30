@@ -43,31 +43,65 @@ public class StorageHandler {
 	private static PrintWriter writer;
 	private static Scanner reader;
 	private static String filePath;
-
+	
+	/**
+	 * Builder inner class for creating instances of StorageHandler with
+	 * the option of setting the filePath variable.
+	 * 
+	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
+	 *
+	 */
 	public static class Builder{
 		 String fileDirectory;
 		 String filePath;
 		
+		/**
+		 * Set directory path with the given string.
+		 * 
+		 * @param fileDirectory
+		 * @return Builder
+		 */
 		public Builder setDirectoryPath(String fileDirectory){
 			this.fileDirectory = fileDirectory;
 			return this;
 		}
 		
+		/**
+		 * Set file path with the directory path and file name.
+		 * 
+		 * @return Builder
+		 */
 		public Builder setFilePath(){
 			this.filePath = fileDirectory + "/" + FILE_NAME;
 			return this;
 		}
+		
+		/**
+		 * Returns a StorageHandler instance.
+		 * 
+		 * @return StorageHandler
+		 */
 		public StorageHandler build(){
 			return new StorageHandler(this);
 		}
 	}
 		
+	/**
+	 * Constructor for StorageHandler, which takes in a Builder object
+	 * to initialise variables. 
+	 * 
+	 * @param builder
+	 */
 	private StorageHandler(Builder builder) {
 	    filePath = builder.filePath;
 		this.storageFile = new File(filePath);
 		createFileIfNonExistent();
 	}
-
+	
+	/**
+	 * Initialise the file reader.
+	 * 
+	 */
 	private void initialiseReader() {
 		try {
 			reader = new Scanner(storageFile);
@@ -76,7 +110,11 @@ public class StorageHandler {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Initialise the file writer.
+	 * 
+	 */
 	private void initialiseWriter() {
 		try {
 			writer = new PrintWriter(new BufferedWriter(new FileWriter(
@@ -86,11 +124,26 @@ public class StorageHandler {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Tear down the file reader.
+	 * 
+	 */
 	private void tearDownReader() {
 		reader.close();
 	}
-
+	/**
+	 * Tear down the file writer.
+	 * 
+	 */
+	private void tearDownWriter() {
+		writer.close();
+	}
+	
+	/**
+	 * Create file with the specified file path if it does not exist.
+	 * 
+	 */
 	private void createFileIfNonExistent() {
 		try {
 			if (!storageFile.exists()) {
@@ -101,10 +154,6 @@ public class StorageHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private void tearDownWriter() {
-		writer.close();
 	}
 
 	/**
@@ -118,7 +167,11 @@ public class StorageHandler {
 		writer.println(jsonString);
 		tearDownWriter();
 	}
-
+	
+	/**
+	 * Retrieves a Memory object from the JSON file.
+	 * 
+	 */
 	public Memory retrieveMemoryFromFile() {
 		initialiseReader();
 		StringBuilder builder = new StringBuilder();
