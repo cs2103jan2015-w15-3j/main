@@ -13,6 +13,8 @@ public class ParsedInput {
 	private List<DateTime> dateTimes;
 	private boolean isRecurring;
 	private Period period;
+	private boolean hasLimit;
+	private DateTime limit;
 
 	/**
 	 * Creates a ParsedInput object with the type of command, a list of
@@ -33,12 +35,15 @@ public class ParsedInput {
 	 *            the period for the recurring todo
 	 */
 	public ParsedInput(Keywords type, ArrayList<KeyParamPair> keyParamPairs,
-			List<DateTime> dateTimes, Period period, boolean isRecurring) {
+			List<DateTime> dateTimes, Period period, boolean isRecurring,
+			boolean hasLimit, DateTime limit) {
 		this.type = type;
 		this.keyParamPairs = keyParamPairs;
 		this.dateTimes = dateTimes;
 		this.period = period;
 		this.isRecurring = isRecurring;
+		this.hasLimit = hasLimit;
+		this.limit = limit;
 	}
 
 	/**
@@ -96,15 +101,15 @@ public class ParsedInput {
 		}
 		return false;
 	}
-	
-	public boolean containsFromKeyword(){
-		for(KeyParamPair pair : keyParamPairs){
-			if(pair.getKeyword() == Keywords.FROM){
+
+	public boolean containsFromKeyword() {
+		for (KeyParamPair pair : keyParamPairs) {
+			if (pair.getKeyword() == Keywords.FROM) {
 				return true;
 			}
 		}
-			return false;
-		
+		return false;
+
 	}
 
 	/**
@@ -127,6 +132,14 @@ public class ParsedInput {
 		return period;
 	}
 
+	public boolean hasLimit() {
+		return hasLimit;
+	}
+
+	public DateTime getLimit() {
+		return limit;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -136,11 +149,14 @@ public class ParsedInput {
 	public boolean equals(Object o) {
 		if (o.getClass().equals(this.getClass())) {
 			ParsedInput other = (ParsedInput) o;
+
 			return this.getType().equals(other.getType())
 					&& this.getParamPairs().equals(other.getParamPairs())
-					&& this.getDateTimes().size() == other.getDateTimes().size()
+					&& this.getDateTimes().equals(other.getDateTimes())
 					&& this.getPeriod().equals(other.getPeriod())
-					&& this.isRecurring() ==other.isRecurring();
+					&& this.isRecurring() == other.isRecurring()
+					&& this.hasLimit() == other.hasLimit()
+					&& this.getLimit().equals(other.getLimit());
 		}
 		return false;
 	}

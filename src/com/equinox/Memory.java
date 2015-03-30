@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TreeSet;
 
@@ -14,6 +13,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import com.equinox.exceptions.InvalidParamException;
+import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
 
@@ -27,19 +27,16 @@ import com.equinox.exceptions.StateUndefinedException;
  */
 public class Memory {
 
-    // Field for Memory singleton pattern
-    private static Memory memory;
+	// Field for Memory singleton pattern
+	private static Memory memory;
 
 	private static final String REGEX_SPACE = "\\s";
 	private static final int STATE_STACK_MAX_SIZE = 5;
 	private static final int ID_INITIAL = 0;
 	private static final int ID_BUFFER_INITIAL_SIZE = 5;
 	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
-	private static final int RECURRING_MAX_INSTANCES = 7;
-    private HashMap<Integer, Todo> allTodos;
-	private HashMap<Integer, List<Todo>> recurringTodos;
-    private HashMap<Integer, RecurringTodoRule> recurringRules;
-	private HashMap<Integer, DateTime> recurrenceLimits;
+	private HashMap<Integer, Todo> allTodos;
+	private HashMap<Integer, RecurringTodoRule> recurringRules;
 	private final IDBuffer idBuffer;
 	private final IDBuffer recurringIdBuffer;
 	private LinkedList<Todo> undoStack;
@@ -50,10 +47,8 @@ public class Memory {
 	 * Constructs an empty Memory object.
 	 */
 	public Memory() {
-        this.allTodos = new HashMap<Integer, Todo>();
-		this.recurringTodos = new HashMap<Integer, List<Todo>>();
-        this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
-		this.recurrenceLimits = new HashMap<Integer, DateTime>();
+		this.allTodos = new HashMap<Integer, Todo>();
+		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
 		this.idBuffer = new IDBuffer();
 		this.recurringIdBuffer = new IDBuffer();
 		this.undoStack = new LinkedList<Todo>();
@@ -76,28 +71,28 @@ public class Memory {
 		int id = todo.getId();
 		save(todo.getPlaceholder());
 		flushRedoStack();
-        allTodos.put(id, todo);
+		allTodos.put(id, todo);
 		searchMap.add(todo);
 	}
 
-    /**
-     * Handle adding of recurring tasks as rules
-     * 
-     * @param rule
-     */
+	/**
+	 * Handle adding of recurring tasks as rules
+	 * 
+	 * @param rule
+	 */
 	public void add(RecurringTodoRule rule) {
-        recurringRules.put(rule.getRecurringId(), rule);
-        updateRecurringRules();
+		recurringRules.put(rule.getRecurringId(), rule);
+		updateRecurringRules();
 	}
 
-    private void updateRecurringRules() {
-        Collection<RecurringTodoRule> rules = recurringRules.values();
-        for (Iterator<RecurringTodoRule> iterator = rules.iterator(); iterator
-                .hasNext();) {
-            RecurringTodoRule rule = (RecurringTodoRule) iterator.next();
-            rule.updateTodoList(this);
-        }
-    }
+	private void updateRecurringRules() {
+		Collection<RecurringTodoRule> rules = recurringRules.values();
+		for (Iterator<RecurringTodoRule> iterator = rules.iterator(); iterator
+				.hasNext();) {
+			RecurringTodoRule rule = (RecurringTodoRule) iterator.next();
+			rule.updateTodoList(this);
+		}
+	}
 
 	/**
 	 * Retrieves the Todo identified by the specified ID from the memory.
@@ -109,7 +104,7 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo get(int id) throws NullTodoException {
-        Todo returnTodo = allTodos.get(id);
+		Todo returnTodo = allTodos.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
@@ -127,13 +122,22 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo setterGet(int id) throws NullTodoException {
-        Todo returnTodo = allTodos.get(id);
+		Todo returnTodo = allTodos.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
 		save(returnTodo);
 		flushRedoStack();
 		return returnTodo;
+	}
+	
+	public RecurringTodoRule getRule(int recurringId) throws NullRuleException {
+		RecurringTodoRule returnRule = recurringRules.get(recurringId);
+		if (returnRule == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		// TODO Save state
+		return returnRule;
 	}
 
 	/**
@@ -146,15 +150,30 @@ public class Memory {
 	 *             if the Todo identified by the specified ID does not exist.
 	 */
 	public Todo remove(int id) throws NullTodoException {
-        Todo returnTodo = allTodos.get(id);
+		Todo returnTodo = allTodos.get(id);
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
 		save(returnTodo);
 		flushRedoStack();
-        allTodos.remove(id);
+		allTodos.remove(id);
 		searchMap.remove(returnTodo);
 		return returnTodo;
+	}
+	
+	public RecurringTodoRule removeRecurringRule(int id) throws NullRuleException {
+		Integer recurringId = allTodos.get(id).getRecurringId();
+		if (recurringId == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		RecurringTodoRule returnRule = recurringRules.get(recurringId);
+		if(returnRule == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		// TODO Save, flush redo stack
+		recurringRules.remove(recurringId);
+		// TODO Remove from search map
+		return returnRule;
 	}
 
 	/**
@@ -174,7 +193,7 @@ public class Memory {
 		Todo toBeSavedCopy = new Todo(toBeSaved);
 		if (undoStack.size() > STATE_STACK_MAX_SIZE) {
 			int id = undoStack.removeFirst().getId();
-            if (!allTodos.containsKey(id)) {
+			if (!allTodos.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -195,7 +214,7 @@ public class Memory {
 	private void flushUndoStack() {
 		while (!undoStack.isEmpty()) {
 			int id = undoStack.pollLast().getId();
-            if (!allTodos.containsKey(id)) {
+			if (!allTodos.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -207,7 +226,7 @@ public class Memory {
 	private void flushRedoStack() {
 		while (!redoStack.isEmpty()) {
 			int id = redoStack.pollLast().getId();
-            if (!allTodos.containsKey(id)) {
+			if (!allTodos.containsKey(id)) {
 				releaseId(id);
 			}
 		}
@@ -230,7 +249,7 @@ public class Memory {
 		}
 
 		int id = fromStack.getId();
-        Todo inMemory = allTodos.get(id);
+		Todo inMemory = allTodos.get(id);
 
 		// If Todo does not exist in memory, use placeholder.
 		if (inMemory == null) {
@@ -243,9 +262,9 @@ public class Memory {
 		// If Todo from stack is a placeholder, delete Todo indicated by its
 		// ID in the memory.
 		if (fromStack.getCreatedOn() == null) {
-            allTodos.remove(id);
+			allTodos.remove(id);
 		} else {
-            allTodos.put(id, fromStack);
+			allTodos.put(id, fromStack);
 		}
 	}
 
@@ -266,7 +285,7 @@ public class Memory {
 		}
 
 		int id = fromStack.getId();
-        Todo inMemory = allTodos.get(id);
+		Todo inMemory = allTodos.get(id);
 
 		// If Todo does not exist in memory, use placeholder.
 		if (inMemory == null) {
@@ -278,9 +297,9 @@ public class Memory {
 		// If Todo from stack is a placeholder, delete Todo indicated by its
 		// ID in the memory.
 		if (fromStack.getCreatedOn() == null) {
-            allTodos.remove(id);
+			allTodos.remove(id);
 		} else {
-            allTodos.put(id, fromStack);
+			allTodos.put(id, fromStack);
 		}
 	}
 
@@ -290,13 +309,13 @@ public class Memory {
 	 * @return all Todos as Collection
 	 */
 	public Collection<Todo> getAllTodos() {
-        updateRecurringRules();
-        return allTodos.values();
+		updateRecurringRules();
+		return allTodos.values();
 	}
 
-    private RecurringTodoRule getRecurringTodoRule(int recurringID) {
-        return recurringRules.get(recurringID);
-    }
+	private RecurringTodoRule getRecurringTodoRule(int recurringID) {
+		return recurringRules.get(recurringID);
+	}
 
 	/**
 	 * Obtains an ID number from the pool of available ID numbers.
@@ -368,7 +387,7 @@ public class Memory {
 			int i = minUnloadedId;
 
 			while (i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
-                if (allTodos.containsKey(i)) {
+				if (allTodos.containsKey(i)) {
 					minUnloadedId++;
 				} else {
 					buffer.add(i);
@@ -397,6 +416,7 @@ public class Memory {
 		private HashMap<LocalTime, ArrayList<Integer>> timeMap;
 		private HashMap<Integer, ArrayList<Integer>> monthMap;
 		private HashMap<Integer, ArrayList<Integer>> dayMap;
+		private HashMap<Integer, ArrayList<Integer>> yearMap;
 
 		SearchMap() {
 			this.nameMap = new HashMap<String, ArrayList<Integer>>();
@@ -404,6 +424,7 @@ public class Memory {
 			this.timeMap = new HashMap<LocalTime, ArrayList<Integer>>();
 			this.monthMap = new HashMap<Integer, ArrayList<Integer>>();
 			this.dayMap = new HashMap<Integer, ArrayList<Integer>>();
+			this.yearMap = new HashMap<Integer, ArrayList<Integer>>();
 		}
 
 		/**
@@ -474,6 +495,16 @@ public class Memory {
 				newIdList.add(id);
 				monthMap.put(month, newIdList);
 			}
+
+			// add id to yearMap
+			int year = dateTime.getYear();
+			if (yearMap.containsKey(year)) {
+				yearMap.get(year).add(id);
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				yearMap.put(year, newIdList);
+			}
 		}
 
 		/**
@@ -525,17 +556,25 @@ public class Memory {
 			// remove id from dayMap
 			int day = dateTime.getDayOfWeek();
 			int todoIdDayIndex = dayMap.get(day).indexOf(id);
-			timeMap.get(day).remove(todoIdDayIndex);
-			if (timeMap.get(day).isEmpty()) {
-				timeMap.remove(day);
+			dayMap.get(day).remove(todoIdDayIndex);
+			if (dayMap.get(day).isEmpty()) {
+				dayMap.remove(day);
 			}
 
 			// remove id from monthMap
 			int month = dateTime.getMonthOfYear();
 			int todoIdMonthIndex = monthMap.get(month).indexOf(id);
-			timeMap.get(month).remove(todoIdMonthIndex);
-			if (timeMap.get(month).isEmpty()) {
-				timeMap.remove(month);
+			monthMap.get(month).remove(todoIdMonthIndex);
+			if (monthMap.get(month).isEmpty()) {
+				monthMap.remove(month);
+			}
+
+			// remove id from yearMap
+			int year = dateTime.getYear();
+			int todoIdYearIndex = yearMap.get(year).indexOf(id);
+			yearMap.get(year).remove(todoIdYearIndex);
+			if (yearMap.get(year).isEmpty()) {
+				yearMap.remove(year);
 			}
 		}
 
@@ -550,7 +589,7 @@ public class Memory {
 			String[] nameArray = name.split(REGEX_SPACE);
 			for (String x : nameArray) {
 				int todoIdIndex = nameMap.get(x).indexOf(id);
-				nameMap.remove(todoIdIndex);
+				nameMap.get(x).remove(todoIdIndex);
 				if (nameMap.get(x).isEmpty()) {
 					nameMap.remove(x);
 				}
@@ -633,17 +672,35 @@ public class Memory {
 					if (timeMap.containsKey(searchTime)) {
 						toDoIds = timeMap.get(searchTime);
 					}// else searchTime is not in timeMap, toDoIds is empty List
+					break;
+				case YEAR:
+					int searchYear = dateTime.getYear();
+					if(yearMap.containsKey(searchYear)) {
+						toDoIds = yearMap.get(searchYear);
+					} // else searchYear is not in yearMap, todoIds is empty List
+					break;
 				default:
 					throw new InvalidParamException(
 							ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
 			}
 			return toDoIds;
 		}
+
+		public void update(int userIndex, String param, String originalParam) {
+			removeIdFromNames(originalParam, userIndex);
+			addToNameMap(param, userIndex);
+		}
+
+		public void update(int userIndex, DateTime param, DateTime originalParam) {
+			removeIdFromAllDateMaps(originalParam, userIndex);
+			addToAllDateMaps(originalParam, userIndex);
+
+		}
 	}
 
 	/**
-	 * This operation retrieves a list of ids of todos that has the given searchString
-	 * in its property of given typeKey
+	 * This operation retrieves a list of ids of todos that has the given
+	 * searchString in its property of given typeKey
 	 * 
 	 * @param typeKey
 	 * @param searchString
@@ -671,8 +728,8 @@ public class Memory {
 	}
 
 	/**
-	 * This operation retrieves a list of ids of todos that has the given dateTime
-	 * in its property of given typeKey
+	 * This operation retrieves a list of ids of todos that has the given
+	 * dateTime in its property of given typeKey
 	 * 
 	 * @param typeKey
 	 * @param dateTime
@@ -696,17 +753,27 @@ public class Memory {
 		this.storage = storage;
 	}
 
-    /**
-     * Method for Memory singleton pattern
-     * 
-     * Create an instance of memory if it is not present
-     * 
-     * @return instance of memory
-     */
-    public static Memory getInstance() {
-        if (memory == null) {
-            memory = new Memory();
-        }
-        return memory;
-    }
+	public void updateMaps(int userIndex, String param, String originalParam) {
+		searchMap.update(userIndex, param, originalParam);
+
+	}
+
+	public void updateMaps(int userIndex, DateTime date, DateTime originalDate) {
+		searchMap.update(userIndex, date, originalDate);
+	}
+
+	/**
+	 * Method for Memory singleton pattern
+	 * 
+	 * Create an instance of memory if it is not present
+	 * 
+	 * @return instance of memory
+	 */
+	public static Memory getInstance() {
+		if (memory == null) {
+			memory = new Memory();
+		}
+		return memory;
+	}
+
 }

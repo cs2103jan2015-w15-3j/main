@@ -147,42 +147,42 @@ public class SearchCommand extends Command {
 	}
 
 	public static void main(String[] args) {
-		Zeitgeist.handleInput("add floating task");
+//		Zeitgeist.handleInput("add floating task");
 
-		Zeitgeist.handleInput("add CS3230 deadline on 9 March 9pm");
+//		Zeitgeist.handleInput("add CS3230 deadline on 9 March 9pm");
 
-		Zeitgeist
-				.handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
+//		Zeitgeist
+//				.handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
 
-		Zeitgeist
-				.handleInput("add new year from 1 January at 10am to 1 January at 11am");
+//		Zeitgeist
+//				.handleInput("add new year from 1 January at 10am to 1 January at 11am");
 
-		Zeitgeist.handleInput("add CS1010 deadline by 3 Feb at 10pm");
+//		Zeitgeist.handleInput("add CS1010 deadline by 3 Feb at 10pm");
 
-		Zeitgeist.handleInput("add read floating books");
+//		Zeitgeist.handleInput("add read floating books");
 
-		Zeitgeist.handleInput("add CS3243 project deadline by 7 March at 9am");
+//		Zeitgeist.handleInput("add CS3243 project deadline by 7 March at 9am");
 
-		Zeitgeist.handleInput("add CS3333 project 2 on 7 Apr 10am");
+//		Zeitgeist.handleInput("add CS3333 project 2 on 7 Apr 10am");
 
-		Zeitgeist.handleInput("display");
+//		Zeitgeist.handleInput("display");
 		
-		Zeitgeist.handleInput("mark 0");
+//		Zeitgeist.handleInput("mark 0");
 
-		Zeitgeist.handleInput("mark 2");
+//		Zeitgeist.handleInput("mark 2");
 
-		Zeitgeist.handleInput("display");
-		Zeitgeist.handleInput("search -n floating deadline");
+//		Zeitgeist.handleInput("display");
+//		Zeitgeist.handleInput("search -n floating deadline");
 
-		Zeitgeist.handleInput("search deadline");
+//		Zeitgeist.handleInput("search deadline");
 
-		Zeitgeist.handleInput("search -dt 3 march -dt 1/1");
+//		Zeitgeist.handleInput("search -dt 3 march -dt 1/1");
 		
-		Zeitgeist.handleInput("search -t 10am");
+//		Zeitgeist.handleInput("search -t 10am");
 		
-		Zeitgeist.handleInput("search -m march");
+//		Zeitgeist.handleInput("search -m march");
 		
-		Zeitgeist.handleInput("search -d thu");
+//		Zeitgeist.handleInput("search -d thu");
 
 	}
 }

@@ -25,6 +25,9 @@ public enum Keywords {
 	START,
 	END,
 	DONE,
+	RULE,
+	FREQUENCY,
+	LIMIT,
 	
 	//Keywords for parameters in SEARCH command
 	NAME,
@@ -32,5 +35,5 @@ public enum Keywords {
 	TIME,
 	DAY,
 	MONTH,
-	
+	YEAR;
 }

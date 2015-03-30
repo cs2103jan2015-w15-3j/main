@@ -59,6 +59,8 @@ public class Signal {
 	public static final String EDIT_SUCCESS_FORMAT = "%1$s successfully modified to %2$s";
 	public static final String EDIT_END_BEFORE_START = "The start time must be before the end time.";
 	public static final String EDIT_INVALID_DATE = "Date(s) specified is/are invalid";
+	public static final String EDIT_NOT_RECURRING = "Todo specified is not a recurring Todo.";
+	public static final String EDIT_NO_LONGER_RECURS = "Recurring Todo rule specified no longer exists.";
 	public static final String EDIT_INVALID_PARAMS = "The number or format of parameters is invalid."
 			+ System.lineSeparator()
 			+ "\t Supported format:"

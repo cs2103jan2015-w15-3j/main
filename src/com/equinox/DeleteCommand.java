@@ -1,5 +1,6 @@
 package com.equinox;
 
+import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
 
 /**
@@ -30,6 +31,16 @@ public class DeleteCommand extends Command {
 	 */
 	@Override
 	public Signal execute() {
+		boolean isRecurringRule = false;
+		
+		// Check 2nd Keyword for -r flag
+		if (keyParamPairs.size() == 2) {
+			if (keyParamPairs.get(1).getKeyword() == Keywords.RULE) {
+				keyParamPairs.remove(1);
+				isRecurringRule = true;
+			}
+		}
+		
 		// Ensure that there is only one KeyParamPair in inputList
 		if (!input.containsOnlyCommand()) {
 			return new Signal(Signal.DELETE_INVALID_PARAMS, false);
@@ -40,19 +51,29 @@ public class DeleteCommand extends Command {
 		}
     	
     	int deleteIndex;
+    	Signal returnSignal;
     	Todo deleted;
+    	RecurringTodoRule deletedRule;
 		try {
 			deleteIndex = Integer.parseInt(keyParamPairs.get(0).getParam());
-			deleted = memory.remove(deleteIndex);
+			if(isRecurringRule) {
+				deletedRule = memory.removeRecurringRule(deleteIndex);
+				returnSignal = new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deletedRule), true);
+			} else {
+				deleted = memory.remove(deleteIndex);
+				returnSignal = new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deleted),
+		                true);
+			}
 			memory.saveToFile();
 		} catch (NumberFormatException e) {
             return new Signal(Signal.DELETE_INVALID_PARAMS, false);
 		} catch (NullTodoException e) {
             return new Signal(e.getMessage(), false);
+		} catch (NullRuleException e) {
+			return new Signal(e.getMessage(), false);
 		}
 		
-        return new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deleted),
-                true);
+        return returnSignal;
 	}
 
 }
