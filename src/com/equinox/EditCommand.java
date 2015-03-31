@@ -34,7 +34,6 @@ public class EditCommand extends Command {
 	 */
 	@Override
 	public Signal execute() {
-		Todo preEdit, postEdit;
 		try {
 			boolean isRecurringRule = false;
 
@@ -79,7 +78,9 @@ public class EditCommand extends Command {
 						return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 					}
 				}
+				return new Signal("SOMETHING!", true);
 			} else {
+				Todo preEdit, postEdit;
 				preEdit = new Todo(memory.get(id));
 				postEdit = memory.setterGet(id);
 
@@ -99,9 +100,10 @@ public class EditCommand extends Command {
 						} else if (!input.containDates()) {
 							return new Signal(Signal.EDIT_INVALID_DATE, false);
 						} else {
-							postEdit.setStartTime(dateTimes.remove(0));
-							memory.updateMaps(id, dateTimes.remove(0),
+							postEdit.setStartTime(dateTimes.get(0));
+							memory.updateMaps(id, dateTimes.get(0),
 									preEdit.getStartTime());
+							dateTimes.remove(0);
 						}
 						memory.saveToFile();
 						break;
@@ -111,9 +113,10 @@ public class EditCommand extends Command {
 						} else if (!input.containDates()) {
 							return new Signal(Signal.EDIT_INVALID_DATE, false);
 						} else {
-							postEdit.setEndTime(dateTimes.remove(0));
-							memory.updateMaps(id, dateTimes.remove(0),
+							postEdit.setEndTime(dateTimes.get(0));
+							memory.updateMaps(id, dateTimes.get(0),
 									preEdit.getEndTime());
+							dateTimes.remove(0);
 						}
 						memory.saveToFile();
 						break;
@@ -134,6 +137,8 @@ public class EditCommand extends Command {
 					}
 					return new Signal(Signal.EDIT_END_BEFORE_START, false);
 				}
+				return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, preEdit,
+						postEdit), true);
 			}
 		} catch (NullTodoException e) {
 			return new Signal(e.getMessage(), false);
@@ -142,8 +147,6 @@ public class EditCommand extends Command {
 		} catch (NullRuleException e) {
 			return new Signal(Signal.EDIT_NO_LONGER_RECURS, false);
 		}
-		return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, preEdit,
-				postEdit), true);
 	}
 
 }
