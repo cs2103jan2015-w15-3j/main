@@ -13,14 +13,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
+import static java.nio.file.StandardCopyOption.*;
 
 public class Zeitgeist {
 	private static final String SETTINGS_FILE_NAME = "settings.txt";
+	private static final String STORAGE_FILE_NAME = "storageFile.json";
 	
 	private static String defaultFileDirectory;
 	private static String fileDirectory;
 	private static String settingsFilePath;
+	private static File settingsFile;
     private static Zeitgeist logic;
 
     public static Scanner scn = new Scanner(System.in);
@@ -72,7 +77,14 @@ public class Zeitgeist {
 	 */
 	public static void main(String[] args) {
 		
-    	readSettingsFile();
+		readSettingsFile();
+		// Check if a file directory path is passed in through argument
+		if(args.length==1){
+			//Check if file directory path is valid
+			String customFileDirPath = args[0];
+			processStorageDirectory(customFileDirPath);
+		}
+
         SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
         String input;
         Zeitgeist logic = getInstance();
@@ -85,10 +97,90 @@ public class Zeitgeist {
 		}
 	}
 
+
+	private static void processStorageDirectory(String customFileDirPath) {
+		// If valid: copy any existing storageFile from its current location to the 
+		// new user-specified location. Change the settings file.
+		if(isValidDirPath(customFileDirPath)){
+			// Check if there is a file at customFileDirPath and select
+			// overwrite option. 
+			String customFilePath = customFileDirPath + "/" + STORAGE_FILE_NAME;
+			File newStorageFile = new File(customFilePath);
+			
+			if(newStorageFile.exists()){
+				System.out.println("A storage file already exists at user-specified location. "
+						+ "Do you wish to overwrite it? Y/N");
+				String overwrite = scn.nextLine().toUpperCase();
+				
+				// If Y >>
+				// If there exists a storageFile.json in the current directory as
+				// specified in the settings file, copy it to the custom directory
+				if(overwrite.equals("Y")){
+					String storageFilePath = fileDirectory + "/" + STORAGE_FILE_NAME;
+					File currentStorageFile = new File(storageFilePath);
+					if(currentStorageFile.exists()){
+						copyStorageFile(storageFilePath, customFileDirPath);
+						System.out.println("Storage file copied to specified location: " + customFileDirPath);
+					}
+					// Do so regardless of existence of storageFile.json
+					modifySettingsFile(customFileDirPath);
+					fileDirectory = customFileDirPath;
+					System.out.println("Directory to save storageFile.json is updated in Settings file to: " + customFileDirPath);
+				}
+				// If N or any other input >> revert to default path.
+				else {
+					System.out.println("Storage file location is reverted to the default: " + fileDirectory);
+				}
+			}
+			// newStorageFile does not exist.
+			else{
+				// If there exists a storageFile.json in the current directory as
+				// specified in the settings file, copy it to the custom directory
+				String storageFilePath = fileDirectory + "/" + STORAGE_FILE_NAME;
+				File currentStorageFile = new File(storageFilePath);
+				if(currentStorageFile.exists()){
+					copyStorageFile(storageFilePath, customFileDirPath);
+					System.out.println("Storage file copied to specified location: " + customFileDirPath);
+				}
+				// So do regardless of existence of storageFile.json
+				modifySettingsFile(customFileDirPath);
+				fileDirectory = customFileDirPath;
+				System.out.println("Directory to save storageFile.json is updated in Settings file to: " + customFileDirPath);
+			}
+			
+		}
+		// If customFileDirPath is invalid: revert back to default directory
+		else{
+			System.out.println("User-specified directory for storage is invalid. Storage file location is reverted to the default : " + fileDirectory);
+		}
+	}
+	
+	private static void copyStorageFile(String storageFilePath, String customFileDirPath){
+		String customFilePath = customFileDirPath + "/" + STORAGE_FILE_NAME;
+		try{
+			Files.copy(Paths.get(storageFilePath), Paths.get(customFilePath), REPLACE_EXISTING);
+		} catch (IOException e){
+			e.printStackTrace();
+		} 
+	}
+	
+	private static void modifySettingsFile(String customFileDirPath){
+		try{
+			BufferedWriter writer = new BufferedWriter(new FileWriter(settingsFile, false));
+			writer.write(customFileDirPath);
+			writer.close();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
     public Signal handleInput(String input) {
         ParsedInput c = Parser.parseInput(input);
         return execute(c);
     }
+    
+    
 
 	/**
 	 * Creates a Command object with the given ParsedInput and executes it.
@@ -179,7 +271,7 @@ public class Zeitgeist {
      * 
      * @author Jonathan Lim Siu Chi || ign3sc3nc3
      */
-    public static void readSettingsFile(){
+    public static String readSettingsFile(){
     	// Set default file directory
     	setDefaultFileDirectory();
     	
@@ -187,7 +279,7 @@ public class Zeitgeist {
     	settingsFilePath = defaultFileDirectory + "/" + SETTINGS_FILE_NAME;
 
     	// Check if settings file exists
-    	File settingsFile = new File(settingsFilePath);
+    	settingsFile = new File(settingsFilePath);
     	BufferedWriter writer;
     	try{
 	    	if(!settingsFile.exists()){
@@ -206,7 +298,7 @@ public class Zeitgeist {
 		    	
 		    	// If storage directory file path is invalid, overwrite settings file
 		    	// with default directory path and set the storage file directory path to default
-		    	if(!isValidFilePath(fileDirectoryString)){
+		    	if(!isValidDirPath(fileDirectoryString)){
 		    		writer = new BufferedWriter(new FileWriter(settingsFile, false));
 		    		writer.write(defaultFileDirectory);
 		    		writer.close();
@@ -223,6 +315,7 @@ public class Zeitgeist {
     	} catch(IOException e){
     		e.printStackTrace();
     	}
+		return fileDirectory;
     }
     
     /**
@@ -244,7 +337,7 @@ public class Zeitgeist {
      * @param fileDirectoryString
      * @return True if string is a valid directory, false otherwise.
      */
-    public static Boolean isValidFilePath(String fileDirectoryString){
+    public static Boolean isValidDirPath(String fileDirectoryString){
     	if(fileDirectoryString == null || fileDirectoryString == ""){
     		return false;
     	}
