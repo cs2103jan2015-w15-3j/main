@@ -160,7 +160,7 @@ public class StorageHandler {
 	 * Deletes storageFile for tearing-down in system tests.
 	 * 
 	 */
-	private void deleteFileIfExists(){
+	public void deleteFileIfExists(){
 		if(storageFile.exists()){
 			storageFile.delete();
 		}
