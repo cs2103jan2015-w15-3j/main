@@ -343,44 +343,6 @@ public class DisplayCommand extends Command {
     }
 
 	public static void main(String[] args) {
-        Collection<Todo> todos;
-
-        Zeitgeist logic = Zeitgeist.getInstance();
-
-        // try {
-        logic.handleInput("add floating task");
-
-        logic.handleInput("add CS3230 deadline on 9 March 9pm");
-
-        logic
-                .handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
-
-        logic
-                .handleInput("add new year from 1 January at 10am to 1 January at 11am");
-
-        logic.handleInput("add CS1010 deadline by 3 Feb at 10pm");
-
-        logic.handleInput("add read floating books");
-
-        logic.handleInput("add CS3243 project deadline by 7 March at 9am");
-
-        logic.handleInput("add CS3333 project 2 on 7 Apr 10am");
-
-        logic
-                .handleInput("add meet june at on the table from malaysia from 9pm on 9 march to 10pm on 10 march");
-
-        logic.handleInput("mark 0");
-
-        logic.handleInput("mark 2");
-
-        todos = logic.memory.getAllTodos();
-        
-        System.out.println(DisplayCommand.getDisplayChrono(todos, showAll));
-
-        System.out.println(DisplayCommand.getDisplayChrono(todos, showPending));
-
-        System.out.println(DisplayCommand
-				.getDisplayChrono(todos, showCompleted));
 
 	}
 }
