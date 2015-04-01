@@ -23,7 +23,7 @@ public class SystemsTestZ {
 
     @After
     public void tearDown() {
-        logic.storage.storageFile.delete();
+        logic.storage.deleteTestFileIfExists();
     }
 
     @Test
