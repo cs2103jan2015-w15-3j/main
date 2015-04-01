@@ -10,9 +10,9 @@ import java.util.Date;
 import java.util.Scanner;
 
 import org.joda.time.DateTime;
+import org.joda.time.DurationFieldType;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.joda.time.DurationFieldType;
 
 import com.equinox.Memory.IDBuffer;
 import com.google.gson.Gson;
@@ -38,7 +38,7 @@ import com.google.gson.JsonSerializer;
 public class StorageHandler {
 	private static final String FILE_NAME = "storageFile.json";
 	
-	private File storageFile;
+    public File storageFile;
 
 	private static PrintWriter writer;
 	private static Scanner reader;
