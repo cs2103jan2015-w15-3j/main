@@ -11,21 +11,29 @@ import org.junit.Test;
 public class DisplayCommandTest {
     Collection<Todo> todos;
 
+    Zeitgeist logic;
+
+    @After
+    public void tearDown() {
+        logic.storage.deleteTestFileIfExists();
+
+    }
+
     @Before
     public void setUp() throws Exception{
 
-        Zeitgeist logic = Zeitgeist.getInstance();
+        Zeitgeist.readSettingsFile();
 
+        logic = new Zeitgeist();
+        
         // try {
         logic.handleInput("add floating task");
 
         logic.handleInput("add CS3230 deadline on 9 March 9pm");
 
-        logic
-                .handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
+        logic.handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
 
-        logic
-                .handleInput("add new year from 1 January at 10am to 1 January at 11am");
+        logic.handleInput("add new year from 1 January at 10am to 1 January at 11am");
 
         logic.handleInput("add CS1010 deadline by 3 Feb at 10pm");
 
@@ -44,47 +52,30 @@ public class DisplayCommandTest {
         todos = logic.memory.getAllTodos();
     }
 
-    @After
-    public void tearDown() {
-    }
-
     @Test
     public void testDisplayDefaultPending() {
-        String expected = "Pending:\n" + "         floating task            "
-                + "\n06 Mar   CS3230 deadline           21:00"
-                + "\n         read floating b          "
-                + "\n07 Mar   CS3243 project            09:00" + "\n";
+        String expected = "Showing pending todos:\nID | Name                           | Time\n\n..Mon 09 Mar 2015...\n1  | CS3230 deadline                | 21:00\n\n..Thu 01 Jan 2015...\n3  | new year                       | 10:00 - 11:00\n\n..Tue 03 Feb 2015...\n4  | CS1010 deadline                | 22:00\n\n......Anytime.......\n5  | read floating books            | NIL\n6  | CS3243 project deadline        | 09:00\n7  | CS3333 project 2               | 10:00\n8  | meet june at  on the table fro | 21:00 - 22:00\n";
         assertEquals(expected, DisplayCommand.getDisplay(todos, 0));
     }
 
     @Test
     public void testDisplayChronoPending() {
-        String expected = "Pending:\n"
-                + "06 Mar   CS3230 deadline           21:00"
-                + "\n07 Mar   CS3243 project            09:00"
-                + "\n         floating task            "
-                + "\n         read floating b          " + "\n";
+        String expected = "Showing pending todos:\nID | Name                           | Time\n\n..Thu 01 Jan 2015...\n3  | new year                       | 10:00 - 11:00\n\n..Tue 03 Feb 2015...\n4  | CS1010 deadline                | 22:00\n\n..Sat 07 Mar 2015...\n6  | CS3243 project deadline        | 09:00\n\n..Mon 09 Mar 2015...\n1  | CS3230 deadline                | 21:00\n8  | meet june at  on the table fro | 21:00 - 22:00\n\n..Tue 07 Apr 2015...\n7  | CS3333 project 2               | 10:00\n\n......Anytime.......\n5  | read floating books            | NIL\n";
         assertEquals(expected, DisplayCommand.getDisplayChrono(todos, 0));
     }
 
     @Test
     public void testDisplayDefaultCompleted() {
-        String expected = "Completed:\n" + "         eat more                 "
-                + "\n03 Mar   CIP event                 10:00 - 12:00"
-                + "\n01 Jan   new year                  10:00 - 11:00"
-                + "\n03 Feb   CS1010 deadline           22:00"
-                + "\n";
+        String expected = "Showing completed todos:\nID | Name                           | Time\n\n......Anytime.......\n0  | floating task                  | NIL\n2  | CIP event                      | 10:00 - 12:00\n";
         assertEquals(expected, DisplayCommand.getDisplay(todos, 1));
     }
 
     @Test
     public void testDisplayChronoCompleted() {
-        String expected = "Completed:\n"
-                + "01 Jan   new year                  10:00 - 11:00"
-                + "\n03 Feb   CS1010 deadline           22:00"
-                + "\n03 Mar   CIP event                 10:00 - 12:00"
-                + "\n         eat more                 " + "\n";
-
+        String expected = "Showing completed todos:\nID | Name                           "
+                + "| Time\n\n..Tue 03 Mar 2015...\n2  | CIP event                      "
+                + "| 10:00 - 12:00\n\n......Anytime.......\n0  | floating task                  "
+                + "| NIL\n";
         assertEquals(expected, DisplayCommand.getDisplayChrono(todos, 1));
     }
 
