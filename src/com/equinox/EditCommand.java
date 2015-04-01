@@ -1,5 +1,7 @@
 package com.equinox;
 
+import org.joda.time.Period;
+
 import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
@@ -35,16 +37,17 @@ public class EditCommand extends Command {
 	@Override
 	public Signal execute() {
 		try {
-			boolean isRecurringRule = false;
-
+			boolean isRecurring = input.isRecurring();
+			// Check if input contains more than 1 keyword (keyParamPairs.size() > 1)
 			if (input.containsOnlyCommand()) {
 				return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 			}
-
-			// Check 2nd Keyword for -r flag
+			
 			if (keyParamPairs.get(1).getKeyword() == Keywords.RULE) {
 				keyParamPairs.remove(1);
-				isRecurringRule = true;
+				if(!isRecurring) {
+					isRecurring = true;
+				}
 			}
 
 			if (input.containsEmptyParams()) {
@@ -52,36 +55,44 @@ public class EditCommand extends Command {
 			}
 
 			int id = Integer.parseInt(keyParamPairs.get(0).getParam());
+			Todo todo = memory.get(id);
 
-			if (isRecurringRule) {
+			if (isRecurring) {
+				// Check if todo is recurring
+				if(!todo.isRecurring()) {
+					return new Signal(Signal.EDIT_NOT_RECURRING, false);
+				}
+				int recurringId = todo.getRecurringId();
+				RecurringTodoRule rule = memory.getRule(recurringId);
+				
 				for(int i = 1; i < keyParamPairs.size(); i++) {
 					Keywords keyword = keyParamPairs.get(i).getKeyword();
 					String param = keyParamPairs.get(i).getParam();
-					Todo todo = memory.get(id);
 					
-					// Check if todo is recurring
-					if(!todo.isRecurring()) {
-						return new Signal(Signal.EDIT_NOT_RECURRING, false);
-					}
-					int recurringId = todo.getRecurringId();
-					RecurringTodoRule rule = memory.getRule(recurringId);
-					
-					switch(keyword) { // TODO: Save to file on each modifying action
-					case NAME:
+					// TODO: Save to file on each modifying action
+					if(keyword == Keywords.NAME) {
 						rule.setOriginalName(param);
-						break;
-					case LIMIT:
-						break;
-					case FREQUENCY:
-						break;
-					default:
-						return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+						memory.saveToFile();
 					}
+					// return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
-				return new Signal("SOMETHING!", true);
+				
+				Period period = input.getPeriod();
+				
+				if(input.isRecurring()) {
+					rule.setRecurringInterval(period);
+					memory.saveToFile();
+				}
+				
+				if(input.hasLimit()) {
+					rule.setRecurrenceLimit(input.getLimit());
+					memory.saveToFile();
+				}
+					
+				return new Signal("Recurring Todo rule successfully edited", true);
 			} else {
 				Todo preEdit, postEdit;
-				preEdit = new Todo(memory.get(id));
+				preEdit = new Todo(todo);
 				postEdit = memory.setterGet(id);
 
 				for (int i = 1; i < keyParamPairs.size(); i++) {
