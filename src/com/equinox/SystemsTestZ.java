@@ -84,10 +84,10 @@ public class SystemsTestZ {
         todos = logic.memory.getAllTodos();
 
         String expected = "Showing pending todos:\nID | Name                           "
-                + "| Time\n\n.....Mon 09 Mar.....\n1  | CS3230 deadline                "
-                + "| 21:00\n\n.....Thu 01 Jan.....\n3  | last new year                  "
-                + "| 23:59\n\n.....Fri 01 Jan.....\n4  | (Recurring) new year           "
-                + "| 23:59\n\n.....Tue 03 Feb.....\n5  | CS1010 deadline                "
+                + "| Time\n\n..Mon 09 Mar 2015...\n1  | CS3230 deadline                "
+                + "| 21:00\n\n..Thu 01 Jan 2015...\n3  | last new year                  "
+                + "| 23:59\n\n..Fri 01 Jan 2016...\n4  | (Recurring) new year           "
+                + "| 23:59\n\n..Tue 03 Feb 2015...\n5  | CS1010 deadline                "
                 + "| 22:00\n\n......Anytime.......\n6  | read floating books            "
                 + "| NIL\n7  | CS3243 project deadline        | 09:00\n8  "
                 + "| CS3333 project 2               | 10:00\n9  "
