@@ -34,7 +34,7 @@ public class EditCommand extends Command {
 	 */
 	@Override
 	public Signal execute() {
-		Todo preEdit, postEdit;
+        Todo preEdit = null, postEdit = null;
 		try {
 			boolean isRecurringRule = false;
 
