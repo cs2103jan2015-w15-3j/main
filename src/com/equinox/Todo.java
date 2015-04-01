@@ -36,7 +36,7 @@ public class Todo{
     protected Integer recurringId;
 
     protected static final DateTimeFormatter DateFormatter = DateTimeFormat
-            .forPattern("dd MMM");
+            .forPattern("dd MMM yyyy");
     protected static final DateTimeFormatter TimeFormatter = DateTimeFormat
             .forPattern("HH:mm");
     protected static final String DateTimeStringFormat = "%1$s at %2$s";

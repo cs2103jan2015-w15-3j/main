@@ -71,7 +71,7 @@ public class DisplayCommand extends Command {
     private static DateTime inOneDay = new DateTime().plusDays(1);
 
 	private static final DateTimeFormatter DateFormatter = DateTimeFormat
-            .forPattern("EEE dd MMM");
+            .forPattern("EEE dd MMM yyyy");
 	private static final DateTimeFormatter TimeFormatter = DateTimeFormat
 			.forPattern("HH:mm");
 
