@@ -119,18 +119,47 @@ public class Parser {
 		// Post-process EDIT command parameters
 		if (cType == Keywords.EDIT) {
 			// int namePairIndex = 0;
-			for (KeyParamPair keyParamPair : keyParamPairs) {
-				Keywords key = keyParamPair.getKeyword();
+			for (int i = 1; i < keyParamPairs.size(); i++) {
+				KeyParamPair currentPair = keyParamPairs.get(i);
+				Keywords key = currentPair.getKeyword();
+			
+				// check if there is a recurring limit parsed
+				if (key == Keywords.UNTIL) {
+					limit = interpretAsDate(keyParamPairs, currentPair, 0, true)
+							.get(0);
+
+					if (!limit.equals(new DateTime(0))) { // if parsing is
+															// successful
+						hasLimit = true;
+					}
+				} else if (key == Keywords.EVERY) {
+					// tries to detect if there is a period in user input
+
+					// tries to parse param as date to extract the date
+					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+							currentPair, 0, false);
+					if (!parsedDate.isEmpty()) {
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
+					}
+
+					// tries to parse param as period
+					period = interpretAsPeriod(period, keyParamPairs, i,
+							currentPair, 0);
+					if (!period.equals(new Period())) { // if period is changed
+						isRecurring = true;
+					}
+				}
+				
 				// if (key == Keywords.NAME) {
 				// namePairIndex = keyParamPairs.indexOf(keyParamPair);
 				// } else
 				if (key == Keywords.START || key == Keywords.END) {
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
-							keyParamPair, 0, false);
+							currentPair, 0, false);
 					if (!parsedDates.isEmpty()) {
 						dateTimes.add(parsedDates.get(0));
 					}
-
 				}
 			}
 		}
@@ -166,9 +195,7 @@ public class Parser {
 						String newName = appendParameters(keyParamPairs, 0, i);
 						keyParamPairs.get(0).setParam(newName);
 					}
-
 				}
-
 			} else {
 				if (hasLimit) {
 					dateTimes.add(limit);
