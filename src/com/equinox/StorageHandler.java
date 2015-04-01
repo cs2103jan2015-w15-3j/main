@@ -163,8 +163,8 @@ public class StorageHandler {
 	 * 
 	 */
 	public void deleteTestFileIfExists(){
-		if(storageTestFile.exists()){
-			storageTestFile.delete();
+		if(storageFile.exists()){
+			storageFile.delete();
 		}
 	}
 	
