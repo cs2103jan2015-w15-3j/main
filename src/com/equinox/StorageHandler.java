@@ -37,8 +37,10 @@ import com.google.gson.JsonSerializer;
 
 public class StorageHandler {
 	private static final String FILE_NAME = "storageFile.json";
+	private static final String TEST_FILE_NAME = "testStorageFile.json";
 	
-    public File storageFile;
+    private File storageFile;
+    private File storageTestFile;
 
 	private static PrintWriter writer;
 	private static Scanner reader;
@@ -157,12 +159,29 @@ public class StorageHandler {
 	}
 	
 	/**
-	 * Deletes storageFile for tearing-down in system tests.
+	 * Deletes testStorageFile for tearing-down in system tests.
 	 * 
 	 */
-	public void deleteFileIfExists(){
-		if(storageFile.exists()){
-			storageFile.delete();
+	public void deleteTestFileIfExists(){
+		if(storageTestFile.exists()){
+			storageTestFile.delete();
+		}
+	}
+	
+	/**
+	 * Creates testStorageFile for use in system tests.
+	 * 
+	 */
+	public void createTestFile(){
+		try{
+			storageTestFile = new File(TEST_FILE_NAME);
+			if(!storageTestFile.exists()){
+				storageTestFile.createNewFile();
+				//write a null Memory in JSON format to file
+                storeMemoryToFile(Memory.getInstance());
+			}
+		} catch(IOException e){
+			e.printStackTrace();
 		}
 	}
 
