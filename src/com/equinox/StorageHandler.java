@@ -155,6 +155,16 @@ public class StorageHandler {
 			e.printStackTrace();
 		}
 	}
+	
+	/**
+	 * Deletes storageFile for tearing-down in system tests.
+	 * 
+	 */
+	private void deleteFileIfExists(){
+		if(storageFile.exists()){
+			storageFile.delete();
+		}
+	}
 
 	/**
 	 * Stores the memory object that is passed in into a file in JSON formatting
@@ -183,7 +193,7 @@ public class StorageHandler {
 		tearDownReader();
 		return importFromJson(jsonString);
 	}
-
+	
 	/**
 	 * Method to export the current memory into a JSON String for external
 	 * storage in a file

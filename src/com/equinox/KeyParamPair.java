@@ -5,7 +5,7 @@ public class KeyParamPair {
 	private String param;
 	
 	KeyParamPair(Keywords commandKeyword, String commandParam) {
-		keyword = commandKeyword; // TODO: Propose using KEYOWRDS keyword = InputStringKeyword.getKeyword(commandKeyword); 
+		keyword = commandKeyword;
 		param = commandParam;
 	}
 
@@ -13,15 +13,11 @@ public class KeyParamPair {
 		return keyword;
 	}
 
-	public void setKeyword(Keywords keyword) { // TODO: Propose removal if unnecessary due to security of private fields
-		this.keyword = keyword;
-	}
-
 	public String getParam() {
 		return param;
 	}
 
-	public void setParam(String param) { // TODO: Propose removal if unnecessary due to security of private fields
+	public void setParam(String param) {
 		this.param = param;
 	}
 	

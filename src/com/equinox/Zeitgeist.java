@@ -172,7 +172,6 @@ public class Zeitgeist {
 			}
 
 			return processSignal;
-
 		}
 
 	}
