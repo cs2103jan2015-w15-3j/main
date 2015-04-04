@@ -15,6 +15,7 @@ import com.joestelmach.natty.DateGroup;
 
 public class Parser {
 
+	private static final String INIT_STRING = "today";
 	private static final String STRING_DAY = "day";
 	private static final String STRING_WEEK = "week";
 	private static final String STRING_MONTH = "month";
@@ -573,5 +574,11 @@ public class Parser {
 			dateTimes.add(dateTime);
 		}
 		return dateTimes;
+	}
+
+	public static void initialize() {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+		parser.parse(INIT_STRING);
 	}
 }
