@@ -17,6 +17,7 @@ public class InputStringKeyword {
 	private static final String KEY_FROM = "from";
 	private static final String KEY_ON = "on";
 	private static final String KEY_AT = "at";
+	private static final String KEY_IN="in";
 	private static final String KEY_EVERY = "every";
 	private static final String KEY_UNTIL = "until";
 	private static final String KEY_NAME = "name";
@@ -75,6 +76,7 @@ public class InputStringKeyword {
         keywords.put(KEY_FROM, Keywords.FROM);
         keywords.put(KEY_ON, Keywords.ON);
         keywords.put(KEY_AT, Keywords.AT);
+        keywords.put(KEY_IN, Keywords.IN);
         keywords.put(KEY_EVERY, Keywords.EVERY);
         keywords.put(KEY_UNTIL, Keywords.UNTIL);
 

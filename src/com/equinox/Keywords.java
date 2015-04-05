@@ -19,6 +19,7 @@ public enum Keywords {
 	AT,
 	EVERY,
 	UNTIL,
+	IN,
 	
 	// Keywords for parameters in EDIT command
 	// NAME,
