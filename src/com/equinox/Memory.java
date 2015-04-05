@@ -692,7 +692,9 @@ public class Memory {
 		}
 
 		public void update(int userIndex, DateTime param, DateTime originalParam) {
-			removeIdFromAllDateMaps(originalParam, userIndex);
+			if(originalParam != null) {
+				removeIdFromAllDateMaps(originalParam, userIndex);
+			}
 			addToAllDateMaps(originalParam, userIndex);
 
 		}
