@@ -13,6 +13,7 @@ public class ParsedInput {
 	private List<DateTime> dateTimes;
 	private boolean isRecurring;
 	private Period period;
+	private boolean hasPeriod;
 	private boolean hasLimit;
 	private DateTime limit;
 
@@ -35,15 +36,15 @@ public class ParsedInput {
 	 *            the period for the recurring todo
 	 */
 	public ParsedInput(Keywords type, ArrayList<KeyParamPair> keyParamPairs,
-			List<DateTime> dateTimes, Period period, boolean isRecurring,
-			boolean hasLimit, DateTime limit) {
+			List<DateTime> dateTimes, Period period, boolean isRecurring, DateTime limit) {
 		this.type = type;
 		this.keyParamPairs = keyParamPairs;
 		this.dateTimes = dateTimes;
 		this.period = period;
+		this.hasPeriod = (period != null);
 		this.isRecurring = isRecurring;
-		this.hasLimit = hasLimit;
 		this.limit = limit;
+		this.hasLimit = (limit != null);
 	}
 
 	/**
@@ -130,6 +131,10 @@ public class ParsedInput {
 
 	public Period getPeriod() {
 		return period;
+	}
+	
+	public boolean hasPeriod() {
+		return hasPeriod;
 	}
 
 	public boolean hasLimit() {

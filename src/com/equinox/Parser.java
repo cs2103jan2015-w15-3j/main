@@ -55,7 +55,7 @@ public class Parser {
 
 		// if command type is error
 		if (cType == null) {
-			return new ParsedInput(null, null, null, null, false, false, null);
+			return new ParsedInput(null, null, null, null, false, null);
 		}
 
 		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
@@ -124,18 +124,21 @@ public class Parser {
 
 		// Post-process EDIT command parameters
 		if (cType == Keywords.EDIT) {
-			// int namePairIndex = 0;
+
+			// ignores thefirst pair as it is assumed to be the name of the todo
 			for (int i = 1; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				Keywords key = currentPair.getKeyword();
 
+				// assumes that 'every _ until _' is at the end of user input
 				// check if there is a recurring limit parsed
+				// in
 				if (key == Keywords.UNTIL) {
 					limit = interpretAsDate(keyParamPairs, currentPair, 0, true)
 							.get(0);
 
-					if (!limit.equals(new DateTime(0))) { // if parsing is
-															// successful
+					if (!limit.equals(new DateTime(0))) { // if parsing is successful
+						isRecurring = true; 
 						hasLimit = true;
 					}
 				} else if (key == Keywords.EVERY) {
@@ -159,18 +162,21 @@ public class Parser {
 									.add(new DateTime().withTime(23, 59, 0, 0));
 						}
 					}
-				}
 
-				// if (key == Keywords.NAME) {
-				// namePairIndex = keyParamPairs.indexOf(keyParamPair);
-				// } else
-				if (key == Keywords.START || key == Keywords.END) {
+				} else {
+					// tries to parse param as date
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
-							currentPair, 0, false);
-					if (!parsedDates.isEmpty()) {
-						dateTimes.add(parsedDates.get(0));
+							currentPair, 0, true);
+
+					if (!parsedDates.isEmpty()) { // if parsing is successful
+						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
+								dateIndexes, i);
 					}
+
 				}
+			}
+			for (int i = keyParamPairs.size() - 1; i > 0; i--) {
+				keyParamPairs.remove(i);
 			}
 		}
 
@@ -213,7 +219,7 @@ public class Parser {
 			}
 		}
 		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
-				isRecurring, hasLimit, limit);
+				isRecurring, limit);
 		return returnInput;
 	}
 
