@@ -75,9 +75,11 @@ public class DisplayCommand extends Command {
 	private static final DateTimeFormatter TimeFormatter = DateTimeFormat
 			.forPattern("HH:mm");
 
+    private static final String RELATIVE_PERIOD_PREFIX = " in ";
+
     private static PeriodFormatter formatter = new PeriodFormatterBuilder()
-            .appendPrefix(" in ").appendHours().appendSuffix("h ")
-            .appendMinutes().appendSuffix("min ")
+            .appendHours().appendSuffix("h ")
+            .printZeroNever().appendMinutes().appendSuffix("min ")
             .printZeroNever().toFormatter();
 
 	@Override
@@ -310,7 +312,7 @@ public class DisplayCommand extends Command {
         String periodString = "";
         if (time.isAfter(now) && time.isBefore(inOneDay)) {
             Period period = new Period(now, time);
-            periodString = formatter.print(period);
+            periodString = RELATIVE_PERIOD_PREFIX + formatter.print(period);
         }
 
         String timeString = TimeFormatter.print(time).concat(periodString);
