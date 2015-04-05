@@ -87,13 +87,14 @@ public class Parser {
 					// tries to detect if there is a period in user input
 
 					// tries to parse param as date to extract the date
-					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
-							currentPair, 0, false);
-					if (!parsedDate.isEmpty()) {
-						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
-								dateIndexes, i);
+					if(dateTimes.isEmpty()) {
+						List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+								currentPair, 0, false);
+						if (!parsedDate.isEmpty()) {
+							addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+									dateIndexes, i);
+						}
 					}
-
 					// tries to parse param as period
 					period = interpretAsPeriod(period, keyParamPairs, i,
 							currentPair, 0);
