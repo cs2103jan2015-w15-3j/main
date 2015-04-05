@@ -37,6 +37,7 @@ public class Zeitgeist {
 				.setFilePath().build();
 		memory = storage.retrieveMemoryFromFile();
 		memory.setStorageHandler(storage);
+		Parser.initialize();
 	}
 
 	public static Zeitgeist getInstance() {

@@ -15,6 +15,7 @@ import com.joestelmach.natty.DateGroup;
 
 public class Parser {
 
+	private static final String INIT_STRING = "today";
 	private static final String STRING_DAY = "day";
 	private static final String STRING_WEEK = "week";
 	private static final String STRING_MONTH = "month";
@@ -98,7 +99,12 @@ public class Parser {
 							currentPair, 0);
 					if (!period.equals(new Period())) { // if period is changed
 						isRecurring = true;
+						if (period.equals(new Period().withDays(1))) {
+							dateTimes
+									.add(new DateTime().withTime(23, 59, 0, 0));
+						}
 					}
+
 				} else {
 					// tries to parse param as date
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
@@ -122,7 +128,7 @@ public class Parser {
 			for (int i = 1; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				Keywords key = currentPair.getKeyword();
-			
+
 				// check if there is a recurring limit parsed
 				if (key == Keywords.UNTIL) {
 					limit = interpretAsDate(keyParamPairs, currentPair, 0, true)
@@ -148,9 +154,13 @@ public class Parser {
 							currentPair, 0);
 					if (!period.equals(new Period())) { // if period is changed
 						isRecurring = true;
+						if (period.equals(new Period().withDays(1))) {
+							dateTimes
+									.add(new DateTime().withTime(23, 59, 0, 0));
+						}
 					}
 				}
-				
+
 				// if (key == Keywords.NAME) {
 				// namePairIndex = keyParamPairs.indexOf(keyParamPair);
 				// } else
@@ -573,5 +583,11 @@ public class Parser {
 			dateTimes.add(dateTime);
 		}
 		return dateTimes;
+	}
+
+	public static void initialize() {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+		parser.parse(INIT_STRING);
 	}
 }
