@@ -695,7 +695,7 @@ public class Memory {
 			if(originalParam != null) {
 				removeIdFromAllDateMaps(originalParam, userIndex);
 			}
-			addToAllDateMaps(originalParam, userIndex);
+			addToAllDateMaps(param, userIndex);
 
 		}
 	}
