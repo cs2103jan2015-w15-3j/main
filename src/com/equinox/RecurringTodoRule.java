@@ -73,6 +73,20 @@ public class RecurringTodoRule {
         this.recurringId = recurringId;
         this.recurrenceLimit = limit;
     }
+    
+    /**
+     * Create a copy of a rule. For use in EditCommand.
+     * 
+     * @param rule
+     */
+    RecurringTodoRule(RecurringTodoRule rule) {
+    	this.originalName = rule.originalName;
+    	this.name = RECURRING_TODO_PREIX + rule.name;
+    	this.dateTimes = rule.dateTimes;
+    	this.recurringInterval = rule.recurringInterval;
+    	this.recurringId = rule.recurringId;
+    	this.recurrenceLimit = rule.recurrenceLimit;
+    }
 
     public String getName() {
         return name;

@@ -22,13 +22,7 @@ public enum Keywords {
 	IN,
 	
 	// Keywords for parameters in EDIT command
-	// NAME,
-	START,
-	END,
-	DONE,
 	RULE,
-	FREQUENCY,
-	LIMIT,
 	
 	//Keywords for parameters in SEARCH command
 	NAME,
