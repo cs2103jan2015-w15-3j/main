@@ -64,6 +64,7 @@ public class EditCommand extends Command {
 				}
 				int recurringId = todo.getRecurringId();
 				RecurringTodoRule rule = memory.getRule(recurringId);
+				RecurringTodoRule ruleCopy = new RecurringTodoRule(rule);
 				
 				for(int i = 1; i < keyParamPairs.size(); i++) {
 					Keywords keyword = keyParamPairs.get(i).getKeyword();
@@ -81,6 +82,7 @@ public class EditCommand extends Command {
 				
 				if(input.isRecurring()) {
 					rule.setRecurringInterval(period);
+					rule.setDateTimes(dateTimes);
 					memory.saveToFile();
 				}
 				
@@ -89,7 +91,7 @@ public class EditCommand extends Command {
 					memory.saveToFile();
 				}
 					
-				return new Signal("Recurring Todo rule successfully edited", true);
+				return new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, ruleCopy, rule), true);
 			} else {
 				Todo preEdit, postEdit;
 				preEdit = new Todo(todo);

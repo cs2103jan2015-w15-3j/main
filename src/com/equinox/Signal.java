@@ -57,6 +57,7 @@ public class Signal {
 	 * Edit Command Signals
 	 */
 	public static final String EDIT_SUCCESS_FORMAT = "%1$s successfully modified to %2$s";
+	public static final String EDIT_RULE_SUCCESS_FORMAT = "Rule %1$s successfuly modified to %2$s";
 	public static final String EDIT_END_BEFORE_START = "The start time must be before the end time.";
 	public static final String EDIT_INVALID_DATE = "Date(s) specified is/are invalid";
 	public static final String EDIT_NOT_RECURRING = "Todo specified is not a recurring Todo.";
