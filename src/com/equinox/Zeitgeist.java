@@ -6,17 +6,17 @@ package com.equinox;
  * @author paradite
  *
  */
-import java.util.Scanner;
-import java.io.File;
-import java.io.IOException;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import static java.nio.file.StandardCopyOption.*;
+import java.util.Scanner;
 
 public class Zeitgeist {
 	private static final String SETTINGS_FILE_NAME = "settings.txt";
@@ -119,56 +119,63 @@ public class Zeitgeist {
 		} else {
 
 			switch (commandType) {
-			case ADD:
-				c = new AddCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case ADD :
+                    c = new AddCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
 
-			case DELETE:
-				c = new DeleteCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case DELETE :
+                    c = new DeleteCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
 
-			case MARK:
-				c = new MarkCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case MARK :
+                    c = new MarkCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
 
-			case REDO:
-				c = new RedoCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case REDO :
+                    c = new RedoCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
 
-			case UNDO:
-				c = new UndoCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case UNDO :
+                    c = new UndoCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
 
-			case EDIT:
-				c = new EditCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case EDIT :
+                    c = new EditCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
 
-			case DISPLAY:
-				c = new DisplayCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case DISPLAY :
+                    c = new DisplayCommand(userInput, memory);
+                    processSignal = c.execute();
+                    break;
 
-			case SEARCH:
-				c = new SearchCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case SEARCH :
+                    c = new SearchCommand(userInput, memory);
+                    processSignal = c.execute();
+                    break;
 
-			case EXIT:
-				c = new ExitCommand(userInput, memory);
-				processSignal = c.execute();
-				break;
+                case EXIT :
+                    c = new ExitCommand(userInput, memory);
+                    processSignal = c.execute();
+                    break;
 
-			default:
-				// NOTE: This case should never happen
-				processSignal = new Signal(Signal.GENERIC_FATAL_ERROR, false);
-				System.exit(-1);
-				break;
+                default :
+                    // NOTE: This case should never happen
+                    processSignal = new Signal(Signal.GENERIC_FATAL_ERROR,
+                            false);
+                    System.exit(-1);
+                    break;
 			}
 
 			return processSignal;

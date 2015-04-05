@@ -97,14 +97,20 @@ public class DisplayCommand extends Command {
 			System.out.println(displayString);
         } else if (param.isEmpty()) {
 			// By default we show pending tasks, in chronological order
-			displayString = getDisplayChrono(todos, showPending);
-			System.out.println(displayString);
+            displayDefault(memory);
         } else {
             return new Signal(
                     String.format(Signal.DISPLAY_INVALID_PARAM, param), false);
         }
         return new Signal(Signal.DISPLAY_SUCCESS_SIGNAL, true);
 	}
+
+    public static void displayDefault(Memory memory) {
+        Collection<Todo> todos = memory.getAllTodos();
+        String displayString;
+        displayString = getDisplayChrono(todos, showPending);
+        System.out.println(displayString);
+    }
 
 	public static String getDisplayChrono(Collection<Todo> todos, int signal) {
         ArrayList<Todo> clonedTodos = cloneTodos(todos);
