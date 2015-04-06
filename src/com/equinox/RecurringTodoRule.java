@@ -149,7 +149,12 @@ public class RecurringTodoRule {
     }
 
     public void setRecurrenceLimit(DateTime recurrenceLimit) {
-        this.recurrenceLimit = recurrenceLimit;
+        if (recurrenceLimit == null) {
+            throw new IllegalArgumentException(
+                    "Recurring limit of recurring rule cannot be empty");
+        } else {
+            this.recurrenceLimit = recurrenceLimit;
+        }
     }
 
     public void setOriginalName(String originalName) {
@@ -158,11 +163,21 @@ public class RecurringTodoRule {
     }
 
     public void setRecurringInterval(Period recurringInterval) {
-        this.recurringInterval = recurringInterval;
+        if (recurringInterval == null) {
+            throw new IllegalArgumentException(
+                    "Recurring interval cannot be empty");
+        } else {
+            this.recurringInterval = recurringInterval;
+        }
     }
 
     public void setDateTimes(List<DateTime> dateTimes) {
-        this.dateTimes = dateTimes;
+        if (dateTimes == null || dateTimes.size() == 0) {
+            throw new IllegalArgumentException(
+                    "DateTime field of recurring rule cannot be empty");
+        } else {
+            this.dateTimes = dateTimes;
+        }
     }
 
     private void addRecurringTodo(Memory memory, Todo newTodo) {
