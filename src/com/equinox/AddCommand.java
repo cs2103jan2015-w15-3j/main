@@ -56,7 +56,7 @@ public class AddCommand extends Command {
 
 		if (input.isRecurring()) {
 			// Check for valid number of keywords
-			if (numberOfKeywords > 8) {
+			if (numberOfKeywords > 5) {
 				return new Signal(Signal.ADD_INVALID_PARAMS, false);
 			}
 
