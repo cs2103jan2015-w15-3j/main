@@ -68,6 +68,7 @@ public class RecurringTodoRule {
     public RecurringTodoRule(int recurringId, String name,
             List<DateTime> dateTimes, Period period, DateTime limit) {
         super();
+        this.originalName = name;
         this.name = RECURRING_TODO_PREIX + name;
         this.dateTimes = dateTimes;
         this.recurringInterval = period;
