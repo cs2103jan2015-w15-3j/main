@@ -100,7 +100,7 @@ public class Parser {
 							currentPair, 0);
 					if (!period.equals(new Period())) { // if period is changed
 						isRecurring = true;
-						if (period.equals(new Period().withDays(1))) {
+						if (period.equals(new Period().withDays(1)) && dateTimes.isEmpty()) {
 							dateTimes
 									.add(new DateTime().withTime(23, 59, 0, 0));
 						}
