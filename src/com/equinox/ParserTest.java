@@ -205,7 +205,6 @@ public class ParserTest {
 
 		// recurring deadline task with limit
 		String add3 = "add test 3 on Friday every week until 4 Dec 2015";
-		dateTimes0.addAll(dateTimes2);
 		ParsedInput parsed3 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 3"))), dateTimes0,
@@ -214,7 +213,6 @@ public class ParserTest {
 
 		// recurring event task with limit
 		String add4 = "add test 4 from Friday to Sunday every month until 4 Dec 2015";
-		dateTimes1.addAll(dateTimes2);
 		ParsedInput parsed4 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 4"))), dateTimes1,

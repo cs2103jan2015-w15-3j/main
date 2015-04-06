@@ -223,10 +223,6 @@ public class Parser {
 							keyParamPairs.get(0).setParam(newName);
 						}
 					}
-				} else {
-					if (hasLimit) {
-						dateTimes.add(limit);
-					}
 				}
 			}
 		}
