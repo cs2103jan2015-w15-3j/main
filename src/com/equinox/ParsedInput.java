@@ -41,7 +41,7 @@ public class ParsedInput {
 		this.keyParamPairs = keyParamPairs;
 		this.dateTimes = dateTimes;
 		this.period = period;
-		this.hasPeriod = (period != null && period != new Period());
+		this.hasPeriod = (period != null && !period.equals(new Period()));
 		this.isRecurring = isRecurring;
 		this.limit = limit;
 		this.hasLimit = hasLimit;

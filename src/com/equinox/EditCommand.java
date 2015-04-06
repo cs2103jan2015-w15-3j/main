@@ -65,6 +65,9 @@ public class EditCommand extends Command {
 			Todo oldTodo = new Todo(todo);
 
 			if (input.isRecurring()) {
+				if(!todo.isRecurring()) {
+					return new Signal(Signal.EDIT_NOT_RECURRING, false);
+				}
 				int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
 				// Check for valid number of keywords TODO: WRONG
 				if (numberOfKeywords > 8) {
@@ -85,8 +88,12 @@ public class EditCommand extends Command {
 				}
 				
 				if (input.hasPeriod()) {
-					rule.setRecurringInterval(input.getPeriod());
-					rule.setDateTimes(dateTimes);
+					if(dateTimes.isEmpty()) {	// TODO: Catch dateTimes empty. Undo
+						return new Signal(Signal.EDIT_NO_RECURRING_TIME, false);
+					} else {
+						rule.setRecurringInterval(input.getPeriod());
+						rule.setDateTimes(dateTimes);
+					}
 				}
 				
 				memory.saveToFile();

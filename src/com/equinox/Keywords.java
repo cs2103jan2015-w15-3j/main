@@ -25,7 +25,7 @@ public enum Keywords {
 	TO,
 	
 	// Keywords for DELETE command for RecurringTodoRules
-	//RULE,
+	RULE,
 	
 	//Keywords for parameters in SEARCH command
 	NAME,
