@@ -17,11 +17,10 @@ public class InputStringKeyword {
 	private static final String KEY_FROM = "from";
 	private static final String KEY_ON = "on";
 	private static final String KEY_AT = "at";
-	private static final String KEY_IN="in";
+	private static final String KEY_IN = "in";
 	private static final String KEY_EVERY = "every";
 	private static final String KEY_UNTIL = "until";
 	private static final String KEY_NAME_ABV = "-n";
-	private static final String KEY_RULE_ABV = "-r";
 	private static final String KEY_EXIT = "exit";
 	private static final String KEY_DATE_ABV = "-dt";
 	private static final String KEY_TIME_ABV = "-t";
@@ -45,7 +44,6 @@ public class InputStringKeyword {
         commands.put(KEY_EXIT, Keywords.EXIT);
     	
         keywords = new HashMap<String, Keywords>(commands);
-        keywords.put(KEY_RULE_ABV, Keywords.RULE);
         keywords.put(KEY_NAME_ABV, Keywords.NAME);
         keywords.put(KEY_DATE_ABV, Keywords.DATE);
         keywords.put(KEY_TIME_ABV, Keywords.TIME);
@@ -59,7 +57,6 @@ public class InputStringKeyword {
         keywords.put(KEY_IN, Keywords.IN);
         keywords.put(KEY_EVERY, Keywords.EVERY);
         keywords.put(KEY_UNTIL, Keywords.UNTIL);
-
     }
 
     /**

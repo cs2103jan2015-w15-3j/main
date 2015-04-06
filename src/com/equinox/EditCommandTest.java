@@ -22,20 +22,22 @@ public class EditCommandTest {
 	DateTime newStartDate = new DateTime(2015, 5, 6, 19, 00, 0);
 	DateTime newEndDate = new DateTime(2015, 5, 6, 21, 00, 0);
 	ArrayList<DateTime> dateTimes = new ArrayList<DateTime>();
+	Zeitgeist logic;
 
 	@Before
 	public void setup() {
 		dateTimes.add(newStartDate);
 		dateTimes.add(newEndDate);
+		logic = Zeitgeist.getInstance();
 	}
 
 	@Test
 	public void test() throws NullTodoException {
-		Zeitgeist.handleInput("add " + title + "from " + startTime + "to "
+		logic.handleInput("add " + title + "from " + startTime + "to "
 				+ endTime);
-		System.out.println(Zeitgeist.handleInput("edit " + "0 " + "start "
+		System.out.println(logic.handleInput("edit " + "0 " + "start "
 				+ editedStart + "end " + editedEnd));
 		assertEquals(new Todo(0, title.toLowerCase().trim(), dateTimes),
-				Zeitgeist.memory.get(0));
+				logic.memory.get(0));
 	}
 }

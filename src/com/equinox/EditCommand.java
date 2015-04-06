@@ -47,7 +47,9 @@ public class EditCommand extends Command {
 				// Try to parse id as int. If fail send invalidParams Signal.
 				id = Integer.parseInt(combinedParam[0].trim());
 				title = combinedParam[1];
-				containsNewName = true;
+				if(!title.equals("")) {
+					containsNewName = true;
+				}
 			} else {
 				// Check if input contains more than 1 keyword (keyParamPairs.size() > 1)
 				if (input.containsOnlyCommand()) {
@@ -59,13 +61,14 @@ public class EditCommand extends Command {
 				}
 				id = Integer.parseInt(keyParamPairs.get(0).getParam());
 			}
-			Todo todo = memory.get(id);
+			Todo todo = memory.setterGet(id);
+			Todo oldTodo = new Todo(todo);
 
 			if (input.isRecurring()) {
 				int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
-				// Check for valid number of keywords
+				// Check for valid number of keywords TODO: WRONG
 				if (numberOfKeywords > 8) {
-					return new Signal(Signal.ADD_INVALID_PARAMS, false);
+					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
 
 				RecurringTodoRule rule = memory.getRule(todo.getRecurringId());
@@ -89,9 +92,47 @@ public class EditCommand extends Command {
 				memory.saveToFile();
 				return new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, ruleOld, rule), true);	
 			} else {
-				// TODO
+				// If input contains new title
+				if(containsNewName) {
+					todo.setName(title);
+				}
+				if(dateTimes.size() == 2) {
+					todo.setStartTime(dateTimes.get(0));
+					todo.setEndTime(dateTimes.get(1));
+				} else if(dateTimes.size() == 1) {
+					for(int i = 1; i < keyParamPairs.size(); i++) {
+						Keywords keyword = keyParamPairs.get(i).getKeyword();
+						String param = keyParamPairs.get(i).getParam();
+						
+						switch (keyword) {
+						case FROM:
+							todo.setStartTime(dateTimes.get(0));
+							break;
+						case BY:
+						case ON:
+						case AT:
+							todo.setEndTime(dateTimes.get(0));
+							todo.setStartTime(null);
+							break;
+						case TO:
+							todo.setEndTime(dateTimes.get(0));
+							break;
+						default:
+							return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+						}
+					}
+				}
+				if(!todo.isValid()) {
+					try {
+						memory.restoreHistoryState();
+					} catch (StateUndefinedException e) {
+						e.printStackTrace();
+					}
+					return new Signal(Signal.EDIT_END_BEFORE_START, false);
+				}
+				memory.saveToFile();
 				
-				return null;
+				return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, oldTodo, todo), true);
 			}
 		} catch (NullTodoException e) {
 			return new Signal(e.getMessage(), false);

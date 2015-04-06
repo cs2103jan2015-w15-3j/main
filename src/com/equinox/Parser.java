@@ -55,7 +55,7 @@ public class Parser {
 
 		// if command type is error
 		if (cType == null) {
-			return new ParsedInput(null, null, null, null, false, null);
+			return new ParsedInput(null, null, null, null, false, false, null);
 		}
 
 		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
@@ -125,6 +125,16 @@ public class Parser {
 
 		// Post-process EDIT command parameters
 		if (cType == Keywords.EDIT) {
+			
+			int toIndex;
+			String firstParam = keyParamPairs.get(0).getParam();
+			// search the first pair for presence of TO
+			if((toIndex = firstParam.indexOf("to")) != -1) { //TODO: Does not ignore case
+				 String toString = firstParam.substring(toIndex, firstParam.length());
+				 String toParam = toString.substring(3, toString.length());
+				 keyParamPairs.get(0).setParam(firstParam.substring(0, toIndex));
+				 keyParamPairs.add(new KeyParamPair(Keywords.TO, toParam));
+			}
 
 			// ignores thefirst pair as it is assumed to be the name of the todo
 			for (int i = 1; i < keyParamPairs.size(); i++) {
@@ -176,9 +186,6 @@ public class Parser {
 
 				}
 			}
-			for (int i = keyParamPairs.size() - 1; i > 0; i--) {
-				keyParamPairs.remove(i);
-			}
 		}
 
 		// Post-process SEARCH command parameters
@@ -220,7 +227,7 @@ public class Parser {
 			}
 		}
 		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
-				isRecurring, limit);
+				isRecurring, hasLimit, limit);
 		return returnInput;
 	}
 
