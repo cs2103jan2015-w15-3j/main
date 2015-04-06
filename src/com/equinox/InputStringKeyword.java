@@ -17,21 +17,10 @@ public class InputStringKeyword {
 	private static final String KEY_FROM = "from";
 	private static final String KEY_ON = "on";
 	private static final String KEY_AT = "at";
-	private static final String KEY_IN="in";
+	private static final String KEY_IN = "in";
 	private static final String KEY_EVERY = "every";
 	private static final String KEY_UNTIL = "until";
-	private static final String KEY_NAME = "name";
 	private static final String KEY_NAME_ABV = "-n";
-	private static final String KEY_START = "start";
-	private static final String KEY_START_ABV = "-s";
-	private static final String KEY_END = "end";
-	private static final String KEY_END_ABV = "-e";
-	// private static final String KEY_RULE = "rule";
-	private static final String KEY_RULE_ABV = "-r";
-	//private static final String KEY_FREQ = "freq";
-	//private static final String KEY_FREQ_ABV = "-f";
-	//private static final String KEY_LIMIT = "limit";
-	//private static final String KEY_LIMIT_ABV = "-l";
 	private static final String KEY_EXIT = "exit";
 	private static final String KEY_DATE_ABV = "-dt";
 	private static final String KEY_TIME_ABV = "-t";
@@ -55,17 +44,6 @@ public class InputStringKeyword {
         commands.put(KEY_EXIT, Keywords.EXIT);
     	
         keywords = new HashMap<String, Keywords>(commands);
-        keywords.put(KEY_START, Keywords.START);
-        keywords.put(KEY_START_ABV, Keywords.START);
-        keywords.put(KEY_END, Keywords.END);
-        keywords.put(KEY_END_ABV, Keywords.END);
-        // keywords.put(KEY_RULE, Keywords.RULE);
-        keywords.put(KEY_RULE_ABV, Keywords.RULE);
-        //keywords.put(KEY_FREQ, Keywords.FREQUENCY);
-        //keywords.put(KEY_FREQ_ABV, Keywords.FREQUENCY);
-        //keywords.put(KEY_LIMIT, Keywords.LIMIT);
-        //keywords.put(KEY_LIMIT_ABV, Keywords.LIMIT);
-        keywords.put(KEY_NAME, Keywords.NAME);
         keywords.put(KEY_NAME_ABV, Keywords.NAME);
         keywords.put(KEY_DATE_ABV, Keywords.DATE);
         keywords.put(KEY_TIME_ABV, Keywords.TIME);
@@ -79,7 +57,6 @@ public class InputStringKeyword {
         keywords.put(KEY_IN, Keywords.IN);
         keywords.put(KEY_EVERY, Keywords.EVERY);
         keywords.put(KEY_UNTIL, Keywords.UNTIL);
-
     }
 
     /**

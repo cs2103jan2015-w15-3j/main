@@ -37,110 +37,92 @@ public class EditCommand extends Command {
 	@Override
 	public Signal execute() {
 		try {
-			boolean isRecurring = input.isRecurring();
-			// Check if input contains more than 1 keyword (keyParamPairs.size() > 1)
-			if (input.containsOnlyCommand()) {
-				return new Signal(Signal.EDIT_INVALID_PARAMS, false);
-			}
-			
-			if (keyParamPairs.get(1).getKeyword() == Keywords.RULE) {
-				keyParamPairs.remove(1);
-				if(!isRecurring) {
-					isRecurring = true;
-				}
-			}
-
-			if (input.containsEmptyParams()) {
-				return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
-			}
-
-			int id = Integer.parseInt(keyParamPairs.get(0).getParam());
-			Todo todo = memory.get(id);
-
-			if (isRecurring) {
-				// Check if todo is recurring
-				if(!todo.isRecurring()) {
-					return new Signal(Signal.EDIT_NOT_RECURRING, false);
-				}
-				int recurringId = todo.getRecurringId();
-				RecurringTodoRule rule = memory.getRule(recurringId);
+			int id;
+			boolean containsNewName = false;
+			String title = new String(); // Stub initialization
+			// Check if first param has any text appended to it intended as Todo name
+			if(keyParamPairs.get(0).getParam().length() > 1) {
+				String[] combinedParam = keyParamPairs.get(0).getParam().split("\\s", 2);
 				
-				for(int i = 1; i < keyParamPairs.size(); i++) {
-					Keywords keyword = keyParamPairs.get(i).getKeyword();
-					String param = keyParamPairs.get(i).getParam();
-					
-					// TODO: Save to file on each modifying action
-					if(keyword == Keywords.NAME) {
-						rule.setOriginalName(param);
-						memory.saveToFile();
-					}
-					// return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+				// Try to parse id as int. If fail send invalidParams Signal.
+				id = Integer.parseInt(combinedParam[0].trim());
+				title = combinedParam[1];
+				if(!title.equals("")) {
+					containsNewName = true;
 				}
-				
-				Period period = input.getPeriod();
-				
-				if(input.isRecurring()) {
-					rule.setRecurringInterval(period);
-					memory.saveToFile();
-				}
-				
-				if(input.hasLimit()) {
-					rule.setRecurrenceLimit(input.getLimit());
-					memory.saveToFile();
-				}
-					
-				return new Signal("Recurring Todo rule successfully edited", true);
 			} else {
-				Todo preEdit, postEdit;
-				preEdit = new Todo(todo);
-				postEdit = memory.setterGet(id);
+				// Check if input contains more than 1 keyword (keyParamPairs.size() > 1)
+				if (input.containsOnlyCommand()) {
+					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+				}
+				// Check if input is missing parameters
+				if (input.containsEmptyParams()) {
+					return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
+				}
+				id = Integer.parseInt(keyParamPairs.get(0).getParam());
+			}
+			Todo todo = memory.setterGet(id);
+			Todo oldTodo = new Todo(todo);
 
-				for (int i = 1; i < keyParamPairs.size(); i++) {
-					Keywords keyword = keyParamPairs.get(i).getKeyword();
-					String param = keyParamPairs.get(i).getParam();
+			if (input.isRecurring()) {
+				int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
+				// Check for valid number of keywords TODO: WRONG
+				if (numberOfKeywords > 8) {
+					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+				}
 
-					switch (keyword) {
-					case NAME:
-						postEdit.setName(param);
-						memory.updateMaps(id, param, preEdit.getName());
-						memory.saveToFile();
-						break;
-					case START:
-						if (param.equals("null")) {
-							postEdit.setStartTime(null);
-						} else if (!input.containDates()) {
-							return new Signal(Signal.EDIT_INVALID_DATE, false);
-						} else {
-							postEdit.setStartTime(dateTimes.get(0));
-							memory.updateMaps(id, dateTimes.get(0),
-									preEdit.getStartTime());
-							dateTimes.remove(0);
+				RecurringTodoRule rule = memory.getRule(todo.getRecurringId());
+				RecurringTodoRule ruleOld = new RecurringTodoRule(rule);
+				
+				// If input contains new title
+				if(containsNewName) {
+					rule.setOriginalName(title);
+				}
+				
+				// If recurrence rule has a limit
+				if (input.hasLimit()) {
+					rule.setRecurrenceLimit(input.getLimit());
+				}
+				
+				if (input.hasPeriod()) {
+					rule.setRecurringInterval(input.getPeriod());
+					rule.setDateTimes(dateTimes);
+				}
+				
+				memory.saveToFile();
+				return new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, ruleOld, rule), true);	
+			} else {
+				// If input contains new title
+				if(containsNewName) {
+					todo.setName(title);
+				}
+				if(dateTimes.size() == 2) {
+					todo.setStartTime(dateTimes.get(0));
+					todo.setEndTime(dateTimes.get(1));
+				} else if(dateTimes.size() == 1) {
+					for(int i = 1; i < keyParamPairs.size(); i++) {
+						Keywords keyword = keyParamPairs.get(i).getKeyword();
+						String param = keyParamPairs.get(i).getParam();
+						
+						switch (keyword) {
+						case FROM:
+							todo.setStartTime(dateTimes.get(0));
+							break;
+						case BY:
+						case ON:
+						case AT:
+							todo.setEndTime(dateTimes.get(0));
+							todo.setStartTime(null);
+							break;
+						case TO:
+							todo.setEndTime(dateTimes.get(0));
+							break;
+						default:
+							return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 						}
-						memory.saveToFile();
-						break;
-					case END:
-						if (param.equals("null")) {
-							postEdit.setEndTime(null);
-						} else if (!input.containDates()) {
-							return new Signal(Signal.EDIT_INVALID_DATE, false);
-						} else {
-							postEdit.setEndTime(dateTimes.get(0));
-							memory.updateMaps(id, dateTimes.get(0),
-									preEdit.getEndTime());
-							dateTimes.remove(0);
-						}
-						memory.saveToFile();
-						break;
-					case DONE:
-						postEdit.setDone(Boolean.parseBoolean(param));
-						memory.saveToFile();
-						break;
-					default:
-						// Invalid Params
-						return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 					}
 				}
-				if (!postEdit.isValid()) {
+				if(!todo.isValid()) {
 					try {
 						memory.restoreHistoryState();
 					} catch (StateUndefinedException e) {
@@ -148,8 +130,9 @@ public class EditCommand extends Command {
 					}
 					return new Signal(Signal.EDIT_END_BEFORE_START, false);
 				}
-				return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, preEdit,
-						postEdit), true);
+				memory.saveToFile();
+				
+				return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, oldTodo, todo), true);
 			}
 		} catch (NullTodoException e) {
 			return new Signal(e.getMessage(), false);

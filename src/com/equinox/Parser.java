@@ -87,13 +87,14 @@ public class Parser {
 					// tries to detect if there is a period in user input
 
 					// tries to parse param as date to extract the date
-					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
-							currentPair, 0, false);
-					if (!parsedDate.isEmpty()) {
-						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
-								dateIndexes, i);
+					if(dateTimes.isEmpty()) {
+						List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+								currentPair, 0, false);
+						if (!parsedDate.isEmpty()) {
+							addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+									dateIndexes, i);
+						}
 					}
-
 					// tries to parse param as period
 					period = interpretAsPeriod(period, keyParamPairs, i,
 							currentPair, 0);
@@ -124,18 +125,31 @@ public class Parser {
 
 		// Post-process EDIT command parameters
 		if (cType == Keywords.EDIT) {
-			// int namePairIndex = 0;
+			
+			int toIndex;
+			String firstParam = keyParamPairs.get(0).getParam();
+			// search the first pair for presence of TO
+			if((toIndex = firstParam.indexOf("to")) != -1) { //TODO: Does not ignore case
+				 String toString = firstParam.substring(toIndex, firstParam.length());
+				 String toParam = toString.substring(3, toString.length());
+				 keyParamPairs.get(0).setParam(firstParam.substring(0, toIndex));
+				 keyParamPairs.add(new KeyParamPair(Keywords.TO, toParam));
+			}
+
+			// ignores thefirst pair as it is assumed to be the name of the todo
 			for (int i = 1; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				Keywords key = currentPair.getKeyword();
 
+				// assumes that 'every _ until _' is at the end of user input
 				// check if there is a recurring limit parsed
+				// in
 				if (key == Keywords.UNTIL) {
 					limit = interpretAsDate(keyParamPairs, currentPair, 0, true)
 							.get(0);
 
-					if (!limit.equals(new DateTime(0))) { // if parsing is
-															// successful
+					if (!limit.equals(new DateTime(0))) { // if parsing is successful
+						isRecurring = true; 
 						hasLimit = true;
 					}
 				} else if (key == Keywords.EVERY) {
@@ -159,17 +173,17 @@ public class Parser {
 									.add(new DateTime().withTime(23, 59, 0, 0));
 						}
 					}
-				}
 
-				// if (key == Keywords.NAME) {
-				// namePairIndex = keyParamPairs.indexOf(keyParamPair);
-				// } else
-				if (key == Keywords.START || key == Keywords.END) {
+				} else {
+					// tries to parse param as date
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
-							currentPair, 0, false);
-					if (!parsedDates.isEmpty()) {
-						dateTimes.add(parsedDates.get(0));
+							currentPair, 0, true);
+
+					if (!parsedDates.isEmpty()) { // if parsing is successful
+						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
+								dateIndexes, i);
 					}
+
 				}
 			}
 		}
@@ -191,24 +205,28 @@ public class Parser {
 				}
 			}
 		}
+		
+		if (cType != Keywords.EDIT) {
+			// check parameters for recurring todos
+			if (isRecurring) {
+				if (!isValidRecurring(dateTimes)) {
+					isRecurring = false;
 
-		// check parameters for recurring todos
-		if (isRecurring) {
-			if (!isValidRecurring(dateTimes)) {
-				isRecurring = false;
-
-				for (int i = 1; i < keyParamPairs.size(); i++) {
-					if (keyParamPairs.get(i).getKeyword() == Keywords.EVERY) {
-						String newName = appendParameters(keyParamPairs, 0, i);
-						keyParamPairs.get(0).setParam(newName);
-					} else if (keyParamPairs.get(i).getKeyword() == Keywords.UNTIL) {
-						String newName = appendParameters(keyParamPairs, 0, i);
-						keyParamPairs.get(0).setParam(newName);
+					for (int i = 1; i < keyParamPairs.size(); i++) {
+						if (keyParamPairs.get(i).getKeyword() == Keywords.EVERY) {
+							String newName = appendParameters(keyParamPairs, 0,
+									i);
+							keyParamPairs.get(0).setParam(newName);
+						} else if (keyParamPairs.get(i).getKeyword() == Keywords.UNTIL) {
+							String newName = appendParameters(keyParamPairs, 0,
+									i);
+							keyParamPairs.get(0).setParam(newName);
+						}
 					}
-				}
-			} else {
-				if (hasLimit) {
-					dateTimes.add(limit);
+				} else {
+					if (hasLimit) {
+						dateTimes.add(limit);
+					}
 				}
 			}
 		}
