@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 
 /**
@@ -32,7 +36,18 @@ public class RecurringTodoRule {
 
     private String RECURRING_TODO_PREIX = "(Recurring) ";
 
-    protected static final String recurringTodoStringFormat = "Recurring todos \"%1$s\"";
+    protected static final String recurringTodoWithLimitStringFormat = "Recurrence Rule: \"%1$s\" every %2$s until %3$s";
+    protected static final String recurringTodoStringFormat = "Recurrence Rule: \"%1$s\" every %2$s";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("dd MMM yyyy");
+    private static final PeriodFormatter PERIOD_FORMATTER;
+    static {
+    	PeriodFormatterBuilder pfb = new PeriodFormatterBuilder();
+    	pfb.appendDays();
+    	pfb.appendSuffix(" day(s)");
+    	PERIOD_FORMATTER = pfb.toFormatter();
+    }
+    private boolean hasLimit = false;
+    
 
     /**
      * Constructor for the RecurringTodoRule without specifying limit
@@ -74,6 +89,7 @@ public class RecurringTodoRule {
         this.recurringInterval = period;
         this.recurringId = recurringId;
         this.recurrenceLimit = limit;
+        this.hasLimit = true;
     }
     
     /**
@@ -156,6 +172,7 @@ public class RecurringTodoRule {
                     "Recurring limit of recurring rule cannot be empty");
         } else {
             this.recurrenceLimit = recurrenceLimit;
+            this.hasLimit = true;
         }
     }
 
@@ -196,7 +213,12 @@ public class RecurringTodoRule {
     }
 
     public String toString() {
-        return String.format(recurringTodoStringFormat, originalName);
+    	if(hasLimit) {
+    		return String.format(recurringTodoWithLimitStringFormat, originalName, recurringInterval.toString(PERIOD_FORMATTER), recurrenceLimit.toString(DATE_TIME_FORMATTER));
+    	} else {
+    		return String.format(recurringTodoStringFormat, originalName, recurringInterval.toString(PERIOD_FORMATTER));
+    	}
+        
     }
 
     /**
