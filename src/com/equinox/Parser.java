@@ -205,24 +205,28 @@ public class Parser {
 				}
 			}
 		}
+		
+		if (cType != Keywords.EDIT) {
+			// check parameters for recurring todos
+			if (isRecurring) {
+				if (!isValidRecurring(dateTimes)) {
+					isRecurring = false;
 
-		// check parameters for recurring todos
-		if (isRecurring) {
-			if (!isValidRecurring(dateTimes)) {
-				isRecurring = false;
-
-				for (int i = 1; i < keyParamPairs.size(); i++) {
-					if (keyParamPairs.get(i).getKeyword() == Keywords.EVERY) {
-						String newName = appendParameters(keyParamPairs, 0, i);
-						keyParamPairs.get(0).setParam(newName);
-					} else if (keyParamPairs.get(i).getKeyword() == Keywords.UNTIL) {
-						String newName = appendParameters(keyParamPairs, 0, i);
-						keyParamPairs.get(0).setParam(newName);
+					for (int i = 1; i < keyParamPairs.size(); i++) {
+						if (keyParamPairs.get(i).getKeyword() == Keywords.EVERY) {
+							String newName = appendParameters(keyParamPairs, 0,
+									i);
+							keyParamPairs.get(0).setParam(newName);
+						} else if (keyParamPairs.get(i).getKeyword() == Keywords.UNTIL) {
+							String newName = appendParameters(keyParamPairs, 0,
+									i);
+							keyParamPairs.get(0).setParam(newName);
+						}
 					}
-				}
-			} else {
-				if (hasLimit) {
-					dateTimes.add(limit);
+				} else {
+					if (hasLimit) {
+						dateTimes.add(limit);
+					}
 				}
 			}
 		}
