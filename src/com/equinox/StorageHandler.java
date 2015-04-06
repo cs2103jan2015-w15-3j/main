@@ -10,14 +10,13 @@ import java.util.Date;
 import java.util.Scanner;
 
 import org.joda.time.DateTime;
-import org.joda.time.DurationFieldType;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.joda.time.Period;
 
 import com.equinox.Memory.IDBuffer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -229,6 +228,7 @@ public class StorageHandler {
 				new LocalTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(IDBuffer.class,
 				new IDBufferInstanceCreator());
+        gsonBuilder.registerTypeAdapter(Period.class, new PeriodConverter());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String jsonString = gson.toJson(mem);
 		return jsonString;
@@ -252,7 +252,7 @@ public class StorageHandler {
 				new LocalTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(IDBuffer.class,
 				new IDBufferInstanceCreator());
-		gsonBuilder.registerTypeAdapter(DurationFieldType.class, new DurationFieldTypeInstanceCreator());
+        gsonBuilder.registerTypeAdapter(Period.class, new PeriodConverter());
 		Gson gson = gsonBuilder.create();
 		return gson.fromJson(jsonString, Memory.class);
 	}
@@ -344,18 +344,33 @@ public class StorageHandler {
 		}
 
 	}
-	/**
-	 * 
-	 * Instance creator for JodaTime's DurationFieldType for proper 
-	 * Json deserialisation
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
-	 *
-	 */
-	
-	private static class DurationFieldTypeInstanceCreator implements InstanceCreator<DurationFieldType>{
-		public DurationFieldType createInstance(Type type) {
-		     return DurationFieldType.minutes();
-		   }
-	}
+
+    /**
+     * 
+     * Period Converter for JodaTime's Period for proper serialization and
+     * deserialization
+     * 
+     * @author Zhu Liang
+     *
+     */
+
+    private static class PeriodConverter implements JsonSerializer<Period>,
+            JsonDeserializer<Period> {
+
+        @Override
+        public Period deserialize(JsonElement json, Type arg1,
+                JsonDeserializationContext arg2) throws JsonParseException {
+            return new Period(json.getAsJsonPrimitive().getAsLong());
+        }
+
+        @Override
+        public JsonElement serialize(Period p, Type arg1,
+                JsonSerializationContext arg2) {
+            // TODO Auto-generated method stub
+            return new JsonPrimitive(p.toDurationFrom(new DateTime())
+                    .getMillis());
+        }
+
+
+    }
 }
