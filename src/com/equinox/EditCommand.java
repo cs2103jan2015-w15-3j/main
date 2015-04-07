@@ -1,7 +1,5 @@
 package com.equinox;
 
-import org.joda.time.Period;
-
 import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
@@ -43,13 +41,14 @@ public class EditCommand extends Command {
 			// Check if first param has any text appended to it intended as Todo name
 			if(keyParamPairs.get(0).getParam().length() > 1) {
 				String[] combinedParam = keyParamPairs.get(0).getParam().split("\\s", 2);
-				
 				// Try to parse id as int. If fail send invalidParams Signal.
-				id = Integer.parseInt(combinedParam[0].trim());
-				title = combinedParam[1];
-				if(!title.equals("")) {
-					containsNewName = true;
-				}
+                id = Integer.parseInt(combinedParam[0].trim());
+                if (combinedParam.length > 1) {
+                    title = combinedParam[1];
+                    if (!title.equals("")) {
+                        containsNewName = true;
+                    }
+                }
 			} else {
 				// Check if input contains more than 1 keyword (keyParamPairs.size() > 1)
 				if (input.containsOnlyCommand()) {
