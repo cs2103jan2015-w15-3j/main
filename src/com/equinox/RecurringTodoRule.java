@@ -36,14 +36,16 @@ public class RecurringTodoRule {
 
     private String RECURRING_TODO_PREIX = "(Recurring) ";
 
-    protected static final String recurringTodoWithLimitStringFormat = "Recurrence Rule: \"%1$s\" every %2$s until %3$s";
+    protected static final String recurringTodoWithLimitStringFormat = "Recurrence Rule: \"%1$s\" every %2$suntil %3$s";
     protected static final String recurringTodoStringFormat = "Recurrence Rule: \"%1$s\" every %2$s";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("dd MMM yyyy");
     private static final PeriodFormatter PERIOD_FORMATTER;
     static {
     	PeriodFormatterBuilder pfb = new PeriodFormatterBuilder();
+    	pfb.appendWeeks();
+    	pfb.appendSuffix(" week(s) ");
     	pfb.appendDays();
-    	pfb.appendSuffix(" day(s)");
+    	pfb.appendSuffix(" day(s) ");
     	PERIOD_FORMATTER = pfb.toFormatter();
     }
     private boolean hasLimit = false;
