@@ -1,7 +1,7 @@
 package com.equinox;
 
 public class ExitCommand extends Command {
-	
+    // @author A0093910H
 	/**
 	 * Creates an ExitCommand object.
 	 * 

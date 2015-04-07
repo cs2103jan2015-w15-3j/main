@@ -15,7 +15,11 @@ import org.joda.time.format.PeriodFormatterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.equinox.exceptions.NullTodoException;
+
 public class DisplayCommand extends Command {
+
+    // @author A0093910H
     private static Logger logger = LoggerFactory
             .getLogger(DisplayCommand.class);
 
@@ -42,26 +46,26 @@ public class DisplayCommand extends Command {
     private static final String MESSAGE_COMPLETED = "Showing completed todos:";
     private static final String MESSAGE_ALL = "Showing all todos:";
 
-    // Heading for dates and floating tasks
+    // Section headings for dates and floating tasks
     private static final String FLOATING_TASK_HEADING = "Anytime";
     private static final Object HEADING_PREFIX = System.lineSeparator();
-
-    // Symbols for different types of todos (event, deadline, floating)
-    private static final String SYMBOL_EVENT = " E  ";
-    private static final String SYMBOL_DEADLINE = " D  ";
-    private static final String SYMBOL_FLOATING = " F  ";
 
 	// Max length for the title of todo to be displayed
     private static final int MAX_CHAR = 30;
     private static final int TOTAL_LENGTH = 20;
 
+    // Headings for columns
     private static final String HEADING_ID = "ID";
     private static final String HEADING_NAME = "Name";
     private static final String HEADING_TIME = "Time";
 
+    // Decoration for date section heading
     private static final String DATE_DECO = ".";
+
+    // Empty field text
     private static final String EMPTY_FIELD = "NIL";
 
+    // String formats
     private static final String eventFormat = "%1$-2s | %2$-30s | %3$s - %4$s";
     private static final String deadLineFormat = "%1$-2s | %2$-30s | %3$s";
     private static final String floatingFormat = "%1$-2s | %2$-30s | %3$s";
@@ -77,6 +81,7 @@ public class DisplayCommand extends Command {
 
     private static final String RELATIVE_PERIOD_PREFIX = " in ";
 
+    // Relative timing format
     private static PeriodFormatter formatter = new PeriodFormatterBuilder()
             .appendHours().appendSuffix("h ")
             .printZeroNever().appendMinutes().appendSuffix("min ")
@@ -89,32 +94,73 @@ public class DisplayCommand extends Command {
 		if (todos.size() == 0) {
             return new Signal(Signal.DISPLAY_EMPTY_SIGNAL, true);
 		}
-		String param = keyParamPairs.get(0).getParam();
-		if (param.equals("completed") || param.equals("complete")
-				|| param.equals("c")) {
-			displayString = getDisplayChrono(todos, showCompleted);
-			System.out.println(displayString);
-		} else if (param.equals("all") || param.equals("a")) {
-			displayString = getDisplayChrono(todos, showAll);
-			System.out.println(displayString);
-        } else if (param.isEmpty()) {
-			// By default we show pending tasks, in chronological order
-            displayDefault(memory);
-        } else {
+
+        // Check that display command only have one key param pair
+        if (keyParamPairs.size() > 1) {
+            String param = keyParamPairs.get(1).getParam();
             return new Signal(
                     String.format(Signal.DISPLAY_INVALID_PARAM, param), false);
+        }
+
+		String param = keyParamPairs.get(0).getParam();
+        if (param.isEmpty()) {
+            // By default we show pending tasks, in chronological order
+            displayDefault();
+        } else if (param.equals("completed") || param.equals("complete")
+				|| param.equals("c")) {
+            displayString = getDisplayChrono(showCompleted);
+			System.out.println(displayString);
+		} else if (param.equals("all") || param.equals("a")) {
+            displayString = getDisplayChrono(showAll);
+			System.out.println(displayString);
+        } else {
+            // Try to parse the param as the id of a specific todo to show
+            // the detail of the todo
+
+            try {
+                int id = Integer.parseInt(param);
+                Todo todo = memory.get(id);
+                displayString = todo.toString();
+                System.out.println(displayString);
+            } catch (NullTodoException e) {
+                return new Signal(String.format(Signal.DISPLAY_ID_NOT_FOUND,
+                        param), false);
+            } catch (NumberFormatException e) {
+                return new Signal(String.format(Signal.DISPLAY_INVALID_PARAM,
+                        param), false);
+            }
+
         }
         return new Signal(Signal.DISPLAY_SUCCESS_SIGNAL, true);
 	}
 
+    public void displayDefault() {
+        displayDefault(memory);
+    }
+
     public static void displayDefault(Memory memory) {
-        Collection<Todo> todos = memory.getAllTodos();
         String displayString;
-        displayString = getDisplayChrono(todos, showPending);
+        displayString = getDisplayChrono(memory, showPending);
         System.out.println(displayString);
     }
 
-	public static String getDisplayChrono(Collection<Todo> todos, int signal) {
+    public static String getDisplayChrono(Memory memory, int signal) {
+        Collection<Todo> todos = memory.getAllTodos();
+        ArrayList<Todo> clonedTodos = cloneTodos(todos);
+        // By default, we order the todos in chronological order
+        Collections.sort(clonedTodos, new ChronoComparator());
+        return getDisplay(clonedTodos, signal);
+    }
+
+    public static String getDisplayChrono(ArrayList<Todo> todos, int signal) {
+        ArrayList<Todo> clonedTodos = cloneTodos(todos);
+        // By default, we order the todos in chronological order
+        Collections.sort(clonedTodos, new ChronoComparator());
+        return getDisplay(clonedTodos, signal);
+    }
+
+    public String getDisplayChrono(int signal) {
+        Collection<Todo> todos = memory.getAllTodos();
         ArrayList<Todo> clonedTodos = cloneTodos(todos);
         // By default, we order the todos in chronological order
         Collections.sort(clonedTodos, new ChronoComparator());
@@ -137,11 +183,8 @@ public class DisplayCommand extends Command {
 
 		while (iterator.hasNext()) {
 			Todo todo = iterator.next();
-            assert (todo != null);
-            assert (todo.getName() != null);
             if (LOGGING) {
-                logger.info("adding todo with title {} into display",
-                        todo.getName());
+                logger.info("adding todo {} into display", todo.getName());
             }
 
             // Show pending, skip the completed tasks
@@ -154,7 +197,8 @@ public class DisplayCommand extends Command {
             }
             DateTime todoDateTime = todo.getDateTime();
             if (!dateAlreadyDisplayed(currentDate, todoDateTime)) {
-                // Date not displayed yet, update currentDate
+                // Date not displayed yet, update currentDate and display the
+                // date
                 currentDate = todoDateTime;
                 appendDate(sBuilder, todoDateTime);
             }
@@ -324,6 +368,7 @@ public class DisplayCommand extends Command {
         return dateString;
     }
 
+    // @author A0093910H-reused
     static class StringUtils {
 
         public static String center(String s, int size) {
@@ -350,7 +395,4 @@ public class DisplayCommand extends Command {
         }
     }
 
-	public static void main(String[] args) {
-
-	}
 }

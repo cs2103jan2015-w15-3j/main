@@ -6,11 +6,10 @@ package com.equinox;
  * 
  * It also contains the formats for different signals.
  * 
- * @author paradite
  *
  */
 public class Signal {
-
+    // @author A0093910H
 	/**
 	 * Welcome Signal
 	 */
@@ -47,9 +46,10 @@ public class Signal {
 	 */
 	public static final String DISPLAY_SUCCESS_SIGNAL = "";
 	public static final String DISPLAY_EMPTY_SIGNAL = "The list is empty";
+    public static final String DISPLAY_ID_NOT_FOUND = "The specified todo with ID %1$s does not exist";
 	public static final String DISPLAY_INVALID_PARAM = "The parameter %1$s is not recognized."
 			+ System.lineSeparator()
-			+ "The display command only supports only following additional parameters: c, completed, a, all. "
+            + "The display command only supports only following additional parameters: c, completed, a, all, [ID]. "
 			+ System.lineSeparator()
 			+ "Pending todos will be displayed by default, when no paramters are supplied. ";
 

@@ -1,7 +1,7 @@
 package com.equinox;
 
 public class SignalHandler {
-
+    // @author A0093910H
     private static final String PREFIX = "Zeitgeist: ";
     private static final String COMMAND_PREFIX = "Command: ";
 

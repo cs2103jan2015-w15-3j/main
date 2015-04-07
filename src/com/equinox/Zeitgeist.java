@@ -47,6 +47,7 @@ public class Zeitgeist {
 		return logic;
 	}
 
+    // @author A0093910H
 	public final static void clearConsole() {
 		try {
 			final String os = System.getProperty("os.name");

@@ -14,11 +14,10 @@ import org.joda.time.format.PeriodFormatterBuilder;
 /**
  * The RecurringTodoRule class contains the rules and methods for creating and
  * storing individual Todos
- * 
- * @author paradite
  *
  */
 public class RecurringTodoRule {
+    // @author A0093910H
     private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
 
     private int MAX_FUTURE_OCCURRENCE = 1;
@@ -155,7 +154,6 @@ public class RecurringTodoRule {
             updateLimit = getRecurrenceLimit();
         }
 
-        // updateDateTime();
         while (getDateTime().plus(recurringInterval)
                 .compareTo(updateLimit) <= 0) {
             updateDateTime();
@@ -227,7 +225,6 @@ public class RecurringTodoRule {
      * Method to return a DateTime of the Recurring rule's last occurrence. The
      * order of preference: start time > end time > null
      * 
-     * @author paradite
      * 
      * @return start time for events; end time for deadlines; null for tasks.
      */

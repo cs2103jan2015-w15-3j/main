@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.equinox.exceptions.InvalidDateException;
 
 public class RecurringTodoRuleTest {
-
+    // @author A0093910H
     @Test
     public void testUpdateTodoList() throws InvalidDateException {
         Period periodWeek = new Period().withWeeks(1);

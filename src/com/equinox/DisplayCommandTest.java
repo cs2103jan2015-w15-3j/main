@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class DisplayCommandTest {
+    // @author A0093910H
     Collection<Todo> todos;
 
     Zeitgeist logic;
@@ -21,11 +22,13 @@ public class DisplayCommandTest {
 
     @Before
     public void setUp() throws Exception{
-
+        
         Zeitgeist.readSettingsFile();
 
         logic = new Zeitgeist();
         
+        logic.storage.deleteTestFileIfExists();
+
         // try {
         logic.handleInput("add floating task");
 
@@ -61,7 +64,7 @@ public class DisplayCommandTest {
     @Test
     public void testDisplayChronoPending() {
         String expected = "Showing pending todos:\nID | Name                           | Time\n\n..Thu 01 Jan 2015...\n3  | new year                       | 10:00 - 11:00\n\n..Tue 03 Feb 2015...\n4  | CS1010 deadline                | 22:00\n\n..Sat 07 Mar 2015...\n6  | CS3243 project deadline        | 09:00\n\n..Mon 09 Mar 2015...\n1  | CS3230 deadline                | 21:00\n8  | meet june at  on the table fro | 21:00 - 22:00\n\n..Tue 07 Apr 2015...\n7  | CS3333 project 2               | 10:00\n\n......Anytime.......\n5  | read floating books            | NIL\n";
-        assertEquals(expected, DisplayCommand.getDisplayChrono(todos, 0));
+        assertEquals(expected, DisplayCommand.getDisplayChrono(logic.memory, 0));
     }
 
     @Test
@@ -76,7 +79,7 @@ public class DisplayCommandTest {
                 + "| Time\n\n..Tue 03 Mar 2015...\n2  | CIP event                      "
                 + "| 10:00 - 12:00\n\n......Anytime.......\n0  | floating task                  "
                 + "| NIL\n";
-        assertEquals(expected, DisplayCommand.getDisplayChrono(todos, 1));
+        assertEquals(expected, DisplayCommand.getDisplayChrono(logic.memory, 1));
     }
 
 }
