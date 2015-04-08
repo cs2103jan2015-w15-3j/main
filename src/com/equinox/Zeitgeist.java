@@ -6,6 +6,7 @@ package com.equinox;
  * @author paradite
  *
  */
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.util.Scanner;
 
