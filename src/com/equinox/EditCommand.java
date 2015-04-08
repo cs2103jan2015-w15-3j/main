@@ -58,7 +58,7 @@ public class EditCommand extends Command {
 				}
 				id = Integer.parseInt(keyParamPairs.get(0).getParam());
 			}
-			Todo todo = memory.setterGet(id);
+			Todo todo = memory.getToModifyTodo(id);
 			Todo oldTodo = new Todo(todo);
 
 			if (input.isRecurring()) {
@@ -71,7 +71,7 @@ public class EditCommand extends Command {
 					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
 
-				RecurringTodoRule rule = memory.getRule(todo.getRecurringId());
+				RecurringTodoRule rule = memory.getToModifyRule(todo.getRecurringId());
 				RecurringTodoRule ruleOld = new RecurringTodoRule(rule);
 				
 				// If input contains new title

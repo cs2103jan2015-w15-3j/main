@@ -62,7 +62,7 @@ public class DeleteCommand extends Command {
 				deletedRule = memory.removeRule(deleteIndex);
 				returnSignal = new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deletedRule), true);
 			} else {
-				deleted = memory.remove(deleteIndex);
+				deleted = memory.removeTodo(deleteIndex);
 				returnSignal = new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deleted),
 		                true);
 			}
