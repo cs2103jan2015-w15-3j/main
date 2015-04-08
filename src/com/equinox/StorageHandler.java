@@ -27,7 +27,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonObject;
 
-
+//@author A0110839H
 
 /**
  * Handles the storing of an instance of Memory into a file in JSON formatting,
@@ -42,7 +42,7 @@ public class StorageHandler {
 	private static final String FILE_NAME = "storageFile.json";
 	private static final String TEST_FILE_NAME = "testStorageFile.json";
 	
-    private File storageFile;
+    private static File storageFile;
     private File storageTestFile;
 
 	private static PrintWriter writer;
@@ -165,8 +165,8 @@ public class StorageHandler {
 	 * Deletes testStorageFile for tearing-down in system tests.
 	 * 
 	 */
-	public void deleteTestFileIfExists(){
-		if(storageFile.exists()){
+	public static void deleteStorageFileIfExists(){
+		if(storageFile != null && storageFile.exists()){
 			storageFile.delete();
 		}
 	}
