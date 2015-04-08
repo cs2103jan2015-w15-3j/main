@@ -1,3 +1,5 @@
+//@author A0094679H
+
 package com.equinox;
 
 import static org.junit.Assert.assertEquals;

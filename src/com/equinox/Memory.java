@@ -1,3 +1,5 @@
+//@author A0094679H
+
 package com.equinox;
 
 import java.util.ArrayList;
@@ -26,8 +28,6 @@ import com.equinox.exceptions.StateUndefinedException;
  *
  */
 public class Memory {
-
-	//@author WILL TODO: add author tag
 	// Field for Memory singleton pattern
 	private static Memory memory;
 
@@ -702,6 +702,7 @@ public class Memory {
 		}
 	}
 
+	//@author A0094679H
 	/**
 	 * This operation retrieves a list of ids of todos that has the given
 	 * searchString in its property of given typeKey

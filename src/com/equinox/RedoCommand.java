@@ -1,3 +1,5 @@
+//@author A0094679H
+
 package com.equinox;
 
 import com.equinox.exceptions.StateUndefinedException;

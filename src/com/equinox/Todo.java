@@ -1,3 +1,5 @@
+//@author A0094679H
+
 package com.equinox;
 import java.util.List;
 
@@ -14,13 +16,10 @@ import org.joda.time.format.DateTimeFormatter;
  * parameters. Todos are uniquely specified identifier known as ID until
  * their deletion, upon which the ID may be recycled.
  * 
- * @author Ho Wei Li || IkarusWill
- *
- */
-/**
  * @author Ikarus
  *
  */
+
 public class Todo{
 	
 	public enum TYPE {
@@ -345,7 +344,6 @@ public class Todo{
         }
     }
 
-	// TODO: Refactor out of Todo.
     private String formatDateTime(DateTime dateTime) {
         if (dateTime == null) {
             return "";

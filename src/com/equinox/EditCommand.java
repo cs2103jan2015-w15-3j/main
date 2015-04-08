@@ -1,3 +1,5 @@
+//@author A0094679H
+
 package com.equinox;
 
 import com.equinox.exceptions.NullRuleException;
@@ -7,7 +9,7 @@ import com.equinox.exceptions.StateUndefinedException;
 /**
  * Houses a method which processes the edit request from the user.
  * 
- * @author Ho Wei Li || IkarusWill
+ * @author Ikarus
  *
  */
 public class EditCommand extends Command {
