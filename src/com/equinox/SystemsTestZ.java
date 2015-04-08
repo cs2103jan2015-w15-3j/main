@@ -16,14 +16,13 @@ public class SystemsTestZ {
 
     @Before
     public void setUp() {
-
-        Zeitgeist.readSettingsFile();
+    	StorageHandler.deleteStorageFileIfExists();
+        StorageUtils.readSettingsFile();
         logic = Zeitgeist.getInstance();
     }
 
     @After
     public void tearDown() {
-        logic.storage.deleteTestFileIfExists();
     }
 
     @Test
