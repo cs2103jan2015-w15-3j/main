@@ -25,6 +25,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.google.gson.JsonObject;
 
 /**
  * Handles the storing of an instance of Memory into a file in JSON formatting,
@@ -252,7 +253,7 @@ public class StorageHandler {
 				new LocalTimeTypeConverter());
 		gsonBuilder.registerTypeAdapter(IDBuffer.class,
 				new IDBufferInstanceCreator());
-		gsonBuilder.registerTypeAdapter(DurationFieldType.class, new DurationFieldTypeInstanceCreator());
+		gsonBuilder.registerTypeAdapter(DurationFieldType.class, new DurationFieldTypeDeserialiser());
 		Gson gson = gsonBuilder.create();
 		return gson.fromJson(jsonString, Memory.class);
 	}
@@ -346,16 +347,52 @@ public class StorageHandler {
 	}
 	/**
 	 * 
-	 * Instance creator for JodaTime's DurationFieldType for proper 
+	 * Deserialiser for JodaTime's DurationFieldType for proper 
 	 * Json deserialisation
 	 * 
 	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 	 *
 	 */
-	
-	private static class DurationFieldTypeInstanceCreator implements InstanceCreator<DurationFieldType>{
-		public DurationFieldType createInstance(Type type) {
-		     return DurationFieldType.minutes();
-		   }
-	}
+	private static class DurationFieldTypeDeserialiser implements JsonDeserializer<DurationFieldType> {
+
+		  @Override
+		  public DurationFieldType deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
+		      throws JsonParseException {
+		    final JsonObject jsonObject = json.getAsJsonObject();
+
+		    final String iName = jsonObject.get("iName").getAsString();
+		    
+		    switch(iName){
+		    
+		    case "years":
+		    return DurationFieldType.years();
+		    
+		    case "months":
+		    return DurationFieldType.months();
+		    
+		    case "weeks":
+		    return DurationFieldType.weeks();
+		    
+		    case "days":
+		    return DurationFieldType.days();
+		    
+		    case "hours":
+		    return DurationFieldType.hours();
+		    
+		    case "minutes":
+		    return DurationFieldType.minutes();
+		    
+		    case "seconds":
+		    return DurationFieldType.seconds();
+		    
+		    case "millis":
+		    return DurationFieldType.millis();
+		    
+		    // Should not be reached
+		    default:
+		    throw new JsonParseException("No suitable iName found.");
+		    }
+		    
+		  }
+		}
 }

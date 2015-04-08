@@ -6,6 +6,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
+
 /**
  * The RecurringTodoRule class contains the rules and methods for creating and
  * storing individual Todos
