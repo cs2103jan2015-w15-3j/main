@@ -42,6 +42,7 @@ public class Zeitgeist {
 		}
 		return logic;
 	}
+	
 	public static Zeitgeist getInstance(String fileDirectory) {
 		if (logic == null) {
 			logic = new Zeitgeist(fileDirectory);

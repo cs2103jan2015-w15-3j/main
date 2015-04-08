@@ -11,18 +11,19 @@ import org.junit.Test;
 public class SystemsTestZ {
 
     Collection<Todo> todos;
-
+    String storageFileDirectory = StorageUtils.readSettingsFile();
     Zeitgeist logic;
 
     @Before
     public void setUp() {
-    	StorageHandler.deleteStorageFileIfExists();
-        String fileDirectory = StorageUtils.readSettingsFile();
-        logic = Zeitgeist.getInstance(fileDirectory);
+    	StorageHandler.deleteStorageFileIfExists(storageFileDirectory);
+        logic = Zeitgeist.getInstance(storageFileDirectory);
+        
     }
 
     @After
     public void tearDown() {
+     	StorageHandler.deleteStorageFileIfExists(storageFileDirectory);
     }
 
     @Test

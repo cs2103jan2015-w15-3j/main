@@ -26,6 +26,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 //@author A0110839H
 
@@ -165,8 +166,10 @@ public class StorageHandler {
 	 * Deletes testStorageFile for tearing-down in system tests.
 	 * 
 	 */
-	public static void deleteStorageFileIfExists(){
-		if(storageFile != null && storageFile.exists()){
+	public static void deleteStorageFileIfExists(String fileDirectory){
+		String filePath = fileDirectory + "/" + FILE_NAME;
+		storageFile = new File(filePath);
+		if(storageFile.exists()){
 			storageFile.delete();
 		}
 	}
@@ -213,7 +216,13 @@ public class StorageHandler {
 		}
 		String jsonString = builder.toString();
 		tearDownReader();
-		return importFromJson(jsonString);
+		Memory retrievedMemory = null;
+		try{
+			retrievedMemory = importFromJson(jsonString);
+		} catch (JsonSyntaxException e){
+			System.out.println("Storage file is not in proper JSON format, or has been corrupted.");
+		}
+		return retrievedMemory;
 	}
 	
 	/**
@@ -245,7 +254,7 @@ public class StorageHandler {
 	 * @param jsonString JSON representation of an instance of memory as String
 	 * @return an instance of Memory class
 	 */
-	public static Memory importFromJson(String jsonString) {
+	public Memory importFromJson(String jsonString) throws JsonSyntaxException {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());
@@ -257,6 +266,7 @@ public class StorageHandler {
 				new IDBufferInstanceCreator());
 		gsonBuilder.registerTypeAdapter(DurationFieldType.class, new DurationFieldTypeDeserialiser());
 		Gson gson = gsonBuilder.create();
+		
 		return gson.fromJson(jsonString, Memory.class);
 	}
 
