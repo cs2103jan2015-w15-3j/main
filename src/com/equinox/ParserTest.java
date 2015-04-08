@@ -1,6 +1,6 @@
 package com.equinox;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,8 @@ import org.joda.time.Period;
 import org.junit.Test;
 
 public class ParserTest {
-
+	
+	//@author A0115983X
 	@Test
 	public void testAddFloatingCommands() {
 

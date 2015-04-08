@@ -18,7 +18,8 @@ import com.equinox.exceptions.NullTodoException;
  *
  */
 public class SearchCommand extends Command {
-
+	//@author A0115983X
+	
 	private static final String REGEX_SPACE = "\\s";
 
 	/**
