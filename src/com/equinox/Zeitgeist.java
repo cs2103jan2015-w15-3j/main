@@ -103,7 +103,7 @@ public class Zeitgeist {
 		Command c;
 
 		Keywords commandType = userInput.getType();
-		if (commandType == null) {
+		if (commandType == Keywords.ERROR) {
 			return new Signal(String.format(
 					Signal.GENERIC_INVALID_COMMAND_FORMAT, ""), false);
 		} else {
