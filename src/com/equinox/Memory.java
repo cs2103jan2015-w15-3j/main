@@ -185,11 +185,8 @@ public class Memory {
 		return returnTodo;
 	}
 
-	public RecurringTodoRule removeRule(int id) throws NullRuleException {
-		Integer recurringId = allTodos.get(id).getRecurringId();
-		if (recurringId == null) {
-			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
-		}
+	
+	public RecurringTodoRule removeRule(int recurringId) throws NullRuleException {
 		RecurringTodoRule returnRule = recurringRules.get(recurringId);
 		if (returnRule == null) {
 			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
@@ -265,6 +262,7 @@ public class Memory {
 				releaseId(id);
 			}
 		}
+		
 	}
 
 	/**

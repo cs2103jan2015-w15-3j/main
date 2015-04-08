@@ -2,6 +2,7 @@
 
 package com.equinox;
 
+import com.equinox.exceptions.NotRecurringException;
 import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
@@ -62,9 +63,6 @@ public class EditCommand extends Command {
 			Todo oldTodo = new Todo(todo);
 
 			if (input.isRecurring()) {
-				if(!todo.isRecurring()) {
-					return new Signal(Signal.EDIT_NOT_RECURRING, false);
-				}
 				int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
 				// Check for valid number of keywords TODO: WRONG
 				if (numberOfKeywords > 8) {
@@ -142,6 +140,8 @@ public class EditCommand extends Command {
 			return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 		} catch (NullRuleException e) {
 			return new Signal(Signal.EDIT_NO_LONGER_RECURS, false);
+		} catch (NotRecurringException e) {
+			return new Signal(e.getMessage(), false);
 		}
 	}
 

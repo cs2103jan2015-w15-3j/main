@@ -2,6 +2,7 @@
 
 package com.equinox;
 
+import com.equinox.exceptions.NotRecurringException;
 import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
 
@@ -59,7 +60,8 @@ public class DeleteCommand extends Command {
 		try {
 			deleteIndex = Integer.parseInt(keyParamPairs.get(0).getParam());
 			if(isRecurringRule) {
-				deletedRule = memory.removeRule(deleteIndex);
+				int recurringId = memory.getTodo(deleteIndex).getRecurringId();
+				deletedRule = memory.removeRule(recurringId);
 				returnSignal = new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deletedRule), true);
 			} else {
 				deleted = memory.removeTodo(deleteIndex);
@@ -72,6 +74,8 @@ public class DeleteCommand extends Command {
 		} catch (NullTodoException e) {
             return new Signal(e.getMessage(), false);
 		} catch (NullRuleException e) {
+			return new Signal(e.getMessage(), false);
+		} catch (NotRecurringException e) {
 			return new Signal(e.getMessage(), false);
 		}
 		
