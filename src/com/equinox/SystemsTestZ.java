@@ -17,8 +17,8 @@ public class SystemsTestZ {
     @Before
     public void setUp() {
     	StorageHandler.deleteStorageFileIfExists();
-        StorageUtils.readSettingsFile();
-        logic = Zeitgeist.getInstance();
+        String fileDirectory = StorageUtils.readSettingsFile();
+        logic = Zeitgeist.getInstance(fileDirectory);
     }
 
     @After

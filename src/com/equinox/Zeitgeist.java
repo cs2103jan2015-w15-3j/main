@@ -12,9 +12,9 @@ import java.util.Scanner;
 
 public class Zeitgeist {
 	
-	private static String fileDirectory;
 	private static Zeitgeist logic;
-
+	private static String fileDirectory;
+	
 	public static Scanner scn = new Scanner(System.in);
 	public static StorageHandler storage;
 	public Memory memory;
@@ -26,14 +26,29 @@ public class Zeitgeist {
 		memory.setStorageHandler(storage);
 		Parser.initialize();
 	}
-
+	
+	public Zeitgeist(String fileDir) {
+		fileDirectory = fileDir;
+		storage = new StorageHandler.Builder().setDirectoryPath(fileDirectory)
+				.setFilePath().build();
+		memory = storage.retrieveMemoryFromFile();
+		memory.setStorageHandler(storage);
+		Parser.initialize();
+	}
+	
 	public static Zeitgeist getInstance() {
 		if (logic == null) {
 			logic = new Zeitgeist();
 		}
 		return logic;
 	}
-
+	public static Zeitgeist getInstance(String fileDirectory) {
+		if (logic == null) {
+			logic = new Zeitgeist(fileDirectory);
+		}
+		return logic;
+	}
+	
     // @author A0093910H
 	public final static void clearConsole() {
 		try {
