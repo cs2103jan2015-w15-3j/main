@@ -55,8 +55,8 @@ public class Parser {
 		Keywords cType = getCommandType(words);
 
 		// if command type is error
-		if (cType == null) {
-			return new ParsedInput(null, null, null, null, false, false, null);
+		if (cType == Keywords.ERROR) {
+			return new ParsedInput();
 		}
 
 		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
@@ -549,8 +549,8 @@ public class Parser {
 	 *         command.
 	 */
 	private static Keywords determineCommandType(String typeString) {
-		Keywords type = null; // TODO: Suggest throwing exception instead of
-								// returning null.
+		Keywords type = Keywords.ERROR;
+		
 		if (InputStringKeyword.isCommand(typeString)) {
 			type = InputStringKeyword.getCommand(typeString);
 		}

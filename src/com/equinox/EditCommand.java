@@ -40,17 +40,16 @@ public class EditCommand extends Command {
 			int id;
 			boolean containsNewName = false;
 			String title = new String(); // Stub initialization
+			// CHECKS
 			// Check if first param has any text appended to it intended as Todo name
-			String[] firstKeywordParams = keyParamPairs.get(0).getParam().split("\\s", 2);
+			String[] firstKeywordParams = keyParamPairs.get(0).getParam().trim().split("\\s", 2);
 			if (firstKeywordParams.length > 1) {
-				// Try to parse id as int. If fail send invalidParams Signal.
+				// Try to parse first sub-param as int. If fail send invalidParams Signal.
 				id = Integer.parseInt(firstKeywordParams[0].trim());
 				title = firstKeywordParams[1];
-				if (!title.equals("")) {
-					containsNewName = true;
-				}
+				containsNewName = true;
 			} else {
-				// Check if input contains more than 1 keyword (keyParamPairs.size() > 1)
+				// Check if input contains only than 1 keyword (keyParamPairs.size() > 1)
 				if (input.containsOnlyCommand()) {
 					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
@@ -136,7 +135,6 @@ public class EditCommand extends Command {
 					return new Signal(Signal.EDIT_END_BEFORE_START, false);
 				}
 				memory.saveToFile();
-				
 				return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, oldTodo, todo), true);
 			}
 		} catch (NullTodoException e) {

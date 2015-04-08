@@ -98,6 +98,10 @@ public class InputStringKeyword {
      * @return the enum constant representing the command.
      */
     public static Keywords getCommand(String s) {
-    	return commands.get(s.toLowerCase());
+    	Keywords command = commands.get(s.toLowerCase());
+    	if(command == null) {
+    		return Keywords.ERROR;
+    	}
+    	return command;
     }
 }

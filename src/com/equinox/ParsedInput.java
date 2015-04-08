@@ -24,8 +24,6 @@ public class ParsedInput {
 	 * KeyParamPair objects and a list of DateTime objects derived from the user
 	 * input String.
 	 * 
-	 * @param userInput
-	 *            the original String read from the user.
 	 * @param type
 	 *            KEYWORDS specifying the type of the command.
 	 * @param keyParamPairs
@@ -47,6 +45,13 @@ public class ParsedInput {
 		this.isRecurring = isRecurring;
 		this.limit = limit;
 		this.hasLimit = hasLimit;
+	}
+	
+	/**
+	 * Creates a ParsedInput object to represent an invalid command.
+	 */
+	ParsedInput() {
+		this.type = Keywords.ERROR;
 	}
 
 	/**
