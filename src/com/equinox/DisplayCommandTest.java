@@ -16,18 +16,14 @@ public class DisplayCommandTest {
 
     @After
     public void tearDown() {
-        logic.storage.deleteTestFileIfExists();
-
+        logic.deleteStorageFile();
     }
 
     @Before
     public void setUp() throws Exception{
-        
-        Zeitgeist.readSettingsFile();
-
-        logic = new Zeitgeist();
-        
-        logic.storage.deleteTestFileIfExists();
+        String fileDirectory = StorageUtils.readSettingsFile();
+        logic = new Zeitgeist(fileDirectory);
+        logic.reloadMemory();
 
         // try {
         logic.handleInput("add floating task");
