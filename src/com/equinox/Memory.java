@@ -161,7 +161,7 @@ public class Memory {
 			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
 		}
 		save(returnRule);
-		// TODO flushRedoStack()
+		flushRedoStack();
 		return returnRule;
 	}
 
@@ -192,7 +192,7 @@ public class Memory {
 			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
 		}
 		save(returnRule);
-		// TODO Flush redo stack
+		flushRedoStack();
 		recurringRules.remove(recurringId);
 		// TODO Remove from search map
 		return returnRule;
@@ -262,7 +262,12 @@ public class Memory {
 				releaseId(id);
 			}
 		}
-		
+		while (!ruleUndoStack.isEmpty()) {
+			int recurringId = ruleUndoStack.pollLast().getRecurringId();
+			if (!recurringRules.containsKey(recurringId)) {
+				releaseRecurringId(recurringId);
+			}
+		}
 	}
 
 	/**
@@ -273,6 +278,12 @@ public class Memory {
 			int id = todoRedoStack.pollLast().getId();
 			if (!allTodos.containsKey(id)) {
 				releaseId(id);
+			}
+		}
+		while (!ruleRedoStack.isEmpty()) {
+			int recurringId = todoRedoStack.pollLast().getId();
+			if (!recurringRules.containsKey(recurringId)) {
+				releaseRecurringId(recurringId);
 			}
 		}
 	}
