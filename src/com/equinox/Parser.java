@@ -56,7 +56,7 @@ public class Parser {
 
 		// if command type is error
 		if (cType == Keywords.ERROR) {
-			return new ParsedInput();
+			return ParsedInput.getPlaceholder();
 		}
 
 		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();

@@ -50,8 +50,12 @@ public class ParsedInput {
 	/**
 	 * Creates a ParsedInput object to represent an invalid command.
 	 */
-	ParsedInput() {
+	private ParsedInput() {
 		this.type = Keywords.ERROR;
+	}
+	
+	public static ParsedInput getPlaceholder() {
+		return new ParsedInput();
 	}
 
 	/**
