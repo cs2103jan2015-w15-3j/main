@@ -54,7 +54,7 @@ public class SystemsTestZ {
 
         logic.handleInput("search read");
 
-        logic.handleInput("add go to NUS hackers every friday");
+        logic.handleInput("add go to NUS hackers on 3 apr every friday until 4 apr");
 
         logic.handleInput("add learn something every sunday");
 
@@ -76,7 +76,7 @@ public class SystemsTestZ {
 
         logic.handleInput("search NUS");
 
-        logic.handleInput("edit 3 name last new year");
+        logic.handleInput("edit 3 last new year");
 
         logic.handleInput("search new");
 
