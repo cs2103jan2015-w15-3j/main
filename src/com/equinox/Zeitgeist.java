@@ -35,13 +35,6 @@ public class Zeitgeist {
 		return logic;
 	}
 	
-	public static Zeitgeist getInstance(String fileDirectory) {
-		if (logic == null) {
-			logic = new Zeitgeist(fileDirectory);
-		}
-		return logic;
-	}
-	
     // @author A0093910H
 	public final static void clearConsole() {
 		try {
@@ -185,7 +178,10 @@ public class Zeitgeist {
 	
 	public void reloadMemory() {
 		memory = new Memory();
-		memory = storage.retrieveMemoryFromFile();
 		memory.setStorageHandler(storage);
+	}
+	
+	public static String getStorageFileDirFromSettings(){
+		return StorageUtils.readSettingsFile();
 	}
 }

@@ -16,14 +16,15 @@ public class SystemsTestZ {
 
     @Before
     public void setUp() {
-    	StorageHandler.deleteStorageFileIfExists(storageFileDirectory);
-        logic = Zeitgeist.getInstance(storageFileDirectory);
+    	String fileDirectory = Zeitgeist.getStorageFileDirFromSettings();
+        logic = new Zeitgeist(fileDirectory);
+        logic.reloadMemory();
         
     }
 
     @After
     public void tearDown() {
-     	StorageHandler.deleteStorageFileIfExists(storageFileDirectory);
+    	logic.deleteStorageFile();
     }
 
     @Test
