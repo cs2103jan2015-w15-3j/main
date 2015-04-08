@@ -1,13 +1,5 @@
 package com.equinox;
 
-/**
- * This is where it all begins.
- * 
- * @author paradite
- *
- */
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 import java.util.Scanner;
 
 public class Zeitgeist {
@@ -187,7 +179,9 @@ public class Zeitgeist {
 		}
 	}
 	
-	public void clearMemory() {
+	public void reloadMemory() {
 		memory = new Memory();
+		memory = storage.retrieveMemoryFromFile();
+		memory.setStorageHandler(storage);
 	}
 }
