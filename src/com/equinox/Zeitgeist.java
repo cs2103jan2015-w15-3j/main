@@ -179,6 +179,10 @@ public class Zeitgeist {
 		}
 	}
 	
+	public void deleteStorageFile() {
+		StorageHandler.deleteStorageFileIfExists(fileDirectory);
+	}
+	
 	public void reloadMemory() {
 		memory = new Memory();
 		memory = storage.retrieveMemoryFromFile();
