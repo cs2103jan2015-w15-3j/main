@@ -27,6 +27,8 @@ import com.equinox.exceptions.StateUndefinedException;
  */
 public class Memory {
 
+	//@author WILL TODO: add author tag
+	
 	// Field for Memory singleton pattern
 	private static Memory memory;
 
@@ -345,6 +347,7 @@ public class Memory {
 		recurringIdBuffer.put(recurringId);
 	}
 
+
 	/**
 	 * Serves as a buffer of fixed size for new Todos to draw their ID from.
 	 * 
@@ -402,6 +405,8 @@ public class Memory {
 			}
 		}
 	}
+	
+	//@author A0115983X
 
 	/**
 	 * This class stores the mapping of various types of index to a list of Todo
@@ -700,6 +705,7 @@ public class Memory {
 		}
 	}
 
+	
 	/**
 	 * This operation retrieves a list of ids of todos that has the given
 	 * searchString in its property of given typeKey
@@ -742,6 +748,8 @@ public class Memory {
 		return searchMap.getResult(typeKey, dateTime);
 	}
 
+	//@author JON! TODO: Add author tag
+	
 	/**
 	 * Saves this instance of memory to file by calling the storeMemoryToFile
 	 * method in the StorageHandler object.
@@ -755,6 +763,7 @@ public class Memory {
 		this.storage = storage;
 	}
 
+	//@author A0115983X
 	public void updateMaps(int userIndex, String param, String originalParam) {
 		searchMap.update(userIndex, param, originalParam);
 
@@ -764,6 +773,8 @@ public class Memory {
 		searchMap.update(userIndex, date, originalDate);
 	}
 
+	//@author ? TODO: add author tag
+	
 	/**
 	 * Method for Memory singleton pattern
 	 * 

@@ -14,7 +14,8 @@ import com.equinox.exceptions.InvalidPeriodException;
 import com.joestelmach.natty.DateGroup;
 
 public class Parser {
-
+	
+	//@author A0115983X
 	private static final String INIT_STRING = "today";
 	private static final String STRING_DAY = "day";
 	private static final String STRING_WEEK = "week";

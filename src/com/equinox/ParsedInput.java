@@ -6,8 +6,11 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
-public class ParsedInput {
 
+public class ParsedInput {
+	
+	//@author A0115983X
+	
 	private Keywords type;
 	private ArrayList<KeyParamPair> keyParamPairs;
 	private List<DateTime> dateTimes;
