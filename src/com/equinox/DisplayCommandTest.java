@@ -21,9 +21,10 @@ public class DisplayCommandTest {
 
     @Before
     public void setUp() throws Exception{
-        String fileDirectory = StorageUtils.readSettingsFile();
-        logic = new Zeitgeist(fileDirectory);
-        logic.reloadMemory();
+        
+       String fileDirectory = Zeitgeist.getStorageFileDirFromSettings();
+       logic = new Zeitgeist(fileDirectory);
+       logic.reloadMemory();
 
         // try {
         logic.handleInput("add floating task");

@@ -35,5 +35,8 @@ public enum Keywords {
 	TIME,
 	DAY,
 	MONTH,
-	YEAR;
+	YEAR,
+	
+	// Keyword for error
+	ERROR;
 }
