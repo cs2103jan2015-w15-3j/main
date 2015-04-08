@@ -110,7 +110,6 @@ public class EditCommand extends Command {
 				} else if(dateTimes.size() == 1) {
 					for(int i = 1; i < keyParamPairs.size(); i++) {
 						Keywords keyword = keyParamPairs.get(i).getKeyword();
-						String param = keyParamPairs.get(i).getParam();
 						
 						switch (keyword) {
 						case FROM:

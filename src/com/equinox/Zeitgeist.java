@@ -185,6 +185,9 @@ public class Zeitgeist {
 
 			return processSignal;
 		}
-
+	}
+	
+	public void clearMemory() {
+		memory = new Memory();
 	}
 }
