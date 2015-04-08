@@ -59,7 +59,7 @@ public class DeleteCommand extends Command {
 		try {
 			deleteIndex = Integer.parseInt(keyParamPairs.get(0).getParam());
 			if(isRecurringRule) {
-				deletedRule = memory.removeRecurringRule(deleteIndex);
+				deletedRule = memory.removeRule(deleteIndex);
 				returnSignal = new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deletedRule), true);
 			} else {
 				deleted = memory.remove(deleteIndex);

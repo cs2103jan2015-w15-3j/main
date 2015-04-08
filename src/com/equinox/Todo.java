@@ -26,9 +26,9 @@ public class Todo{
 		TASK, DEADLINE, EVENT;
 	}
 
-    protected final int id;
+    protected int id;
     protected String name;
-    protected final DateTime createdOn;
+    protected DateTime createdOn;
     protected DateTime modifiedOn, startTime, endTime;
     protected boolean isDone;
     protected TYPE type;
@@ -152,14 +152,15 @@ public class Todo{
 	 */
 	private Todo(int id) {
 		this.id = id;
-		this.name = null;
-		this.createdOn = null;
-		this.modifiedOn = null;
-		this.startTime = null;
-		this.endTime = null;
-		this.isDone = false;
-		this.type = null;
-        this.recurringId = null;
+	}
+	
+	/**
+	 * Returns the placeholder Todo constructed from the ID of this Todo. 
+	 * For use in Undo and Redo stacks in Memory.
+	 * 
+	 */
+	protected Todo getPlaceholder() {
+		return new Todo(id);
 	}
 
     /**
@@ -287,15 +288,6 @@ public class Todo{
     	}
     	return true;
     }
-	
-	/**
-	 * Returns the placeholder Todo constructed from the ID of this Todo. 
-	 * For use in Undo and Redo stacks in Memory.
-	 * 
-	 */
-	protected Todo getPlaceholder() {
-		return new Todo(id);
-	}
 	
 	/**
 	 * Checks if the Todo has valid parameters and type. Specifically, checks

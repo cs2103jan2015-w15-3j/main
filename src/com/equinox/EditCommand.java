@@ -40,7 +40,6 @@ public class EditCommand extends Command {
 			int id;
 			boolean containsNewName = false;
 			String title = new String(); // Stub initialization
-			// CHECKS
 			// Check if first param has any text appended to it intended as Todo name
 			String[] firstKeywordParams = keyParamPairs.get(0).getParam().trim().split("\\s", 2);
 			if (firstKeywordParams.length > 1) {

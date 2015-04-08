@@ -98,13 +98,21 @@ public class RecurringTodoRule {
      * 
      * @param rule
      */
-    RecurringTodoRule(RecurringTodoRule rule) {
+    public RecurringTodoRule(RecurringTodoRule rule) {
     	this.originalName = rule.originalName;
     	this.name = RECURRING_TODO_PREIX + rule.name;
     	this.dateTimes = rule.dateTimes;
     	this.recurringInterval = rule.recurringInterval;
     	this.recurringId = rule.recurringId;
     	this.recurrenceLimit = rule.recurrenceLimit;
+    }
+    
+    private RecurringTodoRule(int recurringId) {
+    	this.recurringId = recurringId;
+    }
+    
+    public RecurringTodoRule getPlaceholder() {
+    	return new RecurringTodoRule(recurringId);
     }
 
     public String getName() {
