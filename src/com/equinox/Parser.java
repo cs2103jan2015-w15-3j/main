@@ -11,6 +11,7 @@ import org.joda.time.Period;
 
 import com.equinox.exceptions.InvalidDateException;
 import com.equinox.exceptions.InvalidPeriodException;
+import com.equinox.exceptions.InvalidRecurringException;
 import com.joestelmach.natty.DateGroup;
 
 public class Parser {
@@ -46,8 +47,9 @@ public class Parser {
 	 *            the String read from the user.
 	 * @return a ParsedInput object containing the command type,
 	 *         keyword-parameter pairs and dates identified.
+	 * @throws InvalidRecurringException 
 	 */
-	public static ParsedInput parseInput(String input) {
+	public static ParsedInput parseInput(String input) throws InvalidRecurringException {
 		boolean hasLimit = false;
 		boolean isRecurring = false;
 		Period period = new Period();
@@ -214,19 +216,7 @@ public class Parser {
 			// check parameters for recurring todos
 			if (isRecurring) {
 				if (!isValidRecurring(dateTimes)) {
-					isRecurring = false;
-
-					for (int i = 1; i < keyParamPairs.size(); i++) {
-						if (keyParamPairs.get(i).getKeyword() == Keywords.EVERY) {
-							String newName = appendParameters(keyParamPairs, 0,
-									i);
-							keyParamPairs.get(0).setParam(newName);
-						} else if (keyParamPairs.get(i).getKeyword() == Keywords.UNTIL) {
-							String newName = appendParameters(keyParamPairs, 0,
-									i);
-							keyParamPairs.get(0).setParam(newName);
-						}
-					}
+					throw new InvalidRecurringException();
 				}
 			}
 		}
