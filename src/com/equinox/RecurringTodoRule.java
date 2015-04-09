@@ -16,7 +16,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
  * storing individual Todos
  *
  */
-public class RecurringTodoRule implements Identifiable<RecurringTodoRule> {
+public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
     // @author A0093910H
     private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
 

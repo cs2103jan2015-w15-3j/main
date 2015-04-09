@@ -22,7 +22,7 @@ import com.equinox.exceptions.NotRecurringException;
  *
  */
 
-public class Todo implements Identifiable<Todo> {
+public class Todo implements UndoableRedoable<Todo> {
 	
 	public enum TYPE {
 		TASK, DEADLINE, EVENT;

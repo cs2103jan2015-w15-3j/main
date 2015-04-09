@@ -170,7 +170,7 @@ public class DisplayCommand extends Command {
 	private static ArrayList<Todo> cloneTodos(Collection<Todo> todos) {
 		ArrayList<Todo> clonedTodos = new ArrayList<Todo>(todos.size());
 		for (Todo todo : todos) {
-			clonedTodos.add(new Todo(todo));
+			clonedTodos.add(todo.copy());
 		}
 		return clonedTodos;
 	}
