@@ -9,6 +9,8 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.equinox.exceptions.NotRecurringException;
+
 /**
  * Stores parameters of a Todo using org.joda.time.DateTime objects. A Todo can
  * be subdivided into 3 different subtypes namely Task, Deadline, or Event,
@@ -26,9 +28,9 @@ public class Todo{
 		TASK, DEADLINE, EVENT;
 	}
 
-    protected final int id;
+    protected int id;
     protected String name;
-    protected final DateTime createdOn;
+    protected DateTime createdOn;
     protected DateTime modifiedOn, startTime, endTime;
     protected boolean isDone;
     protected TYPE type;
@@ -152,14 +154,14 @@ public class Todo{
 	 */
 	private Todo(int id) {
 		this.id = id;
-		this.name = null;
-		this.createdOn = null;
-		this.modifiedOn = null;
-		this.startTime = null;
-		this.endTime = null;
-		this.isDone = false;
-		this.type = null;
-        this.recurringId = null;
+	}
+	
+	/**
+	 * Returns the placeholder Todo constructed from the ID of this Todo. 
+	 * For use in Undo and Redo stacks in Memory.
+	 */
+	protected Todo getPlaceholder() {
+		return new Todo(id);
 	}
 
     /**
@@ -277,7 +279,10 @@ public class Todo{
 		return type;
 	}
 	
-    public Integer getRecurringId() {
+    public Integer getRecurringId() throws NotRecurringException {
+    	if (recurringId == null) {
+    		throw new NotRecurringException(ExceptionMessages.NOT_RECURRING_EXCEPTION);
+    	}
         return recurringId;
     }
     
@@ -287,15 +292,6 @@ public class Todo{
     	}
     	return true;
     }
-	
-	/**
-	 * Returns the placeholder Todo constructed from the ID of this Todo. 
-	 * For use in Undo and Redo stacks in Memory.
-	 * 
-	 */
-	protected Todo getPlaceholder() {
-		return new Todo(id);
-	}
 	
 	/**
 	 * Checks if the Todo has valid parameters and type. Specifically, checks

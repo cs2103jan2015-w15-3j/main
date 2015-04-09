@@ -94,7 +94,7 @@ public class SearchCommand extends Command {
 
 		for (int x : resultSet) {
 			try {
-				current = memory.get(x);
+				current = memory.getTodo(x);
 			} catch (NullTodoException e) {
 
 			}

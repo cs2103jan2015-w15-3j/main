@@ -40,6 +40,6 @@ public class EditCommandTest {
 		System.out.println(logic.handleInput("edit " + "0 " + "start "
 				+ editedStart + "end " + editedEnd));
 		assertEquals(new Todo(0, title.toLowerCase().trim(), dateTimes),
-				logic.memory.get(0));
+				logic.memory.getTodo(0));
 	}
 }

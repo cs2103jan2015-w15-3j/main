@@ -43,7 +43,7 @@ public class MarkCommand extends Command {
 
 		try {
 			int index = Integer.parseInt(keyParamPairs.get(0).getParam());
-			Todo todoToMark = memory.setterGet(index);
+			Todo todoToMark = memory.getToModifyTodo(index);
 			todoToMark.setDone(true);
 			memory.saveToFile();
             return new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT,

@@ -127,7 +127,7 @@ public class DisplayCommand extends Command {
 
             try {
                 int id = Integer.parseInt(param);
-                Todo todo = memory.get(id);
+                Todo todo = memory.getTodo(id);
                 displayString = todo.toString();
                 System.out.println(displayString);
             } catch (NullTodoException e) {

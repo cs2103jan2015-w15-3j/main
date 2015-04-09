@@ -12,6 +12,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.junit.Test;
 
+import com.equinox.exceptions.InvalidRecurringException;
+
 public class ParserTest {
 	
 	//@author A0115983X
@@ -24,7 +26,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 1"))), new ArrayList<DateTime>(),
 				new Period(), false, false, new DateTime(0));
-		assertEquals(parsed1, Parser.parseInput(add1));
+		try {
+			assertEquals(parsed1, Parser.parseInput(add1));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// floating task with 'one keyword + invalid datetime'
 		String add2 = "add study for test on algorithms";
@@ -33,7 +40,12 @@ public class ParserTest {
 						Keywords.ADD, "study for test on algorithms"))),
 				new ArrayList<DateTime>(), new Period(), false, false,
 				new DateTime(0));
-		assertEquals(parsed2, Parser.parseInput(add2));
+		try {
+			assertEquals(parsed2, Parser.parseInput(add2));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -57,7 +69,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 0"))), dateTimes0, new Period(),
 				false, false, new DateTime(0));
-		assertEquals(parsed0, Parser.parseInput(add0));
+		try {
+			assertEquals(parsed0, Parser.parseInput(add0));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// deadline task 'KEYWORD <invalid datetime> + KEYWORD <datetime>'
 		String add5 = "add test 5 at NTU on Friday";
@@ -65,7 +82,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 5 at NTU"))), dateTimes0,
 				new Period(), false, false, new DateTime(0));
-		assertEquals(parsed5, Parser.parseInput(add5));
+		try {
+			assertEquals(parsed5, Parser.parseInput(add5));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// deadline task 'KEYWORD <datetime> + KEYWORD <invalid datetime>'
 		String add6 = "add test 6 by Friday at Computing";
@@ -73,7 +95,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 6 at Computing"))), dateTimes0,
 				new Period(), false, false, new DateTime(0));
-		assertEquals(parsed6, Parser.parseInput(add6));
+		try {
+			assertEquals(parsed6, Parser.parseInput(add6));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -119,7 +146,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 0"))), dateTimes0, new Period(),
 				false, false, new DateTime(0));
-		assertEquals(parsed0, Parser.parseInput(add0));
+		try {
+			assertEquals(parsed0, Parser.parseInput(add0));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		// event task default 'keyword + day + keyword + 2 datetime'
 		String add1 = "add test 1 on Sunday from 3pm to 4pm";
@@ -127,14 +159,24 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 1"))), dateTimes1, new Period(),
 				false, false, new DateTime(0));
-		assertEquals(parsed1, Parser.parseInput(add1));
+		try {
+			assertEquals(parsed1, Parser.parseInput(add1));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		String add2 = "add CIP event from 3 March at 10am to 3 March at 12pm";
 		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "CIP event"))), dateTimes2, new Period(),
 				false, false, new DateTime(0));
-		assertEquals(parsed2, Parser.parseInput(add2));
+		try {
+			assertEquals(parsed2, Parser.parseInput(add2));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -144,7 +186,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, ""))), new ArrayList<DateTime>(),
 				new Period(), false, false, new DateTime(0));
-		assertEquals(parsed0, Parser.parseInput(add0));
+		try {
+			assertEquals(parsed0, Parser.parseInput(add0));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -186,7 +233,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 0"))), dateTimes0,
 				new Period().withWeeks(1), true, false, new DateTime(0));
-		assertEquals(parsed0, Parser.parseInput(add0));
+		try {
+			assertEquals(parsed0, Parser.parseInput(add0));
+		} catch (InvalidRecurringException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		// recurring deadline task 'EVERY <valid day of week>'
 		String add6 = "add test 6 every Friday";
@@ -194,7 +246,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 6"))), dateTimes0,
 				new Period().withWeeks(1), true, false, new DateTime(0));
-		assertEquals(parsed6, Parser.parseInput(add6));
+		try {
+			assertEquals(parsed6, Parser.parseInput(add6));
+		} catch (InvalidRecurringException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		// recurring event task
 		String add1 = "add test 1 from Friday to Sunday every month";
@@ -202,7 +259,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 1"))), dateTimes1,
 				new Period().withMonths(1), true, false, new DateTime(0));
-		assertEquals(parsed1, Parser.parseInput(add1));
+		try {
+			assertEquals(parsed1, Parser.parseInput(add1));
+		} catch (InvalidRecurringException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		// recurring deadline task with limit
 		String add3 = "add test 3 on Friday every week until 4 Dec 2015";
@@ -210,7 +272,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 3"))), dateTimes0,
 				new Period().withWeeks(1), true, true, dateTimes2.get(0));
-		assertEquals(parsed3, Parser.parseInput(add3));
+		try {
+			assertEquals(parsed3, Parser.parseInput(add3));
+		} catch (InvalidRecurringException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 
 		// recurring event task with limit
 		String add4 = "add test 4 from Friday to Sunday every month until 4 Dec 2015";
@@ -218,7 +285,12 @@ public class ParserTest {
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "test 4"))), dateTimes1,
 				new Period().withMonths(1), true, true, dateTimes2.get(0));
-		assertEquals(parsed4, Parser.parseInput(add4));
+		try {
+			assertEquals(parsed4, Parser.parseInput(add4));
+		} catch (InvalidRecurringException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		// invalid recurring command: name + every <valid period> + <valid
 		// limit>
@@ -228,7 +300,12 @@ public class ParserTest {
 						Keywords.ADD, "test 5"))),
 				new ArrayList<DateTime>(), new Period().withMonths(1), false,
 				true, dateTimes2.get(0));
-		assertEquals(parsed5, Parser.parseInput(add5));
+		try {
+			assertEquals(parsed5, Parser.parseInput(add5));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Test
@@ -249,8 +326,13 @@ public class ParserTest {
 		ParsedInput parsed0 = new ParsedInput(Keywords.SEARCH,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.SEARCH, ""), new KeyParamPair(Keywords.YEAR,
-						"2016"))), dateTimes0, new Period(), false, false,
+						"march 2016"))), dateTimes0, new Period(), false, false,
 				new DateTime(0));
-		assertEquals(parsed0, Parser.parseInput(search0));
+		try {
+			assertEquals(parsed0, Parser.parseInput(search0));
+		} catch (InvalidRecurringException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
