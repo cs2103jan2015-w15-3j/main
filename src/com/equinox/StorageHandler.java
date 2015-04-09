@@ -12,10 +12,8 @@ import java.util.Scanner;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.joda.time.Period;
 import org.joda.time.DurationFieldType;
 
-import com.equinox.Memory.IDBuffer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -239,8 +237,6 @@ public class StorageHandler {
 				new LocalDateTypeConverter());
 		gsonBuilder.registerTypeAdapter(LocalTime.class,
 				new LocalTimeTypeConverter());
-		gsonBuilder.registerTypeAdapter(IDBuffer.class,
-				new IDBufferInstanceCreator());
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String jsonString = gson.toJson(mem);
 		return jsonString;
@@ -262,8 +258,6 @@ public class StorageHandler {
 				new LocalDateTypeConverter());
 		gsonBuilder.registerTypeAdapter(LocalTime.class,
 				new LocalTimeTypeConverter());
-		gsonBuilder.registerTypeAdapter(IDBuffer.class,
-				new IDBufferInstanceCreator());
 		gsonBuilder.registerTypeAdapter(DurationFieldType.class, new DurationFieldTypeDeserialiser());
 		Gson gson = gsonBuilder.create();
 		

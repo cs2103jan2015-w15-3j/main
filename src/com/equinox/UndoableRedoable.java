@@ -1,6 +1,6 @@
 package com.equinox;
 
-public interface Identifiable<T extends Identifiable> {
+public interface UndoableRedoable<T extends UndoableRedoable<T>> {
 	
 	public int getId();
 	public T getPlaceholder();

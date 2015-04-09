@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import org.joda.time.DateTime;
@@ -44,11 +43,10 @@ public class Memory {
 	private final IDBuffer<RecurringTodoRule> recurringIdBuffer;
 
 	// Auxiliary memory for undo redo
-	private LinkedList<Boolean> undoStackIsRule;
-	private LinkedList<Boolean> redoStackIsRule;
-
-	private LinkedList<RecurringTodoRule> ruleUndoStack;
-	private LinkedList<RecurringTodoRule> ruleRedoStack;
+	private Stack<Boolean> undoIsRule;
+	private Stack<Boolean> redoIsRule;
+	private UndoRedoStack<Todo> todoStacks;
+	private UndoRedoStack<RecurringTodoRule> ruleStacks;
 
 	// Indexes for search
 	private SearchMap searchMap;
@@ -64,11 +62,11 @@ public class Memory {
 		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
 		this.idBuffer = new IDBuffer<Todo>(allTodos);
 		this.recurringIdBuffer = new IDBuffer<RecurringTodoRule>(recurringRules);
-		this.undoStackIsRule = new LinkedList<Boolean>();
-		this.redoStackIsRule = new LinkedList<Boolean>();
+		this.undoIsRule = new Stack<Boolean>();
+		this.redoIsRule = new Stack<Boolean>();
 		
-		this.ruleUndoStack = new LinkedList<RecurringTodoRule>();
-		this.ruleRedoStack = new LinkedList<RecurringTodoRule>();
+		this.todoStacks = new UndoRedoStack<Todo>(allTodos, idBuffer, STATE_STACK_MAX_SIZE);
+		this.ruleStacks = new UndoRedoStack<RecurringTodoRule>(recurringRules, recurringIdBuffer, STATE_STACK_MAX_SIZE);
 		this.searchMap = new SearchMap();
 	}
 
@@ -83,10 +81,15 @@ public class Memory {
 	 * @param todo the Todo to be added.
 	 */
 	public void add(Todo todo) {
-		int id = todo.getId();
-		save(todo.getPlaceholder());
-		flushRedoStack();
-		allTodos.put(id, todo);
+		// Save to stacks
+		todoStacks.save(todo.getPlaceholder());
+		todoStacks.flushRedoStack();
+		// Update isRuleStack
+		undoIsRule.push(false);
+		redoIsRule.clear();
+		// Save to memory
+		allTodos.put(todo.getId(), todo);
+		// Save to indexes
 		searchMap.add(todo);
 	}
 
@@ -96,8 +99,16 @@ public class Memory {
 	 * @param rule
 	 */
 	public void add(RecurringTodoRule rule) {
-		recurringRules.put(rule.getRecurringId(), rule);
+		// Save to stacks
+		ruleStacks.save(rule.getPlaceholder());
+		ruleStacks.flushRedoStack();
+		// Update isRuleStack
+		undoIsRule.push(true);
+		redoIsRule.clear();
+		// Save to memory
+		recurringRules.put(rule.getId(), rule);
 		updateRecurringRules();
+		// TODO Add to searchmap
 	}
 
 	private void updateRecurringRules() {
@@ -139,8 +150,10 @@ public class Memory {
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
-		save(returnTodo);
-		flushRedoStack();
+		todoStacks.save(returnTodo);
+		todoStacks.flushRedoStack();
+		undoIsRule.push(false);
+		redoIsRule.clear();
 		return returnTodo;
 	}
 
@@ -158,8 +171,10 @@ public class Memory {
 		if (returnRule == null) {
 			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
 		}
-		save(returnRule);
-		flushRedoStack();
+		ruleStacks.save(returnRule);
+		ruleStacks.flushRedoStack();
+		undoIsRule.push(true);
+		redoIsRule.clear();
 		return returnRule;
 	}
 
@@ -176,8 +191,10 @@ public class Memory {
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
-		save(returnTodo);
-		flushRedoStack();
+		todoStacks.save(returnTodo);
+		todoStacks.flushRedoStack();
+		undoIsRule.push(false);
+		redoIsRule.clear();
 		allTodos.remove(id);
 		searchMap.remove(returnTodo);
 		return returnTodo;
@@ -189,194 +206,40 @@ public class Memory {
 		if (returnRule == null) {
 			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
 		}
-		save(returnRule);
-		flushRedoStack();
+		ruleStacks.save(returnRule);
+		ruleStacks.flushRedoStack();
+		undoIsRule.push(true);
+		redoIsRule.clear();
 		recurringRules.remove(recurringId);
 		// TODO Remove from search map
 		return returnRule;
 	}
 	
-	/**
-	 * Saves the a copy of the state of a RecurringTodoRule into the undo stack. If the RecurringTodoRule
-	 * specified is null, a placeholder is used instead.
-	 * <p>
-	 * The stack never contains null values. <br>
-	 * If the maximum stack size is reached, the earliest state is discarded. <br>
-	 * If the stack and memory no longer contains a particular RecurringTodoRule, its ID is
-	 * returned to the pool of available indices.
-	 * 
-	 * @param toBeSaved the RecurringTodoRule to be saved.
-	 */
-	private void save(RecurringTodoRule toBeSaved) {
-		RecurringTodoRule toBeSavedCopy = new RecurringTodoRule(toBeSaved);
-		ruleUndoStack.add(toBeSavedCopy);
-		undoStackIsRule.add(true);
-		
-		// If undo stack has exceeded max size, discard earliest state.
-		if (ruleUndoStack.size() > STATE_STACK_MAX_SIZE) {
-			int id = ruleUndoStack.removeFirst().getRecurringId();
-			if (!recurringRules.containsKey(id)) {
-				releaseId(id);
-			}
-			undoStackIsRule.removeFirst();
+
+	public void undo() throws StateUndefinedException {
+		boolean isRule = undoIsRule.pop();
+		redoIsRule.push(isRule);
+		if(isRule) {
+			ruleStacks.restoreHistoryState();
+		} else {
+			todoStacks.restoreHistoryState();
 		}
 	}
+	
 
-	/**
-	 * Flushes both undo and redo stacks. For use with exit command.
-	 */
+	public void redo() throws StateUndefinedException {
+		boolean isRule = redoIsRule.pop();
+		undoIsRule.push(isRule);
+		if(isRule) {
+			ruleStacks.restoreFutureState();
+		} else {
+			ruleStacks.restoreFutureState();
+		}
+	}
+	
 	public void flushStacks() {
-		flushRedoStack();
-		flushUndoStack();
-	}
-
-	/**
-	 * Flushes the undoStack of all states of Todos.
-	 */
-	private void flushUndoStack() {
-		while (!todoUndoStack.isEmpty()) {
-			int id = todoUndoStack.pollLast().getId();
-			if (!allTodos.containsKey(id)) {
-				releaseId(id);
-			}
-		}
-		while (!ruleUndoStack.isEmpty()) {
-			int recurringId = ruleUndoStack.pollLast().getRecurringId();
-			if (!recurringRules.containsKey(recurringId)) {
-				releaseRecurringId(recurringId);
-			}
-		}
-	}
-
-	/**
-	 * Flushes the redoStack of all states of Todos.
-	 */
-	private void flushRedoStack() {
-		while (!todoRedoStack.isEmpty()) {
-			int id = todoRedoStack.pollLast().getId();
-			if (!allTodos.containsKey(id)) {
-				releaseId(id);
-			}
-		}
-		while (!ruleRedoStack.isEmpty()) {
-			int recurringId = todoRedoStack.pollLast().getId();
-			if (!recurringRules.containsKey(recurringId)) {
-				releaseRecurringId(recurringId);
-			}
-		}
-	}
-
-	
-	
-	static class UndoRedoStack<T extends Identifiable<T>> {
-		private LinkedList<T> undoStack;
-		private LinkedList<T> redoStack;
-		private HashMap<Integer, T> memory;
-		
-		public UndoRedoStack(HashMap<Integer, T> memory) {
-			this.undoStack = new LinkedList<T>();
-			this.redoStack = new LinkedList<T>();
-			this.memory = memory;
-			// TODO Auto-generated constructor stub
-		}
-		
-		/**
-		 * Saves the a copy of the state of a Todo into the undo stack. If the Todo
-		 * specified is null, a placeholder is used instead.
-		 * <p>
-		 * The stack never contains null values. <br>
-		 * If the maximum stack size is reached, the earliest state is discarded. <br>
-		 * If the stack and memory no longer contains a particular Todo, its ID is
-		 * returned to the pool of available indices.
-		 * 
-		 * @param toBeSaved the Todo to be saved.
-		 */
-		private void save(T toBeSaved) {
-			T toBeSavedCopy = toBeSaved.copy();
-			undoStack.add(toBeSavedCopy);
-			
-			// If undo stack has exceeded max size, discard earliest state.
-			if (undoStack.size() > STATE_STACK_MAX_SIZE) {
-				int id = undoStack.removeFirst().getId();
-				if (!memory.containsKey(id)) {
-					releaseId(id);
-				}
-				undoStackIsRule.removeFirst();
-			}
-		}
-		
-		/**
-		 * Restores the latest future state of the memory. Also known as the redo
-		 * operation.
-		 * 
-		 * @throws StateUndefinedException if there are no future states to restore
-		 *             to.
-		 */
-		public void restoreFutureState() throws StateUndefinedException {
-			T fromStack;
-			try {
-				fromStack = redoStack.removeLast();
-			} catch (NoSuchElementException e) {
-				throw new StateUndefinedException(
-						ExceptionMessages.NO_FUTURE_STATES_EXCEPTION);
-			}
-
-			int id = fromStack.getId();
-			T inMemory = memory.get(id);
-
-			// If Todo does not exist in memory, use placeholder.
-			if (inMemory == null) {
-				inMemory = fromStack.getPlaceholder();
-			}
-
-			save(inMemory);
-
-			// If Todo from stack is a placeholder, delete Todo indicated by its
-			// ID in the memory.
-			if (fromStack.isPlaceholder()) {
-				memory.remove(id);
-			} else {
-				memory.put(id, fromStack);
-			}
-		}
-		
-		/**
-		 * Restores the latest history state of the memory. Also known as the undo
-		 * operation.
-		 * 
-		 * @throws StateUndefinedException if there are no history states to restore
-		 *             to.
-		 */
-		public void restoreHistoryState() throws StateUndefinedException {
-			T fromStack;
-			try {
-				fromStack = undoStack.removeLast();
-			} catch (NoSuchElementException e) {
-				throw new StateUndefinedException(
-						ExceptionMessages.NO_HISTORY_STATES_EXCEPTION);
-			}
-
-			int id = fromStack.getId();
-			T inMemory = memory.get(id);
-
-			// If Todo does not exist in memory, use placeholder.
-			if (inMemory == null) {
-				inMemory = fromStack.getPlaceholder();
-			}
-
-			// Redo stack will not exceed maximum size.
-			redoStack.add(inMemory);
-
-			// If Todo from stack is a placeholder, delete Todo indicated by its
-			// ID in the memory.
-			if (fromStack.isPlaceholder()) {
-				memory.remove(id);
-			} else {
-				memory.put(id, fromStack);
-			}
-		}
-	
-	
+		todoStacks.flushStacks();
+		ruleStacks.flushStacks();
 	}
 
 	/**
@@ -451,7 +314,7 @@ public class Memory {
 			return returnId;
 		}
 
-		private void put(int id) {
+		void put(int id) {
 			if (id < minFreeId) {
 				minFreeId = id;
 			}
@@ -864,5 +727,4 @@ public class Memory {
 		}
 		return instance;
 	}
-
 }
