@@ -22,7 +22,7 @@ import com.equinox.exceptions.NotRecurringException;
  *
  */
 
-public class Todo{
+public class Todo implements Identifiable<Todo> {
 	
 	public enum TYPE {
 		TASK, DEADLINE, EVENT;
@@ -134,7 +134,7 @@ public class Todo{
 	 * 
 	 * @param todo the Todo to be copied.
 	 */
-	protected Todo(Todo todo) {
+	private Todo(Todo todo) {
 		this.id = todo.id;
 		this.name = todo.name;
 		this.createdOn = todo.createdOn;
@@ -156,12 +156,20 @@ public class Todo{
 		this.id = id;
 	}
 	
+	public Todo copy() {
+		return new Todo(this);
+	}
+	
 	/**
 	 * Returns the placeholder Todo constructed from the ID of this Todo. 
 	 * For use in Undo and Redo stacks in Memory.
 	 */
-	protected Todo getPlaceholder() {
+	public Todo getPlaceholder() {
 		return new Todo(id);
+	}
+	
+	public boolean isPlaceholder() {
+		return createdOn == null;
 	}
 
     /**

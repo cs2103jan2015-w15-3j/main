@@ -29,7 +29,7 @@ import com.equinox.exceptions.StateUndefinedException;
  */
 public class Memory {
 	// Field for Memory singleton pattern
-	private static Memory memory;
+	private static Memory instance;
 
 	// Constants
 	private static final String REGEX_SPACE = "\\s";
@@ -40,14 +40,13 @@ public class Memory {
 	private HashMap<Integer, RecurringTodoRule> recurringRules;
 
 	// Auxiliary memory for ID maintenance
-	private final IDBuffer idBuffer;
-	private final IDBuffer recurringIdBuffer;
+	private final IDBuffer<Todo> idBuffer;
+	private final IDBuffer<RecurringTodoRule> recurringIdBuffer;
 
 	// Auxiliary memory for undo redo
 	private LinkedList<Boolean> undoStackIsRule;
 	private LinkedList<Boolean> redoStackIsRule;
-	private LinkedList<Todo> todoUndoStack;
-	private LinkedList<Todo> todoRedoStack;
+
 	private LinkedList<RecurringTodoRule> ruleUndoStack;
 	private LinkedList<RecurringTodoRule> ruleRedoStack;
 
@@ -63,12 +62,11 @@ public class Memory {
 	public Memory() {
 		this.allTodos = new HashMap<Integer, Todo>();
 		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
-		this.idBuffer = new IDBuffer();
-		this.recurringIdBuffer = new IDBuffer();
+		this.idBuffer = new IDBuffer<Todo>(allTodos);
+		this.recurringIdBuffer = new IDBuffer<RecurringTodoRule>(recurringRules);
 		this.undoStackIsRule = new LinkedList<Boolean>();
 		this.redoStackIsRule = new LinkedList<Boolean>();
-		this.todoUndoStack = new LinkedList<Todo>();
-		this.todoRedoStack = new LinkedList<Todo>();
+		
 		this.ruleUndoStack = new LinkedList<RecurringTodoRule>();
 		this.ruleRedoStack = new LinkedList<RecurringTodoRule>();
 		this.searchMap = new SearchMap();
@@ -197,29 +195,6 @@ public class Memory {
 		// TODO Remove from search map
 		return returnRule;
 	}
-
-	/**
-	 * Saves the a copy of the state of a Todo into the undo stack. If the Todo
-	 * specified is null, a placeholder is used instead.
-	 * <p>
-	 * The stack never contains null values. <br>
-	 * If the maximum stack size is reached, the earliest state is discarded. <br>
-	 * If the stack and memory no longer contains a particular Todo, its ID is
-	 * returned to the pool of available indices.
-	 * 
-	 * @param toBeSaved the Todo to be saved.
-	 */
-	private void save(Todo toBeSaved) {
-		// If undo stack has exceeded max size, discard earliest state.
-		Todo toBeSavedCopy = new Todo(toBeSaved);
-		if (todoUndoStack.size() > STATE_STACK_MAX_SIZE) {
-			int id = todoUndoStack.removeFirst().getId();
-			if (!allTodos.containsKey(id)) {
-				releaseId(id);
-			}
-		}
-		todoUndoStack.add(toBeSavedCopy);
-	}
 	
 	/**
 	 * Saves the a copy of the state of a RecurringTodoRule into the undo stack. If the RecurringTodoRule
@@ -233,15 +208,18 @@ public class Memory {
 	 * @param toBeSaved the RecurringTodoRule to be saved.
 	 */
 	private void save(RecurringTodoRule toBeSaved) {
-		// If undo stack has exceeded max size, discard earliest state.
 		RecurringTodoRule toBeSavedCopy = new RecurringTodoRule(toBeSaved);
+		ruleUndoStack.add(toBeSavedCopy);
+		undoStackIsRule.add(true);
+		
+		// If undo stack has exceeded max size, discard earliest state.
 		if (ruleUndoStack.size() > STATE_STACK_MAX_SIZE) {
 			int id = ruleUndoStack.removeFirst().getRecurringId();
 			if (!recurringRules.containsKey(id)) {
 				releaseId(id);
 			}
+			undoStackIsRule.removeFirst();
 		}
-		ruleUndoStack.add(toBeSavedCopy);
 	}
 
 	/**
@@ -288,78 +266,117 @@ public class Memory {
 		}
 	}
 
-	/**
-	 * Restores the latest history state of the memory. Also known as the undo
-	 * operation.
-	 * 
-	 * @throws StateUndefinedException if there are no history states to restore
-	 *             to.
-	 */
-	public void restoreHistoryState() throws StateUndefinedException {
-		Todo fromStack;
-		try {
-			fromStack = todoUndoStack.removeLast();
-		} catch (NoSuchElementException e) {
-			throw new StateUndefinedException(
-					ExceptionMessages.NO_HISTORY_STATES_EXCEPTION);
-		}
-
-		int id = fromStack.getId();
-		Todo inMemory = allTodos.get(id);
-
-		// If Todo does not exist in memory, use placeholder.
-		if (inMemory == null) {
-			inMemory = fromStack.getPlaceholder();
-		}
-
-		// Redo stack will not exceed maximum size.
-		todoRedoStack.add(inMemory);
-
-		// If Todo from stack is a placeholder, delete Todo indicated by its
-		// ID in the memory.
-		if (fromStack.getCreatedOn() == null) {
-			allTodos.remove(id);
-		} else {
-			allTodos.put(id, fromStack);
-		}
-	}
-
-	/**
-	 * Restores the latest future state of the memory. Also known as the redo
-	 * operation.
-	 * 
-	 * @throws StateUndefinedException if there are no future states to restore
-	 *             to.
-	 */
-	public void restoreFutureState() throws StateUndefinedException {
-		Todo todoFromStack;
-		RecurringTodoRule ruleFromStack;
+	
+	
+	static class UndoRedoStack<T extends Identifiable<T>> {
+		private LinkedList<T> undoStack;
+		private LinkedList<T> redoStack;
+		private HashMap<Integer, T> memory;
 		
+		public UndoRedoStack(HashMap<Integer, T> memory) {
+			this.undoStack = new LinkedList<T>();
+			this.redoStack = new LinkedList<T>();
+			this.memory = memory;
+			// TODO Auto-generated constructor stub
+		}
 		
-		try {
-			todoFromStack = todoRedoStack.removeLast();
-		} catch (NoSuchElementException e) {
-			throw new StateUndefinedException(
-					ExceptionMessages.NO_FUTURE_STATES_EXCEPTION);
+		/**
+		 * Saves the a copy of the state of a Todo into the undo stack. If the Todo
+		 * specified is null, a placeholder is used instead.
+		 * <p>
+		 * The stack never contains null values. <br>
+		 * If the maximum stack size is reached, the earliest state is discarded. <br>
+		 * If the stack and memory no longer contains a particular Todo, its ID is
+		 * returned to the pool of available indices.
+		 * 
+		 * @param toBeSaved the Todo to be saved.
+		 */
+		private void save(T toBeSaved) {
+			T toBeSavedCopy = toBeSaved.copy();
+			undoStack.add(toBeSavedCopy);
+			
+			// If undo stack has exceeded max size, discard earliest state.
+			if (undoStack.size() > STATE_STACK_MAX_SIZE) {
+				int id = undoStack.removeFirst().getId();
+				if (!memory.containsKey(id)) {
+					releaseId(id);
+				}
+				undoStackIsRule.removeFirst();
+			}
 		}
+		
+		/**
+		 * Restores the latest future state of the memory. Also known as the redo
+		 * operation.
+		 * 
+		 * @throws StateUndefinedException if there are no future states to restore
+		 *             to.
+		 */
+		public void restoreFutureState() throws StateUndefinedException {
+			T fromStack;
+			try {
+				fromStack = redoStack.removeLast();
+			} catch (NoSuchElementException e) {
+				throw new StateUndefinedException(
+						ExceptionMessages.NO_FUTURE_STATES_EXCEPTION);
+			}
 
-		int id = todoFromStack.getId();
-		Todo inMemory = allTodos.get(id);
+			int id = fromStack.getId();
+			T inMemory = memory.get(id);
 
-		// If Todo does not exist in memory, use placeholder.
-		if (inMemory == null) {
-			inMemory = todoFromStack.getPlaceholder();
+			// If Todo does not exist in memory, use placeholder.
+			if (inMemory == null) {
+				inMemory = fromStack.getPlaceholder();
+			}
+
+			save(inMemory);
+
+			// If Todo from stack is a placeholder, delete Todo indicated by its
+			// ID in the memory.
+			if (fromStack.isPlaceholder()) {
+				memory.remove(id);
+			} else {
+				memory.put(id, fromStack);
+			}
 		}
+		
+		/**
+		 * Restores the latest history state of the memory. Also known as the undo
+		 * operation.
+		 * 
+		 * @throws StateUndefinedException if there are no history states to restore
+		 *             to.
+		 */
+		public void restoreHistoryState() throws StateUndefinedException {
+			T fromStack;
+			try {
+				fromStack = undoStack.removeLast();
+			} catch (NoSuchElementException e) {
+				throw new StateUndefinedException(
+						ExceptionMessages.NO_HISTORY_STATES_EXCEPTION);
+			}
 
-		save(inMemory);
+			int id = fromStack.getId();
+			T inMemory = memory.get(id);
 
-		// If Todo from stack is a placeholder, delete Todo indicated by its
-		// ID in the memory.
-		if (todoFromStack.getCreatedOn() == null) {
-			allTodos.remove(id);
-		} else {
-			allTodos.put(id, todoFromStack);
+			// If Todo does not exist in memory, use placeholder.
+			if (inMemory == null) {
+				inMemory = fromStack.getPlaceholder();
+			}
+
+			// Redo stack will not exceed maximum size.
+			redoStack.add(inMemory);
+
+			// If Todo from stack is a placeholder, delete Todo indicated by its
+			// ID in the memory.
+			if (fromStack.isPlaceholder()) {
+				memory.remove(id);
+			} else {
+				memory.put(id, fromStack);
+			}
 		}
+	
+	
 	}
 
 	/**
@@ -403,9 +420,10 @@ public class Memory {
 	 * Serves as a buffer of fixed size for new Todos to draw their ID from.
 	 * 
 	 * @author Ikarus
+	 * @param <E>
 	 *
 	 */
-	class IDBuffer {
+	static class IDBuffer<E> {
 		// Constants
 		private static final int ID_INITIAL = 0;
 		private static final int ID_BUFFER_INITIAL_SIZE = 5;
@@ -413,13 +431,15 @@ public class Memory {
 
 		private TreeSet<Integer> buffer;
 		private int minFreeId;
+		private HashMap<Integer, E> memory;
 
-		protected IDBuffer() {
-			buffer = new TreeSet<Integer>();
-			minFreeId = ID_INITIAL;
+		protected IDBuffer(HashMap<Integer, E> memory) {
+			this.buffer = new TreeSet<Integer>();
+			this.minFreeId = ID_INITIAL;
 			for (int i = ID_INITIAL; i < ID_INITIAL + ID_BUFFER_INITIAL_SIZE; i++) {
 				buffer.add(i);
 			}
+			this.memory = memory;
 		}
 
 		private int get() {
@@ -446,7 +466,7 @@ public class Memory {
 			int i = minUnloadedId;
 
 			while (i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
-				if (allTodos.containsKey(i)) {
+				if (memory.containsKey(i)) { // TODO: DEPENDENCY
 					minUnloadedId++;
 				} else {
 					buffer.add(i);
@@ -839,10 +859,10 @@ public class Memory {
 	 * @return instance of memory
 	 */
 	public static Memory getInstance() {
-		if (memory == null) {
-			memory = new Memory();
+		if (instance == null) {
+			instance = new Memory();
 		}
-		return memory;
+		return instance;
 	}
 
 }
