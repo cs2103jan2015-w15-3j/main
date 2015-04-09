@@ -175,6 +175,9 @@ public class Parser {
 						}
 					}
 
+				} else if (key == Keywords.RULE) {
+					//leaves keyParamPair for rule as it is. 
+					// does not parse as date or append to name
 				} else {
 					// tries to parse param as date
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
