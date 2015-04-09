@@ -55,7 +55,7 @@ public class DisplayCommandTest {
     @Test
     public void testDisplayDefaultPending() {
         String expected = "Showing pending todos:\nID | Name                           | Time\n\n..Mon 09 Mar 2015...\n1  | CS3230 deadline                | 21:00\n\n..Thu 01 Jan 2015...\n3  | new year                       | 10:00 - 11:00\n\n..Tue 03 Feb 2015...\n4  | CS1010 deadline                | 22:00\n\n......Anytime.......\n5  | read floating books            | NIL\n6  | CS3243 project deadline        | 09:00\n7  | CS3333 project 2               | 10:00\n8  | meet june at  on the table fro | 21:00 - 22:00\n";
-        assertEquals(expected, DisplayCommand.getDisplay(todos, 0));
+        assertEquals(expected, DisplayCommand.getDisplayString(todos, 0));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class DisplayCommandTest {
     @Test
     public void testDisplayDefaultCompleted() {
         String expected = "Showing completed todos:\nID | Name                           | Time\n\n......Anytime.......\n0  | floating task                  | NIL\n2  | CIP event                      | 10:00 - 12:00\n";
-        assertEquals(expected, DisplayCommand.getDisplay(todos, 1));
+        assertEquals(expected, DisplayCommand.getDisplayString(todos, 1));
     }
 
     @Test

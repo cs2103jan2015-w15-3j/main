@@ -370,6 +370,16 @@ public class Todo{
             return null;
         }
     }
+
+    // @author A0093910H
+    public boolean isEvent() {
+        if (this.startTime != null && this.endTime != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     //@author A0110839H
     /**
      * Method to compare two DateTime objects at the minute resolution
