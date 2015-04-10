@@ -5,13 +5,15 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import java.util.Scanner;
+
+import com.google.gson.JsonSyntaxException;
 //@author A0110839H
 /**
  * Processes the custom file directory path specified by user.
@@ -56,39 +58,81 @@ public class StorageUtils {
 				File newStorageFile = new File(customFilePath);
 
 				if (newStorageFile.exists()) {
-					System.out
-							.println("A storage file already exists at user-specified location. "
-									+ "Do you wish to overwrite it? Y/N");
-					String overwrite = scn.nextLine().toUpperCase();
-
-					// If Y >>
-					// If there exists a storageFile.json in the current directory
-					// as
-					// specified in the settings file, copy it to the custom
-					// directory
-					if (overwrite.equals("Y")) {
-						String storageFilePath = fileDirectory + "/"
-								+ STORAGE_FILE_NAME;
-						File currentStorageFile = new File(storageFilePath);
-						if (currentStorageFile.exists()) {
-							copyStorageFile(storageFilePath, customFileDirPath);
+					// newStorageFile is not in Json format
+					if(!isFileInJsonFormat(newStorageFile)){
+						System.out
+						.println("An unreadable storage file exists at the user-specified location. \n"
+								+ "Do you wish to : \n"
+								+ "\t 1. Copy over an existing version from the default location (C) \n"
+								+ "\t 2. Overwrite the file with a blank file (O) \n"
+								+ "\t 3. Revert to the default location (R)");
+						String command = scn.next().toUpperCase().trim();
+						
+						switch(command){
+						case "C":
+							String storageFilePath = fileDirectory + "/"
+									+ STORAGE_FILE_NAME;
+							File currentStorageFile = new File(storageFilePath);
+							
+							if (currentStorageFile.exists()) {
+								copyStorageFile(storageFilePath, customFileDirPath);
+								System.out
+										.println("Storage file copied to specified location: "
+												+ customFileDirPath);
+							}
+							// No existing storageFile.json at the default location
+							// Create a blank storageFile.json at the user-specified location
+							else{
+								newStorageFile.delete();
+								try{
+									newStorageFile.createNewFile();
+								} catch(IOException e){
+									e.printStackTrace();
+								}
+								StorageHandler.createFileIfNonExistent(newStorageFile);
+								StorageHandler.storeMemoryToFile(Memory.getInstance(), newStorageFile);
+								
+							}
+							// Update settings file and file directory
+							modifySettingsFile(customFileDirPath);
+							fileDirectory = customFileDirPath;
 							System.out
-									.println("Storage file copied to specified location: "
+									.println("Directory of the storage file is updated to: "
 											+ customFileDirPath);
+							break;
+						case "O":
+							newStorageFile.delete();
+							try{
+								newStorageFile.createNewFile();
+							} catch(IOException e){
+								e.printStackTrace();
+							}
+							StorageHandler.createFileIfNonExistent(newStorageFile);
+							StorageHandler.storeMemoryToFile(Memory.getInstance(), newStorageFile);
+							
+							// Update settings file and file directory
+							modifySettingsFile(customFileDirPath);
+							fileDirectory = customFileDirPath;
+							System.out
+									.println("Directory of the storage file is updated to: "
+											+ customFileDirPath);
+							break;
+						case "R":
+							// Do nothing; fileDirectory is already default
+							System.out
+							.println("Storage file location is reverted to the default: "
+									+ fileDirectory);
+	
+							break;
+						
 						}
-						// Do so regardless of existence of storageFile.json
-						modifySettingsFile(customFileDirPath);
-						fileDirectory = customFileDirPath;
-						System.out
-								.println("Directory to save storageFile.json is updated in Settings file to: "
-										+ customFileDirPath);
+						scn.nextLine();
 					}
-					// If N or any other input >> revert to default path.
-					else {
-						System.out
-								.println("Storage file location is reverted to the default: "
-										+ fileDirectory);
-		
+					// newStorageFile is in Json format
+					// Use the existing file at user-specified location automatically
+					else{
+					 modifySettingsFile(customFileDirPath);
+					 fileDirectory = customFileDirPath;
 					}
 				}
 				// newStorageFile does not exist.
@@ -106,7 +150,7 @@ public class StorageUtils {
 								.println("Storage file copied to specified location: "
 										+ customFileDirPath);
 					}
-					// So do regardless of existence of storageFile.json
+					// Update regardless of existence of storageFile.json
 					modifySettingsFile(customFileDirPath);
 					fileDirectory = customFileDirPath;
 					System.out
@@ -124,6 +168,24 @@ public class StorageUtils {
 			return fileDirectory;
 		}
 		
+		static boolean isFileInJsonFormat(File file){
+			try{
+				Scanner reader = new Scanner(file);
+				StringBuilder builder = new StringBuilder();
+
+				while (reader.hasNextLine()) {
+					builder.append(reader.nextLine() + "\n");
+				}
+				String jsonString = builder.toString();
+				StorageHandler.importFromJson(jsonString);
+				reader.close();
+			} catch(FileNotFoundException e){
+				e.printStackTrace();
+			} catch(JsonSyntaxException e){
+				return false;
+			}
+			return true;
+		}
 		/**
 		 * Copies storageFile.json from the storageFilePath to customFileDirPath 
 		 * 
@@ -160,7 +222,8 @@ public class StorageUtils {
 			}
 
 		}
-
+		
+	
 		/**
 		 * Attempt to read settings.txt in the default directory.
 		 * 

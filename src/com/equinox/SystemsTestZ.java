@@ -11,7 +11,6 @@ import org.junit.Test;
 public class SystemsTestZ {
 
     Collection<Todo> todos;
-    String storageFileDirectory = StorageUtils.readSettingsFile();
     Zeitgeist logic;
 
     @Before
