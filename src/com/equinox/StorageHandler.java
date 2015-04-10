@@ -2,6 +2,7 @@ package com.equinox;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -82,6 +83,11 @@ public class StorageHandler {
 			return this;
 		}
 		
+		public Builder setFilePath(File file){
+			this.filePath = file.getAbsolutePath();
+			return this;
+		}
+		
 		/**
 		 * Returns a StorageHandler instance.
 		 * 
@@ -100,17 +106,43 @@ public class StorageHandler {
 	 */
 	private StorageHandler(Builder builder) {
 	    filePath = builder.filePath;
-		this.storageFile = new File(filePath);
-		createFileIfNonExistent();
+		storageFile = new File(filePath);
+		createFileIfNonExistent(storageFile);
+		checkFileFormat();
 	}
-	
+	/**
+	 * 
+	 * Checks that storageFile.json is readable. If it is not, 
+	 * the user will be asked to replace the file with a new blank
+	 * file, or to exit the program.
+	 * 
+	 */
+	private static void checkFileFormat(){
+		if(!StorageUtils.isFileInJsonFormat(storageFile)){
+			String command;
+			do{
+				System.out.println("Storage file is unreadable or corrupt. Replace it with a blank file (R) or exit (E)?");
+				command = Zeitgeist.scn.nextLine().toUpperCase().trim();
+				if(command.equals("R")){
+					storageFile.delete();
+					createFileIfNonExistent(storageFile);
+				}
+				else if(command.equals("E")){
+					System.exit(0);
+				}
+				else{
+					System.out.println("Incorrect command given.");
+				}
+			}while(!command.equals("R")&&!command.equals("E"));
+		}
+	}
 	/**
 	 * Initialise the file reader.
 	 * 
 	 */
-	private void initialiseReader() {
+	private static void initialiseReader(File file) {
 		try {
-			reader = new Scanner(storageFile);
+			reader = new Scanner(file);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -121,10 +153,10 @@ public class StorageHandler {
 	 * Initialise the file writer.
 	 * 
 	 */
-	private void initialiseWriter() {
+	private static void initialiseWriter(File file) {
 		try {
 			writer = new PrintWriter(new BufferedWriter(new FileWriter(
-					storageFile, false)));
+					file, false)));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -135,14 +167,14 @@ public class StorageHandler {
 	 * Tear down the file reader.
 	 * 
 	 */
-	private void tearDownReader() {
+	private static void tearDownReader() {
 		reader.close();
 	}
 	/**
 	 * Tear down the file writer.
 	 * 
 	 */
-	private void tearDownWriter() {
+	private static void tearDownWriter() {
 		writer.close();
 	}
 	
@@ -150,12 +182,12 @@ public class StorageHandler {
 	 * Create file with the specified file path if it does not exist.
 	 * 
 	 */
-	private void createFileIfNonExistent() {
+	public static void createFileIfNonExistent(File file) {
 		try {
-			if (!storageFile.exists()) {
-				storageFile.createNewFile();
+			if (!file.exists()) {
+				file.createNewFile();
 				//write a null Memory in JSON format to file
-                storeMemoryToFile(Memory.getInstance());
+                storeMemoryToFile(Memory.getInstance(), file);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -184,7 +216,7 @@ public class StorageHandler {
 			if(!storageTestFile.exists()){
 				storageTestFile.createNewFile();
 				//write a null Memory in JSON format to file
-                storeMemoryToFile(Memory.getInstance());
+                storeMemoryToFile(Memory.getInstance(), storageTestFile);
 			}
 		} catch(IOException e){
 			e.printStackTrace();
@@ -196,8 +228,15 @@ public class StorageHandler {
 	 * 
 	 * @param memoryToStore
 	 */
-	public void storeMemoryToFile(Memory memoryToStore) {
-		initialiseWriter();
+	public static void storeMemoryToFile(Memory memoryToStore) {
+		initialiseWriter(storageFile);
+		String jsonString = exportAsJson(memoryToStore);
+		writer.println(jsonString);
+		tearDownWriter();
+	}
+	
+	public static void storeMemoryToFile(Memory memoryToStore, File file) {
+		initialiseWriter(file);
 		String jsonString = exportAsJson(memoryToStore);
 		writer.println(jsonString);
 		tearDownWriter();
@@ -207,8 +246,8 @@ public class StorageHandler {
 	 * Retrieves a Memory object from the JSON file.
 	 * 
 	 */
-	public Memory retrieveMemoryFromFile() {
-		initialiseReader();
+	public Memory retrieveMemoryFromFile() throws JsonSyntaxException{
+		initialiseReader(storageFile);
 		StringBuilder builder = new StringBuilder();
 
 		while (reader.hasNextLine()) {
@@ -217,11 +256,8 @@ public class StorageHandler {
 		String jsonString = builder.toString();
 		tearDownReader();
 		Memory retrievedMemory = null;
-		try{
-			retrievedMemory = importFromJson(jsonString);
-		} catch (JsonSyntaxException e){
-			System.out.println("Storage file is not in proper JSON format, or has been corrupted.");
-		}
+		retrievedMemory = importFromJson(jsonString);
+
 		return retrievedMemory;
 	}
 	
@@ -231,7 +267,7 @@ public class StorageHandler {
 	 * 
 	 * @return JSON String
 	 */
-	public String exportAsJson(Memory mem) {
+	public static String exportAsJson(Memory mem) {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());
@@ -244,7 +280,6 @@ public class StorageHandler {
 		Gson gson = gsonBuilder.setPrettyPrinting().create();
 		String jsonString = gson.toJson(mem);
 		return jsonString;
-
 	}
 
 	/**
@@ -254,7 +289,7 @@ public class StorageHandler {
 	 * @param jsonString JSON representation of an instance of memory as String
 	 * @return an instance of Memory class
 	 */
-	public Memory importFromJson(String jsonString) throws JsonSyntaxException {
+	public static Memory importFromJson(String jsonString) throws JsonSyntaxException {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(DateTime.class,
 				new DateTimeTypeConverter());

@@ -1,6 +1,7 @@
 package com.equinox;
 
 import java.util.Scanner;
+import java.io.File;
 
 public class Zeitgeist {
 	
