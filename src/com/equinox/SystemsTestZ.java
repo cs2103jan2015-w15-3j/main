@@ -53,7 +53,7 @@ public class SystemsTestZ {
 
         logic.handleInput("search read");
 
-        logic.handleInput("add go to NUS hackers every friday");
+        logic.handleInput("add go to NUS hackers on 3 apr every friday until 4 apr");
 
         logic.handleInput("add learn something every sunday");
 
@@ -75,7 +75,7 @@ public class SystemsTestZ {
 
         logic.handleInput("search NUS");
 
-        logic.handleInput("edit 3 name last new year");
+        logic.handleInput("edit 3 last new year");
 
         logic.handleInput("search new");
 
@@ -86,7 +86,7 @@ public class SystemsTestZ {
         todos = logic.memory.getAllTodos();
 
         String expected = "Showing pending todos:\nID | Name                           | Time\n\n..Mon 09 Mar 2015...\n1  | CS3230 deadline                | 21:00\n\n..Thu 01 Jan 2015...\n3  | last new year                  | 23:59\n\n..Fri 01 Jan 2016...\n4  | (Recurring) new year           | 23:59\n\n..Tue 03 Feb 2015...\n5  | CS1010 deadline                | 22:00\n\n..Sat 07 Mar 2015...\n7  | CS3243 project deadline        | 09:00\n\n..Tue 07 Apr 2015...\n8  | CS3333 project 2               | 10:00\n\n..Fri 03 Apr 2015...\n9  | (Recurring) go to NUS hackers  | 23:59\n";
-        assertEquals(expected, DisplayCommand.getDisplay(todos, 0));
+        assertEquals(expected, DisplayCommand.getDisplayString(todos, 0));
 
     }
 

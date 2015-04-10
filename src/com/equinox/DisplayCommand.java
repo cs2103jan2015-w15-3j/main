@@ -19,22 +19,19 @@ import com.equinox.exceptions.NullTodoException;
 
 public class DisplayCommand extends Command {
 
+
     // @author A0093910H
     private static Logger logger = LoggerFactory
             .getLogger(DisplayCommand.class);
 
     private static final boolean LOGGING = false;
 
-	/**
-	 * Creates a DisplayCommand object.
-	 * 
-	 * @param input the ParsedInput object containing the parameters.
-	 * @param memory the memory containing the Todos to which the changes should
-	 *            be committed.
-	 */
-	public DisplayCommand(ParsedInput input, Memory memory) {
-		super(input, memory);
-	}
+	// Parameters allowed for display command
+    private static final String PARAM_ALL_1 = "all";
+    private static final String PARAM_ALL_2 = "a";
+    private static final String PARAM_COMPLETE_1 = "completed";
+    private static final String PARAM_COMPLETE_2 = "complete";
+    private static final String PARAM_COMPLETE_3 = "c";
 
 	// Signals for whether to display pending or completed todos
 	private static final int showPending = 0;
@@ -87,7 +84,18 @@ public class DisplayCommand extends Command {
             .printZeroNever().appendMinutes().appendSuffix("min ")
             .printZeroNever().toFormatter();
 
-	@Override
+	/**
+     * Creates a DisplayCommand object.
+     * 
+     * @param input the ParsedInput object containing the parameters.
+     * @param memory the memory containing the Todos to which the changes should
+     *            be committed.
+     */
+    public DisplayCommand(ParsedInput input, Memory memory) {
+    	super(input, memory);
+    }
+
+    @Override
 	public Signal execute() {
 		String displayString;
 		Collection<Todo> todos = memory.getAllTodos();
@@ -106,11 +114,11 @@ public class DisplayCommand extends Command {
         if (param.isEmpty()) {
             // By default we show pending tasks, in chronological order
             displayDefault();
-        } else if (param.equals("completed") || param.equals("complete")
-				|| param.equals("c")) {
+        } else if (param.equals(PARAM_COMPLETE_1) || param.equals(PARAM_COMPLETE_2)
+				|| param.equals(PARAM_COMPLETE_3)) {
             displayString = getDisplayChrono(showCompleted);
 			System.out.println(displayString);
-		} else if (param.equals("all") || param.equals("a")) {
+		} else if (param.equals(PARAM_ALL_1) || param.equals(PARAM_ALL_2)) {
             displayString = getDisplayChrono(showAll);
 			System.out.println(displayString);
         } else {
@@ -119,7 +127,7 @@ public class DisplayCommand extends Command {
 
             try {
                 int id = Integer.parseInt(param);
-                Todo todo = memory.get(id);
+                Todo todo = memory.getTodo(id);
                 displayString = todo.toString();
                 System.out.println(displayString);
             } catch (NullTodoException e) {
@@ -149,14 +157,14 @@ public class DisplayCommand extends Command {
         ArrayList<Todo> clonedTodos = cloneTodos(todos);
         // By default, we order the todos in chronological order
         Collections.sort(clonedTodos, new ChronoComparator());
-        return getDisplay(clonedTodos, signal);
+        return getDisplayString(clonedTodos, signal);
     }
 
     public static String getDisplayChrono(ArrayList<Todo> todos, int signal) {
         ArrayList<Todo> clonedTodos = cloneTodos(todos);
         // By default, we order the todos in chronological order
         Collections.sort(clonedTodos, new ChronoComparator());
-        return getDisplay(clonedTodos, signal);
+        return getDisplayString(clonedTodos, signal);
     }
 
     public String getDisplayChrono(int signal) {
@@ -164,7 +172,7 @@ public class DisplayCommand extends Command {
         ArrayList<Todo> clonedTodos = cloneTodos(todos);
         // By default, we order the todos in chronological order
         Collections.sort(clonedTodos, new ChronoComparator());
-		return getDisplay(clonedTodos, signal);
+		return getDisplayString(clonedTodos, signal);
 	}
 
 	private static ArrayList<Todo> cloneTodos(Collection<Todo> todos) {
@@ -175,7 +183,10 @@ public class DisplayCommand extends Command {
 		return clonedTodos;
 	}
 
-    public static String getDisplay(Collection<Todo> todos, int signal) {
+    public static String getDisplayString(Collection<Todo> todos, int signal) {
+        // Break down the events that spans across several days
+        todos = breakDownLongEvents(todos);
+
 		Iterator<Todo> iterator = todos.iterator();
 		StringBuilder sBuilder = new StringBuilder();
         DateTime currentDate = new DateTime(0);
@@ -196,16 +207,74 @@ public class DisplayCommand extends Command {
                 continue;
             }
             DateTime todoDateTime = todo.getDateTime();
-            if (!dateAlreadyDisplayed(currentDate, todoDateTime)) {
-                // Date not displayed yet, update currentDate and display the
-                // date
-                currentDate = todoDateTime;
-                appendDate(sBuilder, todoDateTime);
-            }
+            currentDate = appendDateIfNew(sBuilder, currentDate, todoDateTime);
             appendTodo(sBuilder, todo);
 		}
 		return sBuilder.toString();
 	}
+
+    /**
+     * This method handles the events that spans over a few days and break them
+     * down into smaller todos within one day for display purposes
+     * 
+     * @param todos
+     *            todos to be broken down
+     * @return todos with long events broken down into shorter ones which are
+     *         within a single day
+     */
+    private static Collection<Todo> breakDownLongEvents(Collection<Todo> todos) {
+        Collection<Todo> shortTodos = new ArrayList<Todo>();
+        for (Todo todo : todos) {
+            if (todo.isEvent()
+                    && !isSameDay(todo.getStartTime(), todo.getEndTime())) {
+                shortTodos.addAll(getShortEventsFromLongEvent(todo));
+            } else {
+                shortTodos.add(todo);
+            }
+        }
+        return shortTodos;
+    }
+
+    private static Collection<Todo> getShortEventsFromLongEvent(Todo todo) {
+        Collection<Todo> shortTodos = new ArrayList<Todo>();
+        DateTime currentStartTime = todo.getStartTime();
+        DateTime endTime = todo.getEndTime();
+        Todo shortTodo;
+        while (!isSameDay(currentStartTime, endTime)) {
+            shortTodo = new Todo(todo);
+            shortTodo.setStartTime(currentStartTime);
+            // Set the end time of intermediate days to 2359
+            shortTodo.setEndTime(currentStartTime.withHourOfDay(23)
+                    .withMinuteOfHour(59));
+            shortTodos.add(shortTodo);
+            // Move the start time to beginning of the next day
+            currentStartTime = currentStartTime.plusDays(1).withMillisOfDay(0);
+        }
+        // Add the last day of event
+        shortTodo = new Todo(todo);
+        shortTodo.setStartTime(currentStartTime);
+        shortTodos.add(shortTodo);
+        return shortTodos;
+    }
+
+    /**
+     * Append the date if the date is a new one and has not been displayed yet
+     * 
+     * @param sBuilder
+     * @param currentDate
+     * @param todoDateTime
+     * @return the updated current date
+     */
+    private static DateTime appendDateIfNew(StringBuilder sBuilder,
+            DateTime currentDate, DateTime todoDateTime) {
+        if (!dateAlreadyDisplayed(currentDate, todoDateTime)) {
+            // Date not displayed yet, update currentDate and display the
+            // date
+            currentDate = todoDateTime;
+            appendDate(sBuilder, todoDateTime);
+        }
+        return currentDate;
+    }
 
     /**
      * Check if the date is already displayed
@@ -224,20 +293,26 @@ public class DisplayCommand extends Command {
             DateTime dateTime) {
         if (currentDate == null) {
             // null currentDate indicates that floating task heading has
-            // already been displayed
+            // already been displayed, no other headings will be displayed
             return true;
         }
         if (dateTime == null) {
             // null dateTime indicates that this is a floating task
             return false;
         }
-        if (currentDate.getDayOfYear() == dateTime.getDayOfYear()
-                && currentDate.getYear() == dateTime.getYear()) {
-            // currentDate equals to the DateTime of todo, meaning that the date
-            // has been displayed
+        if (isSameDay(currentDate, dateTime)) {
             return true;
+        } else {
+            return false;
         }
-        return false;
+    }
+
+    private static boolean isSameDay(DateTime date1, DateTime date2) {
+        if (date1 == null || date2 == null) {
+            return false;
+        }
+        return (date1.getDayOfYear() == date2.getDayOfYear() && date1
+                .getYear() == date2.getYear());
     }
 
     /**

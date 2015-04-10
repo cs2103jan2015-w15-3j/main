@@ -3,6 +3,8 @@ package com.equinox;
 import java.util.Scanner;
 import java.io.File;
 
+import com.equinox.exceptions.InvalidRecurringException;
+
 public class Zeitgeist {
 	
 	private static Zeitgeist logic;
@@ -81,12 +83,17 @@ public class Zeitgeist {
 			SignalHandler.printCommandPrefix();
 			input = scn.nextLine();
 			clearConsole();
-			Signal signal = logic.handleInput(input);
+			Signal signal;
+			try {
+				signal = logic.handleInput(input);
+			} catch (InvalidRecurringException e) {
+				signal = new Signal(Signal.ADD_INVALID_RECURRING_ERROR, false);
+			}
 			SignalHandler.printSignal(signal);
 		}
 	}
 
-	public Signal handleInput(String input) {
+	public Signal handleInput(String input) throws InvalidRecurringException {
 		ParsedInput c = Parser.parseInput(input);
 		return execute(c);
 	}

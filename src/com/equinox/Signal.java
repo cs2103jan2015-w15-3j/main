@@ -21,6 +21,7 @@ public class Signal {
 	public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added.";
 	public static final String ADD_UNKNOWN_ERROR = "Unknown add error";
 	public static final String ADD_END_BEFORE_START_ERROR = "The start time is after the end time.";
+	public static final String ADD_INVALID_RECURRING_ERROR = "No date or time given for recurring task.";
 	public static final String ADD_INVALID_PARAMS = "The number of parameters is invalid."
 			+ System.lineSeparator()
 			+ "\t Supported formats:"
@@ -60,7 +61,6 @@ public class Signal {
 	public static final String EDIT_RULE_SUCCESS_FORMAT = "Rule %1$ssuccessfuly modified to %2$s.";
 	public static final String EDIT_END_BEFORE_START = "The start time must be before the end time.";
 	public static final String EDIT_INVALID_DATE = "Date(s) specified is/are invalid";
-	public static final String EDIT_NOT_RECURRING = "Todo specified is not a recurring Todo.";
 	public static final String EDIT_NO_LONGER_RECURS = "Recurring Todo rule specified no longer exists.";
 	public static final String EDIT_NO_RECURRING_TIME = "A time must be specified to edit a recurrence interval.";
 	public static final String EDIT_INVALID_PARAMS = "The number or format of parameters is invalid."

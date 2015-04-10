@@ -2,6 +2,7 @@
 
 package com.equinox;
 
+import com.equinox.exceptions.NotRecurringException;
 import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
 import com.equinox.exceptions.StateUndefinedException;
@@ -40,7 +41,6 @@ public class EditCommand extends Command {
 			int id;
 			boolean containsNewName = false;
 			String title = new String(); // Stub initialization
-			// CHECKS
 			// Check if first param has any text appended to it intended as Todo name
 			String[] firstKeywordParams = keyParamPairs.get(0).getParam().trim().split("\\s", 2);
 			if (firstKeywordParams.length > 1) {
@@ -59,20 +59,17 @@ public class EditCommand extends Command {
 				}
 				id = Integer.parseInt(keyParamPairs.get(0).getParam());
 			}
-			Todo todo = memory.setterGet(id);
+			Todo todo = memory.getToModifyTodo(id);
 			Todo oldTodo = new Todo(todo);
 
 			if (input.isRecurring()) {
-				if(!todo.isRecurring()) {
-					return new Signal(Signal.EDIT_NOT_RECURRING, false);
-				}
 				int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
 				// Check for valid number of keywords TODO: WRONG
 				if (numberOfKeywords > 8) {
 					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
 
-				RecurringTodoRule rule = memory.getRule(todo.getRecurringId());
+				RecurringTodoRule rule = memory.getToModifyRule(todo.getRecurringId());
 				RecurringTodoRule ruleOld = new RecurringTodoRule(rule);
 				
 				// If input contains new title
@@ -143,6 +140,8 @@ public class EditCommand extends Command {
 			return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 		} catch (NullRuleException e) {
 			return new Signal(Signal.EDIT_NO_LONGER_RECURS, false);
+		} catch (NotRecurringException e) {
+			return new Signal(e.getMessage(), false);
 		}
 	}
 
