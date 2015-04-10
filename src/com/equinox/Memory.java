@@ -630,13 +630,33 @@ public class Memory {
 			String name = todo.getName();
 			removeIdFromNames(name, id);
 
+			Todo.TYPE type = todo.getType();
 			DateTime startDateTime = todo.getStartTime();
 			DateTime endDateTime = todo.getEndTime();
-			if (startDateTime != null) {
-				removeIdFromAllDateMaps(startDateTime, id);
-			}
-			if (endDateTime != null) {
-				removeIdFromAllDateMaps(endDateTime, id);
+
+			switch (type) {
+				case DEADLINE:
+					assert (endDateTime != null);
+					assert (startDateTime == null);
+					removeIdFromAllDateMaps(endDateTime, id);
+					break;
+				case EVENT:
+					assert (endDateTime != null);
+					assert (startDateTime != null);
+					if (!isSameDay(startDateTime, endDateTime)) {
+						ArrayList<DateTime> dates = generateDateTimes(
+								startDateTime, endDateTime);
+						for (DateTime date : dates) {
+							removeIdFromAllDateMaps(date, id);
+						}
+					} else {
+						removeIdFromAllDateMaps(startDateTime, id);
+						removeIdFromAllDateMaps(endDateTime, id);
+					}
+					break;
+				default:
+					assert (startDateTime == null);
+					assert (endDateTime == null);
 			}
 
 		}
@@ -651,43 +671,54 @@ public class Memory {
 		private void removeIdFromAllDateMaps(DateTime dateTime, int id) {
 			// remove id from dateMap
 			LocalDate date = dateTime.toLocalDate();
-			int todoIdDateIndex = dateMap.get(date).indexOf(id);
-			dateMap.get(date).remove(todoIdDateIndex);
-			if (dateMap.get(date).isEmpty()) {
-				dateMap.remove(date);
+			if(dateMap.containsKey(date) && dateMap.get(date).contains(id)) {
+				int todoIdDateIndex = dateMap.get(date).indexOf(id);
+				dateMap.get(date).remove(todoIdDateIndex);
+				if (dateMap.get(date).isEmpty()) {
+					dateMap.remove(date);
+				}
 			}
-
+			
 			// remove id from timeMap
 			LocalTime time = dateTime.toLocalTime();
-			int todoIdTimeIndex = timeMap.get(time).indexOf(id);
-			timeMap.get(time).remove(todoIdTimeIndex);
-			if (timeMap.get(time).isEmpty()) {
-				timeMap.remove(time);
+			if(timeMap.containsKey(time) && timeMap.get(time).contains(id)) {
+				int todoIdTimeIndex = timeMap.get(time).indexOf(id);
+				timeMap.get(time).remove(todoIdTimeIndex);
+				if (timeMap.get(time).isEmpty()) {
+					timeMap.remove(time);
+				}
 			}
-
+			
 			// remove id from dayMap
 			int day = dateTime.getDayOfWeek();
-			int todoIdDayIndex = dayMap.get(day).indexOf(id);
-			dayMap.get(day).remove(todoIdDayIndex);
-			if (dayMap.get(day).isEmpty()) {
-				dayMap.remove(day);
+			if(dayMap.containsKey(day) && dayMap.get(day).contains(id)) {
+				int todoIdDayIndex = dayMap.get(day).indexOf(id);
+				dayMap.get(day).remove(todoIdDayIndex);
+				if (dayMap.get(day).isEmpty()) {
+					dayMap.remove(day);
+				}
 			}
-
+			
 			// remove id from monthMap
 			int month = dateTime.getMonthOfYear();
-			int todoIdMonthIndex = monthMap.get(month).indexOf(id);
-			monthMap.get(month).remove(todoIdMonthIndex);
-			if (monthMap.get(month).isEmpty()) {
-				monthMap.remove(month);
+			if(monthMap.containsKey(month) && monthMap.get(month).contains(id)) {
+				int todoIdMonthIndex = monthMap.get(month).indexOf(id);
+				monthMap.get(month).remove(todoIdMonthIndex);
+				if (monthMap.get(month).isEmpty()) {
+					monthMap.remove(month);
+				}
 			}
-
+			
 			// remove id from yearMap
 			int year = dateTime.getYear();
-			int todoIdYearIndex = yearMap.get(year).indexOf(id);
-			yearMap.get(year).remove(todoIdYearIndex);
-			if (yearMap.get(year).isEmpty()) {
-				yearMap.remove(year);
+			if(yearMap.containsKey(year) && yearMap.get(year).contains(id)) {
+				int todoIdYearIndex = yearMap.get(year).indexOf(id);
+				yearMap.get(year).remove(todoIdYearIndex);
+				if (yearMap.get(year).isEmpty()) {
+					yearMap.remove(year);
+				}
 			}
+			
 		}
 
 		/**
@@ -700,10 +731,12 @@ public class Memory {
 		private void removeIdFromNames(String name, int id) {
 			String[] nameArray = name.split(REGEX_SPACE);
 			for (String x : nameArray) {
-				int todoIdIndex = nameMap.get(x).indexOf(id);
-				nameMap.get(x).remove(todoIdIndex);
-				if (nameMap.get(x).isEmpty()) {
-					nameMap.remove(x);
+				if(nameMap.containsKey(x) && nameMap.get(x).contains(id)) {
+					int todoIdIndex = nameMap.get(x).indexOf(id);
+					nameMap.get(x).remove(todoIdIndex);
+					if (nameMap.get(x).isEmpty()) {
+						nameMap.remove(x);
+					}
 				}
 			}
 		}
@@ -759,44 +792,48 @@ public class Memory {
 				throws InvalidParamException {
 			ArrayList<Integer> toDoIds = new ArrayList<Integer>();
 			switch (typeKey) {
-			case DATE:
-				LocalDate searchDate = dateTime.toLocalDate();
-				if (dateMap.containsKey(searchDate)) {
-					toDoIds = dateMap.get(searchDate);
-				} // else searchDate is not in dateMap, toDoIds is empty
-					// List
-				break;
-			case DAY:
-				int searchDay = dateTime.getDayOfWeek();
-				if (dayMap.containsKey(searchDay)) {
-					toDoIds = dayMap.get(searchDay);
-				}// else searchDay is not in dayMap, toDoIds is empty List
-				break;
-			case MONTH:
-				int searchMonth = dateTime.getMonthOfYear();
-				if (monthMap.containsKey(searchMonth)) {
-					toDoIds = monthMap.get(searchMonth);
-				}// else searchMonth is not in monthMap, toDoIds is empty
-					// List
-				break;
-			case TIME:
-				LocalTime searchTime = dateTime.toLocalTime();
-				if (timeMap.containsKey(searchTime)) {
-					toDoIds = timeMap.get(searchTime);
-				}// else searchTime is not in timeMap, toDoIds is empty List
-				break;
-			case YEAR:
-				int searchYear = dateTime.getYear();
-				if (yearMap.containsKey(searchYear)) {
-					toDoIds = yearMap.get(searchYear);
-				} // else searchYear is not in yearMap, todoIds is empty List
-				break;
-			default:
-				throw new InvalidParamException(
-						ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
+				case DATE:
+					LocalDate searchDate = dateTime.toLocalDate();
+					if (dateMap.containsKey(searchDate)) {
+						toDoIds = dateMap.get(searchDate);
+					} // else searchDate is not in dateMap, toDoIds is empty
+						// List
+					break;
+				case DAY:
+					int searchDay = dateTime.getDayOfWeek();
+					if (dayMap.containsKey(searchDay)) {
+						toDoIds = dayMap.get(searchDay);
+					}// else searchDay is not in dayMap, toDoIds is empty List
+					break;
+				case MONTH:
+					int searchMonth = dateTime.getMonthOfYear();
+					if (monthMap.containsKey(searchMonth)) {
+						toDoIds = monthMap.get(searchMonth);
+					}// else searchMonth is not in monthMap, toDoIds is empty
+						// List
+					break;
+				case TIME:
+					LocalTime searchTime = dateTime.toLocalTime();
+					if (timeMap.containsKey(searchTime)) {
+						toDoIds = timeMap.get(searchTime);
+					}// else searchTime is not in timeMap, toDoIds is empty List
+					break;
+				case YEAR:
+					int searchYear = dateTime.getYear();
+					if (yearMap.containsKey(searchYear)) {
+						toDoIds = yearMap.get(searchYear);
+					} // else searchYear is not in yearMap, todoIds is empty
+						// List
+					break;
+				default:
+					throw new InvalidParamException(
+							ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
 			}
+
 			return toDoIds;
 		}
+
+		
 
 		public void update(int userIndex, String param, String originalParam) {
 			removeIdFromNames(originalParam, userIndex);
