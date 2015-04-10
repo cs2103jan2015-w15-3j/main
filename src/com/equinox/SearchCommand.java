@@ -1,6 +1,7 @@
 package com.equinox;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +37,7 @@ public class SearchCommand extends Command {
 	@Override
 	public Signal execute() {
 		ArrayList<KeyParamPair> inputList = input.getParamPairs();
-		Set<Integer> resultSet = new HashSet<Integer>();
+		ArrayList<Todo> todos = new ArrayList<Todo>();
 		KeyParamPair pair;
 		Keywords typeKey;
 		String param;
@@ -60,9 +61,7 @@ public class SearchCommand extends Command {
 			}
 
 			try {
-				searchIndex(resultSet, typeKey, param, dateTimes);
-			} catch (InvalidDateException e) {
-				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
+				searchIndex(todos, typeKey, param, dateTimes);
 			} catch (InvalidParamException e) {
 				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
 			}
@@ -70,12 +69,11 @@ public class SearchCommand extends Command {
 		}
 
 		// checks if resultSet is empty
-		if (resultSet.isEmpty()) {
+		if (todos.isEmpty()) {
 			return new Signal(Signal.SEARCH_EMPTY_SIGNAL, false);
 		}
 
 		// displays the list of todos that were found
-		ArrayList<Todo> todos = getTodos(resultSet);
 		String displayString = DisplayCommand.getDisplayChrono(todos, 2);
 		System.out.println(displayString);
 
@@ -85,21 +83,70 @@ public class SearchCommand extends Command {
 	/**
 	 * Operation generates Collection of Todo Objects based on their ids
 	 * 
-	 * @param resultSet
+	 * @param todoIds
 	 * @return Collection of Todo objects
+	 * @throws InvalidParamException
 	 */
-	private ArrayList<Todo> getTodos(Set<Integer> resultSet) {
+	private ArrayList<Todo> getTodos(Keywords typeKey, DateTime searchDate,
+			ArrayList<Integer> todoIds) throws InvalidParamException {
+		if(typeKey != Keywords.NAME && searchDate == null) {
+			throw new InvalidParamException(ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
+		}
 		ArrayList<Todo> todos = new ArrayList<Todo>();
-		Todo current = null;
+		Todo current;
 
-		for (int x : resultSet) {
+		for (int x : todoIds) {
 			try {
 				current = memory.getTodo(x);
-			} catch (NullTodoException e) {
+				if (current != null) {
+					if (current.isEvent() && !current.isSameDayEvent()) {
+						for (Todo shortTodo : current.breakIntoShortEvents()) {
+							switch (typeKey) {
+								case YEAR:
+									if (shortTodo.getEndTime().getYear() == searchDate
+											.getYear()) {
+										todos.add(shortTodo);
+									}
+									break;
+								case MONTH:
+									if (shortTodo.getEndTime().getMonthOfYear() == searchDate
+											.getMonthOfYear()) {
+										todos.add(shortTodo);
+									}
+									break;
+								case DAY:
+									if (shortTodo.getEndTime().getDayOfWeek() == searchDate
+											.getDayOfWeek()) {
+										todos.add(shortTodo);
+									}
+									break;
+								case TIME:
+									if (shortTodo.getEndTime().toLocalTime()
+											.equals(searchDate.toLocalTime())
+											|| shortTodo
+													.getStartTime()
+													.toLocalTime()
+													.equals(searchDate
+															.toLocalTime())) {
+										todos.add(shortTodo);
+									}
+									break;
+								case DATE:
+									if(shortTodo.getEndTime().toLocalDate().equals(searchDate.toLocalDate())) {
+										todos.add(shortTodo);
+									}
+									break;
+								default:
+									
+							}
+						}
 
-			}
-			if (current != null) {
-				todos.add(current);
+					} else {
+						todos.add(current);
+					}
+				}
+			} catch (NullTodoException e) {
+				
 			}
 		}
 		return todos;
@@ -115,36 +162,63 @@ public class SearchCommand extends Command {
 	 * @throws InvalidDateException
 	 * @throws InvalidParamException 
 	 */
-	private void searchIndex(Set<Integer> resultSet, Keywords typeKey,
-			String param, List<DateTime> dateTimes) throws InvalidDateException, InvalidParamException {
-		ArrayList<Integer> tempResult;
-		
+	private void searchIndex(ArrayList<Todo> resultTodos, Keywords typeKey,
+			String param, List<DateTime> dateTimes) throws InvalidParamException {
+		ArrayList<Integer> todoIds;
+		DateTime searchDate;
 		if(typeKey == Keywords.NAME) {
 			String[] paramArray = param.split(REGEX_SPACE);
 			for (String searchKey : paramArray) {
-				tempResult = memory.search(typeKey, searchKey);
-				addToSet(tempResult, resultSet);
+				todoIds = memory.search(typeKey, searchKey);
+				resultTodos.addAll(getTodos(todoIds));
 			}
 		} else { //assumes if typeKey != NAME, user wants to search for dateTime
-			assert (dateTimes.size() == 1);
-			tempResult = memory.search(typeKey, dateTimes.remove(0));
-			addToSet(tempResult, resultSet);
+			try{
+				searchDate = dateTimes.remove(0);
+				todoIds = memory.search(typeKey, searchDate);
+				resultTodos.addAll(getTodos(typeKey, searchDate, todoIds));
+			} catch (IndexOutOfBoundsException e) {
+				throw new InvalidParamException();
+			}
+			
+			
 		}
 		
 	}
 
-	/**
-	 * Operation inserts integer from tempResult into the resultSet
-	 * 
-	 * @param tempResult
-	 * @param resultSet
-	 */
-	private void addToSet(ArrayList<Integer> tempResult, Set<Integer> resultSet) {
-		int current;
-		for (int i = 0; i < tempResult.size(); i++) {
-			current = tempResult.get(i);
-			resultSet.add(current);
+//	/**
+//	 * Operation adds the todo from todoIds into the set of todos to be returned as result
+//	 * 
+//	 * @param todoIds
+//	 * @param resultTodos
+//	 */
+//	private void addToSet(ArrayList<Todo> todoIds, ArrayList<Todo> resultTodos) {
+//		Todo current;
+//		for (int id: todoIds) {
+//			try {
+//				current = memory.getTodo(id);
+//				if(current.isEvent() && !current.isSameDayEvent()) {
+//					resultTodos.addAll(current.breakIntoShortEvents());
+//				}
+//			} catch (NullTodoException e) {
+//				
+//			}
+//		}
+//	}
+
+
+	private Collection<Todo> getTodos(ArrayList<Integer> todoIds) {
+		ArrayList<Todo> todos = new ArrayList<Todo>();
+		Todo todo;
+		for(int id: todoIds) {
+			try {
+				todo = memory.getTodo(id);
+				todos.add(todo);
+			} catch (NullTodoException e) {
+
+			}
 		}
+		return todos;
 	}
 
 	public static void main(String[] args) {

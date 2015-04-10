@@ -497,16 +497,57 @@ public class Memory {
 			int id = todo.getId();
 
 			addToNameMap(todo.getName(), id);
-
+			Todo.TYPE type = todo.getType();
 			DateTime startDateTime = todo.getStartTime();
 			DateTime endDateTime = todo.getEndTime();
-			if (startDateTime != null) {
-				addToAllDateMaps(startDateTime, id);
-			}
-			if (endDateTime != null) {
-				addToAllDateMaps(endDateTime, id);
+
+			switch (type) {
+				case DEADLINE:
+					assert (endDateTime != null);
+					assert (startDateTime == null);
+					addToAllDateMaps(endDateTime, id);
+					break;
+				case EVENT:
+					assert (endDateTime != null);
+					assert (startDateTime != null);
+					if (!isSameDay(startDateTime, endDateTime)) {
+						ArrayList<DateTime> dates = generateDateTimes(
+								startDateTime, endDateTime);
+						for (DateTime date : dates) {
+							addToAllDateMaps(date, id);
+						}
+					} else {
+						addToAllDateMaps(startDateTime, id);
+						addToAllDateMaps(endDateTime, id);
+					}
+					break;
+				default:
+					assert (startDateTime == null);
+					assert (endDateTime == null);
 			}
 
+		}
+
+		private ArrayList<DateTime> generateDateTimes(DateTime startDateTime,
+				DateTime endDateTime) {
+			ArrayList<DateTime> dates = new ArrayList<DateTime>();
+			while (!isSameDay(startDateTime, endDateTime)) {
+				dates.add(startDateTime);
+				dates.add(startDateTime.withHourOfDay(23).withMinuteOfHour(59));
+				startDateTime = startDateTime.plusDays(1)
+						.withTimeAtStartOfDay();
+			}
+			dates.add(startDateTime);
+			dates.add(endDateTime);
+			return dates;
+		}
+
+		private boolean isSameDay(DateTime date1, DateTime date2) {
+			if (date1 == null || date2 == null) {
+				return false;
+			}
+			return (date1.getDayOfYear() == date2.getDayOfYear() && date1
+					.getYear() == date2.getYear());
 		}
 
 		/**
@@ -520,7 +561,9 @@ public class Memory {
 			// add id to dateMap
 			LocalDate date = dateTime.toLocalDate();
 			if (dateMap.containsKey(date)) {
-				dateMap.get(date).add(id);
+				if (!dateMap.get(date).contains(id)) {
+					dateMap.get(date).add(id);
+				}
 			} else {
 				ArrayList<Integer> newIdList = new ArrayList<Integer>();
 				newIdList.add(id);
@@ -530,7 +573,9 @@ public class Memory {
 			// add id to timeMap
 			LocalTime time = dateTime.toLocalTime();
 			if (timeMap.containsKey(time)) {
-				timeMap.get(time).add(id);
+				if (!timeMap.get(time).contains(id)) {
+					timeMap.get(time).add(id);
+				}
 			} else {
 				ArrayList<Integer> newIdList = new ArrayList<Integer>();
 				newIdList.add(id);
@@ -540,7 +585,9 @@ public class Memory {
 			// add id to dayMap
 			int day = dateTime.getDayOfWeek();
 			if (dayMap.containsKey(day)) {
-				dayMap.get(day).add(id);
+				if (!dayMap.get(day).contains(id)) {
+					dayMap.get(day).add(id);
+				}
 			} else {
 				ArrayList<Integer> newIdList = new ArrayList<Integer>();
 				newIdList.add(id);
@@ -550,7 +597,9 @@ public class Memory {
 			// add id to monthMap
 			int month = dateTime.getMonthOfYear();
 			if (monthMap.containsKey(month)) {
-				monthMap.get(month).add(id);
+				if (!monthMap.get(month).contains(id)) {
+					monthMap.get(month).add(id);
+				}
 			} else {
 				ArrayList<Integer> newIdList = new ArrayList<Integer>();
 				newIdList.add(id);
@@ -560,7 +609,9 @@ public class Memory {
 			// add id to yearMap
 			int year = dateTime.getYear();
 			if (yearMap.containsKey(year)) {
-				yearMap.get(year).add(id);
+				if (!yearMap.get(year).contains(id)) {
+					yearMap.get(year).add(id);
+				}
 			} else {
 				ArrayList<Integer> newIdList = new ArrayList<Integer>();
 				newIdList.add(id);
@@ -761,7 +812,6 @@ public class Memory {
 		}
 	}
 
-	// @author A0094679H
 	/**
 	 * This operation retrieves a list of ids of todos that has the given
 	 * searchString in its property of given typeKey
@@ -769,26 +819,22 @@ public class Memory {
 	 * @param typeKey
 	 * @param searchString
 	 * @return todoIds
+	 * @throws InvalidParamException
 	 */
-	public ArrayList<Integer> search(Keywords typeKey, String searchString) {
+	public ArrayList<Integer> search(Keywords typeKey, String searchString)
+			throws InvalidParamException {
 		// search method with String type search key is only for search in Todo
 		// names
 		assert (typeKey == Keywords.NAME);
 
-		ArrayList<Integer> tempResult;
-		ArrayList<Integer> resultList = new ArrayList<Integer>();
+		ArrayList<Integer> tempTodoIds;
+		ArrayList<Integer> todoIds = new ArrayList<Integer>();
 		String[] paramArray = searchString.split(REGEX_SPACE);
 		for (String searchKey : paramArray) {
-			tempResult = searchMap.getResult(typeKey, searchKey);
-			resultList.addAll(tempResult);
+			tempTodoIds = searchMap.getResult(typeKey, searchKey);
+			todoIds.addAll(tempTodoIds);
 		}
-
-		if (resultList.isEmpty()) {
-			return new ArrayList<Integer>();
-		} else {
-			return resultList;
-		}
-
+		return todoIds;
 	}
 
 	/**
