@@ -55,6 +55,7 @@ public class AddCommand extends Command {
 		// endDate>
 		// KeyParamPair 2: every <date>, KeyParamPair 3: until <date>
 
+		System.out.println("The number of keywords: " + numberOfKeywords);
 		if (input.isRecurring()) {
 			// Check for valid number of keywords
 			if (numberOfKeywords > 5) {
@@ -84,7 +85,9 @@ public class AddCommand extends Command {
 		// Not recurring task
 		else {
 			// Check for valid number of keywords
+			
 			if (numberOfKeywords > 4) {
+				
 				return new Signal(Signal.ADD_INVALID_PARAMS, false);
 			}
 
