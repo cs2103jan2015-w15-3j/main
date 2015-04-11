@@ -383,11 +383,11 @@ public class Parser {
 			int indexOfSecondPair) {
 		KeyParamPair firstPair = keyParamPairs.get(indexOfFirstPair);
 		KeyParamPair secondPair = keyParamPairs.get(indexOfSecondPair);
-		Keywords key = secondPair.getKeyword();
+		String key = secondPair.getKeyString();
 
 		StringBuilder sBuilder = new StringBuilder(firstPair.getParam());
 		sBuilder.append(CHAR_SPACE);
-		sBuilder.append(key.toString().toLowerCase());
+		sBuilder.append(key);
 		sBuilder.append(CHAR_SPACE);
 		sBuilder.append(secondPair.getParam());
 		return sBuilder.toString();

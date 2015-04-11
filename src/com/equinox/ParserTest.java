@@ -24,7 +24,7 @@ public class ParserTest {
 		String add1 = "add test 1";
 		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 1"))), new ArrayList<DateTime>(),
+						Keywords.ADD, "add","test 1"))), new ArrayList<DateTime>(),
 				new Period(), false, false, new DateTime(0));
 		try {
 			assertEquals(parsed1, Parser.parseInput(add1));
@@ -37,7 +37,7 @@ public class ParserTest {
 		String add2 = "add study for test on algorithms";
 		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "study for test on algorithms"))),
+						Keywords.ADD, "add","study for test on algorithms"))),
 				new ArrayList<DateTime>(), new Period(), false, false,
 				new DateTime(0));
 		try {
@@ -67,7 +67,7 @@ public class ParserTest {
 		String add0 = "add test 0 by Friday";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 0"))), dateTimes0, new Period(),
+						Keywords.ADD, "add","test 0"))), dateTimes0, new Period(),
 				false, false, new DateTime(0));
 		try {
 			assertEquals(parsed0, Parser.parseInput(add0));
@@ -80,7 +80,7 @@ public class ParserTest {
 		String add5 = "add test 5 at NTU on Friday";
 		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 5 at NTU"))), dateTimes0,
+						Keywords.ADD, "add","test 5 at NTU"))), dateTimes0,
 				new Period(), false, false, new DateTime(0));
 		try {
 			assertEquals(parsed5, Parser.parseInput(add5));
@@ -93,7 +93,7 @@ public class ParserTest {
 		String add6 = "add test 6 by Friday at Computing";
 		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 6 at Computing"))), dateTimes0,
+						Keywords.ADD, "add","test 6 at Computing"))), dateTimes0,
 				new Period(), false, false, new DateTime(0));
 		try {
 			assertEquals(parsed6, Parser.parseInput(add6));
@@ -144,7 +144,7 @@ public class ParserTest {
 		String add0 = "add test 0 from 3pm to 4pm";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 0"))), dateTimes0, new Period(),
+						Keywords.ADD, "add","test 0"))), dateTimes0, new Period(),
 				false, false, new DateTime(0));
 		try {
 			assertEquals(parsed0, Parser.parseInput(add0));
@@ -157,7 +157,7 @@ public class ParserTest {
 		String add1 = "add test 1 on Sunday from 3pm to 4pm";
 		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 1"))), dateTimes1, new Period(),
+						Keywords.ADD, "add","test 1"))), dateTimes1, new Period(),
 				false, false, new DateTime(0));
 		try {
 			assertEquals(parsed1, Parser.parseInput(add1));
@@ -169,7 +169,7 @@ public class ParserTest {
 		String add2 = "add CIP event from 3 March at 10am to 3 March at 12pm";
 		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "CIP event"))), dateTimes2, new Period(),
+						Keywords.ADD, "add","CIP event"))), dateTimes2, new Period(),
 				false, false, new DateTime(0));
 		try {
 			assertEquals(parsed2, Parser.parseInput(add2));
@@ -184,7 +184,7 @@ public class ParserTest {
 		String add0 = "add";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, ""))), new ArrayList<DateTime>(),
+						Keywords.ADD, "add",""))), new ArrayList<DateTime>(),
 				new Period(), false, false, new DateTime(0));
 		try {
 			assertEquals(parsed0, Parser.parseInput(add0));
@@ -231,7 +231,7 @@ public class ParserTest {
 		String add0 = "add test 0 on Friday every week";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 0"))), dateTimes0,
+						Keywords.ADD, "add","test 0"))), dateTimes0,
 				new Period().withWeeks(1), true, false, new DateTime(0));
 		try {
 			assertEquals(parsed0, Parser.parseInput(add0));
@@ -244,7 +244,7 @@ public class ParserTest {
 		String add6 = "add test 6 every Friday";
 		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 6"))), dateTimes0,
+						Keywords.ADD, "add","test 6"))), dateTimes0,
 				new Period().withWeeks(1), true, false, new DateTime(0));
 		try {
 			assertEquals(parsed6, Parser.parseInput(add6));
@@ -257,7 +257,7 @@ public class ParserTest {
 		String add1 = "add test 1 from Friday to Sunday every month";
 		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 1"))), dateTimes1,
+						Keywords.ADD, "add","test 1"))), dateTimes1,
 				new Period().withMonths(1), true, false, new DateTime(0));
 		try {
 			assertEquals(parsed1, Parser.parseInput(add1));
@@ -270,7 +270,7 @@ public class ParserTest {
 		String add3 = "add test 3 on Friday every week until 4 Dec 2015";
 		ParsedInput parsed3 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 3"))), dateTimes0,
+						Keywords.ADD, "add","test 3"))), dateTimes0,
 				new Period().withWeeks(1), true, true, dateTimes2.get(0));
 		try {
 			assertEquals(parsed3, Parser.parseInput(add3));
@@ -283,7 +283,7 @@ public class ParserTest {
 		String add4 = "add test 4 from Friday to Sunday every month until 4 Dec 2015";
 		ParsedInput parsed4 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 4"))), dateTimes1,
+						Keywords.ADD, "add","test 4"))), dateTimes1,
 				new Period().withMonths(1), true, true, dateTimes2.get(0));
 		try {
 			assertEquals(parsed4, Parser.parseInput(add4));
@@ -297,7 +297,7 @@ public class ParserTest {
 		String add5 = "add test 5 every month until 4 Dec 2015";
 		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 5"))),
+						Keywords.ADD, "add","test 5"))),
 				new ArrayList<DateTime>(), new Period().withMonths(1), false,
 				true, dateTimes2.get(0));
 		try {
@@ -325,7 +325,7 @@ public class ParserTest {
 		String search0 = "search -y 2016";
 		ParsedInput parsed0 = new ParsedInput(Keywords.SEARCH,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.SEARCH, ""), new KeyParamPair(Keywords.YEAR,
+						Keywords.SEARCH, "search",""), new KeyParamPair(Keywords.YEAR, "-y",
 						"march 2016"))), dateTimes0, new Period(), false, false,
 				new DateTime(0));
 		try {
