@@ -1,3 +1,4 @@
+	//@author A0115983X
 package com.equinox;
 
 import java.util.ArrayList;
@@ -12,13 +13,12 @@ import org.joda.time.Period;
 import com.equinox.exceptions.InvalidDateException;
 import com.equinox.exceptions.InvalidPeriodException;
 import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
 import com.joestelmach.natty.DateGroup;
 
 public class Parser {
-	
 	private static final String STRING_MARCH = "march ";
 	private static final String STRING_TO = "to";
-	//@author A0115983X
 	private static final String INIT_STRING = "today";
 	private static final String STRING_DAY = "day";
 	private static final String STRING_WEEK = "week";
@@ -50,8 +50,9 @@ public class Parser {
 	 * @return a ParsedInput object containing the command type,
 	 *         keyword-parameter pairs and dates identified.
 	 * @throws InvalidRecurringException 
+	 * @throws InvalidTodoNameException 
 	 */
-	public static ParsedInput parseInput(String input) throws InvalidRecurringException {
+	public static ParsedInput parseInput(String input) throws InvalidRecurringException, InvalidTodoNameException {
 		boolean hasLimit = false;
 		boolean isRecurring = false;
 		Period period = new Period();
@@ -76,6 +77,9 @@ public class Parser {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				Keywords key = currentPair.getKeyword();
 
+				if(InputStringKeyword.isFlag(currentPair.getKeyString())) {
+					throw new InvalidTodoNameException();
+				}
 				// assumes that 'every _ until _' is at the end of user input
 				if (isRecurring) { // check if there is a recurring limit parsed
 									// in

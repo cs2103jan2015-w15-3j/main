@@ -10,6 +10,8 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
 import com.equinox.exceptions.NullTodoException;
 
 public class EditCommandTest {
@@ -34,7 +36,7 @@ public class EditCommandTest {
 	}
 
 	@Test
-	public void test() throws NullTodoException {
+	public void test() throws NullTodoException, InvalidRecurringException, InvalidTodoNameException {
 		logic.handleInput("add " + title + "from " + startTime + "to "
 				+ endTime);
 		System.out.println(logic.handleInput("edit " + "0 " + "start "

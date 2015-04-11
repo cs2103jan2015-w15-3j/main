@@ -20,17 +20,19 @@ public class InputStringKeyword {
 	private static final String KEY_IN = "in";
 	private static final String KEY_EVERY = "every";
 	private static final String KEY_UNTIL = "until";
+	private static final String KEY_EXIT = "exit";
 	private static final String KEY_RULE_ABV = "-r";
 	private static final String KEY_NAME_ABV = "-n";
-	private static final String KEY_EXIT = "exit";
 	private static final String KEY_DATE_ABV = "-dt";
 	private static final String KEY_TIME_ABV = "-t";
 	private static final String KEY_DAY_ABV = "-d";
 	private static final String KEY_MONTH_ABV = "-m";
 	private static final String KEY_YEAR_ABV = "-y";
 
+	
     private static Map<String, Keywords> keywords;
     private static Map<String, Keywords> commands;
+    private static Map<String, Keywords> flags;
 
     static {
     	commands = new HashMap<String, Keywords>();
@@ -43,14 +45,18 @@ public class InputStringKeyword {
         commands.put(KEY_UNDO, Keywords.UNDO);
         commands.put(KEY_REDO, Keywords.REDO);
         commands.put(KEY_EXIT, Keywords.EXIT);
-    	
+        
+        flags = new HashMap<String, Keywords>();
+        flags.put(KEY_NAME_ABV, Keywords.NAME);
+        flags.put(KEY_DATE_ABV, Keywords.DATE);
+        flags.put(KEY_TIME_ABV, Keywords.TIME);
+        flags.put(KEY_DAY_ABV, Keywords.DAY);
+        flags.put(KEY_MONTH_ABV, Keywords.MONTH);
+        flags.put(KEY_YEAR_ABV,  Keywords.YEAR);
+        flags.put(KEY_RULE_ABV,  Keywords.RULE);
+        
         keywords = new HashMap<String, Keywords>(commands);
-        keywords.put(KEY_NAME_ABV, Keywords.NAME);
-        keywords.put(KEY_DATE_ABV, Keywords.DATE);
-        keywords.put(KEY_TIME_ABV, Keywords.TIME);
-        keywords.put(KEY_DAY_ABV, Keywords.DAY);
-        keywords.put(KEY_MONTH_ABV, Keywords.MONTH);
-        keywords.put(KEY_YEAR_ABV,  Keywords.YEAR);
+        keywords.putAll(flags);
         keywords.put(KEY_BY, Keywords.BY);
         keywords.put(KEY_FROM, Keywords.FROM);
         keywords.put(KEY_ON, Keywords.ON);
@@ -58,14 +64,14 @@ public class InputStringKeyword {
         keywords.put(KEY_IN, Keywords.IN);
         keywords.put(KEY_EVERY, Keywords.EVERY);
         keywords.put(KEY_UNTIL, Keywords.UNTIL);
-        keywords.put(KEY_RULE_ABV,  Keywords.RULE);
+        
     }
 
     /**
      * Checks if the String encodes a keyword
      * 
      * @param s String to be checked
-     * @return the enum constant representing the keyword.
+     * @return 
      */
     public static boolean isKeyword(String s) {
         return keywords.containsKey(s.toLowerCase());
@@ -76,6 +82,7 @@ public class InputStringKeyword {
      * 
      * @param s String containing the keyword.
      * @return the enum constant representing the command.
+     * 		enum error if string is not a keyword
      */
     public static Keywords getKeyword(String s) {
         return keywords.get(s.toLowerCase());
@@ -96,6 +103,7 @@ public class InputStringKeyword {
      * 
      * @param s String containing the keyword.
      * @return the enum constant representing the command.
+     * 		enum error if string is not a command
      */
     public static Keywords getCommand(String s) {
     	Keywords command = commands.get(s.toLowerCase());
@@ -103,5 +111,30 @@ public class InputStringKeyword {
     		return Keywords.ERROR;
     	}
     	return command;
+    }
+    
+    /**
+     * Checks if the String encodes a flag.
+     * 
+     * @param s
+     * @return
+     */
+    public static boolean isFlag(String s) {
+    	return flags.containsKey(s.toLowerCase());
+    }
+    
+    /**
+     * Retrieves the enum constant that represents the flag encoded in the String.
+     * 
+     * @param s String containing the keyword.
+     * @return the enum constant representing the flag.
+     * 		enum error if string is not a flag
+     */
+    public static Keywords getFlag(String s) {
+    	Keywords flag = flags.get(s.toLowerCase());
+    	if(flag == null) {
+    		return Keywords.ERROR;
+    	}
+    	return flag;
     }
 }
