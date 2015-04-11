@@ -1,8 +1,8 @@
 //@author A0094679H
 
 package com.equinox;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -17,44 +17,46 @@ import com.equinox.exceptions.NotRecurringException;
  * Stores parameters of a Todo using org.joda.time.DateTime objects. A Todo can
  * be subdivided into 3 different subtypes namely Task, Deadline, or Event,
  * which is uniquely determined at construction by the availability of
- * parameters. Todos are uniquely specified identifier known as ID until
- * their deletion, upon which the ID may be recycled.
+ * parameters. Todos are uniquely specified identifier known as ID until their
+ * deletion, upon which the ID may be recycled.
  * 
  * @author Ikarus
  *
  */
 
-public class Todo{
-	
+public class Todo {
+
 	public enum TYPE {
 		TASK, DEADLINE, EVENT;
 	}
 
-    protected int id;
-    protected String name;
-    protected DateTime createdOn;
-    protected DateTime modifiedOn, startTime, endTime;
-    protected boolean isDone;
-    protected TYPE type;
-    protected Integer recurringId;
+	protected int id;
+	protected String name;
+	protected DateTime createdOn;
+	protected DateTime modifiedOn, startTime, endTime;
+	protected boolean isDone;
+	protected TYPE type;
+	protected Integer recurringId;
 
-    protected static final DateTimeFormatter DateFormatter = DateTimeFormat
-            .forPattern("dd MMM yyyy");
-    protected static final DateTimeFormatter TimeFormatter = DateTimeFormat
-            .forPattern("HH:mm");
-    protected static final String DateTimeStringFormat = "%1$s at %2$s";
+	protected static final DateTimeFormatter DateFormatter = DateTimeFormat
+			.forPattern("dd MMM yyyy");
+	protected static final DateTimeFormatter TimeFormatter = DateTimeFormat
+			.forPattern("HH:mm");
+	protected static final String DateTimeStringFormat = "%1$s at %2$s";
 
-    protected static final String EventStringFormat = "Event \"%1$s\" from %2$s to %3$s";
+	protected static final String EventStringFormat = "Event \"%1$s\" from %2$s to %3$s";
 
-    protected static final String DeadlineStringFormat = "Deadline \"%1$s\" by %2$s";
+	protected static final String DeadlineStringFormat = "Deadline \"%1$s\" by %2$s";
 
-    protected static final String FloatingTaskStringFormat = "Floating task \"%1$s\"";
-	
+	protected static final String FloatingTaskStringFormat = "Floating task \"%1$s\"";
+
 	/**
 	 * Constructs a Todo of type: TASK.
 	 * 
-	 * @param id the ID of the Todo.
-	 * @param name name of the task.
+	 * @param id
+	 *            the ID of the Todo.
+	 * @param name
+	 *            name of the task.
 	 */
 	public Todo(int id, String name) {
 		this.id = id;
@@ -65,18 +67,21 @@ public class Todo{
 		this.endTime = null;
 		this.isDone = false;
 		this.type = TYPE.TASK;
-        this.recurringId = null;
+		this.recurringId = null;
 	}
-	
+
 	/**
 	 * Constructs a Todo of type: DEADLINE or EVENT.
 	 * 
 	 * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
 	 * dates.
 	 * 
-	 * @param id the ID of the Todo.
-	 * @param name name of the task.
-	 * @param dateTimes a List of DateTimes specifying the end and/or start times.
+	 * @param id
+	 *            the ID of the Todo.
+	 * @param name
+	 *            name of the task.
+	 * @param dateTimes
+	 *            a List of DateTimes specifying the end and/or start times.
 	 */
 	public Todo(int id, String name, List<DateTime> dateTimes) {
 		this.id = id;
@@ -84,57 +89,57 @@ public class Todo{
 		this.createdOn = new DateTime();
 		this.modifiedOn = this.createdOn;
 		this.isDone = false;
-		if(dateTimes.size() == 1) {
+		if (dateTimes.size() == 1) {
 			this.startTime = null;
 			this.endTime = dateTimes.get(0);
 			this.type = TYPE.DEADLINE;
-		} else if(dateTimes.size() == 2) {
+		} else if (dateTimes.size() == 2) {
 			this.startTime = dateTimes.get(0);
 			this.endTime = dateTimes.get(1);
 			this.type = TYPE.EVENT;
 		}
-        this.recurringId = null;
+		this.recurringId = null;
 	}
-	
-    /**
-     * Constructs a Recurring Todo of type: DEADLINE or EVENT.
-     * 
-     * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
-     * dates.
-     * 
-     * @param id
-     *            the ID of the Todo.
-     * @param name
-     *            name of the task.
-     * @param dateTimes
-     *            a List of DateTimes specifying the end and/or start times.
-     * @param recurringId
-     *            the ID for the recurring rule
-     */
-    public Todo(int id, String name, List<DateTime> dateTimes,
-            int recurringId) {
-        this.id = id;
-        this.name = name;
-        this.createdOn = new DateTime();
-        this.modifiedOn = this.createdOn;
-        this.isDone = false;
-        if (dateTimes.size() == 1) {
-            this.startTime = null;
-            this.endTime = dateTimes.get(0);
-            this.type = TYPE.DEADLINE;
-        } else if (dateTimes.size() == 2) {
-            this.startTime = dateTimes.get(0);
-            this.endTime = dateTimes.get(1);
-            this.type = TYPE.EVENT;
-        }
-        this.recurringId = recurringId;
 
-    }
+	/**
+	 * Constructs a Recurring Todo of type: DEADLINE or EVENT.
+	 * 
+	 * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
+	 * dates.
+	 * 
+	 * @param id
+	 *            the ID of the Todo.
+	 * @param name
+	 *            name of the task.
+	 * @param dateTimes
+	 *            a List of DateTimes specifying the end and/or start times.
+	 * @param recurringId
+	 *            the ID for the recurring rule
+	 */
+	public Todo(int id, String name, List<DateTime> dateTimes, int recurringId) {
+		this.id = id;
+		this.name = name;
+		this.createdOn = new DateTime();
+		this.modifiedOn = this.createdOn;
+		this.isDone = false;
+		if (dateTimes.size() == 1) {
+			this.startTime = null;
+			this.endTime = dateTimes.get(0);
+			this.type = TYPE.DEADLINE;
+		} else if (dateTimes.size() == 2) {
+			this.startTime = dateTimes.get(0);
+			this.endTime = dateTimes.get(1);
+			this.type = TYPE.EVENT;
+		}
+		this.recurringId = recurringId;
+
+	}
 
 	/**
 	 * Makes an exact copy of another Todo.
 	 * 
-	 * @param todo the Todo to be copied.
+	 * @param todo
+	 *            the Todo to be copied.
 	 */
 	protected Todo(Todo todo) {
 		this.id = todo.id;
@@ -145,36 +150,37 @@ public class Todo{
 		this.endTime = todo.endTime;
 		this.isDone = todo.isDone;
 		this.type = todo.type;
-        this.recurringId = todo.recurringId;
+		this.recurringId = todo.recurringId;
 	}
-	
+
 	/**
-	 * Constructs a placeholder Todo with null fields except the ID. To be
-	 * used by Memory class in its stacks for undo/redo operations.
+	 * Constructs a placeholder Todo with null fields except the ID. To be used
+	 * by Memory class in its stacks for undo/redo operations.
 	 * 
-	 * @param id the ID of the Todo that was removed from Memory.
+	 * @param id
+	 *            the ID of the Todo that was removed from Memory.
 	 */
 	private Todo(int id) {
 		this.id = id;
 	}
-	
+
 	/**
-	 * Returns the placeholder Todo constructed from the ID of this Todo. 
-	 * For use in Undo and Redo stacks in Memory.
+	 * Returns the placeholder Todo constructed from the ID of this Todo. For
+	 * use in Undo and Redo stacks in Memory.
 	 */
 	protected Todo getPlaceholder() {
 		return new Todo(id);
 	}
 
-    /**
-     * Returns the ID of the Todo.
-     * 
-     * @return the ID of the Todo.
-     */
+	/**
+	 * Returns the ID of the Todo.
+	 * 
+	 * @return the ID of the Todo.
+	 */
 	public int getId() {
 		return id;
 	}
-	
+
 	/**
 	 * Returns the name of the Todo.
 	 * 
@@ -188,7 +194,8 @@ public class Todo{
 	 * Replaces the title with the specified String and updates the last
 	 * modified time.
 	 * 
-	 * @param title the new title of the Todo.
+	 * @param title
+	 *            the new title of the Todo.
 	 */
 	public void setName(String title) {
 		this.name = title;
@@ -208,7 +215,8 @@ public class Todo{
 	 * Replaces the start time with the date encoded in the specified
 	 * startTimeString and updates the last modified time.
 	 * 
-	 * @param startTime DateTime of the new startTime
+	 * @param startTime
+	 *            DateTime of the new startTime
 	 */
 	public void setStartTime(DateTime startTime) {
 		this.startTime = startTime;
@@ -228,7 +236,8 @@ public class Todo{
 	 * Replaces the end time with the specified DateTime and updates the last
 	 * modified field of the Todo.
 	 * 
-	 * @param endTime String containing the new end time of the Todo.
+	 * @param endTime
+	 *            String containing the new end time of the Todo.
 	 */
 	public void setEndTime(DateTime endTime) {
 		this.endTime = endTime;
@@ -247,7 +256,8 @@ public class Todo{
 	/**
 	 * Marks the Todo as done or undone and updates the last modified time.
 	 * 
-	 * @param isDone the new status of the Todo.
+	 * @param isDone
+	 *            the new status of the Todo.
 	 */
 	public void setDone(boolean isDone) {
 		this.isDone = isDone;
@@ -280,21 +290,22 @@ public class Todo{
 	public TYPE getType() {
 		return type;
 	}
-	
-    public Integer getRecurringId() throws NotRecurringException {
-    	if (recurringId == null) {
-    		throw new NotRecurringException(ExceptionMessages.NOT_RECURRING_EXCEPTION);
-    	}
-        return recurringId;
-    }
-    
-    public boolean isRecurring() {
-    	if(recurringId == null) {
-    		return false;
-    	}
-    	return true;
-    }
-	
+
+	public Integer getRecurringId() throws NotRecurringException {
+		if (recurringId == null) {
+			throw new NotRecurringException(
+					ExceptionMessages.NOT_RECURRING_EXCEPTION);
+		}
+		return recurringId;
+	}
+
+	public boolean isRecurring() {
+		if (recurringId == null) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Checks if the Todo has valid parameters and type. Specifically, checks
 	 * for the presence of startTime and endTime and sets the type accordingly.
@@ -304,190 +315,211 @@ public class Todo{
 	 * @return true if Todo has valid parameters and type, false otherwise.
 	 */
 	protected boolean isValid() {
-		if(startTime != null && endTime != null) {
+		if (startTime != null && endTime != null) {
 			type = TYPE.EVENT;
-			if(endTime.isBefore(startTime)) {
+			if (endTime.isBefore(startTime)) {
 				return false;
 			}
 		} else if (startTime != null && endTime == null) {
 			endTime = startTime;
 			startTime = null;
 			type = TYPE.DEADLINE;
-		} else if(startTime == null && endTime != null) {
+		} else if (startTime == null && endTime != null) {
 			type = TYPE.DEADLINE;
-		} else if(startTime == null && endTime == null) {
+		} else if (startTime == null && endTime == null) {
 			type = TYPE.TASK;
 		}
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-        String endDateTimeString = formatDateTime(endTime);
-        String startDateTimeString = formatDateTime(startTime);
+		String endDateTimeString = formatDateTime(endTime);
+		String startDateTimeString = formatDateTime(startTime);
 
-        switch (type) {
-            case TASK :
-                return String.format(FloatingTaskStringFormat, name);
-            case DEADLINE :
-                return String.format(DeadlineStringFormat, name,
-                        endDateTimeString);
-            case EVENT :
-                return String.format(EventStringFormat, name,
-                        startDateTimeString, endDateTimeString);
-            default :
-                return "";
-        }
-    }
+		switch (type) {
+			case TASK:
+				return String.format(FloatingTaskStringFormat, name);
+			case DEADLINE:
+				return String.format(DeadlineStringFormat, name,
+						endDateTimeString);
+			case EVENT:
+				return String.format(EventStringFormat, name,
+						startDateTimeString, endDateTimeString);
+			default:
+				return "";
+		}
+	}
 
-    private String formatDateTime(DateTime dateTime) {
-        if (dateTime == null) {
-            return "";
-        }
-        String dateString = DateFormatter.print(dateTime);
-        String timeString = TimeFormatter.print(dateTime);
-        return String.format(DateTimeStringFormat, dateString, timeString);
-    }
+	private String formatDateTime(DateTime dateTime) {
+		if (dateTime == null) {
+			return "";
+		}
+		String dateString = DateFormatter.print(dateTime);
+		String timeString = TimeFormatter.print(dateTime);
+		return String.format(DateTimeStringFormat, dateString, timeString);
+	}
 
-    /**
-     * Method to return a DateTime of the Todo for ordering them chronologically
-     * The order of preference: start time > end time > null
-     * 
-     * @author paradite
-     * 
-     * @return start time for events; end time for deadlines; null for tasks.
-     */
-    public DateTime getDateTime() {
-        if (this.startTime != null) {
-            return this.startTime;
-        } else if (this.endTime != null) {
-            return this.endTime;
-        } else {
-            return null;
-        }
-    }
-
-    // @author A0093910H
-    public boolean isEvent() {
-        if (this.startTime != null && this.endTime != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    //@author A0110839H
-    /**
-     * Method to compare two DateTime objects at the minute resolution
-     * 
-     * @author Jonathan Lim Siu Chi || ign3sc3nc3
-     * 
-     * @return -1 if the first object is smaller (earlier), 0 if the two objects are equal, 1 if the first object is larger(later).
-     */
-    public int compareDateTime(DateTime first, DateTime second){
-    	DateTimeComparator comparator = DateTimeComparator.getInstance(DateTimeFieldType.minuteOfDay());
-    	return comparator.compare(first, second);
-    }
-	
 	/**
-	 * Overriding the equals method. 
-	 * Compares the title, startTime, endTime and isDone parameters between this Todo object
-	 * and the other Todo object being compared to.
+	 * Method to return a DateTime of the Todo for ordering them chronologically
+	 * The order of preference: start time > end time > null
+	 * 
+	 * @author paradite
+	 * 
+	 * @return start time for events; end time for deadlines; null for tasks.
+	 */
+	public DateTime getDateTime() {
+		if (this.startTime != null) {
+			return this.startTime;
+		} else if (this.endTime != null) {
+			return this.endTime;
+		} else {
+			return null;
+		}
+	}
+
+	// @author A0093910H
+	public boolean isEvent() {
+		if (this.startTime != null && this.endTime != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// @author A0110839H
+	/**
+	 * Method to compare two DateTime objects at the minute resolution
+	 * 
+	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
+	 * 
+	 * @return -1 if the first object is smaller (earlier), 0 if the two objects
+	 *         are equal, 1 if the first object is larger(later).
+	 */
+	public int compareDateTime(DateTime first, DateTime second) {
+		DateTimeComparator comparator = DateTimeComparator
+				.getInstance(DateTimeFieldType.minuteOfDay());
+		return comparator.compare(first, second);
+	}
+
+	/**
+	 * Overriding the equals method. Compares the title, startTime, endTime and
+	 * isDone parameters between this Todo object and the other Todo object
+	 * being compared to.
 	 * 
 	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 	 */
 	@Override
-	public boolean equals(Object obj){
-		if(this == obj){
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
-		if(this.getClass() != obj.getClass()){
+		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
 		final Todo other = (Todo) obj;
-		
-		//Construct a DateTimeComparator comparing DateTime objects at the minute resolution.
-		//If the argument passed into the compare method is null, it will be treated as DateTime.now
-		//Thus null checks must be done beforehand
-		DateTimeComparator comparator = DateTimeComparator.getInstance(DateTimeFieldType.minuteOfDay());
-		
-		//Comparing startTime. If it is null in both objects, treat as equal.
-		if((this.startTime == null) && (other.startTime != null)){
+
+		// Construct a DateTimeComparator comparing DateTime objects at the
+		// minute resolution.
+		// If the argument passed into the compare method is null, it will be
+		// treated as DateTime.now
+		// Thus null checks must be done beforehand
+		DateTimeComparator comparator = DateTimeComparator
+				.getInstance(DateTimeFieldType.minuteOfDay());
+
+		// Comparing startTime. If it is null in both objects, treat as equal.
+		if ((this.startTime == null) && (other.startTime != null)) {
 			return false;
-		}
-		else if((this.startTime != null) && (other.startTime == null)){
+		} else if ((this.startTime != null) && (other.startTime == null)) {
 			return false;
-		}
-		else if((this.startTime != null) && (other.startTime != null)){
-			if(comparator.compare(this.startTime, other.startTime) != 0){
+		} else if ((this.startTime != null) && (other.startTime != null)) {
+			if (comparator.compare(this.startTime, other.startTime) != 0) {
 				return false;
 			}
 		}
-				
-		//Comparing endTime. If it is null in both objects, treat as equal.
-		if((this.endTime == null) && (other.endTime != null)){
+
+		// Comparing endTime. If it is null in both objects, treat as equal.
+		if ((this.endTime == null) && (other.endTime != null)) {
 			return false;
-		}
-		else if((this.endTime != null) && (other.endTime == null)){
+		} else if ((this.endTime != null) && (other.endTime == null)) {
 			return false;
-		}
-		else if((this.endTime != null) && (other.endTime != null)){
-			if(comparator.compare(this.endTime, other.endTime) != 0){
+		} else if ((this.endTime != null) && (other.endTime != null)) {
+			if (comparator.compare(this.endTime, other.endTime) != 0) {
 				return false;
 			}
 		}
-		
-		//Comparing title
-				if(!this.name.equals(other.name)){
-					return false;
-				}
-				
-		//Comparing isDone
-				if(this.isDone != other.isDone){
-					return false;
-				}
-				
+
+		// Comparing title
+		if (!this.name.equals(other.name)) {
+			return false;
+		}
+
+		// Comparing isDone
+		if (this.isDone != other.isDone) {
+			return false;
+		}
+
 		return true;
 	}
 
+	// @author A0115983X
 	/**
 	 * Returns if todo is a same day event.
-	 * @return true if todo is a same day event
-	 * 		false otherwise
+	 * 
+	 * @return true if todo is a same day event false otherwise
 	 */
 	public boolean isSameDayEvent() {
-		DateTime date1 = getStartTime();
-		DateTime date2 = getEndTime();
-		if (date1 == null || date2 == null) {
-            return false;
-        }
-        return (date1.getDayOfYear() == date2.getDayOfYear() && date1
-                .getYear() == date2.getYear());
+
+		return isSameDay(getStartTime(), getEndTime());
 	}
-	
+
+	// @author A0093910H
 	/**
-	 * Breaks multiple day events into daily events as a collection. 
-	 * If todo is not a multiple day event, method returns a collection with one element.
-	 * @return Collection of todos 
+	 * This method handles the events that spans over a few days and break them
+	 * down into smaller todos within one day for display purposes
+	 * 
+	 * @return todos which are within a single day. If todo is originally not a
+	 *         long event, returns an ArrayList with a single Todo
 	 */
-	public Collection<Todo> breakIntoShortEvents() {
-		Collection<Todo> shortTodos = new ArrayList<Todo>();
+	public ArrayList<Todo> breakIntoShortEvents() {
+		ArrayList<Todo> shortTodos = new ArrayList<Todo>();
 		DateTime currentStartTime = getStartTime();
-        Todo shortTodo= new Todo(this);
-		while(!shortTodo.isSameDayEvent()) {
-			shortTodo.setEndTime(currentStartTime.withHourOfDay(23).withMinuteOfHour(59));
-			shortTodos.add(shortTodo);
-			currentStartTime = currentStartTime.plusDays(1).withTimeAtStartOfDay();
+		DateTime endTime = getEndTime();
+		Todo shortTodo;
+		while (!isSameDay(currentStartTime, endTime)) {
 			shortTodo = new Todo(this);
 			shortTodo.setStartTime(currentStartTime);
+			// Set the end time of intermediate days to 2359
+			shortTodo.setEndTime(currentStartTime.withHourOfDay(23)
+					.withMinuteOfHour(59));
+			shortTodos.add(shortTodo);
+			// Move the start time to beginning of the next day
+			currentStartTime = currentStartTime.plusDays(1).withMillisOfDay(0);
 		}
+		// Add the last day of event
+		shortTodo = new Todo(this);
+		shortTodo.setStartTime(currentStartTime);
 		shortTodos.add(shortTodo);
-		
 		return shortTodos;
+	}
+
+	/**
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	private boolean isSameDay(DateTime date1, DateTime date2) {
+		if (date1 == null || date2 == null) {
+			return false;
+		}
+		return (date1.getDayOfYear() == date2.getDayOfYear() && date1.getYear() == date2
+				.getYear());
 	}
 }

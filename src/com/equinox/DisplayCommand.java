@@ -226,8 +226,8 @@ public class DisplayCommand extends Command {
         ArrayList<Todo> shortTodos = new ArrayList<Todo>();
         for (Todo todo : todos) {
             if (todo.isEvent()
-                    && !isSameDay(todo.getStartTime(), todo.getEndTime())) {
-                shortTodos.addAll(getShortEventsFromLongEvent(todo));
+                    && !todo.isSameDayEvent()) {
+                shortTodos.addAll(todo.breakIntoShortEvents());
             } else {
                 shortTodos.add(todo);
             }
@@ -236,27 +236,6 @@ public class DisplayCommand extends Command {
         return shortTodos;
     }
 
-    private static Collection<Todo> getShortEventsFromLongEvent(Todo todo) {
-        Collection<Todo> shortTodos = new ArrayList<Todo>();
-        DateTime currentStartTime = todo.getStartTime();
-        DateTime endTime = todo.getEndTime();
-        Todo shortTodo;
-        while (!isSameDay(currentStartTime, endTime)) {
-            shortTodo = new Todo(todo);
-            shortTodo.setStartTime(currentStartTime);
-            // Set the end time of intermediate days to 2359
-            shortTodo.setEndTime(currentStartTime.withHourOfDay(23)
-                    .withMinuteOfHour(59));
-            shortTodos.add(shortTodo);
-            // Move the start time to beginning of the next day
-            currentStartTime = currentStartTime.plusDays(1).withMillisOfDay(0);
-        }
-        // Add the last day of event
-        shortTodo = new Todo(todo);
-        shortTodo.setStartTime(currentStartTime);
-        shortTodos.add(shortTodo);
-        return shortTodos;
-    }
 
     /**
      * Append the date if the date is a new one and has not been displayed yet

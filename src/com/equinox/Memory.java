@@ -510,11 +510,11 @@ public class Memory {
 				case EVENT:
 					assert (endDateTime != null);
 					assert (startDateTime != null);
-					if (!isSameDay(startDateTime, endDateTime)) {
-						ArrayList<DateTime> dates = generateDateTimes(
-								startDateTime, endDateTime);
-						for (DateTime date : dates) {
-							addToAllDateMaps(date, id);
+					if (!todo.isSameDayEvent()) {
+						ArrayList<Todo> shortTodos = todo.breakIntoShortEvents();
+						for (Todo shortTodo : shortTodos) {
+							addToAllDateMaps(shortTodo.getStartTime(), id);
+							addToAllDateMaps(shortTodo.getEndTime(), id);
 						}
 					} else {
 						addToAllDateMaps(startDateTime, id);
@@ -528,27 +528,8 @@ public class Memory {
 
 		}
 
-		private ArrayList<DateTime> generateDateTimes(DateTime startDateTime,
-				DateTime endDateTime) {
-			ArrayList<DateTime> dates = new ArrayList<DateTime>();
-			while (!isSameDay(startDateTime, endDateTime)) {
-				dates.add(startDateTime);
-				dates.add(startDateTime.withHourOfDay(23).withMinuteOfHour(59));
-				startDateTime = startDateTime.plusDays(1)
-						.withTimeAtStartOfDay();
-			}
-			dates.add(startDateTime);
-			dates.add(endDateTime);
-			return dates;
-		}
-
-		private boolean isSameDay(DateTime date1, DateTime date2) {
-			if (date1 == null || date2 == null) {
-				return false;
-			}
-			return (date1.getDayOfYear() == date2.getDayOfYear() && date1
-					.getYear() == date2.getYear());
-		}
+		
+		
 
 		/**
 		 * This operation adds the dateTime property of todo with the given id
@@ -643,11 +624,11 @@ public class Memory {
 				case EVENT:
 					assert (endDateTime != null);
 					assert (startDateTime != null);
-					if (!isSameDay(startDateTime, endDateTime)) {
-						ArrayList<DateTime> dates = generateDateTimes(
-								startDateTime, endDateTime);
-						for (DateTime date : dates) {
-							removeIdFromAllDateMaps(date, id);
+					if (!todo.isSameDayEvent()) {
+						ArrayList<Todo> shortTodos = todo.breakIntoShortEvents();
+						for (Todo shortTodo: shortTodos) {
+							removeIdFromAllDateMaps(shortTodo.getStartTime(), id);
+							removeIdFromAllDateMaps(shortTodo.getEndTime(), id);
 						}
 					} else {
 						removeIdFromAllDateMaps(startDateTime, id);
