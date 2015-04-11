@@ -32,7 +32,6 @@ public class Memory {
 
 	// Constants
 	private static final String REGEX_SPACE = "\\s";
-	private static final int STATE_STACK_MAX_SIZE = 5;
 
 	// Primary memory
 	private HashMap<Integer, Todo> allTodos;
@@ -42,12 +41,9 @@ public class Memory {
 	private final IDBuffer<Todo> idBuffer;
 	private final IDBuffer<RecurringTodoRule> recurringIdBuffer;
 
-	// Auxiliary memory for undo redo
-	private Stack<Boolean> undoIsRule;
-	private Stack<Boolean> redoIsRule;
-	private UndoRedoStack<Todo> todoStacks;
-	private UndoRedoStack<RecurringTodoRule> ruleStacks;
-
+	// Volatile memory for undo/redo
+	private VolatileMemory vMem;
+	
 	// Indexes for search
 	private SearchMap searchMap;
 
@@ -62,12 +58,18 @@ public class Memory {
 		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
 		this.idBuffer = new IDBuffer<Todo>(allTodos);
 		this.recurringIdBuffer = new IDBuffer<RecurringTodoRule>(recurringRules);
-		this.undoIsRule = new Stack<Boolean>();
-		this.redoIsRule = new Stack<Boolean>();
-		
-		this.todoStacks = new UndoRedoStack<Todo>(allTodos, idBuffer, STATE_STACK_MAX_SIZE);
-		this.ruleStacks = new UndoRedoStack<RecurringTodoRule>(recurringRules, recurringIdBuffer, STATE_STACK_MAX_SIZE);
 		this.searchMap = new SearchMap();
+	}
+	
+	void onCreate() {
+		vMem = new VolatileMemory(allTodos, idBuffer, recurringRules, recurringIdBuffer);
+		idBuffer.setMemory(allTodos);
+		recurringIdBuffer.setMemory(recurringRules);
+	}
+	
+	void onDestroy() {
+		vMem.flushStacks(); //Recycles all IDs
+		vMem = null;
 	}
 
 	/**
@@ -82,11 +84,7 @@ public class Memory {
 	 */
 	public void add(Todo todo) {
 		// Save to stacks
-		todoStacks.save(todo.getPlaceholder());
-		todoStacks.flushRedoStack();
-		// Update isRuleStack
-		undoIsRule.push(false);
-		redoIsRule.clear();
+		vMem.save(todo.getPlaceholder());
 		// Save to memory
 		allTodos.put(todo.getId(), todo);
 		// Save to indexes
@@ -100,11 +98,7 @@ public class Memory {
 	 */
 	public void add(RecurringTodoRule rule) {
 		// Save to stacks
-		ruleStacks.save(rule.getPlaceholder());
-		ruleStacks.flushRedoStack();
-		// Update isRuleStack
-		undoIsRule.push(true);
-		redoIsRule.clear();
+		vMem.save(rule.getPlaceholder());
 		// Save to memory
 		recurringRules.put(rule.getId(), rule);
 		updateRecurringRules();
@@ -150,10 +144,8 @@ public class Memory {
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
-		todoStacks.save(returnTodo);
-		todoStacks.flushRedoStack();
-		undoIsRule.push(false);
-		redoIsRule.clear();
+		// Save to stacks
+		vMem.save(returnTodo);
 		return returnTodo;
 	}
 
@@ -171,10 +163,8 @@ public class Memory {
 		if (returnRule == null) {
 			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
 		}
-		ruleStacks.save(returnRule);
-		ruleStacks.flushRedoStack();
-		undoIsRule.push(true);
-		redoIsRule.clear();
+		// Save to stacks
+		vMem.save(returnRule);
 		return returnRule;
 	}
 
@@ -191,10 +181,8 @@ public class Memory {
 		if (returnTodo == null) {
 			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
 		}
-		todoStacks.save(returnTodo);
-		todoStacks.flushRedoStack();
-		undoIsRule.push(false);
-		redoIsRule.clear();
+		// Save to stacks
+		vMem.save(returnTodo);
 		allTodos.remove(id);
 		searchMap.remove(returnTodo);
 		return returnTodo;
@@ -206,40 +194,11 @@ public class Memory {
 		if (returnRule == null) {
 			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
 		}
-		ruleStacks.save(returnRule);
-		ruleStacks.flushRedoStack();
-		undoIsRule.push(true);
-		redoIsRule.clear();
+		// Save to stacks
+		vMem.save(returnRule);
 		recurringRules.remove(recurringId);
 		// TODO Remove from search map
 		return returnRule;
-	}
-	
-
-	public void undo() throws StateUndefinedException {
-		boolean isRule = undoIsRule.pop();
-		redoIsRule.push(isRule);
-		if(isRule) {
-			ruleStacks.restoreHistoryState();
-		} else {
-			todoStacks.restoreHistoryState();
-		}
-	}
-	
-
-	public void redo() throws StateUndefinedException {
-		boolean isRule = redoIsRule.pop();
-		undoIsRule.push(isRule);
-		if(isRule) {
-			ruleStacks.restoreFutureState();
-		} else {
-			ruleStacks.restoreFutureState();
-		}
-	}
-	
-	public void flushStacks() {
-		todoStacks.flushStacks();
-		ruleStacks.flushStacks();
 	}
 
 	/**
@@ -277,73 +236,7 @@ public class Memory {
 
 	public void releaseRecurringId(int recurringId) {
 		recurringIdBuffer.put(recurringId);
-	}
-
-	/**
-	 * Serves as a buffer of fixed size for new Todos to draw their ID from.
-	 * 
-	 * @author Ikarus
-	 * @param <E>
-	 *
-	 */
-	static class IDBuffer<E> {
-		// Constants
-		private static final int ID_INITIAL = 0;
-		private static final int ID_BUFFER_INITIAL_SIZE = 5;
-		private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
-
-		private TreeSet<Integer> buffer;
-		private int minFreeId;
-		private HashMap<Integer, E> memory;
-
-		protected IDBuffer(HashMap<Integer, E> memory) {
-			this.buffer = new TreeSet<Integer>();
-			this.minFreeId = ID_INITIAL;
-			for (int i = ID_INITIAL; i < ID_INITIAL + ID_BUFFER_INITIAL_SIZE; i++) {
-				buffer.add(i);
-			}
-			this.memory = memory;
-		}
-
-		private int get() {
-			if (buffer.size() == 1) {
-				loadToSize();
-			}
-			int returnId = buffer.pollFirst();
-			minFreeId = buffer.first();
-			return returnId;
-		}
-
-		void put(int id) {
-			if (id < minFreeId) {
-				minFreeId = id;
-			}
-			buffer.add(id);
-			if (buffer.size() > ID_BUFFER_MAX_SIZE) {
-				unloadToSize();
-			}
-		}
-
-		private void loadToSize() {
-			int minUnloadedId = minFreeId + 1;
-			int i = minUnloadedId;
-
-			while (i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
-				if (memory.containsKey(i)) { // TODO: DEPENDENCY
-					minUnloadedId++;
-				} else {
-					buffer.add(i);
-					i++;
-				}
-			}
-		}
-
-		private void unloadToSize() {
-			for (int i = 0; i < ID_BUFFER_INITIAL_SIZE; i++) {
-				buffer.pollLast();
-			}
-		}
-	}
+	}	
 
 	// @author A0115983X
 

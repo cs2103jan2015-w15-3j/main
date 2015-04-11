@@ -3,8 +3,6 @@ package com.equinox;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-
-import com.equinox.Memory.IDBuffer;
 import com.equinox.exceptions.StateUndefinedException;
 
 public class UndoRedoStack<T extends UndoableRedoable<T>> {
