@@ -145,6 +145,31 @@ public class ParserTest {
 	}
 
 	@Test
+	public void testAddDeadlineWithTimeAndDate()
+			throws InvalidRecurringException, InvalidTodoNameException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 2359 on 15 March
+		List<Date> dates0 = parser.parse("2359 on 15 March").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// deadline task 'KEYWORD <datetime> + KEYWORD <invalid datetime>'
+		String add6 = "add test 6 by 2359 on 15 March";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6"))),
+				dateTimes0, new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+	
+	@Test
 	public void testAddDeadlineWithNonPeriod()
 			throws InvalidRecurringException, InvalidTodoNameException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
@@ -511,7 +536,8 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testAddRecurringDeadlineWithNonLimit() throws InvalidRecurringException, InvalidTodoNameException {
+	public void testAddRecurringDeadlineWithNonLimit()
+			throws InvalidRecurringException, InvalidTodoNameException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -524,12 +550,14 @@ public class ParserTest {
 			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
 		}
 
-		// recurring deadline task 'KEYWORD <valid date> + EVERY <valid period> + UNTIL <invalid limit>'
+		// recurring deadline task 'KEYWORD <valid date> + EVERY <valid period>
+		// + UNTIL <invalid limit>'
 		String add0 = "add test 0 on Friday every week until forever";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "add", "test 0 until forever"))), dateTimes0,
-				new Period().withWeeks(1), true, false, new DateTime(0));
+						Keywords.ADD, "add", "test 0 until forever"))),
+				dateTimes0, new Period().withWeeks(1), true, false,
+				new DateTime(0));
 
 		assertEquals(parsed0, Parser.parseInput(add0));
 	}
@@ -566,6 +594,30 @@ public class ParserTest {
 				new Period().withMonths(1), true, true, dateTimes2.get(0));
 
 		assertEquals(parsed4, Parser.parseInput(add4));
+	}
+	
+	@Test
+	public void testAddRecurringDeadlineEveryDate() throws InvalidRecurringException, InvalidTodoNameException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("4 Jan").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring deadline task 'KEYWORD <valid date> + EVERY <valid period>
+		String add0 = "add test 0 every 4 Jan";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
+				new Period().withYears(1), true, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(add0));
 	}
 
 	@Test(expected = InvalidRecurringException.class)
