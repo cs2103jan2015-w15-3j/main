@@ -93,9 +93,12 @@ public class EditCommand extends Command {
 				
 				// If input contains new title
 				if(containsNewName) {
+					memory.updateMaps(id, title, todo.getName());
 					todo.setName(title);
 				}
 				if(dateTimes.size() == 2) {
+					memory.updateMaps(id, dateTimes.get(0), todo.getStartTime());
+					memory.updateMaps(id, dateTimes.get(1), todo.getEndTime());
 					todo.setStartTime(dateTimes.get(0));
 					todo.setEndTime(dateTimes.get(1));
 				} else if(dateTimes.size() == 1) {
@@ -104,15 +107,19 @@ public class EditCommand extends Command {
 						
 						switch (keyword) {
 						case FROM:
+							memory.updateMaps(id, dateTimes.get(0), todo.getStartTime());
 							todo.setStartTime(dateTimes.get(0));
 							break;
 						case BY:
 						case ON:
 						case AT:
+							memory.updateMaps(id, dateTimes.get(0), todo.getEndTime());
+							memory.updateMaps(id, null, todo.getStartTime());
 							todo.setEndTime(dateTimes.get(0));
 							todo.setStartTime(null);
 							break;
 						case TO:
+							memory.updateMaps(id, dateTimes.get(0), todo.getEndTime());
 							todo.setEndTime(dateTimes.get(0));
 							break;
 						default:
