@@ -121,7 +121,9 @@ public class StorageHandler {
 		if(!StorageUtils.isFileInJsonFormat(storageFile)){
 			String command;
 			do{
-				System.out.println("Storage file is unreadable or corrupt. Replace it with a blank file (R) or exit (E)?");
+				System.out.println("Storage file is unreadable or corrupt. Do you wish to : \n"
+						+ "\t1. Replace it with a blank file (R)\n"
+						+ "\t2. Exit (E)");
 				command = Zeitgeist.scn.nextLine().toUpperCase().trim();
 				if(command.equals("R")){
 					storageFile.delete();
