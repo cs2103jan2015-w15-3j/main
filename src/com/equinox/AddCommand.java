@@ -42,7 +42,8 @@ public class AddCommand extends Command {
 		}
 
 		String todoName = keyParamPairs.get(0).getParam();
-		int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
+		//keyParamPair.size() should be 1, and maximum of dateTimes.size() should be 2
+		int numberOfParams = keyParamPairs.size() + dateTimes.size();
 		// Check if Todo to be created is a recurring task
 		// Recurring Deadline
 		// Example:
@@ -57,7 +58,7 @@ public class AddCommand extends Command {
 
 		if (input.isRecurring()) {
 			// Check for valid number of keywords
-			if (numberOfKeywords > 5) {
+			if (numberOfParams > 3) {
 				return new Signal(Signal.ADD_INVALID_PARAMS, false);
 			}
 
@@ -84,7 +85,9 @@ public class AddCommand extends Command {
 		// Not recurring task
 		else {
 			// Check for valid number of keywords
-			if (numberOfKeywords > 4) {
+			
+			if (numberOfParams > 3) {
+				
 				return new Signal(Signal.ADD_INVALID_PARAMS, false);
 			}
 

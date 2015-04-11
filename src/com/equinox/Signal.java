@@ -122,7 +122,7 @@ public class Signal {
 	/**
 	 * Generic Signals
 	 */
-	public static final String GENERIC_EMPTY_PARAM = "At least one parameter is unspecified and empty.";
+	public static final String GENERIC_EMPTY_PARAM = "At least one parameter is unspecified.";
 	public static final String GENERIC_INVALID_COMMAND_FORMAT = "%1$s command is invalid!"
 			+ System.lineSeparator()
 			+ "Supported commands: add, mark, delete, edit, undo, etc...";
