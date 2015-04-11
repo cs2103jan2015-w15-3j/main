@@ -85,7 +85,11 @@ public class InputStringKeyword {
      * 		enum error if string is not a keyword
      */
     public static Keywords getKeyword(String s) {
-        return keywords.get(s.toLowerCase());
+    	Keywords keyword = keywords.get(s.toLowerCase());
+    	if(keyword == null) {
+    		return Keywords.ERROR;
+    	}
+    	return keyword;
     }
     
     /**
