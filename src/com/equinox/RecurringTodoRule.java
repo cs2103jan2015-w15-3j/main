@@ -217,7 +217,7 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
 
     private void addRecurringTodo(Memory memory, Todo newTodo) {
         recurringTodos.add(newTodo);
-        memory.add(newTodo);
+        memory.userAdd(newTodo);
     }
 
     private void updateDateTime() {

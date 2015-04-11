@@ -21,11 +21,11 @@ public class MemoryTest {
 	public void setUp() throws InvalidDateException {
 		memory = new Memory();
 		todo1 = new Todo(0, TASK_1);
-		memory.add(todo1);
+		memory.userAdd(todo1);
 		todo2 = new Todo(1, TASK_2);
-		memory.add(todo2);
+		memory.userAdd(todo2);
 		todo3 = new Todo(2, TASK_3);
-		memory.add(todo3);
+		memory.userAdd(todo3);
 	}
 
 	@Test
