@@ -16,6 +16,8 @@ import com.joestelmach.natty.DateGroup;
 
 public class Parser {
 	
+	private static final String STRING_MARCH = "march ";
+	private static final String STRING_TO = "to";
 	//@author A0115983X
 	private static final String INIT_STRING = "today";
 	private static final String STRING_DAY = "day";
@@ -132,11 +134,11 @@ public class Parser {
 			int toIndex;
 			String firstParam = keyParamPairs.get(0).getParam();
 			// search the first pair for presence of TO
-			if((toIndex = firstParam.indexOf("to")) != -1) { //TODO: Does not ignore case
+			if((toIndex = firstParam.indexOf(STRING_TO)) != -1) { //TODO: Does not ignore case
 				 String toString = firstParam.substring(toIndex, firstParam.length());
 				 String toParam = toString.substring(3, toString.length());
 				 keyParamPairs.get(0).setParam(firstParam.substring(0, toIndex));
-				 keyParamPairs.add(new KeyParamPair(Keywords.TO, toParam));
+				 keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO, toParam));
 			}
 
 			// ignores thefirst pair as it is assumed to be the name of the todo
@@ -200,7 +202,7 @@ public class Parser {
 				Keywords key = keyParamPair.getKeyword();
 				if (!(key == Keywords.NAME || key == Keywords.SEARCH)) {
 					if (key == Keywords.YEAR) {
-						keyParamPair.setParam("march ".concat(keyParamPair
+						keyParamPair.setParam(STRING_MARCH.concat(keyParamPair
 								.getParam()));
 					}
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
@@ -491,7 +493,7 @@ public class Parser {
 				// Ignore and append keyword if it has occurred before
 				if (!keywordOccurrence.contains(keyword)) {
 					keywordOccurrence.add(keyword);
-					results.add(new KeyParamPair(keyword, paramBuilder
+					results.add(new KeyParamPair(keyword, key ,paramBuilder
 							.toString()));
 					key = currentParam;
 					paramBuilder = new StringBuilder();
@@ -506,7 +508,7 @@ public class Parser {
 		}
 		// last KeyParamPair to be added to ArrayList
 		keyword = InputStringKeyword.getKeyword(key);
-		results.add(new KeyParamPair(keyword, paramBuilder.toString()));
+		results.add(new KeyParamPair(keyword, key, paramBuilder.toString()));
 		return results;
 	}
 
