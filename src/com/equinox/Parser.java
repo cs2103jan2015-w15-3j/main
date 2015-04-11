@@ -174,34 +174,47 @@ public class Parser {
 				// check if there is a recurring limit parsed
 				// in
 				if (key == Keywords.UNTIL) {
-					limit = interpretAsDate(keyParamPairs, currentPair, true)
-							.get(0);
+					if (isRecurring) {
+						List<DateTime> parsedLimits = interpretAsDate(
+								keyParamPairs, currentPair, true);
 
-					if (!limit.equals(new DateTime(0))) { // if parsing is
-															// successful
-						isRecurring = true;
-						hasLimit = true;
+						if (!parsedLimits.isEmpty()) { // if parsing is
+														// successful
+							limit = parsedLimits.get(0);
+							hasLimit = true;
+						}
+					} else {
+						interpretAsName(keyParamPairs, currentPair);
 					}
 				} else if (key == Keywords.EVERY) {
 					// tries to detect if there is a period in user input
 
-					// tries to parse param as date to extract the date
-					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
-							currentPair, false);
-					if (!parsedDate.isEmpty()) {
-						addToDateTimes(parsedDate, dateTimes,
-								keyParamPairs, dateIndexes, i);
-					}
-
 					// tries to parse param as period
 					period = interpretAsPeriod(period, keyParamPairs,
 							currentPair);
-					if (!period.equals(new Period())) { // if period is changed
+					if (!period.equals(new Period())) { // if param is valid
+														// period
 						isRecurring = true;
-						if (period.equals(new Period().withDays(1))) {
+						if (period.equals(new Period().withDays(1))
+								&& dateTimes.isEmpty()) { // period = every day
 							dateTimes
 									.add(new DateTime().withTime(23, 59, 0, 0));
 						}
+					}
+					// tries to parse param as date to extract the date
+					if (dateTimes.isEmpty()) {
+						List<DateTime> parsedDate = interpretAsDate(
+								keyParamPairs, currentPair, false);
+						if (!parsedDate.isEmpty()) {
+							if (!isRecurring) {
+								period = period.withYears(1);
+								isRecurring = true;
+							}
+							addToDateTimes(parsedDate, dateTimes,
+									keyParamPairs, dateIndexes, i);
+						}
+					} else if (!isRecurring) {
+						interpretAsName(keyParamPairs, currentPair);
 					}
 
 				} else if (key == Keywords.RULE) {
