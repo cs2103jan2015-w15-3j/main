@@ -608,16 +608,21 @@ public class Memory {
 		
 
 		public void update(int userIndex, String param, String originalParam) {
-			removeIdFromNames(originalParam, userIndex);
-			addToNameMap(param, userIndex);
+			if(originalParam != null) {
+				removeIdFromNames(originalParam, userIndex);
+			}
+			if(param != null) {
+				addToNameMap(param, userIndex);
+			}	
 		}
 
 		public void update(int userIndex, DateTime param, DateTime originalParam) {
 			if (originalParam != null) {
 				removeIdFromAllDateMaps(originalParam, userIndex);
 			}
-			addToAllDateMaps(param, userIndex);
-
+			if (param != null) {
+				addToAllDateMaps(param, userIndex);	
+			}
 		}
 	}
 

@@ -645,6 +645,31 @@ public class ParserTest {
 		assertEquals(parsed0, Parser.parseInput(add0));
 	}
 
+	@Test 
+	public void testEditTo() throws InvalidRecurringException, InvalidTodoNameException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 4 Dec 2015
+		List<Date> dates0 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+		
+		String edit0 = "edit 1 to 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+								Keywords.TO, "to", "4 Dec 2015"))),
+				dateTimes0, new Period(), false,
+				false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+		System.out.println(parsed0.containsOnlyCommand());
+	}
+	
 	@Test
 	public void testSearchYear() throws InvalidRecurringException,
 			InvalidTodoNameException {
