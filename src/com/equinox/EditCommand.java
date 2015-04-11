@@ -60,7 +60,7 @@ public class EditCommand extends Command {
 				id = Integer.parseInt(keyParamPairs.get(0).getParam());
 			}
 			Todo todo = memory.getToModifyTodo(id);
-			Todo oldTodo = new Todo(todo);
+			Todo oldTodo = todo.copy();
 
 			if (input.isRecurring()) {
 				int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
@@ -70,7 +70,7 @@ public class EditCommand extends Command {
 				}
 
 				RecurringTodoRule rule = memory.getToModifyRule(todo.getRecurringId());
-				RecurringTodoRule ruleOld = new RecurringTodoRule(rule);
+				RecurringTodoRule ruleOld = rule.copy();
 				
 				// If input contains new title
 				if(containsNewName) {
@@ -125,7 +125,7 @@ public class EditCommand extends Command {
 				}
 				if(!todo.isValid()) {
 					try {
-						memory.restoreHistoryState();
+						memory.undo();
 					} catch (StateUndefinedException e) {
 						e.printStackTrace();
 					}
