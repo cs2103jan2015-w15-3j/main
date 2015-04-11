@@ -128,8 +128,13 @@ public class Parser {
 							currentPair, true);
 
 					if (!parsedDates.isEmpty()) { // if parsing is successful
-						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
-								dateIndexes, i);
+						try {
+							addToDateTimes(parsedDates, dateTimes, keyParamPairs,
+									dateIndexes, i);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 
 				}
@@ -181,8 +186,13 @@ public class Parser {
 					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
 							currentPair, false);
 					if (!parsedDate.isEmpty()) {
-						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
-								dateIndexes, i);
+						try {
+							addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+									dateIndexes, i);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 
 					// tries to parse param as period
@@ -205,8 +215,13 @@ public class Parser {
 							currentPair, true);
 
 					if (!parsedDates.isEmpty()) { // if parsing is successful
-						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
-								dateIndexes, i);
+						try {
+							addToDateTimes(parsedDates, dateTimes, keyParamPairs,
+									dateIndexes, i);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 
 				}
@@ -291,7 +306,7 @@ public class Parser {
 	 */
 	private static List<DateTime> interpretAsDate(
 			ArrayList<KeyParamPair> keyParamPairs, KeyParamPair currentPair,
-			boolean addToName) {
+			boolean addToName){
 		List<DateTime> parsedDate = new ArrayList<DateTime>();
 		try {
 			parsedDate = parseDates(currentPair.getParam());
@@ -325,10 +340,11 @@ public class Parser {
 	 * @param keyParamPairs
 	 * @param dateIndexes
 	 * @param currentIndex
+	 * @throws InterruptedException 
 	 */
 	private static void addToDateTimes(List<DateTime> parsedDate,
 			List<DateTime> dateTimes, ArrayList<KeyParamPair> keyParamPairs,
-			ArrayList<Integer> dateIndexes, int currentIndex) {
+			ArrayList<Integer> dateIndexes, int currentIndex) throws InterruptedException {
 
 		if (dateTimes.size() > 0) {
 			int appendedPairIndex = dateIndexes.get(0);
@@ -575,33 +591,41 @@ public class Parser {
 	 * @throws InvalidDateException
 	 *             if dateString does not contain a valid date, is empty, or
 	 *             null
+	 * @throws InterruptedException 
 	 */
 	public static List<DateTime> parseDates(String dateString)
-			throws InvalidDateException {
+			throws InvalidDateException{
 		List<DateTime> dateTimes = new ArrayList<DateTime>();
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
-		DateGroup parsedDate;
-		DateGroup dateNow;
+		DateGroup parsedDate = null;
+		DateGroup dateNow = null;
+		DateTime currentDateTime = null;
 		try {
 			parsedDate = parser.parse(dateString).get(0);
-
+			Thread.sleep(1);
+			currentDateTime = new DateTime();
+			Thread.sleep(1);
 			// Parse the date again to detect dateString type
 			dateNow = parser.parse(dateString).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			throw new InvalidDateException(
 					ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
-		}
+		} catch (InterruptedException e) {
+			
+		} 
 
 		List<Date> dates = parsedDate.getDates();
 		List<Date> secondDates = dateNow.getDates();
 		for (int i = 0; i < dates.size(); i++) {
 			Date date = dates.get(i);
 			DateTime dateTime = new DateTime(date);
-
+			DateTime secondDateTime = new DateTime(secondDates.get(i));
 			// date does not include a time
-			if (!date.equals(secondDates.get(i))) {
+			if (dateTime.toLocalTime().isBefore(currentDateTime.toLocalTime())
+					&& currentDateTime.toLocalTime().isBefore(
+							secondDateTime.toLocalTime())) {
 				// sets the default time to be 2359h
 				dateTime = dateTime.withTime(23, 59, 0, 0);
 			}
