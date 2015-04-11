@@ -160,7 +160,7 @@ public class Parser {
 				String toString = firstParam.substring(toIndex,
 						firstParam.length());
 				String toParam = toString.substring(3, toString.length());
-				keyParamPairs.get(0).setParam(firstParam.substring(0, toIndex));
+				keyParamPairs.get(0).setParam(firstParam.substring(0, toIndex - 1));
 				keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO,
 						toParam));
 			}
