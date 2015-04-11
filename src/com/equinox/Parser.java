@@ -88,10 +88,11 @@ public class Parser {
 				if (key == Keywords.UNTIL) { // check if there is a recurring
 												// limit parsed in
 					if (isRecurring) {
-						List<DateTime> parsedLimits = interpretAsDate(keyParamPairs, currentPair,
-								true);
-						
-						if (!parsedLimits.isEmpty()) { // if parsing is successful
+						List<DateTime> parsedLimits = interpretAsDate(
+								keyParamPairs, currentPair, true);
+
+						if (!parsedLimits.isEmpty()) { // if parsing is
+														// successful
 							limit = parsedLimits.get(0);
 							hasLimit = true;
 						}
@@ -101,25 +102,32 @@ public class Parser {
 				} else if (key == Keywords.EVERY) {
 					// tries to detect if there is a period in user input
 
-					// tries to parse param as date to extract the date
-					if (dateTimes.isEmpty()) {
-						List<DateTime> parsedDate = interpretAsDate(
-								keyParamPairs, currentPair, false);
-						if (!parsedDate.isEmpty()) {
-							addToDateTimes(parsedDate, dateTimes,
-									keyParamPairs, dateIndexes, i);
-						}
-					}
 					// tries to parse param as period
 					period = interpretAsPeriod(period, keyParamPairs,
 							currentPair);
-					if (!period.equals(new Period())) { // if period is changed
+					if (!period.equals(new Period())) { // if param is valid
+														// period
 						isRecurring = true;
 						if (period.equals(new Period().withDays(1))
 								&& dateTimes.isEmpty()) { // period = every day
 							dateTimes
 									.add(new DateTime().withTime(23, 59, 0, 0));
 						}
+					}
+					// tries to parse param as date to extract the date
+					if (dateTimes.isEmpty()) {
+						List<DateTime> parsedDate = interpretAsDate(
+								keyParamPairs, currentPair, false);
+						if (!parsedDate.isEmpty()) {
+							if (!isRecurring) {
+								period = period.withYears(1);
+								isRecurring = true;
+							}
+							addToDateTimes(parsedDate, dateTimes,
+									keyParamPairs, dateIndexes, i);
+						}
+					} else if (!isRecurring) {
+						interpretAsName(keyParamPairs, currentPair);
 					}
 
 				} else {
@@ -128,8 +136,8 @@ public class Parser {
 							currentPair, true);
 
 					if (!parsedDates.isEmpty()) { // if parsing is successful
-						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
-								dateIndexes, i);
+						addToDateTimes(parsedDates, dateTimes,
+								keyParamPairs, dateIndexes, i);
 					}
 
 				}
@@ -166,34 +174,47 @@ public class Parser {
 				// check if there is a recurring limit parsed
 				// in
 				if (key == Keywords.UNTIL) {
-					limit = interpretAsDate(keyParamPairs, currentPair, true)
-							.get(0);
+					if (isRecurring) {
+						List<DateTime> parsedLimits = interpretAsDate(
+								keyParamPairs, currentPair, true);
 
-					if (!limit.equals(new DateTime(0))) { // if parsing is
-															// successful
-						isRecurring = true;
-						hasLimit = true;
+						if (!parsedLimits.isEmpty()) { // if parsing is
+														// successful
+							limit = parsedLimits.get(0);
+							hasLimit = true;
+						}
+					} else {
+						interpretAsName(keyParamPairs, currentPair);
 					}
 				} else if (key == Keywords.EVERY) {
 					// tries to detect if there is a period in user input
 
-					// tries to parse param as date to extract the date
-					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
-							currentPair, false);
-					if (!parsedDate.isEmpty()) {
-						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
-								dateIndexes, i);
-					}
-
 					// tries to parse param as period
 					period = interpretAsPeriod(period, keyParamPairs,
 							currentPair);
-					if (!period.equals(new Period())) { // if period is changed
+					if (!period.equals(new Period())) { // if param is valid
+														// period
 						isRecurring = true;
-						if (period.equals(new Period().withDays(1))) {
+						if (period.equals(new Period().withDays(1))
+								&& dateTimes.isEmpty()) { // period = every day
 							dateTimes
 									.add(new DateTime().withTime(23, 59, 0, 0));
 						}
+					}
+					// tries to parse param as date to extract the date
+					if (dateTimes.isEmpty()) {
+						List<DateTime> parsedDate = interpretAsDate(
+								keyParamPairs, currentPair, false);
+						if (!parsedDate.isEmpty()) {
+							if (!isRecurring) {
+								period = period.withYears(1);
+								isRecurring = true;
+							}
+							addToDateTimes(parsedDate, dateTimes,
+									keyParamPairs, dateIndexes, i);
+						}
+					} else if (!isRecurring) {
+						interpretAsName(keyParamPairs, currentPair);
 					}
 
 				} else if (key == Keywords.RULE) {
@@ -205,8 +226,8 @@ public class Parser {
 							currentPair, true);
 
 					if (!parsedDates.isEmpty()) { // if parsing is successful
-						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
-								dateIndexes, i);
+						addToDateTimes(parsedDates, dateTimes,
+								keyParamPairs, dateIndexes, i);
 					}
 
 				}
@@ -271,8 +292,7 @@ public class Parser {
 					.toLowerCase());
 
 		} catch (InvalidPeriodException e) { // no valid period
-												// given
-			interpretAsName(keyParamPairs, currentPair);
+
 		}
 		return period;
 	}
@@ -505,8 +525,8 @@ public class Parser {
 				// Ignore and append keyword if it has occurred before
 				if (!keywordOccurrence.contains(keyword)) {
 					keywordOccurrence.add(keyword);
-					keyParamPairs.add(new KeyParamPair(keyword, key, paramBuilder
-							.toString()));
+					keyParamPairs.add(new KeyParamPair(keyword, key,
+							paramBuilder.toString()));
 					key = currentParam;
 					paramBuilder = new StringBuilder();
 				} else { // wordList.get(i) is a repeated keyword; append to
@@ -520,7 +540,8 @@ public class Parser {
 		}
 		// last KeyParamPair to be added to ArrayList
 		keyword = InputStringKeyword.getKeyword(key);
-		keyParamPairs.add(new KeyParamPair(keyword, key, paramBuilder.toString()));
+		keyParamPairs.add(new KeyParamPair(keyword, key, paramBuilder
+				.toString()));
 		return keyParamPairs;
 	}
 
@@ -575,6 +596,7 @@ public class Parser {
 	 * @throws InvalidDateException
 	 *             if dateString does not contain a valid date, is empty, or
 	 *             null
+	 * @throws InterruptedException
 	 */
 	public static List<DateTime> parseDates(String dateString)
 			throws InvalidDateException {
@@ -582,16 +604,21 @@ public class Parser {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
-		DateGroup parsedDate;
-		DateGroup dateNow;
+		DateGroup parsedDate = null;
+		DateGroup dateNow = null;
+		DateTime currentDateTime = null;
 		try {
 			parsedDate = parser.parse(dateString).get(0);
-
+			Thread.sleep(1);
+			currentDateTime = new DateTime();
+			Thread.sleep(1);
 			// Parse the date again to detect dateString type
 			dateNow = parser.parse(dateString).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			throw new InvalidDateException(
 					ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
+		} catch (InterruptedException e) {
+
 		}
 
 		List<Date> dates = parsedDate.getDates();
@@ -599,9 +626,11 @@ public class Parser {
 		for (int i = 0; i < dates.size(); i++) {
 			Date date = dates.get(i);
 			DateTime dateTime = new DateTime(date);
-
+			DateTime secondDateTime = new DateTime(secondDates.get(i));
 			// date does not include a time
-			if (!date.equals(secondDates.get(i))) {
+			if (dateTime.toLocalTime().isBefore(currentDateTime.toLocalTime())
+					&& currentDateTime.toLocalTime().isBefore(
+							secondDateTime.toLocalTime())) {
 				// sets the default time to be 2359h
 				dateTime = dateTime.withTime(23, 59, 0, 0);
 			}
