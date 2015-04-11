@@ -7,19 +7,19 @@ import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
 
 public class Zeitgeist {
-	
 	private static Zeitgeist logic;
 	private static String fileDirectory;
 	
 	public static Scanner scn = new Scanner(System.in);
 	public static StorageHandler storage;
 	public Memory memory;
-
+	
 	public Zeitgeist() {
 		storage = new StorageHandler.Builder().setDirectoryPath(fileDirectory)
 				.setFilePath().build();
 		memory = storage.retrieveMemoryFromFile();
 		memory.setStorageHandler(storage);
+		memory.onCreate();
 		Parser.initialize();
 	}
 	

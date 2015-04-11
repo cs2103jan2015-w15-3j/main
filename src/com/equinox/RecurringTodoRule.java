@@ -16,7 +16,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
  * storing individual Todos
  *
  */
-public class RecurringTodoRule {
+public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
     // @author A0093910H
     private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
 
@@ -98,7 +98,7 @@ public class RecurringTodoRule {
      * 
      * @param rule
      */
-    public RecurringTodoRule(RecurringTodoRule rule) {
+    private RecurringTodoRule(RecurringTodoRule rule) {
     	this.originalName = rule.originalName;
     	this.name = RECURRING_TODO_PREIX + rule.name;
     	this.dateTimes = rule.dateTimes;
@@ -111,8 +111,16 @@ public class RecurringTodoRule {
     	this.recurringId = recurringId;
     }
     
+    public RecurringTodoRule copy() {
+    	return new RecurringTodoRule(this);
+    }
+    
     public RecurringTodoRule getPlaceholder() {
     	return new RecurringTodoRule(recurringId);
+    }
+    
+    public boolean isPlaceholder() {
+    	return recurringInterval == null;
     }
 
     public String getName() {
@@ -131,7 +139,7 @@ public class RecurringTodoRule {
         return recurringInterval;
     }
 
-    public int getRecurringId() {
+    public int getId() {
         return recurringId;
     }
 
