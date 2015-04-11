@@ -20,7 +20,7 @@ public class ExitCommand extends Command {
             return new Signal(Signal.EXIT_INVALLID_PARAMS, false);
         }
         
-        memory.flushStacks();
+        memory.onDestroy();
         memory.saveToFile();
         return new Signal(Signal.EXIT_SUCCESS, true);
     }

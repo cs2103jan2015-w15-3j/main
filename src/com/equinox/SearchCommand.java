@@ -1,10 +1,9 @@
+//@author A0115983X
 package com.equinox;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.joda.time.DateTime;
 
@@ -19,21 +18,27 @@ import com.equinox.exceptions.NullTodoException;
  *
  */
 public class SearchCommand extends Command {
-	//@author A0115983X
-	
+
 	private static final String REGEX_SPACE = "\\s";
 
 	/**
 	 * Creates a SearchCommand object.
 	 * 
-	 * @param input the ParsedInput object containing the parameters.
-	 * @param memory the memory containing the Todos to which the changes should
-	 *            be committed.
+	 * @param input
+	 *            the ParsedInput object containing the parameters.
+	 * @param memory
+	 *            the memory containing the Todos to which the changes should be
+	 *            committed.
 	 */
 	public SearchCommand(ParsedInput input, Memory memory) {
 		super(input, memory);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.equinox.Command#execute()
+	 */
 	@Override
 	public Signal execute() {
 		ArrayList<KeyParamPair> inputList = input.getParamPairs();
@@ -81,16 +86,20 @@ public class SearchCommand extends Command {
 	}
 
 	/**
-	 * Operation generates Collection of Todo Objects based on their ids
+	 * Operation generates Collection of Todo Objects based on their ids and
+	 * search date and type
 	 * 
+	 * @param typeKey
+	 * @param searchDate
 	 * @param todoIds
-	 * @return Collection of Todo objects
+	 * @return Collection of Todo
 	 * @throws InvalidParamException
 	 */
-	private ArrayList<Todo> getTodos(Keywords typeKey, DateTime searchDate,
+	private Collection<Todo> getTodos(Keywords typeKey, DateTime searchDate,
 			ArrayList<Integer> todoIds) throws InvalidParamException {
-		if(typeKey != Keywords.NAME && searchDate == null) {
-			throw new InvalidParamException(ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
+		if (typeKey != Keywords.NAME && searchDate == null) {
+			throw new InvalidParamException(
+					ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
 		}
 		ArrayList<Todo> todos = new ArrayList<Todo>();
 		Todo current;
@@ -160,57 +169,43 @@ public class SearchCommand extends Command {
 	 * @param key
 	 * @param paramArray
 	 * @throws InvalidDateException
-	 * @throws InvalidParamException 
+	 * @throws InvalidParamException
 	 */
 	private void searchIndex(ArrayList<Todo> resultTodos, Keywords typeKey,
-			String param, List<DateTime> dateTimes) throws InvalidParamException {
+			String param, List<DateTime> dateTimes)
+			throws InvalidParamException {
 		ArrayList<Integer> todoIds;
 		DateTime searchDate;
-		if(typeKey == Keywords.NAME) {
+		if (typeKey == Keywords.NAME) {
 			String[] paramArray = param.split(REGEX_SPACE);
 			for (String searchKey : paramArray) {
 				todoIds = memory.search(typeKey, searchKey);
 				resultTodos.addAll(getTodos(todoIds));
 			}
-		} else { //assumes if typeKey != NAME, user wants to search for dateTime
-			try{
+		} else { // assumes if typeKey != NAME, user wants to search for
+					// dateTime
+			try {
 				searchDate = dateTimes.remove(0);
 				todoIds = memory.search(typeKey, searchDate);
 				resultTodos.addAll(getTodos(typeKey, searchDate, todoIds));
 			} catch (IndexOutOfBoundsException e) {
 				throw new InvalidParamException();
 			}
-			
-			
+
 		}
-		
+
 	}
 
-//	/**
-//	 * Operation adds the todo from todoIds into the set of todos to be returned as result
-//	 * 
-//	 * @param todoIds
-//	 * @param resultTodos
-//	 */
-//	private void addToSet(ArrayList<Todo> todoIds, ArrayList<Todo> resultTodos) {
-//		Todo current;
-//		for (int id: todoIds) {
-//			try {
-//				current = memory.getTodo(id);
-//				if(current.isEvent() && !current.isSameDayEvent()) {
-//					resultTodos.addAll(current.breakIntoShortEvents());
-//				}
-//			} catch (NullTodoException e) {
-//				
-//			}
-//		}
-//	}
-
-
+	/**
+	 * Retrieves a Collection of Todo objects based on their todoIds
+	 * 
+	 * @param todoIds
+	 * @return Collection of Todos
+	 */
 	private Collection<Todo> getTodos(ArrayList<Integer> todoIds) {
 		ArrayList<Todo> todos = new ArrayList<Todo>();
 		Todo todo;
-		for(int id: todoIds) {
+		for (int id : todoIds) {
 			try {
 				todo = memory.getTodo(id);
 				todos.add(todo);
@@ -221,43 +216,4 @@ public class SearchCommand extends Command {
 		return todos;
 	}
 
-	public static void main(String[] args) {
-//		Zeitgeist.handleInput("add floating task");
-
-//		Zeitgeist.handleInput("add CS3230 deadline on 9 March 9pm");
-
-//		Zeitgeist
-//				.handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
-
-//		Zeitgeist
-//				.handleInput("add new year from 1 January at 10am to 1 January at 11am");
-
-//		Zeitgeist.handleInput("add CS1010 deadline by 3 Feb at 10pm");
-
-//		Zeitgeist.handleInput("add read floating books");
-
-//		Zeitgeist.handleInput("add CS3243 project deadline by 7 March at 9am");
-
-//		Zeitgeist.handleInput("add CS3333 project 2 on 7 Apr 10am");
-
-//		Zeitgeist.handleInput("display");
-		
-//		Zeitgeist.handleInput("mark 0");
-
-//		Zeitgeist.handleInput("mark 2");
-
-//		Zeitgeist.handleInput("display");
-//		Zeitgeist.handleInput("search -n floating deadline");
-
-//		Zeitgeist.handleInput("search deadline");
-
-//		Zeitgeist.handleInput("search -dt 3 march -dt 1/1");
-		
-//		Zeitgeist.handleInput("search -t 10am");
-		
-//		Zeitgeist.handleInput("search -m march");
-		
-//		Zeitgeist.handleInput("search -d thu");
-
-	}
 }
