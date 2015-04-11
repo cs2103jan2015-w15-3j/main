@@ -501,6 +501,12 @@ public class Todo implements UndoableRedoable<Todo> {
 		DateTime currentStartTime = getStartTime();
 		DateTime endTime = getEndTime();
 		Todo shortTodo;
+        // Prevent the case where start time is after end time, causing infinite
+        // loop
+        if (currentStartTime.isAfter(endTime)) {
+            shortTodos.add(this);
+            return shortTodos;
+        }
 		while (!isSameDay(currentStartTime, endTime)) {
 			shortTodo = new Todo(this);
 			shortTodo.setStartTime(currentStartTime);
