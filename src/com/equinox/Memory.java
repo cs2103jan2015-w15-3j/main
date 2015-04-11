@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Stack;
-import java.util.TreeSet;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -199,6 +197,14 @@ public class Memory {
 		recurringRules.remove(recurringId);
 		// TODO Remove from search map
 		return returnRule;
+	}
+	
+	public void undo() throws StateUndefinedException {
+		vMem.undo();
+	}
+	
+	public void redo() throws StateUndefinedException {
+		vMem.redo();
 	}
 
 	/**

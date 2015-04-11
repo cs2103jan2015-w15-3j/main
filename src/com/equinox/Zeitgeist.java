@@ -15,6 +15,7 @@ public class Zeitgeist {
 				.setFilePath().build();
 		memory = storage.retrieveMemoryFromFile();
 		memory.setStorageHandler(storage);
+		memory.onCreate();
 		Parser.initialize();
 	}
 	
