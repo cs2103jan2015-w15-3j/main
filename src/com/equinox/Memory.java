@@ -57,6 +57,7 @@ public class Memory {
 		this.idBuffer = new IDBuffer<Todo>(allTodos);
 		this.recurringIdBuffer = new IDBuffer<RecurringTodoRule>(recurringRules);
 		this.searchMap = new SearchMap();
+		this.vMem = new VolatileMemory(allTodos, idBuffer, recurringRules, recurringIdBuffer);
 	}
 	
 	void onCreate() {

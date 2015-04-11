@@ -39,12 +39,12 @@ public class MemoryTest {
 	public void testSetterGetUndo() throws StateUndefinedException,
 			NullTodoException {
 		memory.getToModifyTodo(todo1.getId());
-		Todo todo1Copy = new Todo(todo1);
+		Todo todo1Copy = todo1.copy();
 		todo1.setDone(true);
 		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
 		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
 		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
-		memory.restoreHistoryState();
+		memory.undo();
 		assertEquals("Todo1 Undo Mark", todo1Copy, memory.getTodo(todo1.getId()));
 	}
 
@@ -52,15 +52,15 @@ public class MemoryTest {
 	public void testSetterGetUndoRedo() throws StateUndefinedException,
 			NullTodoException {
 		memory.getToModifyTodo(todo1.getId());
-		Todo todo1Copy = new Todo(todo1);
+		Todo todo1Copy = todo1.copy();
 		todo1.setDone(true);
-		Todo todo1MarkCopy = new Todo(todo1);
+		Todo todo1MarkCopy = todo1.copy();
 		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
 		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
 		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
-		memory.restoreHistoryState();
+		memory.undo();
 		assertEquals("Todo1 Undo Mark", todo1Copy, memory.getTodo(todo1.getId()));
-		memory.restoreFutureState();
+		memory.redo();
 		assertEquals("Todo1 Redo Mark", todo1MarkCopy,
 				memory.getTodo(todo1.getId()));
 	}
@@ -72,7 +72,7 @@ public class MemoryTest {
 		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
 		memory.getTodo(todo2.getId()); // Exception
 		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
-		memory.restoreHistoryState();
+		memory.undo();
 		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
 	}
 
@@ -81,26 +81,26 @@ public class MemoryTest {
 			NullTodoException {
 		memory.removeTodo(todo2.getId());
 		memory.removeTodo(todo1.getId());
-		memory.restoreHistoryState();
+		memory.undo();
 		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
 		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
-		memory.restoreFutureState();
+		memory.redo();
 		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
 	}
 
 	@Test(expected = NullTodoException.class)
 	public void testAddUndo() throws StateUndefinedException, NullTodoException {
-		memory.restoreHistoryState();
+		memory.undo();
 		memory.getTodo(todo3.getId()); // Exception
 	}
 
 	@Test
 	public void testAddUndoRedo() throws StateUndefinedException,
 			NullTodoException {
-		memory.restoreHistoryState();
+		memory.undo();
 		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
 		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
-		memory.restoreFutureState();
+		memory.redo();
 		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
 	}
 	/*
