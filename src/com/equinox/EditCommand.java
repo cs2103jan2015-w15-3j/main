@@ -41,6 +41,7 @@ public class EditCommand extends Command {
 			int id;
 			boolean containsNewName = false;
 			String title = new String(); // Stub initialization
+			
 			// Check if first param has any text appended to it intended as Todo name
 			String[] firstKeywordParams = keyParamPairs.get(0).getParam().trim().split("\\s", 2);
 			if (firstKeywordParams.length > 1) {
@@ -59,17 +60,9 @@ public class EditCommand extends Command {
 				}
 				id = Integer.parseInt(keyParamPairs.get(0).getParam());
 			}
-			Todo todo = memory.getToModifyTodo(id);
-			Todo oldTodo = todo.copy();
 
 			if (input.isRecurring()) {
-				int numberOfKeywords = keyParamPairs.size() + dateTimes.size();
-				// Check for valid number of keywords TODO: WRONG
-				if (numberOfKeywords > 8) {
-					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
-				}
-
-				RecurringTodoRule rule = memory.getToModifyRule(todo.getRecurringId());
+				RecurringTodoRule rule = memory.getToModifyRule(memory.getTodo(id).getRecurringId());
 				RecurringTodoRule ruleOld = rule.copy();
 				
 				// If input contains new title
@@ -94,6 +87,10 @@ public class EditCommand extends Command {
 				memory.saveToFile();
 				return new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, ruleOld, rule), true);	
 			} else {
+				
+				Todo todo = memory.getToModifyTodo(id);
+				Todo oldTodo = todo.copy();
+				
 				// If input contains new title
 				if(containsNewName) {
 					todo.setName(title);

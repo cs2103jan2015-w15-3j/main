@@ -96,7 +96,7 @@ public class AddCommand extends Command {
 			// KeyParamPair 0: add <task>
 			case 0:
 				Todo floatingTask = new Todo(memory.obtainFreshId(), todoName);
-				memory.add(floatingTask);
+				memory.userAdd(floatingTask);
 				memory.saveToFile();
 				return new Signal(String.format(
 						Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask), true);
@@ -115,7 +115,7 @@ public class AddCommand extends Command {
 				Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
 						dateTimes);
 				if (timedTodo.isValid()) {
-					memory.add(timedTodo);
+					memory.userAdd(timedTodo);
 					memory.saveToFile();
 					return new Signal(String.format(
 							Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);

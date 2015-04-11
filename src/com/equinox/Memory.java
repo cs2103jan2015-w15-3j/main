@@ -81,9 +81,17 @@ public class Memory {
 	 * 
 	 * @param todo the Todo to be added.
 	 */
-	public void add(Todo todo) {
+	public void userAdd(Todo todo) {
 		// Save to stacks
 		vMem.save(todo.getPlaceholder());
+		// Save to memory
+		allTodos.put(todo.getId(), todo);
+		// Save to indexes
+		searchMap.add(todo);
+	}
+	
+	void systemAdd(Todo todo) {
+		// Does not save to stacks
 		// Save to memory
 		allTodos.put(todo.getId(), todo);
 		// Save to indexes
