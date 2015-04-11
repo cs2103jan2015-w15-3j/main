@@ -1,3 +1,4 @@
+//@author A0115983X
 package com.equinox;
 
 import java.util.ArrayList;
@@ -12,11 +13,12 @@ import org.joda.time.Period;
 import com.equinox.exceptions.InvalidDateException;
 import com.equinox.exceptions.InvalidPeriodException;
 import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
 import com.joestelmach.natty.DateGroup;
 
 public class Parser {
-	
-	//@author A0115983X
+	private static final String STRING_MARCH = "march ";
+	private static final String STRING_TO = "to";
 	private static final String INIT_STRING = "today";
 	private static final String STRING_DAY = "day";
 	private static final String STRING_WEEK = "week";
@@ -40,16 +42,21 @@ public class Parser {
 	private static final String STRING_SUNDAY = "sunday";
 
 	/**
-	 * Parses the specified String, for the command type, keywords, dates and
-	 * other parameters.
+	 * Tries to parse the specified String into ParsedInput object for various
+	 * commands to work on. If the recurring todo which user is trying to add
+	 * does not include any time frame or deadline, throws an
+	 * InvalidRecurringException If the todo which user is trying to add has
+	 * flag keywords as parameters, throws an InvalidTodoNameException.
 	 * 
 	 * @param input
 	 *            the String read from the user.
 	 * @return a ParsedInput object containing the command type,
 	 *         keyword-parameter pairs and dates identified.
-	 * @throws InvalidRecurringException 
+	 * @throws InvalidRecurringException
+	 * @throws InvalidTodoNameException
 	 */
-	public static ParsedInput parseInput(String input) throws InvalidRecurringException {
+	public static ParsedInput parseInput(String input)
+			throws InvalidRecurringException, InvalidTodoNameException {
 		boolean hasLimit = false;
 		boolean isRecurring = false;
 		Period period = new Period();
@@ -74,6 +81,9 @@ public class Parser {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				Keywords key = currentPair.getKeyword();
 
+				if (InputStringKeyword.isFlag(currentPair.getKeyString())) {
+					throw new InvalidTodoNameException();
+				}
 				// assumes that 'every _ until _' is at the end of user input
 				if (isRecurring) { // check if there is a recurring limit parsed
 									// in
@@ -90,12 +100,12 @@ public class Parser {
 					// tries to detect if there is a period in user input
 
 					// tries to parse param as date to extract the date
-					if(dateTimes.isEmpty()) {
-						List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
-								currentPair, 0, false);
+					if (dateTimes.isEmpty()) {
+						List<DateTime> parsedDate = interpretAsDate(
+								keyParamPairs, currentPair, 0, false);
 						if (!parsedDate.isEmpty()) {
-							addToDateTimes(parsedDate, dateTimes, keyParamPairs,
-									dateIndexes, i);
+							addToDateTimes(parsedDate, dateTimes,
+									keyParamPairs, dateIndexes, i);
 						}
 					}
 					// tries to parse param as period
@@ -103,7 +113,8 @@ public class Parser {
 							currentPair, 0);
 					if (!period.equals(new Period())) { // if period is changed
 						isRecurring = true;
-						if (period.equals(new Period().withDays(1)) && dateTimes.isEmpty()) {
+						if (period.equals(new Period().withDays(1))
+								&& dateTimes.isEmpty()) {
 							dateTimes
 									.add(new DateTime().withTime(23, 59, 0, 0));
 						}
@@ -128,15 +139,20 @@ public class Parser {
 
 		// Post-process EDIT command parameters
 		if (cType == Keywords.EDIT) {
-			
+
 			int toIndex;
 			String firstParam = keyParamPairs.get(0).getParam();
 			// search the first pair for presence of TO
-			if((toIndex = firstParam.indexOf("to")) != -1) { //TODO: Does not ignore case
-				 String toString = firstParam.substring(toIndex, firstParam.length());
-				 String toParam = toString.substring(3, toString.length());
-				 keyParamPairs.get(0).setParam(firstParam.substring(0, toIndex));
-				 keyParamPairs.add(new KeyParamPair(Keywords.TO, toParam));
+			if ((toIndex = firstParam.indexOf(STRING_TO)) != -1) { // TODO: Does
+																	// not
+																	// ignore
+																	// case
+				String toString = firstParam.substring(toIndex,
+						firstParam.length());
+				String toParam = toString.substring(3, toString.length());
+				keyParamPairs.get(0).setParam(firstParam.substring(0, toIndex));
+				keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO,
+						toParam));
 			}
 
 			// ignores thefirst pair as it is assumed to be the name of the todo
@@ -151,8 +167,9 @@ public class Parser {
 					limit = interpretAsDate(keyParamPairs, currentPair, 0, true)
 							.get(0);
 
-					if (!limit.equals(new DateTime(0))) { // if parsing is successful
-						isRecurring = true; 
+					if (!limit.equals(new DateTime(0))) { // if parsing is
+															// successful
+						isRecurring = true;
 						hasLimit = true;
 					}
 				} else if (key == Keywords.EVERY) {
@@ -178,7 +195,7 @@ public class Parser {
 					}
 
 				} else if (key == Keywords.RULE) {
-					//leaves keyParamPair for rule as it is. 
+					// leaves keyParamPair for rule as it is.
 					// does not parse as date or append to name
 				} else {
 					// tries to parse param as date
@@ -200,7 +217,7 @@ public class Parser {
 				Keywords key = keyParamPair.getKeyword();
 				if (!(key == Keywords.NAME || key == Keywords.SEARCH)) {
 					if (key == Keywords.YEAR) {
-						keyParamPair.setParam("march ".concat(keyParamPair
+						keyParamPair.setParam(STRING_MARCH.concat(keyParamPair
 								.getParam()));
 					}
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
@@ -211,8 +228,8 @@ public class Parser {
 				}
 			}
 		}
-		
-		if (cType != Keywords.EDIT) {
+
+		if (cType == Keywords.ADD) {
 			// check parameters for recurring todos
 			if (isRecurring) {
 				if (!isValidRecurring(dateTimes)) {
@@ -332,7 +349,6 @@ public class Parser {
 			} catch (InvalidDateException e) {
 				// should never enter this catch block as old date parameters
 				// were parse-able
-				e.printStackTrace(); // TODO: handle this exception
 			}
 
 			if (!newDateTimes.isEmpty() && newDateTimes.equals(dateTimes)) {
@@ -349,7 +365,6 @@ public class Parser {
 				} catch (InvalidDateException e) {
 					// should never enter this catch block as old date
 					// parameters were parse-able
-					e.printStackTrace(); // TODO: handle this exception
 				}
 			}
 			// dateTime generated were different
@@ -381,18 +396,19 @@ public class Parser {
 			int indexOfSecondPair) {
 		KeyParamPair firstPair = keyParamPairs.get(indexOfFirstPair);
 		KeyParamPair secondPair = keyParamPairs.get(indexOfSecondPair);
-		Keywords key = secondPair.getKeyword();
+		String key = secondPair.getKeyString();
 
 		StringBuilder sBuilder = new StringBuilder(firstPair.getParam());
 		sBuilder.append(CHAR_SPACE);
-		sBuilder.append(key.toString().toLowerCase());
+		sBuilder.append(key);
 		sBuilder.append(CHAR_SPACE);
 		sBuilder.append(secondPair.getParam());
 		return sBuilder.toString();
 	}
 
 	/**
-	 * Retrieves period given string
+	 * Retrieves period given string. Throws an InvalidPeriodException if
+	 * parameter given is not a valid period.
 	 * 
 	 * @param param
 	 * @return period for recurrence
@@ -491,7 +507,7 @@ public class Parser {
 				// Ignore and append keyword if it has occurred before
 				if (!keywordOccurrence.contains(keyword)) {
 					keywordOccurrence.add(keyword);
-					results.add(new KeyParamPair(keyword, paramBuilder
+					results.add(new KeyParamPair(keyword, key, paramBuilder
 							.toString()));
 					key = currentParam;
 					paramBuilder = new StringBuilder();
@@ -506,7 +522,7 @@ public class Parser {
 		}
 		// last KeyParamPair to be added to ArrayList
 		keyword = InputStringKeyword.getKeyword(key);
-		results.add(new KeyParamPair(keyword, paramBuilder.toString()));
+		results.add(new KeyParamPair(keyword, key, paramBuilder.toString()));
 		return results;
 	}
 
@@ -543,7 +559,7 @@ public class Parser {
 	 */
 	private static Keywords determineCommandType(String typeString) {
 		Keywords type = Keywords.ERROR;
-		
+
 		if (InputStringKeyword.isCommand(typeString)) {
 			type = InputStringKeyword.getCommand(typeString);
 		}
@@ -572,6 +588,8 @@ public class Parser {
 		DateGroup dateNow;
 		try {
 			parsedDate = parser.parse(dateString).get(0);
+
+			// Parse the date again to detect dateString type
 			dateNow = parser.parse(dateString).get(0);
 		} catch (IndexOutOfBoundsException e) {
 			throw new InvalidDateException(
@@ -583,16 +601,21 @@ public class Parser {
 		for (int i = 0; i < dateList.size(); i++) {
 			Date date = dateList.get(i);
 			DateTime dateTime = new DateTime(date);
+
+			// date does not include a time
 			if (!date.equals(nowList.get(i))) {
+				// sets the default time to be 2359h
 				dateTime = dateTime.withTime(23, 59, 0, 0);
-			} else {
-				dateTime = dateTime.withSecondOfMinute(0).withMillisOfSecond(0);
 			}
 			dateTimes.add(dateTime);
 		}
 		return dateTimes;
 	}
 
+	/**
+	 * Initializes the natty parser by test parsing a string to reduce execution
+	 * time for future parsing
+	 */
 	public static void initialize() {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());

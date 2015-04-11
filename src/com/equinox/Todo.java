@@ -1,6 +1,8 @@
 //@author A0094679H
 
 package com.equinox;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -451,5 +453,41 @@ public class Todo{
 				}
 				
 		return true;
+	}
+
+	/**
+	 * Returns if todo is a same day event.
+	 * @return true if todo is a same day event
+	 * 		false otherwise
+	 */
+	public boolean isSameDayEvent() {
+		DateTime date1 = getStartTime();
+		DateTime date2 = getEndTime();
+		if (date1 == null || date2 == null) {
+            return false;
+        }
+        return (date1.getDayOfYear() == date2.getDayOfYear() && date1
+                .getYear() == date2.getYear());
+	}
+	
+	/**
+	 * Breaks multiple day events into daily events as a collection. 
+	 * If todo is not a multiple day event, method returns a collection with one element.
+	 * @return Collection of todos 
+	 */
+	public Collection<Todo> breakIntoShortEvents() {
+		Collection<Todo> shortTodos = new ArrayList<Todo>();
+		DateTime currentStartTime = getStartTime();
+        Todo shortTodo= new Todo(this);
+		while(!shortTodo.isSameDayEvent()) {
+			shortTodo.setEndTime(currentStartTime.withHourOfDay(23).withMinuteOfHour(59));
+			shortTodos.add(shortTodo);
+			currentStartTime = currentStartTime.plusDays(1).withTimeAtStartOfDay();
+			shortTodo = new Todo(this);
+			shortTodo.setStartTime(currentStartTime);
+		}
+		shortTodos.add(shortTodo);
+		
+		return shortTodos;
 	}
 }

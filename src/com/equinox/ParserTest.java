@@ -13,44 +13,40 @@ import org.joda.time.Period;
 import org.junit.Test;
 
 import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
 
 public class ParserTest {
-	
-	//@author A0115983X
+
+	// @author A0115983X
 	@Test
-	public void testAddFloatingCommands() {
+	public void testAddFloatingCommands() throws InvalidTodoNameException,
+			InvalidRecurringException {
 
 		// floating task without any other keywords
 		String add1 = "add test 1";
 		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 1"))), new ArrayList<DateTime>(),
-				new Period(), false, false, new DateTime(0));
-		try {
-			assertEquals(parsed1, Parser.parseInput(add1));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+						Keywords.ADD, "add", "test 1"))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+
+		assertEquals(parsed1, Parser.parseInput(add1));
 
 		// floating task with 'one keyword + invalid datetime'
 		String add2 = "add study for test on algorithms";
 		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "study for test on algorithms"))),
+						Keywords.ADD, "add", "study for test on algorithms"))),
 				new ArrayList<DateTime>(), new Period(), false, false,
 				new DateTime(0));
-		try {
-			assertEquals(parsed2, Parser.parseInput(add2));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		assertEquals(parsed2, Parser.parseInput(add2));
 
 	}
 
 	@Test
-	public void testAddDeadlineCommands() {
+	public void testAddDeadlineCommands() throws InvalidTodoNameException,
+			InvalidRecurringException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -67,44 +63,33 @@ public class ParserTest {
 		String add0 = "add test 0 by Friday";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 0"))), dateTimes0, new Period(),
-				false, false, new DateTime(0));
-		try {
-			assertEquals(parsed0, Parser.parseInput(add0));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(add0));
 
 		// deadline task 'KEYWORD <invalid datetime> + KEYWORD <datetime>'
 		String add5 = "add test 5 at NTU on Friday";
 		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 5 at NTU"))), dateTimes0,
+						Keywords.ADD, "add", "test 5 at NTU"))), dateTimes0,
 				new Period(), false, false, new DateTime(0));
-		try {
-			assertEquals(parsed5, Parser.parseInput(add5));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		assertEquals(parsed5, Parser.parseInput(add5));
 
 		// deadline task 'KEYWORD <datetime> + KEYWORD <invalid datetime>'
 		String add6 = "add test 6 by Friday at Computing";
 		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 6 at Computing"))), dateTimes0,
-				new Period(), false, false, new DateTime(0));
-		try {
-			assertEquals(parsed6, Parser.parseInput(add6));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+						Keywords.ADD, "add", "test 6 at Computing"))),
+				dateTimes0, new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed6, Parser.parseInput(add6));
 	}
 
 	@Test
-	public void testEventCommands() {
+	public void testEventCommands() throws InvalidTodoNameException,
+			InvalidRecurringException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -144,59 +129,44 @@ public class ParserTest {
 		String add0 = "add test 0 from 3pm to 4pm";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 0"))), dateTimes0, new Period(),
-				false, false, new DateTime(0));
-		try {
-			assertEquals(parsed0, Parser.parseInput(add0));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(add0));
 
 		// event task default 'keyword + day + keyword + 2 datetime'
 		String add1 = "add test 1 on Sunday from 3pm to 4pm";
 		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 1"))), dateTimes1, new Period(),
-				false, false, new DateTime(0));
-		try {
-			assertEquals(parsed1, Parser.parseInput(add1));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+						Keywords.ADD, "add", "test 1"))), dateTimes1,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed1, Parser.parseInput(add1));
 
 		String add2 = "add CIP event from 3 March at 10am to 3 March at 12pm";
 		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "CIP event"))), dateTimes2, new Period(),
-				false, false, new DateTime(0));
-		try {
-			assertEquals(parsed2, Parser.parseInput(add2));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+						Keywords.ADD, "add", "CIP event"))), dateTimes2,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed2, Parser.parseInput(add2));
 	}
 
 	@Test
-	public void testEndCases() {
+	public void testEndCases() throws InvalidTodoNameException,
+			InvalidRecurringException {
 		String add0 = "add";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, ""))), new ArrayList<DateTime>(),
+						Keywords.ADD, "add", ""))), new ArrayList<DateTime>(),
 				new Period(), false, false, new DateTime(0));
-		try {
-			assertEquals(parsed0, Parser.parseInput(add0));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		assertEquals(parsed0, Parser.parseInput(add0));
 
 	}
 
 	@Test
-	public void testAddRecurringCommands() {
+	public void testAddRecurringCommands() throws InvalidRecurringException,
+			InvalidTodoNameException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -231,85 +201,74 @@ public class ParserTest {
 		String add0 = "add test 0 on Friday every week";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 0"))), dateTimes0,
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
 				new Period().withWeeks(1), true, false, new DateTime(0));
-		try {
-			assertEquals(parsed0, Parser.parseInput(add0));
-		} catch (InvalidRecurringException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+
+		assertEquals(parsed0, Parser.parseInput(add0));
 
 		// recurring deadline task 'EVERY <valid day of week>'
 		String add6 = "add test 6 every Friday";
 		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 6"))), dateTimes0,
+						Keywords.ADD, "add", "test 6"))), dateTimes0,
 				new Period().withWeeks(1), true, false, new DateTime(0));
-		try {
-			assertEquals(parsed6, Parser.parseInput(add6));
-		} catch (InvalidRecurringException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		assertEquals(parsed6, Parser.parseInput(add6));
 
 		// recurring event task
 		String add1 = "add test 1 from Friday to Sunday every month";
 		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 1"))), dateTimes1,
+						Keywords.ADD, "add", "test 1"))), dateTimes1,
 				new Period().withMonths(1), true, false, new DateTime(0));
-		try {
-			assertEquals(parsed1, Parser.parseInput(add1));
-		} catch (InvalidRecurringException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+
+		assertEquals(parsed1, Parser.parseInput(add1));
 
 		// recurring deadline task with limit
 		String add3 = "add test 3 on Friday every week until 4 Dec 2015";
 		ParsedInput parsed3 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 3"))), dateTimes0,
+						Keywords.ADD, "add", "test 3"))), dateTimes0,
 				new Period().withWeeks(1), true, true, dateTimes2.get(0));
-		try {
-			assertEquals(parsed3, Parser.parseInput(add3));
-		} catch (InvalidRecurringException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+		assertEquals(parsed3, Parser.parseInput(add3));
 
 		// recurring event task with limit
 		String add4 = "add test 4 from Friday to Sunday every month until 4 Dec 2015";
 		ParsedInput parsed4 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 4"))), dateTimes1,
+						Keywords.ADD, "add", "test 4"))), dateTimes1,
 				new Period().withMonths(1), true, true, dateTimes2.get(0));
-		try {
-			assertEquals(parsed4, Parser.parseInput(add4));
-		} catch (InvalidRecurringException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 
+		assertEquals(parsed4, Parser.parseInput(add4));
+
+	}
+
+	@Test (expected = InvalidRecurringException.class)
+	public void testAddInvalidRecurring() throws InvalidRecurringException, InvalidTodoNameException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+		
+		// date: 4 Dec 2015
+				List<Date> dates0 = parser.parse("4 Dec 2015").get(0).getDates();
+				List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+				for (int i = 0; i < dates0.size(); i++) {
+					Date date = dates0.get(i);
+					dateTimes0.add(new DateTime(date));
+					dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+				}
 		// invalid recurring command: name + every <valid period> + <valid
 		// limit>
-		String add5 = "add test 5 every month until 4 Dec 2015";
-		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
+		String add0 = "add test 5 every month until 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "test 5"))),
+						Keywords.ADD, "add", "test 5"))),
 				new ArrayList<DateTime>(), new Period().withMonths(1), false,
-				true, dateTimes2.get(0));
-		try {
-			assertEquals(parsed5, Parser.parseInput(add5));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+				true, dateTimes0.get(0));
+		assertEquals(parsed0, Parser.parseInput(add0));
 	}
 
 	@Test
-	public void testSearchYear() {
+	public void testSearchYear() throws InvalidRecurringException,
+			InvalidTodoNameException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -325,14 +284,19 @@ public class ParserTest {
 		String search0 = "search -y 2016";
 		ParsedInput parsed0 = new ParsedInput(Keywords.SEARCH,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.SEARCH, ""), new KeyParamPair(Keywords.YEAR,
-						"march 2016"))), dateTimes0, new Period(), false, false,
-				new DateTime(0));
-		try {
-			assertEquals(parsed0, Parser.parseInput(search0));
-		} catch (InvalidRecurringException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+						Keywords.SEARCH, "search", ""), new KeyParamPair(
+						Keywords.YEAR, "-y", "march 2016"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(search0));
+
+	}
+
+	@Test(expected = InvalidTodoNameException.class)
+	public void testAddFlagName() throws InvalidRecurringException,
+			InvalidTodoNameException {
+		
+		String add0 = "add -y";
+		Parser.parseInput(add0);
 	}
 }

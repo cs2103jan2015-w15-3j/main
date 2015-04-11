@@ -1,8 +1,10 @@
 package com.equinox;
 
 import java.util.Scanner;
+import java.io.File;
 
 import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
 
 public class Zeitgeist {
 	
@@ -87,12 +89,14 @@ public class Zeitgeist {
 				signal = logic.handleInput(input);
 			} catch (InvalidRecurringException e) {
 				signal = new Signal(Signal.ADD_INVALID_RECURRING_ERROR, false);
+			} catch(InvalidTodoNameException e) {
+				signal = new Signal(Signal.ADD_INVALID_TODO_NAME_ERROR, false);
 			}
 			SignalHandler.printSignal(signal);
 		}
 	}
 
-	public Signal handleInput(String input) throws InvalidRecurringException {
+	public Signal handleInput(String input) throws InvalidRecurringException, InvalidTodoNameException {
 		ParsedInput c = Parser.parseInput(input);
 		return execute(c);
 	}
