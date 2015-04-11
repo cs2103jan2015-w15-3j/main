@@ -158,7 +158,7 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
         if (recurringTodos.isEmpty()) {
             currentID = memory.obtainFreshId();
             Todo newTodo = new Todo(currentID, name, dateTimes, recurringId);
-            addRecurringTodo(memory, newTodo);
+            addFirstRecurringTodo(memory, newTodo);
             newTodoCount++;
         }
 
@@ -215,9 +215,30 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
         }
     }
 
-    private void addRecurringTodo(Memory memory, Todo newTodo) {
+    /**
+     * Add the first occurrence of the rule
+     * 
+     * This is considered to be added together with the rule by the user
+     * 
+     * @param memory
+     * @param newTodo
+     */
+    private void addFirstRecurringTodo(Memory memory, Todo newTodo) {
         recurringTodos.add(newTodo);
         memory.userAdd(newTodo);
+    }
+
+    /**
+     * Add the subsequent occurrences of the rule
+     * 
+     * This is considered to be added automatically by the system, not the user
+     * 
+     * @param memory
+     * @param newTodo
+     */
+    private void addRecurringTodo(Memory memory, Todo newTodo) {
+        recurringTodos.add(newTodo);
+        memory.systemAdd(newTodo);
     }
 
     private void updateDateTime() {
