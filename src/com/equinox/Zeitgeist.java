@@ -77,9 +77,9 @@ public class Zeitgeist {
 			fileDirectory = StorageUtils.processStorageDirectory(customFileDirPath, scn);
 		}
 
-		SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
 		String input;
 		Zeitgeist logic = getInstance();
+		SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
 		while (true) {
 			SignalHandler.printCommandPrefix();
 			input = scn.nextLine();

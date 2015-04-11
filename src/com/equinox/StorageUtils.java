@@ -65,24 +65,44 @@ public class StorageUtils {
 								+ "Do you wish to : \n"
 								+ "\t 1. Copy over an existing version from the default location (C) \n"
 								+ "\t 2. Overwrite the file with a blank file (O) \n"
-								+ "\t 3. Revert to the default location (R)");
-						String command = scn.next().toUpperCase().trim();
-						
-						switch(command){
-						case "C":
-							String storageFilePath = fileDirectory + "/"
-									+ STORAGE_FILE_NAME;
-							File currentStorageFile = new File(storageFilePath);
-							
-							if (currentStorageFile.exists()) {
-								copyStorageFile(storageFilePath, customFileDirPath);
+								+ "\t 3. Revert to the default location (R)\n"
+								+ "\t 4. Exit the program (E)");
+						String command;
+						do{
+							command = scn.next().toUpperCase().trim();
+							switch(command){
+							case "C":
+								String storageFilePath = fileDirectory + "/"
+										+ STORAGE_FILE_NAME;
+								File currentStorageFile = new File(storageFilePath);
+								
+								if (currentStorageFile.exists()) {
+									copyStorageFile(storageFilePath, customFileDirPath);
+									System.out
+											.println("Storage file copied to specified location: "
+													+ customFileDirPath);
+								}
+								// No existing storageFile.json at the default location
+								// Create a blank storageFile.json at the user-specified location
+								else{
+									newStorageFile.delete();
+									try{
+										newStorageFile.createNewFile();
+									} catch(IOException e){
+										e.printStackTrace();
+									}
+									StorageHandler.createFileIfNonExistent(newStorageFile);
+									StorageHandler.storeMemoryToFile(Memory.getInstance(), newStorageFile);
+									
+								}
+								// Update settings file and file directory
+								modifySettingsFile(customFileDirPath);
+								fileDirectory = customFileDirPath;
 								System.out
-										.println("Storage file copied to specified location: "
+										.println("Directory of the storage file is updated to: "
 												+ customFileDirPath);
-							}
-							// No existing storageFile.json at the default location
-							// Create a blank storageFile.json at the user-specified location
-							else{
+								break;
+							case "O":
 								newStorageFile.delete();
 								try{
 									newStorageFile.createNewFile();
@@ -92,41 +112,27 @@ public class StorageUtils {
 								StorageHandler.createFileIfNonExistent(newStorageFile);
 								StorageHandler.storeMemoryToFile(Memory.getInstance(), newStorageFile);
 								
+								// Update settings file and file directory
+								modifySettingsFile(customFileDirPath);
+								fileDirectory = customFileDirPath;
+								System.out
+										.println("Directory of the storage file is updated to: "
+												+ customFileDirPath);
+								break;
+							case "R":
+								// Do nothing; fileDirectory is already default
+								System.out
+								.println("Storage file location is reverted to the default: "
+										+ fileDirectory);
+								break;
+							case "E":
+								System.exit(0);
+							default:
+								System.out.println("Incorrect command is given.");
+							break;
 							}
-							// Update settings file and file directory
-							modifySettingsFile(customFileDirPath);
-							fileDirectory = customFileDirPath;
-							System.out
-									.println("Directory of the storage file is updated to: "
-											+ customFileDirPath);
-							break;
-						case "O":
-							newStorageFile.delete();
-							try{
-								newStorageFile.createNewFile();
-							} catch(IOException e){
-								e.printStackTrace();
-							}
-							StorageHandler.createFileIfNonExistent(newStorageFile);
-							StorageHandler.storeMemoryToFile(Memory.getInstance(), newStorageFile);
-							
-							// Update settings file and file directory
-							modifySettingsFile(customFileDirPath);
-							fileDirectory = customFileDirPath;
-							System.out
-									.println("Directory of the storage file is updated to: "
-											+ customFileDirPath);
-							break;
-						case "R":
-							// Do nothing; fileDirectory is already default
-							System.out
-							.println("Storage file location is reverted to the default: "
-									+ fileDirectory);
-	
-							break;
-						
-						}
-						scn.nextLine();
+							scn.nextLine();
+						}while(!command.equals("C")&&!command.equals("O")&&!command.equals("R")&&!command.equals("E"));
 					}
 					// newStorageFile is in Json format
 					// Use the existing file at user-specified location automatically
