@@ -8,6 +8,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
+
 public class SystemsTestZ {
 
     Collection<Todo> todos;
@@ -27,7 +30,7 @@ public class SystemsTestZ {
     }
 
     @Test
-    public void testAll() {
+    public void testAll() throws InvalidRecurringException, InvalidTodoNameException {
 
         logic.handleInput("add floating task");
 

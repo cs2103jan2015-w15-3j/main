@@ -1,20 +1,57 @@
+//@author A0115983X
 package com.equinox;
+
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-
 public class InputStringKeywordTest {
 
-    String s = "add first word";
-    String s2 = "add";
-    String s3 = "nonkeyword";
+	@Test
+	public void testIsFlag() {
+		String s = "-y";
+		String s1 = "nonflag";
+		assertEquals(true, InputStringKeyword.isFlag(s));
+		assertEquals(false, InputStringKeyword.isFlag(s1));
+	}
 
-    @Test
-    public void testIsKeyword() {
+	@Test
+	public void testIsCommand() {
+		String s = "add";
+		String s1 = "noncommand";
+		assertEquals(true, InputStringKeyword.isCommand(s));
+		assertEquals(false, InputStringKeyword.isCommand(s1));
+	}
 
-        assertEquals(false, InputStringKeyword.isKeyword(s));
-        assertEquals(true, InputStringKeyword.isKeyword(s2));
-        assertEquals(false, InputStringKeyword.isKeyword(s3));
-    }
+	@Test
+	public void testIsKeyword() {
+		String s = "add";
+		String s1 = "nonkeyword";
+		assertEquals(true, InputStringKeyword.isKeyword(s));
+		assertEquals(false, InputStringKeyword.isKeyword(s1));
+	}
+
+	@Test
+	public void testGetFlag() {
+		String s = "-d";
+		String s2 = "nonflag";
+		assertEquals(Keywords.DAY, InputStringKeyword.getFlag(s));
+		assertEquals(Keywords.ERROR, InputStringKeyword.getFlag(s2));
+	}
+
+	@Test
+	public void testGetCommand() {
+		String s = "delete";
+		String s1 = "noncommand";
+		assertEquals(Keywords.DELETE, InputStringKeyword.getCommand(s));
+		assertEquals(Keywords.ERROR, InputStringKeyword.getCommand(s1));
+	}
+
+	@Test
+	public void testGetKeyword() {
+		String s = "on";
+		String s1 = "nonkeyword";
+		assertEquals(Keywords.ON, InputStringKeyword.getKeyword(s));
+		assertEquals(Keywords.ERROR, InputStringKeyword.getKeyword(s1));
+	}
 }

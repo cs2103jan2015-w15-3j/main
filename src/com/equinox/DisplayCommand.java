@@ -223,7 +223,7 @@ public class DisplayCommand extends Command {
      *         within a single day
      */
     private static Collection<Todo> breakDownLongEvents(Collection<Todo> todos) {
-        Collection<Todo> shortTodos = new ArrayList<Todo>();
+        ArrayList<Todo> shortTodos = new ArrayList<Todo>();
         for (Todo todo : todos) {
             if (todo.isEvent()
                     && !isSameDay(todo.getStartTime(), todo.getEndTime())) {
@@ -232,6 +232,7 @@ public class DisplayCommand extends Command {
                 shortTodos.add(todo);
             }
         }
+        Collections.sort(shortTodos, new ChronoComparator());
         return shortTodos;
     }
 
