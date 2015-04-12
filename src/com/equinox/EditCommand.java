@@ -3,6 +3,7 @@
 package com.equinox;
 
 import java.util.ArrayList;
+
 import org.joda.time.DateTime;
 
 import com.equinox.exceptions.NotRecurringException;
@@ -70,29 +71,44 @@ public class EditCommand extends Command {
 				DateTime startTime = stubTodo.getStartTime();
 				DateTime endTime = stubTodo.getEndTime();
 				ArrayList<DateTime> newDateTimes = new ArrayList<DateTime>();
+                boolean startTimeEdited = false;
 				
 				// Date checks
 				if(!dateTimes.isEmpty()) { // Keywords will always exist if dateTimes 
 					for(int i = 1; i < keyParamPairs.size(); i++) {
 						Keywords keyword = keyParamPairs.get(i).getKeyword();
 						
-						switch (keyword) {
-						case FROM:
-							startTime = dateTimes.remove(0);
-							break;
-						case BY:case ON:case AT:
-							startTime = null;
-							endTime = dateTimes.remove(0);
-							break;
-						case TO:
-							endTime = dateTimes.remove(0);
-							break;
-						case RULE:case UNTIL:case EVERY:
-							// Ignore
-							break;
-						default:
-							return new Signal(Signal.EDIT_INVALID_PARAMS, false);
-						}
+                        switch (keyword) {
+                            case FROM :
+                                startTime = dateTimes.remove(0);
+                                startTimeEdited = true;
+                                break;
+                            case BY :
+                            case ON :
+                            case AT :
+                                if (!dateTimes.isEmpty()) {
+                                    // Prevent overwriting of edit by FROM
+                                    // keyword
+                                    if (!startTimeEdited) {
+                                        startTime = null;
+                                    }
+                                    endTime = dateTimes.remove(0);
+                                }
+                                break;
+                            case TO :
+                                if (!dateTimes.isEmpty()) {
+                                    endTime = dateTimes.remove(0);
+                                }
+                                break;
+                            case RULE :
+                            case UNTIL :
+                            case EVERY :
+                                // Ignore
+                                break;
+                            default :
+                                return new Signal(Signal.EDIT_INVALID_PARAMS,
+                                        false);
+                        }
 					}
 					
 					if(startTime != null && endTime != null) {
@@ -150,24 +166,37 @@ public class EditCommand extends Command {
 				Todo stubTodo = memory.getTodo(id).copy();
 				DateTime startTime = stubTodo.getStartTime();
 				DateTime endTime = stubTodo.getEndTime();
+                boolean startTimeEdited = false;
 				
 				if(!dateTimes.isEmpty()) {
 					for(int i = 1; i < keyParamPairs.size(); i++) {
 						Keywords keyword = keyParamPairs.get(i).getKeyword();
 						
-						switch (keyword) {
-						case FROM:
-							startTime = dateTimes.remove(0);
-							break;
-						case BY:case ON:case AT:
-							startTime = null;
-							endTime = dateTimes.remove(0);
-							break;
-						case TO:
-							endTime = dateTimes.remove(0);
-							break;
-						default:
-							return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+                        switch (keyword) {
+                            case FROM :
+                                startTime = dateTimes.remove(0);
+                                startTimeEdited = true;
+                                break;
+                            case BY :
+                            case ON :
+                            case AT :
+                                if (!dateTimes.isEmpty()) {
+                                    // Prevent overwriting of edit by FROM
+                                    // keyword
+                                    if (!startTimeEdited) {
+                                        startTime = null;
+                                    }
+                                    endTime = dateTimes.remove(0);
+                                }
+                                break;
+                            case TO :
+                                if (!dateTimes.isEmpty()) {
+                                    endTime = dateTimes.remove(0);
+                                }
+                                break;
+                            default :
+                                return new Signal(Signal.EDIT_INVALID_PARAMS,
+                                        false);
 						}
 					}
 					if(startTime != null && endTime != null) {
