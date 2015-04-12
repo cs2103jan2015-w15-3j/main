@@ -40,6 +40,7 @@ public class EditCommand extends Command {
 		try {
 			int id;
 			boolean containsNewName = false;
+			boolean isRule = false;
 			String title = new String(); // Stub initialization
 			
 			// Check if first param has any text appended to it intended as Todo name
@@ -50,7 +51,7 @@ public class EditCommand extends Command {
 				title = firstKeywordParams[1];
 				containsNewName = true;
 			} else {
-				// Check if input contains only than 1 keyword (keyParamPairs.size() > 1)
+				// Check if input contains only 1 keyword (keyParamPairs.size() == 1)
 				if (input.containsOnlyCommand()) {
 					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
@@ -61,7 +62,10 @@ public class EditCommand extends Command {
 				id = Integer.parseInt(keyParamPairs.get(0).getParam());
 			}
 
-			if (input.isRecurring()) {
+			// Check for presence of -r flag
+			isRule = input.containsFlag(Keywords.RULE);
+			
+			if (input.isRecurring() || isRule) {
 				RecurringTodoRule rule = memory.getToModifyRule(memory.getTodo(id).getRecurringId());
 				RecurringTodoRule ruleOld = rule.copy();
 				

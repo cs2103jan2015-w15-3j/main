@@ -57,7 +57,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 			fromStack = redoStack.removeLast();
 		} catch (NoSuchElementException e) {
 			throw new StateUndefinedException(
-					ExceptionMessages.NO_FUTURE_STATES_EXCEPTION);
+					ExceptionMessages.NO_FUTURE_STATES);
 		}
 
 		int id = fromStack.getId();
@@ -92,7 +92,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 			fromStack = undoStack.removeLast();
 		} catch (NoSuchElementException e) {
 			throw new StateUndefinedException(
-					ExceptionMessages.NO_HISTORY_STATES_EXCEPTION);
+					ExceptionMessages.NO_HISTORY_STATES);
 		}
 
 		int id = fromStack.getId();

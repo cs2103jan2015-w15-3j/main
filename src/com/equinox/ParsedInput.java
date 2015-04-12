@@ -114,6 +114,15 @@ public class ParsedInput {
 		return false;
 	}
 	
+	public boolean containsFlag(Keywords flagKeyword) {
+		for(KeyParamPair pair : keyParamPairs) {
+			if(pair.getKeyword() == flagKeyword && InputStringKeyword.isFlag(pair.getKeyString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Checks if any dates are parsed.
 	 * 

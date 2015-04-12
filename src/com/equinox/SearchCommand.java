@@ -99,7 +99,7 @@ public class SearchCommand extends Command {
 			ArrayList<Integer> todoIds) throws InvalidParamException {
 		if (typeKey != Keywords.NAME && searchDate == null) {
 			throw new InvalidParamException(
-					ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
+					ExceptionMessages.INVALID_SEARCH_TYPE);
 		}
 		ArrayList<Todo> todos = new ArrayList<Todo>();
 		Todo current;
