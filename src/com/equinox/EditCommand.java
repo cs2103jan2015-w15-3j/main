@@ -12,9 +12,6 @@ import com.equinox.exceptions.NullTodoException;
 
 /**
  * Houses a method which processes the edit request from the user.
- * 
- * @author Ikarus
- *
  */
 public class EditCommand extends Command {
 

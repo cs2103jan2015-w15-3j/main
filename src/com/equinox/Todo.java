@@ -19,8 +19,6 @@ import com.equinox.exceptions.NotRecurringException;
  * which is uniquely determined at construction by the availability of
  * parameters. Todos are uniquely specified identifier known as ID until their
  * deletion, upon which the ID may be recycled.
- * 
- * @author Ikarus
  *
  */
 
