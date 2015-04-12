@@ -57,10 +57,6 @@ public class EditCommand extends Command {
 				if (input.containsOnlyCommand()) {
 					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
-				// Check if input is missing parameters
-				if (input.containsEmptyParams()) {
-					return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
-				}
 				id = Integer.parseInt(keyParamPairs.get(0).getParam());
 			}
 
@@ -92,6 +88,9 @@ public class EditCommand extends Command {
 							break;
 						case TO:
 							endTime = dateTimes.remove(0);
+							break;
+						case RULE:
+							// Ignore
 							break;
 						default:
 							return new Signal(Signal.EDIT_INVALID_PARAMS, false);
