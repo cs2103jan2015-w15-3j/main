@@ -18,7 +18,7 @@ public class Signal {
 	/**
 	 * Add Command Signals
 	 */
-	public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added.";
+	public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$ssuccessfully added.";
 	public static final String ADD_UNKNOWN_ERROR = "Unknown add error";
 	public static final String ADD_END_BEFORE_START_ERROR = "The start time is after the end time.";
 	public static final String ADD_INVALID_RECURRING_ERROR = "No date or time given for recurring todo.";

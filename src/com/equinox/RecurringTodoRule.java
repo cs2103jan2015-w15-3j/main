@@ -41,11 +41,12 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
     private static final PeriodFormatter PERIOD_FORMATTER;
     static {
     	PeriodFormatterBuilder pfb = new PeriodFormatterBuilder();
-    	pfb.appendWeeks();
-    	pfb.appendSuffix(" week(s) ");
-    	pfb.appendDays();
-    	pfb.appendSuffix(" day(s) ");
-    	PERIOD_FORMATTER = pfb.toFormatter();
+    	PERIOD_FORMATTER = pfb
+    			.printZeroNever().appendYears().appendSuffix(" year(s) ")
+    			.printZeroNever().appendMonths().appendSuffix(" month(s) ")
+    			.printZeroNever().appendWeeks().appendSuffix(" week(s) ")
+    			.printZeroNever().appendDays().appendSuffix(" day(s) ")
+    			.toFormatter();
     }
     private boolean hasLimit = false;
     
