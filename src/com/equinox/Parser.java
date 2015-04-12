@@ -136,8 +136,8 @@ public class Parser {
 							currentPair, true);
 
 					if (!parsedDates.isEmpty()) { // if parsing is successful
-						addToDateTimes(parsedDates, dateTimes,
-								keyParamPairs, dateIndexes, i);
+						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
+								dateIndexes, i);
 					}
 
 				}
@@ -160,7 +160,8 @@ public class Parser {
 				String toString = firstParam.substring(toIndex,
 						firstParam.length());
 				String toParam = toString.substring(3, toString.length());
-				keyParamPairs.get(0).setParam(firstParam.substring(0, toIndex - 1));
+				keyParamPairs.get(0).setParam(
+						firstParam.substring(0, toIndex - 1));
 				keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO,
 						toParam));
 			}
@@ -226,8 +227,8 @@ public class Parser {
 							currentPair, true);
 
 					if (!parsedDates.isEmpty()) { // if parsing is successful
-						addToDateTimes(parsedDates, dateTimes,
-								keyParamPairs, dateIndexes, i);
+						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
+								dateIndexes, i);
 					}
 
 				}
@@ -262,6 +263,7 @@ public class Parser {
 		}
 		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
 				isRecurring, hasLimit, limit);
+		// System.out.println(returnInput.getParamPairs().get(0).getParam());
 		return returnInput;
 	}
 
@@ -314,13 +316,21 @@ public class Parser {
 			boolean addToName) {
 		List<DateTime> parsedDate = new ArrayList<DateTime>();
 		try {
-			parsedDate = parseDates(currentPair.getParam());
+			parsedDate = parseDates(combineKeyPair(currentPair.getKeyString(),
+					currentPair.getParam()));
 		} catch (InvalidDateException e) { // no valid date given
 			if (addToName) {
 				interpretAsName(keyParamPairs, currentPair);
 			}
 		}
 		return parsedDate;
+	}
+
+	private static String combineKeyPair(String keyString, String paramString) {
+		StringBuilder sBuilder = new StringBuilder(keyString);
+		sBuilder.append(CHAR_SPACE);
+		sBuilder.append(paramString);
+		return sBuilder.toString();
 	}
 
 	/**
@@ -362,11 +372,13 @@ public class Parser {
 			String newDateParam = appendParameters(keyParamPairs,
 					appendedPairIndex, currentIndex);
 			try {
-				newDateTimes = parseDates(newDateParam);
+				newDateTimes = parseDates(combineKeyPair(
+						keyParamPairs.get(appendedPairIndex).getKeyString(),
+						newDateParam));
 
 			} catch (InvalidDateException e) {
-				// should never enter this catch block as old date parameters
-				// were parse-able
+				// should never enter this catch block as old parameters
+				// were parse-able as dates
 			}
 
 			if (!newDateTimes.isEmpty() && newDateTimes.equals(dateTimes)) {
@@ -378,7 +390,9 @@ public class Parser {
 				newDateParam = appendParameters(keyParamPairs,
 						appendedPairIndex, currentIndex);
 				try {
-					newDateTimes = parseDates(newDateParam);
+					newDateTimes = parseDates(combineKeyPair(
+							keyParamPairs.get(appendedPairIndex).getKeyString(),
+							newDateParam));
 
 				} catch (InvalidDateException e) {
 					// should never enter this catch block as old date
