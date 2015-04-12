@@ -266,9 +266,6 @@ public class Memory {
 	/**
 	 * This class stores the mapping of various types of index to a list of Todo
 	 * ids for the purpose of the search command
-	 * 
-	 * @author peanut11
-	 *
 	 */
 	private class SearchMap {
 		private HashMap<String, ArrayList<Integer>> nameMap;
@@ -677,8 +674,6 @@ public class Memory {
 	/**
 	 * Saves this instance of memory to file by calling the storeMemoryToFile
 	 * method in the StorageHandler object.
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 	 */
 	public void saveToFile() {
 		storage.storeMemoryToFile(this);
