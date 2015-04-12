@@ -131,6 +131,8 @@ public class Signal {
 
 	public static final String ERROR_PREFIX = "Error: ";
 
+	public static final String DATE_PARSING_ERROR = "Unable to parse dates: Try rephrasing your dates ";
+
 	private String message;
 
 	/**

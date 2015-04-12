@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.ParsingFailureException;
 
 public class Zeitgeist {
 	private static Zeitgeist logic;
@@ -90,12 +91,14 @@ public class Zeitgeist {
 				signal = new Signal(Signal.ADD_INVALID_RECURRING_ERROR, false);
 			} catch(InvalidTodoNameException e) {
 				signal = new Signal(Signal.ADD_INVALID_TODO_NAME_ERROR, false);
+			} catch (ParsingFailureException e) {
+				signal = new Signal(Signal.DATE_PARSING_ERROR, false);
 			}
 			SignalHandler.printSignal(signal);
 		}
 	}
 
-	public Signal handleInput(String input) throws InvalidRecurringException, InvalidTodoNameException {
+	public Signal handleInput(String input) throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
 		ParsedInput c = Parser.parseInput(input);
 		return execute(c);
 	}
