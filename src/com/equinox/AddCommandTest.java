@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.ParsingFailureException;
 
 //@author A0110839H
 public class AddCommandTest {
@@ -68,7 +69,7 @@ public class AddCommandTest {
 		try {
 			// Test for equivalence in Signal object
 			assertEquals(insufficientParamSignal, logic.handleInput(command));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		command = "add by 4pm";
@@ -77,7 +78,7 @@ public class AddCommandTest {
 		try {
 			// Test for equivalence in Signal object
 			assertEquals(insufficientParamSignal, logic.handleInput(command));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		command = "add from 1am to 2am";
@@ -86,7 +87,7 @@ public class AddCommandTest {
 		try {
 			// Test for equivalence in Signal object
 			assertEquals(insufficientParamSignal, logic.handleInput(command));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 	}
 
@@ -109,7 +110,7 @@ public class AddCommandTest {
 				floatingTaskString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(floatingTaskCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -122,7 +123,7 @@ public class AddCommandTest {
 				floatingTaskString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(floatingTaskCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -135,7 +136,7 @@ public class AddCommandTest {
 				floatingTaskString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(floatingTaskCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -148,7 +149,7 @@ public class AddCommandTest {
 				floatingTaskString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(floatingTaskCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 	}
@@ -180,7 +181,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -194,7 +195,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -211,7 +212,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -226,7 +227,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		/*
 		 * Test for a multiple-worded, mixed-case title, absolute date and time,
@@ -239,7 +240,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -253,7 +254,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -273,7 +274,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -286,7 +287,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -299,7 +300,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -312,7 +313,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -329,7 +330,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -347,7 +348,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -360,7 +361,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -373,7 +374,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -386,7 +387,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -399,7 +400,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -412,7 +413,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -430,7 +431,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -443,7 +444,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -456,7 +457,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -469,7 +470,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -482,7 +483,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -495,7 +496,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -513,7 +514,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -526,7 +527,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -540,7 +541,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -554,7 +555,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -568,7 +569,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -582,7 +583,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -597,7 +598,7 @@ public class AddCommandTest {
 				deadlineString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 	}
@@ -627,7 +628,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -640,7 +641,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -655,7 +656,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -670,7 +671,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -685,7 +686,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -705,7 +706,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -722,7 +723,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -739,7 +740,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -756,7 +757,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -773,7 +774,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -790,7 +791,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -807,7 +808,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -824,7 +825,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -841,7 +842,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 
 		/*
@@ -858,7 +859,7 @@ public class AddCommandTest {
 				eventString), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 	}
 	
@@ -876,7 +877,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -887,7 +888,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -898,7 +899,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -909,7 +910,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -920,7 +921,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -931,7 +932,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -942,7 +943,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -953,7 +954,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -964,7 +965,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -975,7 +976,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -986,7 +987,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -997,7 +998,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -1008,7 +1009,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -1019,7 +1020,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 		/*
@@ -1030,7 +1031,7 @@ public class AddCommandTest {
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
-		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
 		}
 		
 	}
