@@ -157,10 +157,12 @@ public class Parser {
 				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) { // TODO: Does not ignore case
 					String toString = currentParam.substring(toIndex,
 							currentParam.length());
-					String afterTo = toString.substring(3, toString.length());
-					currentPair.setParam(currentParam.substring(0, toIndex - 1));
-					keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO,
-							afterTo));
+					if(toString.length() != 2) {
+						String afterTo = toString.substring(3, toString.length());
+						currentPair.setParam(currentParam.substring(0, toIndex - 1));
+						keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO,
+								afterTo));
+					}
 				}
 			}
 
