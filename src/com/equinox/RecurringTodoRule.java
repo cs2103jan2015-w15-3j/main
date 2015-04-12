@@ -101,7 +101,7 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
      */
     private RecurringTodoRule(RecurringTodoRule rule) {
     	this.originalName = rule.originalName;
-    	this.name = RECURRING_TODO_PREIX + rule.name;
+        this.name = rule.name;
     	this.dateTimes = rule.dateTimes;
     	this.recurringInterval = rule.recurringInterval;
     	this.recurringId = rule.recurringId;
@@ -161,6 +161,7 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
             Todo newTodo = new Todo(currentID, name, dateTimes, recurringId);
             addFirstRecurringTodo(memory, newTodo);
             newTodoCount++;
+            updateDateTime();
         }
 
         DateTime now = new DateTime();
@@ -171,13 +172,12 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
             updateLimit = getRecurrenceLimit();
         }
 
-        while (getDateTime().plus(recurringInterval)
-                .compareTo(updateLimit) <= 0) {
-            updateDateTime();
+        while (getDateTime().compareTo(updateLimit) <= 0) {
             currentID = memory.obtainFreshId();
             Todo newTodo = new Todo(currentID, name, dateTimes, recurringId);
             addRecurringTodo(memory, newTodo);
             newTodoCount++;
+            updateDateTime();
         }
 
         return newTodoCount;
@@ -207,7 +207,8 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
         }
     }
 
-    public void setDateTimes(List<DateTime> dateTimes) {
+    public void setDateTimes(List<DateTime> dateTimes)
+            throws IllegalArgumentException {
         if (dateTimes == null || dateTimes.size() == 0) {
             throw new IllegalArgumentException(
                     "DateTime field of recurring rule cannot be empty");

@@ -15,12 +15,13 @@ import org.junit.Test;
 
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.ParsingFailureException;
 
 public class ParserTest {
 
 	@Test
 	public void testAddFloating() throws InvalidTodoNameException,
-			InvalidRecurringException {
+			InvalidRecurringException, ParsingFailureException {
 
 		// floating task without any other keywords
 		String add1 = "add test 1";
@@ -34,7 +35,7 @@ public class ParserTest {
 	}
 
 	public void testAddFloatingWithKeyword() throws InvalidRecurringException,
-			InvalidTodoNameException {
+			InvalidTodoNameException, ParsingFailureException {
 		// floating task with 'one keyword + non-datetime'
 		String add2 = "add study for test on algorithms";
 		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
@@ -48,7 +49,7 @@ public class ParserTest {
 
 	@Test
 	public void testAddDeadlineWithDateOnly() throws InvalidTodoNameException,
-			InvalidRecurringException {
+			InvalidRecurringException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -73,7 +74,7 @@ public class ParserTest {
 
 	@Test
 	public void testAddDeadlineWithTime() throws InvalidRecurringException,
-			InvalidTodoNameException {
+			InvalidTodoNameException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -97,7 +98,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddDeadlineWithNondateAndDate()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -107,7 +109,7 @@ public class ParserTest {
 		for (int i = 0; i < dates0.size(); i++) {
 			Date date = dates0.get(i);
 			dateTimes0.add(new DateTime(date));
-//			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+			// dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
 		}
 		// deadline task 'KEYWORD <invalid datetime> + KEYWORD <datetime>'
 		String add5 = "add test 5 in sr1 at 3pm";
@@ -120,7 +122,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddDeadlineWithDateAndNondate()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -145,7 +148,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddDeadlineWithTimeAndDate()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -162,15 +166,16 @@ public class ParserTest {
 		String add6 = "add test 6 by 2359 on 15 March";
 		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "add", "test 6"))),
-				dateTimes0, new Period(), false, false, new DateTime(0));
+						Keywords.ADD, "add", "test 6"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
 
 		assertEquals(parsed6, Parser.parseInput(add6));
 	}
-	
+
 	@Test
 	public void testAddDeadlineWithNonPeriod()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -195,7 +200,7 @@ public class ParserTest {
 
 	@Test
 	public void testAddDeadlineWithLimit() throws InvalidRecurringException,
-			InvalidTodoNameException {
+			InvalidTodoNameException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -220,7 +225,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddDeadlineWithNonPeriodAndLimit()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -246,7 +252,8 @@ public class ParserTest {
 	}
 
 	public void testAddDeadlineWithNonPeriodAndNonLimit()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -273,7 +280,7 @@ public class ParserTest {
 
 	@Test
 	public void testAddEventWithTwoTimes() throws InvalidTodoNameException,
-			InvalidRecurringException {
+			InvalidRecurringException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -296,7 +303,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddEventWithDateAndTwoTimes()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -320,7 +328,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddEventWithTwoTimesAndDate()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -344,7 +353,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddEventWithTwoDateAndTime()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -368,7 +378,7 @@ public class ParserTest {
 
 	@Test
 	public void testAddEventWithTwoDates() throws InvalidRecurringException,
-			InvalidTodoNameException {
+			InvalidTodoNameException, ParsingFailureException {
 
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
@@ -392,7 +402,7 @@ public class ParserTest {
 
 	@Test
 	public void testEndCases() throws InvalidTodoNameException,
-			InvalidRecurringException {
+			InvalidRecurringException, ParsingFailureException {
 		String add0 = "add";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
@@ -405,7 +415,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddRecurringDeadlineWithDate()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -431,7 +442,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddRecurringDeadlineWithDayOfWeek()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -455,7 +467,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddRecurringDeadlineEveryDay()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -479,7 +492,7 @@ public class ParserTest {
 
 	@Test
 	public void testAddRecurringEvent() throws InvalidRecurringException,
-			InvalidTodoNameException {
+			InvalidTodoNameException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -504,7 +517,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddRecurringDeadlineWithLimit()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -536,7 +550,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddRecurringDeadlineWithNonLimit()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -563,7 +578,8 @@ public class ParserTest {
 
 	@Test
 	public void testAddRecurringEventWithLimit()
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -594,9 +610,11 @@ public class ParserTest {
 
 		assertEquals(parsed4, Parser.parseInput(add4));
 	}
-	
+
 	@Test
-	public void testAddRecurringDeadlineEveryDate() throws InvalidRecurringException, InvalidTodoNameException {
+	public void testAddRecurringDeadlineEveryDate()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -621,7 +639,7 @@ public class ParserTest {
 
 	@Test(expected = InvalidRecurringException.class)
 	public void testAddInvalidRecurring() throws InvalidRecurringException,
-			InvalidTodoNameException {
+			InvalidTodoNameException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -644,8 +662,17 @@ public class ParserTest {
 		assertEquals(parsed0, Parser.parseInput(add0));
 	}
 
-	@Test 
-	public void testEditTo() throws InvalidRecurringException, InvalidTodoNameException {
+	@Test(expected = ParsingFailureException.class)
+	public void testAddTaskWithMoreThanTwoDateTimes()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		String add0 = "add event from 1 Jan to 2 Jan in 2 days";
+		Parser.parseInput(add0);
+	}
+
+	@Test
+	public void testEditTo() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -657,21 +684,20 @@ public class ParserTest {
 			dateTimes0.add(new DateTime(date));
 			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
 		}
-		
+
 		String edit0 = "edit 1 to 4 Dec 2015";
 		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.EDIT, "edit", "1"), new KeyParamPair(
-								Keywords.TO, "to", "4 Dec 2015"))),
-				dateTimes0, new Period(), false,
-				false, new DateTime(0));
+						Keywords.TO, "to", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
 		assertEquals(parsed0, Parser.parseInput(edit0));
 		System.out.println(parsed0.containsOnlyCommand());
 	}
-	
+
 	@Test
 	public void testSearchYear() throws InvalidRecurringException,
-			InvalidTodoNameException {
+			InvalidTodoNameException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 
@@ -697,7 +723,7 @@ public class ParserTest {
 
 	@Test(expected = InvalidTodoNameException.class)
 	public void testAddFlagName() throws InvalidRecurringException,
-			InvalidTodoNameException {
+			InvalidTodoNameException, ParsingFailureException {
 
 		String add0 = "add -y";
 		Parser.parseInput(add0);

@@ -14,6 +14,7 @@ import com.equinox.exceptions.InvalidDateException;
 import com.equinox.exceptions.InvalidPeriodException;
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.ParsingFailureException;
 import com.joestelmach.natty.DateGroup;
 
 public class Parser {
@@ -54,9 +55,11 @@ public class Parser {
 	 *         keyword-parameter pairs and dates identified.
 	 * @throws InvalidRecurringException
 	 * @throws InvalidTodoNameException
+	 * @throws ParsingFailureException
 	 */
 	public static ParsedInput parseInput(String input)
-			throws InvalidRecurringException, InvalidTodoNameException {
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		boolean hasLimit = false;
 		boolean isRecurring = false;
 		Period period = new Period();
@@ -150,20 +153,27 @@ public class Parser {
 		// Post-process EDIT command parameters
 		if (cType == Keywords.EDIT) {
 
-			int toIndex;	
-			for(int i = 0; i < keyParamPairs.size(); i++) {
+			int toIndex;
+			for (int i = 0; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				String currentParam = currentPair.getParam();
-				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) { // TODO: Does not ignore case
+				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) { // TODO:
+																			// Does
+																			// not
+																			// ignore
+																			// case
 					String toString = currentParam.substring(toIndex,
 							currentParam.length());
-					if(toString.length() != 2) {
-						String afterTo = toString.substring(3, toString.length());
-						currentPair.setParam(currentParam.substring(0, toIndex - 1));
-						keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO,
-								afterTo));
+					if (toString.length() != 2) {
+						String afterTo = toString.substring(3,
+								toString.length());
+						currentPair.setParam(currentParam.substring(0,
+								toIndex - 1));
+						keyParamPairs.add(new KeyParamPair(Keywords.TO,
+								STRING_TO, afterTo));
 					}
 				}
+
 			}
 
 			// ignores thefirst pair as it is assumed to be the name of the todo
@@ -175,14 +185,14 @@ public class Parser {
 				// check if there is a recurring limit parsed
 				// in
 				if (key == Keywords.UNTIL) {
-						List<DateTime> parsedLimits = interpretAsDate(
-								keyParamPairs, currentPair, true);
-						
-						if (!parsedLimits.isEmpty()) { // if parsing is
-														// successful
-							limit = parsedLimits.get(0);
-							hasLimit = true;
-							isRecurring = true;
+					List<DateTime> parsedLimits = interpretAsDate(
+							keyParamPairs, currentPair, true);
+
+					if (!parsedLimits.isEmpty()) { // if parsing is
+													// successful
+						limit = parsedLimits.get(0);
+						hasLimit = true;
+						isRecurring = true;
 					} else {
 						interpretAsName(keyParamPairs, currentPair);
 					}
@@ -354,10 +364,12 @@ public class Parser {
 	 * @param keyParamPairs
 	 * @param dateIndexes
 	 * @param currentIndex
+	 * @throws ParsingFailureException
 	 */
 	private static void addToDateTimes(List<DateTime> parsedDate,
 			List<DateTime> dateTimes, ArrayList<KeyParamPair> keyParamPairs,
-			ArrayList<Integer> dateIndexes, int currentIndex) {
+			ArrayList<Integer> dateIndexes, int currentIndex)
+			throws ParsingFailureException {
 
 		if (dateTimes.size() > 0) {
 			int appendedPairIndex = dateIndexes.get(0);
@@ -393,12 +405,40 @@ public class Parser {
 							keyParamPairs.get(appendedPairIndex).getKeyString(),
 							newDateParam));
 
+					System.out.println(newDateTimes.get(0).toLocalDate()
+							.equals(parsedDate.get(0).toLocalDate()));
+					System.out
+							.println(newDateTimes.get(0).getHourOfDay() == parsedDate
+									.get(0).getHourOfDay());
+					System.out.println(newDateTimes.get(0).getHourOfDay());
+					System.out.println(parsedDate.get(0).minuteOfDay());
+					// new dateTime parsed from 'param y param x' is same as
+					// 'param y'
+					if (newDateTimes.get(0).toLocalDate()
+							.equals(parsedDate.get(0).toLocalDate())) {
+						if (newDateTimes.get(0).getHourOfDay() == parsedDate
+								.get(0).getHourOfDay()
+								&& newDateTimes.get(0).getMinuteOfHour() == parsedDate
+										.get(0).getMinuteOfHour()) {
+							if (newDateTimes.size() == 2) {
+								if (newDateTimes.get(1).getHourOfDay() == parsedDate
+										.get(1).getHourOfDay()
+										&& newDateTimes.get(1).getMinuteOfHour() == parsedDate
+												.get(1).getMinuteOfHour()) {
+									throw new ParsingFailureException();
+								}
+							} else {
+								throw new ParsingFailureException();
+							}
+
+						}
+					}
 				} catch (InvalidDateException e) {
 					// should never enter this catch block as old date
 					// parameters were parse-able
 				}
 			}
-			// dateTime generated were different
+
 			assert (!newDateTimes.isEmpty()); // shouldn't be empty because
 												// parameters should be
 												// parse-able
