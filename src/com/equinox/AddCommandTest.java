@@ -528,14 +528,22 @@ public class AddCommandTest {
 	 */
 	@Test
 	public void testEvent() {
+		final DateTime baseTime = new DateTime();
+		DateTime changedTime;
+		String formattedDate;
+		String formattedTime;
 		String eventCommand;
 		String eventString;
 		Signal addSuccess;
+		
+		/*
+		 * Absolute time
+		 */
 		/*
 		 * Test for a single-worded, lower-case event, long-format
 		 */
 		eventCommand = "add canoeing from 3pm to 4pm on six april";
-		eventString = "Event \"canoeing\" from Mon 06 Apr 2015 at 15:00 to Mon 06 Apr 2015 at 16:00";
+		eventString = "Event \"canoeing\" from Mon 06 Apr 2015 at 15:00 to Mon 06 Apr 2015 at 16:00 ";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(
 				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
@@ -593,7 +601,10 @@ public class AddCommandTest {
 		assertEquals(addSuccess, logic.handleInput(eventCommand));
 		} catch(InvalidRecurringException | InvalidTodoNameException e){}
 	
-	
+		/*
+		 * Relative time
+		 */
+		
 	}
 	
 }

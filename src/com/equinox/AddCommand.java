@@ -117,14 +117,17 @@ public class AddCommand extends Command {
 			case 2:
 				Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
 						dateTimes);
-				if (timedTodo.isValid()) {
+				// Start-time is after end-time
+				if (dateTimes.get(0).isAfter(dateTimes.get(1))) {
+					memory.saveToFile();
+					return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
+				
+				// Valid dates
+				} else {
 					memory.userAdd(timedTodo);
 					memory.saveToFile();
 					return new Signal(String.format(
 							Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
-				} else {
-					memory.saveToFile();
-					return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
 				}
 			}
 			memory.saveToFile();
