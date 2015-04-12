@@ -528,17 +528,72 @@ public class AddCommandTest {
 	 */
 	@Test
 	public void testEvent() {
+		String eventCommand;
+		String eventString;
+		Signal addSuccess;
 		/*
-		 * Test for a single-worded, lower-case event
+		 * Test for a single-worded, lower-case event, long-format
 		 */
-		String eventCommand = "add canoeing from 3pm to 4pm on 6 April";
-		String eventString = "Event \"canoeing\" from Mon 06 Apr 2015 at 15:00 to Mon 06 Apr 2015 at 16:00";
+		eventCommand = "add canoeing from 3pm to 4pm on six april";
+		eventString = "Event \"canoeing\" from Mon 06 Apr 2015 at 15:00 to Mon 06 Apr 2015 at 16:00";
 		// Mock Signal object
-		Signal addSuccess = new Signal(String.format(
+		addSuccess = new Signal(String.format(
 				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
 		try{
 		assertEquals(addSuccess, logic.handleInput(eventCommand));
 		} catch(InvalidRecurringException | InvalidTodoNameException e){}
+		
+		/*
+		 * Test for a single-worded, lower-case event within the same day, short format
+		 */
+		eventCommand = "add canoeing from 3pm to 4pm on 6 apr";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(
+				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
+		try{
+		assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch(InvalidRecurringException | InvalidTodoNameException e){}
+		
+		/*
+		 * Test for a multiple-worded, mixed-case event within the same day, short format
+		 */
+		
+		eventCommand = "add climb Mount Everest in Nepal from 3pm to 4pm on 12 Jun";
+		eventString = "Event \"climb Mount Everest in Nepal\" from Fri 12 Jun 2015 at 15:00 to Fri 12 Jun 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(
+				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
+		try{
+		assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch(InvalidRecurringException | InvalidTodoNameException e){}
+		
+		/*
+		 * Test for a multiple-worded, mixed-case event straddling different days, short format
+		 */
+		
+		eventCommand = "add climb Mount Everest in Nepal from 5 jun 3pm to 20 jun 4pm";
+		eventString = "Event \"climb Mount Everest in Nepal\" from Fri 05 Jun 2015 at 15:00 to Sat 20 Jun 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(
+				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
+		try{
+		assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch(InvalidRecurringException | InvalidTodoNameException e){}
+		
+		/*
+		 * Test for a multiple-worded, mixed-case event straddling different days, short format
+		 */
+		
+		eventCommand = "add climb Mount Everest in Nepal from 3pm on 5 jun to 4pm on 20 jun";
+		eventString = "Event \"climb Mount Everest in Nepal\" from Fri 05 Jun 2015 at 15:00 to Sat 20 Jun 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(
+				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
+		try{
+		assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch(InvalidRecurringException | InvalidTodoNameException e){}
+	
+	
 	}
 	
 }
