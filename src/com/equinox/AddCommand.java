@@ -92,8 +92,10 @@ public class AddCommand extends Command {
 			}
 
 			int numberOfDates = dateTimes.size();
-
+			
+			
 			switch (numberOfDates) {
+			
 			// Floating task
 			// Example:
 			// KeyParamPair 0: add <task>
@@ -114,8 +116,14 @@ public class AddCommand extends Command {
 				// <startDate to endDate>
 
 			case 1:
-			case 2:
 				Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
+						dateTimes);
+				memory.userAdd(timedTodo);
+				memory.saveToFile();
+				return new Signal(String.format(
+						Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
+			case 2:
+				timedTodo = new Todo(memory.obtainFreshId(), todoName,
 						dateTimes);
 				// Start-time is after end-time
 				if (dateTimes.get(0).isAfter(dateTimes.get(1))) {
