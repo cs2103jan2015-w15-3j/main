@@ -44,11 +44,11 @@ public class Todo implements UndoableRedoable<Todo> {
 			.forPattern("HH:mm");
 	protected static final String DateTimeStringFormat = "%1$s at %2$s";
 
-	protected static final String EventStringFormat = "Event \"%1$s\" from %2$s to %3$s ";
+	protected static final String EventStringFormat = "Event \"%1$s\" from %2$s to %3$s";
 
-	protected static final String DeadlineStringFormat = "Deadline \"%1$s\" by %2$s ";
+	protected static final String DeadlineStringFormat = "Deadline \"%1$s\" by %2$s";
 
-	protected static final String FloatingTaskStringFormat = "Floating task \"%1$s\" ";
+	protected static final String FloatingTaskStringFormat = "Floating task \"%1$s\"";
 
 	/**
 	 * Constructs a Todo of type: TASK.

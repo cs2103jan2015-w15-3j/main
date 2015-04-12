@@ -233,7 +233,7 @@ public class AddCommandTest {
 		/*
 		 * Test for a single-worded, lower-case title, relative time (months), long-format in lower-case
 		 */
-		changedTime = baseTime.plusMonths(2);
+		changedTime = baseTime.plusMonths(3);
 		formattedDate = formatDate(changedTime);
 		deadlineCommand = "add NOC in three months";
 		deadlineString = "Deadline \"NOC\" by " + formattedDate + " at 23:59";
@@ -281,7 +281,7 @@ public class AddCommandTest {
 		/*
 		 * Test for a multiple-worded, mixed-case title, relative time (months), short-format in mixed-case
 		 */
-		changedTime = baseTime.plusMonths(2);
+		changedTime = baseTime.plusMonths(3);
 		formattedDate = formatDate(changedTime);
 		deadlineCommand = "add NOC in Silicon Valley in 3 months";
 		deadlineString = "Deadline \"NOC in Silicon Valley\" by " + formattedDate + " at 23:59";
@@ -543,7 +543,7 @@ public class AddCommandTest {
 		 * Test for a single-worded, lower-case event, long-format
 		 */
 		eventCommand = "add canoeing from 3pm to 4pm on six april";
-		eventString = "Event \"canoeing\" from Mon 06 Apr 2015 at 15:00 to Mon 06 Apr 2015 at 16:00 ";
+		eventString = "Event \"canoeing\" from Mon 06 Apr 2015 at 15:00 to Mon 06 Apr 2015 at 16:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(
 				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
@@ -604,7 +604,45 @@ public class AddCommandTest {
 		/*
 		 * Relative time
 		 */
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative (day)
+		 */
+		changedTime = baseTime.plusDays(3);
+		eventCommand = "add CS2103T presentation in 3 days from 3pm to 4pm";
+		eventString = "Event \"CS2103T presentation\" from Wed 15 Apr 2015 at 15:00 to Wed 15 Apr 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(
+				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
+		try{
+		assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch(InvalidRecurringException | InvalidTodoNameException e){}
 		
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative (day)
+		 */
+		changedTime = baseTime.plusDays(1);
+		eventCommand = "add cycling at ECP tomorrow from 6pm to 7pm";
+		eventString = "Event \"cycling at ECP\" from Mon 13 Apr 2015 at 18:00 to Mon 13 Apr 2015 at 19:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(
+				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
+		try{
+		assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch(InvalidRecurringException | InvalidTodoNameException e){}
+		
+		
+		/*
+		 * Test for a multiple-worded, mixed-case event within a day, relative (week)
+		 */
+		changedTime = baseTime.plusDays(3);
+		eventCommand = "add CS2103T presentation in 3 days from 3pm to 4pm";
+		eventString = "Event \"CS2103T presentation\" from Wed 15 Apr 2015 at 15:00 to Wed 15 Apr 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(
+				Signal.ADD_SUCCESS_SIGNAL_FORMAT, eventString), true);
+		try{
+		assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch(InvalidRecurringException | InvalidTodoNameException e){}
 	}
 	
 }
