@@ -314,20 +314,10 @@ public class Todo implements UndoableRedoable<Todo> {
 		return true;
 	}
 
-	/**
-	 * Checks if the Todo has valid parameters and type. Specifically, checks
-	 * for the presence of startTime and endTime and sets the type accordingly.
-	 * If both are present, startTime is checked to determine if it elapses
-	 * before endTime. Used in AddCommand and EditCommand operations.
-	 * 
-	 * @return true if Todo has valid parameters and type, false otherwise.
-	 */
-	protected boolean isValid() {
+
+	public void updateType() {
 		if (startTime != null && endTime != null) {
 			type = TYPE.EVENT;
-			if (endTime.isBefore(startTime)) {
-				return false;
-			}
 		} else if (startTime != null && endTime == null) {
 			endTime = startTime;
 			startTime = null;
@@ -337,7 +327,6 @@ public class Todo implements UndoableRedoable<Todo> {
 		} else if (startTime == null && endTime == null) {
 			type = TYPE.TASK;
 		}
-		return true;
 	}
 
 	/*
