@@ -155,6 +155,14 @@ public class Memory {
 		vMem.save(returnTodo);
 		return returnTodo;
 	}
+	
+	public RecurringTodoRule getRule(int recurringId) throws NullRuleException {
+		RecurringTodoRule returnRule = recurringRules.get(recurringId);
+		if (returnRule == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		return returnRule;
+	}
 
 	/**
 	 * Retrieves the RecurringTodoRule identified by the specified ID from the memory for
