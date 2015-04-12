@@ -2,10 +2,12 @@
 
 package com.equinox;
 
+import java.util.ArrayList;
+import org.joda.time.DateTime;
+
 import com.equinox.exceptions.NotRecurringException;
 import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
-import com.equinox.exceptions.StateUndefinedException;
 
 /**
  * Houses a method which processes the edit request from the user.
@@ -40,7 +42,7 @@ public class EditCommand extends Command {
 		try {
 			int id;
 			boolean containsNewName = false;
-			boolean isRule = false;
+			boolean hasRuleFlag = false;
 			String title = new String(); // Stub initialization
 			
 			// Check if first param has any text appended to it intended as Todo name
@@ -63,9 +65,62 @@ public class EditCommand extends Command {
 			}
 
 			// Check for presence of -r flag
-			isRule = input.containsFlag(Keywords.RULE);
+			hasRuleFlag = input.containsFlag(Keywords.RULE);
 			
-			if (input.isRecurring() || isRule) {
+			if (input.isRecurring() || hasRuleFlag) {
+				
+				// Parameter loading and validation
+				RecurringTodoRule stubRule = memory.getRule(memory.getTodo(id).getRecurringId()).copy();
+				DateTime startTime = stubRule.getDateTimes().get(0);
+				DateTime endTime = stubRule.getDateTimes().get(1);
+				ArrayList<DateTime> newDateTimes = new ArrayList<DateTime>();
+				
+				// Date checks
+				if(!dateTimes.isEmpty()) {
+					for(int i = 1; i < keyParamPairs.size(); i++) {
+						Keywords keyword = keyParamPairs.get(i).getKeyword();
+						
+						switch (keyword) {
+						case FROM:
+							startTime = dateTimes.remove(0);
+							break;
+						case BY:
+						case ON:
+						case AT:
+							startTime = null;
+							endTime = dateTimes.remove(0);
+							break;
+						case TO:
+							endTime = dateTimes.remove(0);
+							break;
+						default:
+							return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+						}
+					}
+					
+					if(startTime != null && endTime != null) {
+						if(startTime.isAfter(endTime)) {
+							return new Signal(Signal.EDIT_END_BEFORE_START, false);
+						}
+						newDateTimes.add(startTime);
+						newDateTimes.add(endTime);
+					} else if(startTime != null) {
+						newDateTimes.add(startTime);
+					} else if(endTime != null) {
+						newDateTimes.add(endTime);
+					}
+				}
+				
+				// Limit checks
+				if(input.hasLimit()) {
+					if(input.getLimit().isBeforeNow()) {
+						return new Signal(Signal.EDIT_LIMIT_BEFORE_NOW, false);
+					}
+				}
+				
+				// End parameter loading and validation
+				
+				// Commit edited fields
 				RecurringTodoRule rule = memory.getToModifyRule(memory.getTodo(id).getRecurringId());
 				RecurringTodoRule ruleOld = rule.copy();
 				
@@ -80,18 +135,52 @@ public class EditCommand extends Command {
 				}
 				
 				if (input.hasPeriod()) {
-					if(dateTimes.isEmpty()) {	// TODO: Catch dateTimes empty. Undo
-						return new Signal(Signal.EDIT_NO_RECURRING_TIME, false);
-					} else {
-						rule.setRecurringInterval(input.getPeriod());
-						rule.setDateTimes(dateTimes);
-					}
+					rule.setRecurringInterval(input.getPeriod());
+					rule.setDateTimes(dateTimes);
 				}
+				
+				rule.setDateTimes(newDateTimes);
+				
+				// End commit
 				
 				memory.saveToFile();
 				return new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, ruleOld, rule), true);	
 			} else {
 				
+				// Parameter loading and validation
+				Todo stubTodo = memory.getTodo(id).copy();
+				DateTime startTime = stubTodo.getStartTime();
+				DateTime endTime = stubTodo.getEndTime();
+				
+				if(!dateTimes.isEmpty()) {
+					for(int i = 1; i < keyParamPairs.size(); i++) {
+						Keywords keyword = keyParamPairs.get(i).getKeyword();
+						
+						switch (keyword) {
+						case FROM:
+							startTime = dateTimes.remove(0);
+							break;
+						case BY:
+						case ON:
+						case AT:
+							startTime = null;
+							endTime = dateTimes.remove(0);
+							break;
+						case TO:
+							endTime = dateTimes.remove(0);
+							break;
+						default:
+							return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+						}
+					}
+					if(startTime != null && endTime != null) {
+						if(startTime.isAfter(endTime)) {
+							return new Signal(Signal.EDIT_END_BEFORE_START, false);
+						}
+					}
+				}
+				
+				// Commit edited fields
 				Todo todo = memory.getToModifyTodo(id);
 				Todo oldTodo = todo.copy();
 				
@@ -100,45 +189,13 @@ public class EditCommand extends Command {
 					memory.updateMaps(id, title, todo.getName());
 					todo.setName(title);
 				}
-				if(dateTimes.size() == 2) {
-					memory.updateMaps(id, dateTimes.get(0), todo.getStartTime());
-					memory.updateMaps(id, dateTimes.get(1), todo.getEndTime());
-					todo.setStartTime(dateTimes.get(0));
-					todo.setEndTime(dateTimes.get(1));
-				} else if(dateTimes.size() == 1) {
-					for(int i = 1; i < keyParamPairs.size(); i++) {
-						Keywords keyword = keyParamPairs.get(i).getKeyword();
-						
-						switch (keyword) {
-						case FROM:
-							memory.updateMaps(id, dateTimes.get(0), todo.getStartTime());
-							todo.setStartTime(dateTimes.get(0));
-							break;
-						case BY:
-						case ON:
-						case AT:
-							memory.updateMaps(id, dateTimes.get(0), todo.getEndTime());
-							memory.updateMaps(id, null, todo.getStartTime());
-							todo.setEndTime(dateTimes.get(0));
-							todo.setStartTime(null);
-							break;
-						case TO:
-							memory.updateMaps(id, dateTimes.get(0), todo.getEndTime());
-							todo.setEndTime(dateTimes.get(0));
-							break;
-						default:
-							return new Signal(Signal.EDIT_INVALID_PARAMS, false);
-						}
-					}
-				}
-				if(!todo.isValid()) {
-					try {
-						memory.undo();
-					} catch (StateUndefinedException e) {
-						e.printStackTrace();
-					}
-					return new Signal(Signal.EDIT_END_BEFORE_START, false);
-				}
+				
+				memory.updateMaps(id, startTime, todo.getStartTime());
+				memory.updateMaps(id, endTime, todo.getEndTime());
+				todo.setStartTime(dateTimes.get(0));
+				todo.setEndTime(dateTimes.get(1));
+				todo.updateType();
+
 				memory.saveToFile();
 				return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, oldTodo, todo), true);
 			}
