@@ -188,6 +188,21 @@ public class AddCommandTest {
 		} catch(InvalidRecurringException | InvalidTodoNameException e){}
 		
 		/*
+		 * Test for a single-worded, lower-case floating task, relative time (hours), long-format
+		 */
+		changedTime = baseTime.plusHours(5);
+		formattedDate = formatDate(changedTime);
+		formattedTime = formatTime(changedTime);
+		deadlineCommand = "add exam in 2 hours";
+		deadlineString = "Deadline \"exam\" by " + formattedDate + " at " + formattedTime;
+		// Mock Signal object
+		addSuccess = new Signal(String.format(
+				Signal.ADD_SUCCESS_SIGNAL_FORMAT, deadlineString), true);
+		try{
+		assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch(InvalidRecurringException | InvalidTodoNameException e){}
+		
+		/*
 		 * Test for a multiple-worded, mixed-case floating task, absolute date and time, long-format
 		 */
 		deadlineCommand = "add interview with Google by 10am on 17 June";
