@@ -175,15 +175,14 @@ public class Parser {
 				// check if there is a recurring limit parsed
 				// in
 				if (key == Keywords.UNTIL) {
-					if (isRecurring) {
 						List<DateTime> parsedLimits = interpretAsDate(
 								keyParamPairs, currentPair, true);
-
+						
 						if (!parsedLimits.isEmpty()) { // if parsing is
 														// successful
 							limit = parsedLimits.get(0);
 							hasLimit = true;
-						}
+							isRecurring = true;
 					} else {
 						interpretAsName(keyParamPairs, currentPair);
 					}
