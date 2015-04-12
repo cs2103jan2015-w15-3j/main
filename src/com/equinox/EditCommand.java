@@ -57,10 +57,6 @@ public class EditCommand extends Command {
 				if (input.containsOnlyCommand()) {
 					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
-				// Check if input is missing parameters
-				if (input.containsEmptyParams()) {
-					return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
-				}
 				id = Integer.parseInt(keyParamPairs.get(0).getParam());
 			}
 
@@ -68,11 +64,11 @@ public class EditCommand extends Command {
 			hasRuleFlag = input.containsFlag(Keywords.RULE);
 			
 			if (input.isRecurring() || hasRuleFlag) {
+				Todo stubTodo = memory.getTodo(id).copy();
 				
 				// Parameter loading and validation
-				RecurringTodoRule stubRule = memory.getRule(memory.getTodo(id).getRecurringId()).copy();
-				DateTime startTime = stubRule.getDateTimes().get(0);
-				DateTime endTime = stubRule.getDateTimes().get(1);
+				DateTime startTime = stubTodo.getStartTime();
+				DateTime endTime = stubTodo.getEndTime();
 				ArrayList<DateTime> newDateTimes = new ArrayList<DateTime>();
 				
 				// Date checks
@@ -92,6 +88,9 @@ public class EditCommand extends Command {
 							break;
 						case TO:
 							endTime = dateTimes.remove(0);
+							break;
+						case RULE:
+							// Ignore
 							break;
 						default:
 							return new Signal(Signal.EDIT_INVALID_PARAMS, false);

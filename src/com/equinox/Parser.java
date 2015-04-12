@@ -150,20 +150,18 @@ public class Parser {
 		// Post-process EDIT command parameters
 		if (cType == Keywords.EDIT) {
 
-			int toIndex;
-			String firstParam = keyParamPairs.get(0).getParam();
-			// search the first pair for presence of TO
-			if ((toIndex = firstParam.indexOf(STRING_TO)) != -1) { // TODO: Does
-																	// not
-																	// ignore
-																	// case
-				String toString = firstParam.substring(toIndex,
-						firstParam.length());
-				String toParam = toString.substring(3, toString.length());
-				keyParamPairs.get(0).setParam(
-						firstParam.substring(0, toIndex - 1));
-				keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO,
-						toParam));
+			int toIndex;	
+			for(int i = 0; i < keyParamPairs.size(); i++) {
+				KeyParamPair currentPair = keyParamPairs.get(i);
+				String currentParam = currentPair.getParam();
+				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) { // TODO: Does not ignore case
+					String toString = currentParam.substring(toIndex,
+							currentParam.length());
+					String afterTo = toString.substring(3, toString.length());
+					currentPair.setParam(currentParam.substring(0, toIndex - 1));
+					keyParamPairs.add(new KeyParamPair(Keywords.TO, STRING_TO,
+							afterTo));
+				}
 			}
 
 			// ignores thefirst pair as it is assumed to be the name of the todo
