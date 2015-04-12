@@ -4,6 +4,7 @@ import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Stack;
 
+import com.equinox.exceptions.NotRecurringException;
 import com.equinox.exceptions.StateUndefinedException;
 
 public class VolatileMemory {
@@ -33,31 +34,53 @@ public class VolatileMemory {
 	}
 
 	public void undo() throws StateUndefinedException {
+		RecurringTodoRule rule;
+		Todo todo;
+		
 		try {
 			boolean isRule = undoIsRule.pop();
 			redoIsRule.push(isRule);
 			if(isRule) {
 				ruleStacks.restoreHistoryState();
 			} else {
-				todoStacks.restoreHistoryState();
+				todo = todoStacks.restoreHistoryState();
+				if(todo.isRecurring() && undoIsRule.peek()) {
+					rule = ruleStacks.peekHistoryState();
+					if(rule.getId() == todo.getRecurringId()) {
+						undo();
+					}
+				}
 			}
 		} catch (EmptyStackException e) {
 			throw new StateUndefinedException(ExceptionMessages.NO_HISTORY_STATES);
+		} catch (NotRecurringException e) {
+			// Ignore
 		}
 	}
 	
 
 	public void redo() throws StateUndefinedException {
+		RecurringTodoRule rule;
+		Todo todo;
+		
 		try {
 			boolean isRule = redoIsRule.pop();
 			undoIsRule.push(isRule);
 			if (isRule) {
-				ruleStacks.restoreFutureState();
+				rule = ruleStacks.restoreFutureState();
+				if(!redoIsRule.peek()) {
+					todo = todoStacks.peekFutureState();
+					if(todo.isRecurring() && rule.getId() == todo.getRecurringId()) {
+						redo();
+					}
+				}
 			} else {
 				todoStacks.restoreFutureState();
 			}
 		} catch (EmptyStackException e) {
 			throw new StateUndefinedException(ExceptionMessages.NO_FUTURE_STATES);
+		} catch (NotRecurringException e) {
+			// Ignore
 		}
 	}
 	

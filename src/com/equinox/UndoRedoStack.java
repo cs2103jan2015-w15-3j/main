@@ -51,7 +51,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 	 * @throws StateUndefinedException if there are no future states to restore
 	 *             to.
 	 */
-	public void restoreFutureState() throws StateUndefinedException {
+	public T restoreFutureState() throws StateUndefinedException {
 		T fromStack;
 		try {
 			fromStack = redoStack.removeLast();
@@ -77,6 +77,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 		} else {
 			memory.put(id, fromStack);
 		}
+		return fromStack;
 	}
 	
 	/**
@@ -86,7 +87,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 	 * @throws StateUndefinedException if there are no history states to restore
 	 *             to.
 	 */
-	public void restoreHistoryState() throws StateUndefinedException {
+	public T restoreHistoryState() throws StateUndefinedException {
 		T fromStack;
 		try {
 			fromStack = undoStack.removeLast();
@@ -113,6 +114,15 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 		} else {
 			memory.put(id, fromStack);
 		}
+		return fromStack;
+	}
+	
+	public T peekHistoryState() {
+		return undoStack.peekLast();
+	}
+	
+	public T peekFutureState() {
+		return redoStack.peekLast();
 	}
 	
 

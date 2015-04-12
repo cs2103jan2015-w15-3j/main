@@ -160,8 +160,9 @@ public class Todo implements UndoableRedoable<Todo> {
 	 * @param id
 	 *            the ID of the Todo that was removed from Memory.
 	 */
-	private Todo(int id) {
+	private Todo(int id, Integer recurringId) {
 		this.id = id;
+		this.recurringId = recurringId;
 	}
 	
 	public Todo copy() {
@@ -173,7 +174,7 @@ public class Todo implements UndoableRedoable<Todo> {
 	 * use in Undo and Redo stacks in Memory.
 	 */
 	public Todo getPlaceholder() {
-		return new Todo(id);
+		return new Todo(id, recurringId);
 	}
 	
 	public boolean isPlaceholder() {
