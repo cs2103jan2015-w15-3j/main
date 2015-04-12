@@ -175,6 +175,7 @@ public class EditCommand extends Command {
                         switch (keyword) {
                             case FROM :
                                 startTime = dateTimes.remove(0);
+                                startTimeEdited = true;
                                 break;
                             case BY :
                             case ON :
