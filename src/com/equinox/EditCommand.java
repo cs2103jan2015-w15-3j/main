@@ -68,11 +68,11 @@ public class EditCommand extends Command {
 			hasRuleFlag = input.containsFlag(Keywords.RULE);
 			
 			if (input.isRecurring() || hasRuleFlag) {
+				Todo stubTodo = memory.getTodo(id).copy();
 				
 				// Parameter loading and validation
-				RecurringTodoRule stubRule = memory.getRule(memory.getTodo(id).getRecurringId()).copy();
-				DateTime startTime = stubRule.getDateTimes().get(0);
-				DateTime endTime = stubRule.getDateTimes().get(1);
+				DateTime startTime = stubTodo.getStartTime();
+				DateTime endTime = stubTodo.getEndTime();
 				ArrayList<DateTime> newDateTimes = new ArrayList<DateTime>();
 				
 				// Date checks
