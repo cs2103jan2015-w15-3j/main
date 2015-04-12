@@ -361,11 +361,11 @@ public class Todo implements UndoableRedoable<Todo> {
 		return String.format(DateTimeStringFormat, dateString, timeString);
 	}
 
+    // @author A0093910H
 	/**
 	 * Method to return a DateTime of the Todo for ordering them chronologically
 	 * The order of preference: start time > end time > null
 	 * 
-	 * @author paradite
 	 * 
 	 * @return start time for events; end time for deadlines; null for tasks.
 	 */
@@ -379,7 +379,6 @@ public class Todo implements UndoableRedoable<Todo> {
 		}
 	}
 
-	// @author A0093910H
 	public boolean isEvent() {
 		if (this.startTime != null && this.endTime != null) {
 			return true;
@@ -513,11 +512,13 @@ public class Todo implements UndoableRedoable<Todo> {
 		return shortTodos;
 	}
 
-	/**
-	 * @param date1
-	 * @param date2
-	 * @return
-	 */
+    /**
+     * This method checks if the two DateTime objects are the same day
+     * 
+     * @param date1
+     * @param date2
+     * @return result of check in boolean
+     */
 	private boolean isSameDay(DateTime date1, DateTime date2) {
 		if (date1 == null || date2 == null) {
 			return false;

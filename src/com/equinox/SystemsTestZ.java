@@ -12,6 +12,10 @@ import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
 import com.equinox.exceptions.ParsingFailureException;
 
+// @author A0093910H-unused
+// We decided to do system testing with a text file containing commands 
+// and compare output with expected output.
+// For example: java -jar 048.jar < test_commands.txt > output.txt
 public class SystemsTestZ {
 
     Collection<Todo> todos;
