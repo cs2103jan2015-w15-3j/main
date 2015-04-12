@@ -1,5 +1,6 @@
 package com.equinox;
 
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -32,23 +33,31 @@ public class VolatileMemory {
 	}
 
 	public void undo() throws StateUndefinedException {
-		boolean isRule = undoIsRule.pop();
-		redoIsRule.push(isRule);
-		if(isRule) {
-			ruleStacks.restoreHistoryState();
-		} else {
-			todoStacks.restoreHistoryState();
+		try {
+			boolean isRule = undoIsRule.pop();
+			redoIsRule.push(isRule);
+			if(isRule) {
+				ruleStacks.restoreHistoryState();
+			} else {
+				todoStacks.restoreHistoryState();
+			}
+		} catch (EmptyStackException e) {
+			throw new StateUndefinedException(ExceptionMessages.NO_HISTORY_STATES);
 		}
 	}
 	
 
 	public void redo() throws StateUndefinedException {
-		boolean isRule = redoIsRule.pop();
-		undoIsRule.push(isRule);
-		if(isRule) {
-			ruleStacks.restoreFutureState();
-		} else {
-			todoStacks.restoreFutureState();
+		try {
+			boolean isRule = redoIsRule.pop();
+			undoIsRule.push(isRule);
+			if (isRule) {
+				ruleStacks.restoreFutureState();
+			} else {
+				todoStacks.restoreFutureState();
+			}
+		} catch (EmptyStackException e) {
+			throw new StateUndefinedException(ExceptionMessages.NO_FUTURE_STATES);
 		}
 	}
 	
