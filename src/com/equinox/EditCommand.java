@@ -72,7 +72,7 @@ public class EditCommand extends Command {
 				ArrayList<DateTime> newDateTimes = new ArrayList<DateTime>();
 				
 				// Date checks
-				if(!dateTimes.isEmpty()) {
+				if(!dateTimes.isEmpty()) { // Keywords will always exist if dateTimes 
 					for(int i = 1; i < keyParamPairs.size(); i++) {
 						Keywords keyword = keyParamPairs.get(i).getKeyword();
 						
@@ -80,16 +80,14 @@ public class EditCommand extends Command {
 						case FROM:
 							startTime = dateTimes.remove(0);
 							break;
-						case BY:
-						case ON:
-						case AT:
+						case BY:case ON:case AT:
 							startTime = null;
 							endTime = dateTimes.remove(0);
 							break;
 						case TO:
 							endTime = dateTimes.remove(0);
 							break;
-						case RULE:
+						case RULE:case UNTIL:case EVERY:
 							// Ignore
 							break;
 						default:
@@ -138,7 +136,9 @@ public class EditCommand extends Command {
 					rule.setDateTimes(dateTimes);
 				}
 				
-				rule.setDateTimes(newDateTimes);
+				if(!newDateTimes.isEmpty()) {
+					rule.setDateTimes(newDateTimes);
+				}
 				
 				// End commit
 				
@@ -159,9 +159,7 @@ public class EditCommand extends Command {
 						case FROM:
 							startTime = dateTimes.remove(0);
 							break;
-						case BY:
-						case ON:
-						case AT:
+						case BY:case ON:case AT:
 							startTime = null;
 							endTime = dateTimes.remove(0);
 							break;
