@@ -4,9 +4,7 @@ package com.equinox;
 /**
  * The AddCommand class handles all user commands with "add" as the first
  * keyword and processes ParsedInput to generate Todo objects and adds them into
- * memory. *
- * 
- * @author Jonathan Lim Siu Chi || ign3sc3nc3
+ * memory.
  */
 
 public class AddCommand extends Command {

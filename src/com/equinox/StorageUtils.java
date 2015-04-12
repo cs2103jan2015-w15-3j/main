@@ -33,8 +33,6 @@ import com.google.gson.JsonSyntaxException;
  * Storage file at the default path, the file at the default path will be
  * copied to the new location.
  * 
- * @author Jonathan Lim Siu Chi || ign3sc3nc3
- * 
  * @param customFileDirPath
  */
 public class StorageUtils {

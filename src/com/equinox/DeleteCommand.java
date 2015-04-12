@@ -8,9 +8,6 @@ import com.equinox.exceptions.NullTodoException;
 
 /**
  * Houses a method which processes the delete request from the user. 
- * 
- * @author Ikarus
- *
  */
 public class DeleteCommand extends Command {
 

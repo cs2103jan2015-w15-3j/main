@@ -8,9 +8,6 @@ import com.google.gson.InstanceCreator;
 /**
  * Utility class that creates an instance of IDBuffer for Gson to
  * serialise and deserialise the nested IDBuffer class in Memory 
- * 
- * @author Jonathan Lim Siu Chi || ign3sc3nc3
- *
  */
 
 public class IDBufferInstanceCreator implements InstanceCreator<Memory.IDBuffer>{

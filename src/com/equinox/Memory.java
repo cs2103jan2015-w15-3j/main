@@ -20,9 +20,6 @@ import com.equinox.exceptions.StateUndefinedException;
  * Stores all Todos and keeps state information allowing Undo and Redo
  * operations. Maximum number of states that can be stored by Memory is
  * {@value #STATE_STACK_MAX_SIZE}.
- * 
- * @author Ho Wei Li || IkarusWill
- *
  */
 public class Memory {
 	// Field for Memory singleton pattern

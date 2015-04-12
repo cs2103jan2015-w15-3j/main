@@ -32,9 +32,6 @@ import com.google.gson.JsonSyntaxException;
  * Handles the storing of an instance of Memory into a file in JSON formatting,
  * as well as the retrieving of an instance of Memory from a file in JSON
  * formatting.
- * 
- * @author Jonathan Lim Siu Chi || ign3sc3nc3
- *
  */
 
 public class StorageHandler {

@@ -6,9 +6,6 @@ import com.equinox.exceptions.NullTodoException;
  * This class handles all user input with "mark" as the first keyword with the format of mark <index>.
  * It retrieves a Todo object from memory at the given index, marks the Todo as done and replaces the 
  * existing copy in memory.
- * 
- * @author Jonathan Lim Siu Chi || ign3sc3nc3
- * 
  */
 
 public class MarkCommand extends Command {

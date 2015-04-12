@@ -3,8 +3,6 @@ package com.equinox;
 
 /**
  * This class stores a Keyword, its string and its parameter. 
- * @author peanut11
- *
  */
 public class KeyParamPair {
 	private Keywords keyword;

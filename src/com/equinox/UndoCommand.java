@@ -4,9 +4,6 @@ import com.equinox.exceptions.StateUndefinedException;
 //@author A0110839H
 /**
  * Restores the last stored state in memory.
- * 
- * @author Jonathan Lim Siu Chi || ign3sc3nc3
- *
  */
 public class UndoCommand extends Command{
 	
