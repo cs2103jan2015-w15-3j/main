@@ -192,8 +192,8 @@ public class EditCommand extends Command {
 				
 				memory.updateMaps(id, startTime, todo.getStartTime());
 				memory.updateMaps(id, endTime, todo.getEndTime());
-				todo.setStartTime(dateTimes.get(0));
-				todo.setEndTime(dateTimes.get(1));
+				todo.setStartTime(startTime);
+				todo.setEndTime(endTime);
 				todo.updateType();
 
 				memory.saveToFile();
