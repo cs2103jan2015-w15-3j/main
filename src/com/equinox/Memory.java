@@ -599,7 +599,7 @@ public class Memory {
 					break;
 				default:
 					throw new InvalidParamException(
-							ExceptionMessages.INVALID_SEARCH_TYPE_EXCEPTION);
+							ExceptionMessages.INVALID_SEARCH_TYPE);
 			}
 
 			return toDoIds;
