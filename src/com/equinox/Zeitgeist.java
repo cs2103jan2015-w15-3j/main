@@ -1,7 +1,6 @@
 package com.equinox;
 
 import java.util.Scanner;
-import java.io.File;
 
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;

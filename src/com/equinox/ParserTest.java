@@ -102,20 +102,19 @@ public class ParserTest {
 				TimeZone.getDefault());
 
 		// date: Friday
-		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<Date> dates0 = parser.parse("at 3pm").get(0).getDates();
 		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
 		for (int i = 0; i < dates0.size(); i++) {
 			Date date = dates0.get(i);
 			dateTimes0.add(new DateTime(date));
-			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+//			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
 		}
 		// deadline task 'KEYWORD <invalid datetime> + KEYWORD <datetime>'
-		String add5 = "add test 5 at NTU on Friday";
+		String add5 = "add test 5 in sr1 at 3pm";
 		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.ADD, "add", "test 5 at NTU"))), dateTimes0,
+						Keywords.ADD, "add", "test 5 in sr1"))), dateTimes0,
 				new Period(), false, false, new DateTime(0));
-
 		assertEquals(parsed5, Parser.parseInput(add5));
 	}
 
