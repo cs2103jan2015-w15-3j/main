@@ -92,7 +92,7 @@ public class ParsedInput {
 	 *         present.
 	 */
 	public boolean containsOnlyCommand() {
-		if (keyParamPairs.size() == 1) {
+		if (keyParamPairs.size() == 1 && dateTimes.size() == 0) {
 			return true;
 		}
 		return false;

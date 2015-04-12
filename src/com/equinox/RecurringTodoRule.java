@@ -35,17 +35,17 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
 
     private String RECURRING_TODO_PREIX = "(Recurring) ";
 
-    protected static final String recurringTodoWithLimitStringFormat = "Recurrence Rule: \"%1$s\" every %2$suntil %3$s";
+    protected static final String recurringTodoWithLimitStringFormat = "Recurrence Rule: \"%1$s\" every %2$s until %3$s";
     protected static final String recurringTodoStringFormat = "Recurrence Rule: \"%1$s\" every %2$s";
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("dd MMM yyyy");
     private static final PeriodFormatter PERIOD_FORMATTER;
     static {
     	PeriodFormatterBuilder pfb = new PeriodFormatterBuilder();
     	PERIOD_FORMATTER = pfb
-    			.printZeroNever().appendYears().appendSuffix(" year(s) ")
-    			.printZeroNever().appendMonths().appendSuffix(" month(s) ")
-    			.printZeroNever().appendWeeks().appendSuffix(" week(s) ")
-    			.printZeroNever().appendDays().appendSuffix(" day(s) ")
+    			.printZeroNever().appendYears().appendSuffix(" year(s)")
+    			.printZeroNever().appendMonths().appendSuffix(" month(s)")
+    			.printZeroNever().appendWeeks().appendSuffix(" week(s)")
+    			.printZeroNever().appendDays().appendSuffix(" day(s)")
     			.toFormatter();
     }
     private boolean hasLimit = false;

@@ -138,6 +138,7 @@ public class AddCommand extends Command {
 							Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
 				}
 			}
+			// Should not be reached
 			memory.saveToFile();
 			return new Signal(Signal.ADD_UNKNOWN_ERROR, false);
 		}

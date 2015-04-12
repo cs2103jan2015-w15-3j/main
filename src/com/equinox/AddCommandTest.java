@@ -9,17 +9,11 @@ package com.equinox;
 import static org.junit.Assert.assertEquals;
 
 import org.joda.time.DateTime;
-import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import java.util.ArrayList;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
@@ -30,8 +24,6 @@ public class AddCommandTest {
 	ParsedInput input;
 	Keywords addCommand = Keywords.ADD;
 	Zeitgeist logic;
-
-	private static final String userInputFloatingTask1 = "add study CS2105";
 
 	public enum TYPE {
 		ADD, MARK, DELETE, SEARCH, EDIT, DISPLAY, UNDO, ERROR;
@@ -71,8 +63,7 @@ public class AddCommandTest {
 		Signal insufficientParamSignal;
 		String command;
 		// Mock Signal object
-		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM,
-				false);
+		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 		command = "add";
 		try {
 			// Test for equivalence in Signal object
@@ -82,18 +73,16 @@ public class AddCommandTest {
 
 		command = "add by 4pm";
 		// Mock Signal object
-		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM,
-				false);
+		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 		try {
 			// Test for equivalence in Signal object
 			assertEquals(insufficientParamSignal, logic.handleInput(command));
 		} catch (InvalidRecurringException | InvalidTodoNameException e) {
 		}
-		
+
 		command = "add from 1am to 2am";
 		// Mock Signal object
-		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM,
-				false);
+		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM, false);
 		try {
 			// Test for equivalence in Signal object
 			assertEquals(insufficientParamSignal, logic.handleInput(command));
@@ -621,7 +610,6 @@ public class AddCommandTest {
 		final DateTime baseTime = new DateTime();
 		DateTime changedTime;
 		String formattedDate;
-		String formattedTime;
 		String eventCommand;
 		String eventString;
 		Signal addSuccess;
@@ -708,8 +696,10 @@ public class AddCommandTest {
 		 * (year)
 		 */
 		changedTime = baseTime.plusYears(3);
-		eventCommand = "add travel the States from 2pm to 3pm in 2 years";
-		eventString = "Event \"travel the States\" from Wed 12 Apr 2017 at 14:00 to Wed 12 Apr 2017 at 15:00";
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add travel the States from 2pm to 3pm in 3 years";
+		eventString = "Event \"travel the States\" from " + formattedDate
+				+ " at 14:00 to " + formattedDate + " at 15:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -723,8 +713,10 @@ public class AddCommandTest {
 		 * (year)
 		 */
 		changedTime = baseTime.plusYears(1);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add travel the States from 2pm to 3pm next year";
-		eventString = "Event \"travel the States\" from Tue 12 Apr 2016 at 14:00 to Tue 12 Apr 2016 at 15:00";
+		eventString = "Event \"travel the States\" from " + formattedDate
+				+ " at 14:00 to " + formattedDate + " at 15:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -738,8 +730,10 @@ public class AddCommandTest {
 		 * (month)
 		 */
 		changedTime = baseTime.plusMonths(3);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add visit the Dentist in 3 months from 2pm to 3pm";
-		eventString = "Event \"visit the Dentist\" from Sun 12 Jul 2015 at 14:00 to Sun 12 Jul 2015 at 15:00";
+		eventString = "Event \"visit the Dentist\" from " + formattedDate
+				+ " at 14:00 to " + formattedDate + " at 15:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -753,8 +747,10 @@ public class AddCommandTest {
 		 * (week)
 		 */
 		changedTime = baseTime.plusMonths(1);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add visit the Dentist from 2pm to 3pm next month";
-		eventString = "Event \"visit the Dentist\" from Tue 12 May 2015 at 14:00 to Tue 12 May 2015 at 15:00";
+		eventString = "Event \"visit the Dentist\" from " + formattedDate
+				+ " at 14:00 to " + formattedDate + " at 15:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -768,8 +764,10 @@ public class AddCommandTest {
 		 * (week)
 		 */
 		changedTime = baseTime.plusWeeks(1);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add CS2010 consultation in 1 week from 9am to 12pm";
-		eventString = "Event \"CS2010 consultation\" from Sun 19 Apr 2015 at 09:00 to Sun 19 Apr 2015 at 12:00";
+		eventString = "Event \"CS2010 consultation\" from " + formattedDate
+				+ " at 09:00 to " + formattedDate + " at 12:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -783,8 +781,10 @@ public class AddCommandTest {
 		 * (week)
 		 */
 		changedTime = baseTime.plusWeeks(2);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add CS2105 consultation in 2 weeks from 10am to 2pm";
-		eventString = "Event \"CS2105 consultation\" from Sun 26 Apr 2015 at 10:00 to Sun 26 Apr 2015 at 14:00";
+		eventString = "Event \"CS2105 consultation\" from " + formattedDate
+				+ " at 10:00 to " + formattedDate + " at 14:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -798,8 +798,10 @@ public class AddCommandTest {
 		 * (week)
 		 */
 		changedTime = baseTime.plusWeeks(1);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add CS2010 consultation in 1 week from 9am to 12pm";
-		eventString = "Event \"CS2010 consultation\" from Sun 19 Apr 2015 at 09:00 to Sun 19 Apr 2015 at 12:00";
+		eventString = "Event \"CS2010 consultation\" from " + formattedDate
+				+ " at 09:00 to " + formattedDate + " at 12:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -813,8 +815,10 @@ public class AddCommandTest {
 		 * (day)
 		 */
 		changedTime = baseTime.plusDays(3);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add CS2103T presentation in 3 days from 3pm to 4pm";
-		eventString = "Event \"CS2103T presentation\" from Wed 15 Apr 2015 at 15:00 to Wed 15 Apr 2015 at 16:00";
+		eventString = "Event \"CS2103T presentation\" from " + formattedDate
+				+ " at 15:00 to " + formattedDate + " at 16:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -828,8 +832,10 @@ public class AddCommandTest {
 		 * (day)
 		 */
 		changedTime = baseTime.plusDays(1);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add cycling at ECP from 6pm to 7pm tomorrow";
-		eventString = "Event \"cycling at ECP\" from Mon 13 Apr 2015 at 18:00 to Mon 13 Apr 2015 at 19:00";
+		eventString = "Event \"cycling at ECP\" from " + formattedDate
+				+ " at 18:00 to " + formattedDate + " at 19:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -843,8 +849,10 @@ public class AddCommandTest {
 		 * (week)
 		 */
 		changedTime = baseTime.plusDays(3);
+		formattedDate = formatDate(changedTime);
 		eventCommand = "add CS2103T presentation in 3 days from 3pm to 4pm";
-		eventString = "Event \"CS2103T presentation\" from Wed 15 Apr 2015 at 15:00 to Wed 15 Apr 2015 at 16:00";
+		eventString = "Event \"CS2103T presentation\" from " + formattedDate
+				+ " at 15:00 to " + formattedDate + " at 16:00";
 		// Mock Signal object
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
 				eventString), true);
@@ -852,6 +860,179 @@ public class AddCommandTest {
 			assertEquals(addSuccess, logic.handleInput(eventCommand));
 		} catch (InvalidRecurringException | InvalidTodoNameException e) {
 		}
+	}
+	
+	@Test
+	public void testRecurringTasks(){
+		Signal addSuccess;
+		String recurrenceRule;
+		String recurrenceCommand;
+		
+		/*
+		 * Test for a single-worded recurring floating task (daily), no limit
+		 */
+		recurrenceCommand = "add swim every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring deadline (daily), no limit
+		 */
+		recurrenceCommand = "add swim by 3pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring deadline (daily), no limit
+		 */
+		recurrenceCommand = "add swim from 4pm to 5pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring deadline (daily), no limit
+		 */
+		recurrenceCommand = "add swim from 4pm to 5pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring floating task (daily), no limit
+		 */
+		recurrenceCommand = "add swim every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring deadline (daily), no limit
+		 */
+		recurrenceCommand = "add swim by 3pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring deadline (monthly), no limit
+		 */
+		recurrenceCommand = "add submit monthly report by 2300pm every month";
+		recurrenceRule = "Recurrence Rule: \"submit monthly report\" every 1 month(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring deadline (monthly), with limit
+		 */
+		recurrenceCommand = "add submit monthly report by 2300pm every month until 8 Dec";
+		recurrenceRule = "Recurrence Rule: \"submit monthly report\" every 1 month(s) until 08 Dec 2015";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring deadline (yearly), no limit
+		 */
+		recurrenceCommand = "add celebrate New Year on 1 Jan every year";
+		recurrenceRule = "Recurrence Rule: \"celebrate New Year\" every 1 year(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring event (daily), no limit
+		 */
+		recurrenceCommand = "add swim from 4pm to 5pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event (daily), with limit
+		 */
+		recurrenceCommand = "add swim at Jurong Swimming Complex from 4pm to 5pm every day until 5 jun";
+		recurrenceRule = "Recurrence Rule: \"swim at Jurong Swimming Complex\" every 1 day(s) until 05 Jun 2015";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event(weekly), no limit
+		 */
+		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every week";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 week(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event(weekly), with limit
+		 */
+		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every week until 8 jun";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 week(s) until 08 Jun 2015";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event(month), no limit
+		 */
+		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every month";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 month(s)";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event(month), with limit
+		 */
+		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every month until 10 dec";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 month(s) until 10 Dec 2015";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException e) {
+		}
+		
 	}
 
 }

@@ -42,6 +42,18 @@ public class StorageUtils {
 		private static final String SETTINGS_FILE_NAME = "settings.txt";
 		private static final String STORAGE_FILE_NAME = "storageFile.json";
 		
+		private static final String MESSAGE_INCORRECT_COMMAND = "Incorrect command is given.";
+		private static final String MESSAGE_INVALID_DIRECTORY = "User-specified directory for storage is invalid. Storage file location is reverted to the default : %1$s";
+		private static final String MESSAGE_COPIED_TO_LOCATION = "Storage file copied to specified location: %1$s";
+		private static final String MESSAGE_DIRECTORY_DEFAULT = "Storage file location is reverted to the default: %1$s";
+		private static final String MESSAGE_DIRECTORY_UPDATED = "Directory of the storage file is updated to: %1$s";
+		private static final String MESSAGE_CORRUPT_FILE = "An unreadable storage file exists at the user-specified location. \n"
+				+ "Do you wish to : \n"
+				+ "\t 1. Copy over an existing version from the default location (C) \n"
+				+ "\t 2. Overwrite the file with a blank file (O) \n"
+				+ "\t 3. Revert to the default location (R)\n"
+				+ "\t 4. Exit the program (E)";
+		
 		private static String defaultFileDirectory;
 		private static String fileDirectory;
 		private static String settingsFilePath;
@@ -61,12 +73,7 @@ public class StorageUtils {
 					// newStorageFile is not in Json format
 					if(!isFileInJsonFormat(newStorageFile)){
 						System.out
-						.println("An unreadable storage file exists at the user-specified location. \n"
-								+ "Do you wish to : \n"
-								+ "\t 1. Copy over an existing version from the default location (C) \n"
-								+ "\t 2. Overwrite the file with a blank file (O) \n"
-								+ "\t 3. Revert to the default location (R)\n"
-								+ "\t 4. Exit the program (E)");
+						.println(MESSAGE_CORRUPT_FILE);
 						String command;
 						do{
 							command = scn.next().toUpperCase().trim();
@@ -99,8 +106,7 @@ public class StorageUtils {
 								modifySettingsFile(customFileDirPath);
 								fileDirectory = customFileDirPath;
 								System.out
-										.println("Directory of the storage file is updated to: "
-												+ customFileDirPath);
+										.println(String.format(MESSAGE_DIRECTORY_UPDATED, customFileDirPath));
 								break;
 							case "O":
 								newStorageFile.delete();
@@ -116,19 +122,17 @@ public class StorageUtils {
 								modifySettingsFile(customFileDirPath);
 								fileDirectory = customFileDirPath;
 								System.out
-										.println("Directory of the storage file is updated to: "
-												+ customFileDirPath);
+										.println(String.format(MESSAGE_DIRECTORY_UPDATED, customFileDirPath));
 								break;
 							case "R":
 								// Do nothing; fileDirectory is already default
 								System.out
-								.println("Storage file location is reverted to the default: "
-										+ fileDirectory);
+								.println(String.format(MESSAGE_DIRECTORY_DEFAULT, fileDirectory));
 								break;
 							case "E":
 								System.exit(0);
 							default:
-								System.out.println("Incorrect command is given.");
+								System.out.println(MESSAGE_INCORRECT_COMMAND);
 							break;
 							}
 							scn.nextLine();
@@ -153,23 +157,20 @@ public class StorageUtils {
 					if (currentStorageFile.exists()) {
 						copyStorageFile(storageFilePath, customFileDirPath);
 						System.out
-								.println("Storage file copied to specified location: "
-										+ customFileDirPath);
+								.println(String.format(MESSAGE_COPIED_TO_LOCATION, customFileDirPath));
 					}
 					// Update regardless of existence of storageFile.json
 					modifySettingsFile(customFileDirPath);
 					fileDirectory = customFileDirPath;
 					System.out
-							.println("Directory to save storageFile.json is updated in Settings file to: "
-									+ customFileDirPath);
+							.println(String.format(MESSAGE_DIRECTORY_UPDATED, customFileDirPath));
 				}
 
 			}
 			// If customFileDirPath is invalid: revert back to default directory
 			else {
 				System.out
-						.println("User-specified directory for storage is invalid. Storage file location is reverted to the default : "
-								+ fileDirectory);
+						.println(String.format(MESSAGE_INVALID_DIRECTORY, fileDirectory));
 			}
 			return fileDirectory;
 		}

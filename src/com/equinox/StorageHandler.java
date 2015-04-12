@@ -38,6 +38,9 @@ import com.google.gson.JsonSyntaxException;
  */
 
 public class StorageHandler {
+	private static final String MESSAGE_CORRUPT_FILE = "Storage file is unreadable or corrupt. Do you wish to : \n"
+			+ "\t1. Replace it with a blank file (R)\n"
+			+ "\t2. Exit (E)";
 	private static final String FILE_NAME = "storageFile.json";
 	private static final String TEST_FILE_NAME = "testStorageFile.json";
 	
@@ -118,9 +121,7 @@ public class StorageHandler {
 		if(!StorageUtils.isFileInJsonFormat(storageFile)){
 			String command;
 			do{
-				System.out.println("Storage file is unreadable or corrupt. Do you wish to : \n"
-						+ "\t1. Replace it with a blank file (R)\n"
-						+ "\t2. Exit (E)");
+				System.out.println(MESSAGE_CORRUPT_FILE);
 				command = Zeitgeist.scn.nextLine().toUpperCase().trim();
 				if(command.equals("R")){
 					storageFile.delete();
