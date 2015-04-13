@@ -1,10 +1,6 @@
 package com.equinox;
 
 
-import java.lang.reflect.Type;
-
-import com.equinox.Memory.IDBuffer;
-import com.google.gson.InstanceCreator;
 //@author A0110839-unused
 
 /**
@@ -16,16 +12,16 @@ import com.google.gson.InstanceCreator;
  * serialise and deserialise the nested IDBuffer class in Memory 
  */
 
-public class IDBufferInstanceCreator implements InstanceCreator<Memory.IDBuffer>{
+//public class IDBufferInstanceCreator implements InstanceCreator<Memory.IDBuffer>{
 
 	/**
 	 * Creates an instance of IDBuffer
 	 * 
 	 * @param Type 
 	 */
-	@Override
-	public IDBuffer createInstance(Type arg0) {
-		Memory memoryInstance = new Memory();
-		return memoryInstance.new IDBuffer();
-	}
-}
+//	@Override
+//	public IDBuffer createInstance(Type arg0) {
+//		Memory memoryInstance = new Memory();
+//		return memoryInstance.new IDBuffer();
+//	}
+// }

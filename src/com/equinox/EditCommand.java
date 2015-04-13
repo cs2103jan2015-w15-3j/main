@@ -73,41 +73,48 @@ public class EditCommand extends Command {
 				
 				// Date checks
 				if(!dateTimes.isEmpty()) { // Keywords will always exist if dateTimes 
-					for(int i = 1; i < keyParamPairs.size(); i++) {
-						Keywords keyword = keyParamPairs.get(i).getKeyword();
-						
-                        switch (keyword) {
-                            case FROM :
-                                startTime = dateTimes.remove(0);
-                                startTimeEdited = true;
-                                break;
-                            case BY :
-                            case ON :
-                            case AT :
-                                if (!dateTimes.isEmpty()) {
-                                    // Prevent overwriting of edit by FROM
-                                    // keyword
-                                    if (!startTimeEdited) {
-                                        startTime = null;
+
+                    if (dateTimes.size() == 2) {
+                        startTime = dateTimes.remove(0);
+                        endTime = dateTimes.remove(0);
+                    } else {
+                        for (int i = 1; i < keyParamPairs.size(); i++) {
+                            Keywords keyword = keyParamPairs.get(i)
+                                    .getKeyword();
+
+                            switch (keyword) {
+                                case FROM :
+                                    startTime = dateTimes.remove(0);
+                                    startTimeEdited = true;
+                                    break;
+                                case BY :
+                                case ON :
+                                case AT :
+                                    if (!dateTimes.isEmpty()) {
+                                        // Prevent overwriting of edit by FROM
+                                        // keyword
+                                        if (!startTimeEdited) {
+                                            startTime = null;
+                                        }
+                                        endTime = dateTimes.remove(0);
                                     }
-                                    endTime = dateTimes.remove(0);
-                                }
-                                break;
-                            case TO :
-                                if (!dateTimes.isEmpty()) {
-                                    endTime = dateTimes.remove(0);
-                                }
-                                break;
-                            case RULE :
-                            case UNTIL :
-                            case EVERY :
-                                // Ignore
-                                break;
-                            default :
-                                return new Signal(Signal.EDIT_INVALID_PARAMS,
-                                        false);
+                                    break;
+                                case TO :
+                                    if (!dateTimes.isEmpty()) {
+                                        endTime = dateTimes.remove(0);
+                                    }
+                                    break;
+                                case RULE :
+                                case UNTIL :
+                                case EVERY :
+                                    // Ignore
+                                    break;
+                                default :
+                                    return new Signal(
+                                            Signal.EDIT_INVALID_PARAMS, false);
+                            }
                         }
-					}
+                    }
 					
 					if(startTime != null && endTime != null) {
 						if(startTime.isAfter(endTime)) {
@@ -167,36 +174,43 @@ public class EditCommand extends Command {
                 boolean startTimeEdited = false;
 				
 				if(!dateTimes.isEmpty()) {
-					for(int i = 1; i < keyParamPairs.size(); i++) {
-						Keywords keyword = keyParamPairs.get(i).getKeyword();
-						
-                        switch (keyword) {
-                            case FROM :
-                                startTime = dateTimes.remove(0);
-                                startTimeEdited = true;
-                                break;
-                            case BY :
-                            case ON :
-                            case AT :
-                                if (!dateTimes.isEmpty()) {
-                                    // Prevent overwriting of edit by FROM
-                                    // keyword
-                                    if (!startTimeEdited) {
-                                        startTime = null;
+                    if (dateTimes.size() == 2) {
+                        startTime = dateTimes.remove(0);
+                        endTime = dateTimes.remove(0);
+                    } else {
+                        for (int i = 1; i < keyParamPairs.size(); i++) {
+                            Keywords keyword = keyParamPairs.get(i)
+                                    .getKeyword();
+
+                            switch (keyword) {
+                                case FROM :
+                                    startTime = dateTimes.remove(0);
+                                    startTimeEdited = true;
+                                    break;
+                                case BY :
+                                case ON :
+                                case AT :
+                                    if (!dateTimes.isEmpty()) {
+                                        // Prevent overwriting of edit by FROM
+                                        // keyword
+                                        if (!startTimeEdited) {
+                                            startTime = null;
+                                        }
+                                        endTime = dateTimes.remove(0);
                                     }
-                                    endTime = dateTimes.remove(0);
-                                }
-                                break;
-                            case TO :
-                                if (!dateTimes.isEmpty()) {
-                                    endTime = dateTimes.remove(0);
-                                }
-                                break;
-                            default :
-                                return new Signal(Signal.EDIT_INVALID_PARAMS,
-                                        false);
-						}
-					}
+                                    break;
+                                case TO :
+                                    if (!dateTimes.isEmpty()) {
+                                        endTime = dateTimes.remove(0);
+                                    }
+                                    break;
+                                default :
+                                    return new Signal(
+                                            Signal.EDIT_INVALID_PARAMS, false);
+                            }
+                        }
+                    }
+
 					if(startTime != null && endTime != null) {
 						if(startTime.isAfter(endTime)) {
 							return new Signal(Signal.EDIT_END_BEFORE_START, false);
