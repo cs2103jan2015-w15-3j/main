@@ -18,20 +18,8 @@ import com.google.gson.JsonSyntaxException;
 /**
  * Processes the custom file directory path specified by user.
  * 
- * If the path is valid, and there exists a Storage file (storageFile.json)
- * at that path, the user will be prompted to overwrite it. 
- * 
- * Overwrite: 
- * If there exists a Storage file at the default path, it will be copied to the
- * custom path. If there is no Storage file at the default path, the
- * Storage file at the new path will be appended to. 
- * 
- * If user chooses not to overwrite, the default path found in the Settings 
- * file (settings.txt) will be used.
- * 
- * If there is no Storage file at the custom path, and there exists a
- * Storage file at the default path, the file at the default path will be
- * copied to the new location.
+ * Since the storage file at the default location can also be corrupt or invalid,
+ * it is also checked in the StorageHandler class.
  * 
  * @param customFileDirPath
  */
@@ -57,7 +45,25 @@ public class StorageUtils {
 		private static String settingsFilePath;
 		private static File settingsFile;
 		
-		static String processStorageDirectory(String customFileDirPath, Scanner scn) {
+	/**
+	 * Processes the user-specified path.
+	 * 
+	 * If the path is valid, and there exists a Storage file (storageFile.json)
+	 * at that user-specified path, the file will be checked if it is a valid
+	 * JSON file. If it is, it will be used automatically.
+	 * 
+	 * If the file at the user-specified path is corrupt or invalid, the user
+	 * will be asked to choose the following options, which would be executed accordingly.
+	 * 1. Copy the storage file from the default location 
+	 * 2. Create and use a new storage file at the user-specified path 
+	 * 3. Revert back to using the storage file at the default location 
+	 * 4. Exit
+	 * 
+	 * @param customFileDirPath
+	 * @return String Path of storageFile.json after processing
+	 */
+		static String processStorageDirectory(String customFileDirPath) {
+			Scanner scn = Zeitgeist.scn;
 			// If valid: copy any existing storageFile from its current location to
 			// the
 			// new user-specified location. Change the settings file.
@@ -212,7 +218,7 @@ public class StorageUtils {
 
 		/**
 		 * Modifies the Settings file (settings.txt) by overriding the file with
-		 * the path specified by customFileDirPath..
+		 * the path specified by customFileDirPath.
 		 * 
 		 * @param customFileDirPath
 		 */

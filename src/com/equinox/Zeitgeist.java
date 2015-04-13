@@ -75,12 +75,12 @@ public class Zeitgeist {
 	 */
 	public static void main(String[] args) {
 
-		fileDirectory = StorageUtils.readSettingsFile();
+		fileDirectory = getStorageFileDirFromSettings();
 		// Check if a file directory path is passed in through argument
 		if (args.length == 1) {
 			// Check if file directory path is valid
 			String customFileDirPath = args[0];
-			fileDirectory = StorageUtils.processStorageDirectory(customFileDirPath, scn);
+			fileDirectory = StorageUtils.processStorageDirectory(customFileDirPath);
 		}
 
 		String input;
