@@ -5,7 +5,7 @@ import java.util.Scanner;
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
 import com.equinox.exceptions.ParsingFailureException;
-
+//@author A0093910H
 public class Zeitgeist {
 	private static Zeitgeist logic;
 	private static String fileDirectory;
@@ -107,6 +107,8 @@ public class Zeitgeist {
 		return execute(c);
 	}
 
+	
+	//@author A0110839H
 	/**
 	 * Creates a Command object with the given ParsedInput and executes it.
 	 * 
