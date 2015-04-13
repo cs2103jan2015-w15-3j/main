@@ -9,6 +9,16 @@ import java.util.Stack;
 import com.equinox.exceptions.NotRecurringException;
 import com.equinox.exceptions.StateUndefinedException;
 
+/**
+ * Functions as an auxiliary memory that supports the main memory by providing
+ * the functionality of remembering the states of Todos and RecurringTodoRules,
+ * and allows the undo and redo operation to track and restore the last modified
+ * object.
+ * <p>
+ * The VolatileMemory object should be flushed by calling the flushStacks()
+ * before the main Memory is serialized and saved so that UndoRedo states that
+ * are brought out of context on the next load does not persist.
+ */
 public class VolatileMemory {
 	private Stack<Boolean> undoIsRule;
 	private Stack<Boolean> redoIsRule;
@@ -23,18 +33,33 @@ public class VolatileMemory {
 		this.ruleStacks = new UndoRedoStack<RecurringTodoRule>(recurringRules, recurringIdBuffer, STATE_STACK_MAX_SIZE);
 	}
 	
+	/**
+	 * Saves the state of a Todo.
+	 * 
+	 * @param todo the original Todo to be saved.
+	 */
 	public void save(Todo todo) {
 		todoStacks.save(todo);
 		undoIsRule.push(false);
 		flushRedoStacks();
 	}
 	
+	/**
+	 * Saves the state of a RecurringTodoRule.
+	 * 
+	 * @param rule the original RecurringTodoRule to be saved.
+	 */
 	public void save(RecurringTodoRule rule) {
 		ruleStacks.save(rule);
 		undoIsRule.push(true);
 		flushRedoStacks();
 	}
 
+	/**
+	 * Reverts the last change depending on the object type that was modified by the last command.
+	 * 
+	 * @throws StateUndefinedException if there are no states to revert to.
+	 */
 	public void undo() throws StateUndefinedException {
 		RecurringTodoRule rule;
 		Todo todo;
@@ -61,6 +86,11 @@ public class VolatileMemory {
 	}
 	
 
+	/**
+	 * Reverts the last reversion depending on the object type that was modified by the reversion.
+	 * 
+	 * @throws StateUndefinedException if there are no states to revert to.
+	 */
 	public void redo() throws StateUndefinedException {
 		RecurringTodoRule rule;
 		Todo todo;
@@ -86,11 +116,17 @@ public class VolatileMemory {
 		}
 	}
 	
+	/**
+	 * Flushes both rule and todo stacks to release the IDs reserved by the Todo or RecurringTodoRule objects in the stacks.
+	 */
 	public void flushStacks() {
 		todoStacks.flushStacks();
 		ruleStacks.flushStacks();
 	}
 	
+	/**
+	 * Flushes the redo stack to release the IDs reserved by the Todo or Recurring Todo objects in the redo stacks.
+	 */
 	private void flushRedoStacks() {
 		todoStacks.flushRedoStack();
 		ruleStacks.flushRedoStack();
