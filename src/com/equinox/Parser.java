@@ -41,6 +41,7 @@ public class Parser {
 	private static final String STRING_FRIDAY = "friday";
 	private static final String STRING_SATURDAY = "saturday";
 	private static final String STRING_SUNDAY = "sunday";
+	private static final String EMPTY_STRING = "";
 
 	/**
 	 * Tries to parse the specified String into ParsedInput object for various
@@ -217,9 +218,9 @@ public class Parser {
 					}
 
 				} else if (key == Keywords.RULE) {
-					// leaves keyParamPair for rule as it is.
-					// does not parse as date or append to name
-					isRecurring = true;
+					// appends the param for rule as the name
+					interpretAsName(keyParamPairs, currentPair);
+					keyParamPairs.get(i).setParam(EMPTY_STRING);
 				} else {
 					// tries to parse param as date
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
@@ -283,8 +284,11 @@ public class Parser {
 
 	private static void interpretAsName(ArrayList<KeyParamPair> keyParamPairs,
 			KeyParamPair currentPair) {
+		String newName;
 		int currentIndex = keyParamPairs.indexOf(currentPair);
-		String newName = appendParameters(keyParamPairs, 0, currentIndex);
+
+		newName = appendParameters(keyParamPairs, 0, currentIndex);
+
 		keyParamPairs.get(0).setParam(newName);
 	}
 
@@ -470,8 +474,10 @@ public class Parser {
 
 		StringBuilder sBuilder = new StringBuilder(firstPair.getParam());
 		sBuilder.append(CHAR_SPACE);
-		sBuilder.append(key);
-		sBuilder.append(CHAR_SPACE);
+		if (!secondPair.getKeyword().equals(Keywords.RULE)) {
+			sBuilder.append(key);
+			sBuilder.append(CHAR_SPACE);
+		}
 		sBuilder.append(secondPair.getParam());
 		return sBuilder.toString();
 	}

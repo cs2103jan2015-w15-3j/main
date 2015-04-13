@@ -842,11 +842,11 @@ public class ParserTest {
 		String edit0 = "edit 1 -r change name";
 		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
-						Keywords.EDIT, "edit", "1"), new KeyParamPair(
-						Keywords.RULE, "-r", "change name"))),
-				new ArrayList<DateTime>(), new Period(), true, false,
+						Keywords.EDIT, "edit", "1 change name"), new KeyParamPair(
+						Keywords.RULE, "-r", ""))),
+				new ArrayList<DateTime>(), new Period(), false, false,
 				new DateTime(0));
-		System.out.println(Parser.parseInput(edit0).isRecurring());
+		System.out.println(Parser.parseInput(edit0).getParamPairs().get(0).getParam());
 		assertEquals(parsed0, Parser.parseInput(edit0));
 	}
 
