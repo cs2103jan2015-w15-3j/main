@@ -194,7 +194,8 @@ public class Zeitgeist {
 	}
 	
 	public void reloadMemory() {
-		memory = new Memory();
+		memory.clearInstance();
+		memory = Memory.getInstance();
 		memory.setStorageHandler(storage);
 	}
 	

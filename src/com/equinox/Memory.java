@@ -48,7 +48,7 @@ public class Memory {
 	/**
 	 * Constructs an empty Memory object.
 	 */
-	public Memory() {
+	private Memory() {
 		this.allTodos = new HashMap<Integer, Todo>();
 		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
 		this.idBuffer = new IDBuffer<Todo>(allTodos);
@@ -66,6 +66,17 @@ public class Memory {
 	void onDestroy() {
 		vMem.flushStacks(); //Recycles all IDs
 		vMem = null;
+	}
+	
+	public static Memory getInstance() {
+		if (instance == null) {
+			instance = new Memory();
+		}
+		return instance;
+	}
+	
+	void clear() {
+		instance = null;
 	}
 
 	/**
@@ -688,20 +699,5 @@ public class Memory {
 
 	public void updateMaps(int userIndex, DateTime date, DateTime originalDate) {
 		searchMap.update(userIndex, date, originalDate);
-	}
-
-	// @author ? TODO: add author tag
-	/*
-	 * Method for Memory singleton pattern
-	 * 
-	 * Create an instance of memory if it is not present
-	 * 
-	 * @return instance of memory
-	 */
-	public static Memory getInstance() {
-		if (instance == null) {
-			instance = new Memory();
-		}
-		return instance;
 	}
 }
