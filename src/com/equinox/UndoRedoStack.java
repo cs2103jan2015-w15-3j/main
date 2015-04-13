@@ -7,6 +7,11 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import com.equinox.exceptions.StateUndefinedException;
 
+/**
+ * Provides the functionality of remembering past states of objects that implement the UndoableRedoable interface. 
+ *
+ * @param <T>
+ */
 public class UndoRedoStack<T extends UndoableRedoable<T>> {
 	private LinkedList<T> undoStack;
 	private LinkedList<T> redoStack;
@@ -23,15 +28,15 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 	}
 		
 	/**
-	 * Saves the a copy of the state of a Todo into the undo stack. If the Todo
+	 * Saves the a copy of the state of an object into the undo stack. If the object
 	 * specified is null, a placeholder is used instead.
 	 * <p>
 	 * The stack never contains null values. <br>
 	 * If the maximum stack size is reached, the earliest state is discarded. <br>
-	 * If the stack and memory no longer contains a particular Todo, its ID is
-	 * returned to the pool of available indices.
+	 * If the stack and memory no longer contains a particular object, its ID is
+	 * returned to the pool of available IDs.
 	 * 
-	 * @param toBeSaved the Todo to be saved.
+	 * @param toBeSaved the object to be saved.
 	 */
 	public void save(T toBeSaved) {
 		T toBeSavedCopy = toBeSaved.copy();
@@ -47,8 +52,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 	}
 	
 	/**
-	 * Restores the latest future state of the memory. Also known as the redo
-	 * operation.
+	 * Restores the latest future state of the object.
 	 * 
 	 * @throws StateUndefinedException if there are no future states to restore
 	 *             to.
@@ -83,8 +87,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 	}
 	
 	/**
-	 * Restores the latest history state of the memory. Also known as the undo
-	 * operation.
+	 * Restores the latest history state of the object.
 	 * 
 	 * @throws StateUndefinedException if there are no history states to restore
 	 *             to.
@@ -119,17 +122,29 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 		return fromStack;
 	}
 	
+	
+	/**
+	 * Returns the first object from the stack of history state.
+	 * 
+	 * @return the first object from the stack of history state.
+	 */
 	public T peekHistoryState() {
 		return undoStack.peekLast();
 	}
 	
+	/**
+	 * Returns the first object from the stack of future states.
+	 * 
+	 * @return the first object from the stack of future states.
+	 */
 	public T peekFutureState() {
 		return redoStack.peekLast();
 	}
 	
 
 	/**
-	 * Flushes both undo and redo stacks. For use with exit command.
+	 * Flushes both undo and redo stacks to release all reserved IDs back to the
+	 * pool of available IDs.
 	 */
 	public void flushStacks() {
 		flushRedoStack();
@@ -137,7 +152,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 	}
 
 	/**
-	 * Flushes the undoStack of all states of Todos.
+	 * Flushes the undoStack of all states of objects.
 	 */
 	private void flushUndoStack() {
 		while (!undoStack.isEmpty()) {
@@ -149,7 +164,7 @@ public class UndoRedoStack<T extends UndoableRedoable<T>> {
 	}
 
 	/**
-	 * Flushes the redoStack of all states of Todos.
+	 * Flushes the redoStack of all states of objects.
 	 */
 	public void flushRedoStack() {
 		while (!redoStack.isEmpty()) {
