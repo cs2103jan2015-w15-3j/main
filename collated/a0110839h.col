@@ -1,0 +1,2294 @@
+//@author: a0110839h
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\AddCommand.java
+	 */
+
+/**
+ * The AddCommand class handles all user commands with "add" as the first
+ * keyword and processes ParsedInput to generate Todo objects and adds them into
+ * memory.
+ */
+
+public class AddCommand extends Command {
+
+	/**
+	 * Creates an AddCommand object.
+	 * 
+	 * @param input
+	 *            the ParsedInput object containing the parameters.
+	 * @param memory
+	 *            the memory containing the Todos to which the changes should be
+	 *            committed.
+	 */
+	public AddCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
+	/**
+	 * It takes in a ParsedInput object and generates a Todo object with respect
+	 * to the ParsedInput object. The Todo object can be a floating task,
+	 * deadline or event.
+	 * 
+	 * It returns a Signal object to indicate success or failure (if exception
+	 * is thrown).
+	 * 
+	 * @return It returns a Signal object to indicate success or failure.
+	 */
+	@Override
+	public Signal execute() {
+		// Check for empty string params
+		if (input.containsEmptyParams()) {
+			return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
+		}
+
+		String todoName = keyParamPairs.get(0).getParam();
+		//keyParamPair.size() should be 1, and maximum of dateTimes.size() should be 2
+		int numberOfParams = keyParamPairs.size() + dateTimes.size();
+		// Check if Todo to be created is a recurring task
+		// Recurring Deadline
+
+		if (input.isRecurring()) {
+			// Check for valid number of keywords
+			if (numberOfParams > 3) {
+				return new Signal(Signal.ADD_INVALID_PARAMS, false);
+			}
+
+			RecurringTodoRule rule;
+
+			// If recurrence rule has a limit
+			if (input.hasLimit()) {
+				rule = new RecurringTodoRule(memory.obtainFreshRecurringId(),
+						todoName, dateTimes, input.getPeriod(),
+						input.getLimit());
+				memory.add(rule);
+			}
+			// If recurrence rule has no limit
+			else {
+				rule = new RecurringTodoRule(memory.obtainFreshRecurringId(),
+						todoName, dateTimes, input.getPeriod());
+			}
+			memory.add(rule);
+			memory.saveToFile();
+			return new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+					rule.toString()), true);
+
+		}
+		// Not recurring task
+		else {
+			// Check for valid number of keywords
+			
+			if (numberOfParams > 3) {
+				
+				return new Signal(Signal.ADD_INVALID_PARAMS, false);
+			}
+
+			int numberOfDates = dateTimes.size();
+			
+			
+			switch (numberOfDates) {
+			// No dates = floating task
+			case 0:
+				Todo floatingTask = new Todo(memory.obtainFreshId(), todoName);
+				memory.userAdd(floatingTask);
+				memory.saveToFile();
+				return new Signal(String.format(
+						Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask), true);
+			// 1 date = deadline
+			case 1:
+				Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
+						dateTimes);
+				memory.userAdd(timedTodo);
+				memory.saveToFile();
+				return new Signal(String.format(
+						Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
+			// 2 dates = event
+			case 2:
+				timedTodo = new Todo(memory.obtainFreshId(), todoName,
+						dateTimes);
+				// Start-time is after end-time
+				if (dateTimes.get(0).isAfter(dateTimes.get(1))) {
+					memory.saveToFile();
+					return new Signal(Signal.ADD_END_BEFORE_START_ERROR, false);
+				
+				// Valid dates
+				} else {
+					memory.userAdd(timedTodo);
+					memory.saveToFile();
+					return new Signal(String.format(
+							Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
+				}
+			}
+			// Should not be reached
+			memory.saveToFile();
+			return new Signal(Signal.ADD_UNKNOWN_ERROR, false);
+		}
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\AddCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\AddCommandTest.java
+	 */
+
+public class AddCommandTest {
+	Memory memory;
+	ParsedInput input;
+	Keywords addCommand = Keywords.ADD;
+	Zeitgeist logic;
+
+	public enum TYPE {
+		ADD, MARK, DELETE, SEARCH, EDIT, DISPLAY, UNDO, ERROR;
+	}
+
+	private static final DateTimeFormatter DateFormatter = DateTimeFormat
+			.forPattern("EEE dd MMM yyyy");
+	private static final DateTimeFormatter TimeFormatter = DateTimeFormat
+			.forPattern("HH:mm");
+
+	private static String formatTime(DateTime time) {
+		String timeString = TimeFormatter.print(time);
+		return timeString;
+	}
+
+	private static String formatDate(DateTime time) {
+		String dateString = DateFormatter.print(time);
+
+		return dateString;
+	}
+
+	@Before
+	public void setUp() {
+		String fileDirectory = Zeitgeist.getStorageFileDirFromSettings();
+		logic = new Zeitgeist(fileDirectory);
+		logic.reloadMemory();
+
+	}
+
+	@After
+	public void tearDown() {
+		logic.deleteStorageFile();
+	}
+
+	@Test
+	public void testInsufficientParams() {
+		Signal insufficientParamSignal;
+		String command;
+		// Mock Signal object
+		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM, false);
+		command = "add";
+		try {
+			// Test for equivalence in Signal object
+			assertEquals(insufficientParamSignal, logic.handleInput(command));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		command = "add by 4pm";
+		// Mock Signal object
+		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM, false);
+		try {
+			// Test for equivalence in Signal object
+			assertEquals(insufficientParamSignal, logic.handleInput(command));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		command = "add from 1am to 2am";
+		// Mock Signal object
+		insufficientParamSignal = new Signal(Signal.GENERIC_EMPTY_PARAM, false);
+		try {
+			// Test for equivalence in Signal object
+			assertEquals(insufficientParamSignal, logic.handleInput(command));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+	}
+
+	/*
+	 * Tests adding of floating tasks
+	 */
+	@Test
+	public void testFloatingTask() {
+		String floatingTaskCommand;
+		String floatingTaskString;
+		Signal addSuccess;
+
+		/*
+		 * Test for a single-worded, lower-case floating task
+		 */
+		floatingTaskCommand = "add running";
+		floatingTaskString = "Floating task \"running\"";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				floatingTaskString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(floatingTaskCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, mixed-case floating task
+		 */
+		floatingTaskCommand = "add Running";
+		floatingTaskString = "Floating task \"Running\"";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				floatingTaskString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(floatingTaskCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case floating task
+		 */
+		floatingTaskCommand = "add Running for StandChart marathon";
+		floatingTaskString = "Floating task \"Running for StandChart marathon\"";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				floatingTaskString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(floatingTaskCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case floating task
+		 */
+		floatingTaskCommand = "add Running for 42km StandChart marathon";
+		floatingTaskString = "Floating task \"Running for 42km StandChart marathon\"";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				floatingTaskString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(floatingTaskCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+	}
+
+	/*
+	 * Test adding of deadlines
+	 */
+	@Test
+	public void testDeadline() {
+		String deadlineCommand;
+		String deadlineString;
+		Signal addSuccess;
+		DateTime changedTime;
+		String formattedTime;
+		String formattedDate;
+		final DateTime baseTime = new DateTime();
+		/*
+		 * Absolute deadlines
+		 */
+
+		/*
+		 * Test for a single-worded, lower-case title, with absolute date and
+		 * time, long-format
+		 */
+		deadlineCommand = "add interview by 0800 on 13 Apr";
+		deadlineString = "Deadline \"interview\" by Mon 13 Apr 2015 at 08:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, absolute date and time,
+		 * short-format with upper-case
+		 */
+		deadlineCommand = "add interview by 8am on 15 Mar";
+		deadlineString = "Deadline \"interview\" by Sun 15 Mar 2015 at 08:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (day),
+		 * long-format
+		 */
+		changedTime = baseTime.plusDays(2);
+		formattedDate = formatDate(changedTime);
+		deadlineCommand = "add interview in two days";
+		deadlineString = "Deadline \"interview\" by " + formattedDate
+				+ " at 23:59";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (day),
+		 * short-format
+		 */
+		deadlineCommand = "add interview in 2 days";
+		deadlineString = "Deadline \"interview\" by " + formattedDate
+				+ " at 23:59";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		/*
+		 * Test for a multiple-worded, mixed-case title, absolute date and time,
+		 * long-format
+		 */
+		deadlineCommand = "add interview with Google by 10am on 17 June";
+		deadlineString = "Deadline \"interview with Google\" by Wed 17 Jun 2015 at 10:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case title, absolute date and time,
+		 * long-format
+		 */
+		deadlineCommand = "add hand in CS2103T developers guide by 1 April at 6pm";
+		deadlineString = "Deadline \"hand in CS2103T developers guide\" by Wed 01 Apr 2015 at 18:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Relative deadlines
+		 */
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (months),
+		 * long-format in lower-case
+		 */
+		changedTime = baseTime.plusMonths(3);
+		formattedDate = formatDate(changedTime);
+		deadlineCommand = "add NOC in three months";
+		deadlineString = "Deadline \"NOC\" by " + formattedDate + " at 23:59";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (months),
+		 * short-format in lower-case
+		 */
+		deadlineCommand = "add NOC in 3 months";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (months),
+		 * short-format in lower-case
+		 */
+		deadlineCommand = "add NOC in 3 month";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (months),
+		 * short-format in mixed-case
+		 */
+		deadlineCommand = "add NOC in 3 Months";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case title, relative time (months),
+		 * short-format in mixed-case
+		 */
+		changedTime = baseTime.plusMonths(3);
+		formattedDate = formatDate(changedTime);
+		deadlineCommand = "add NOC in Silicon Valley in 3 months";
+		deadlineString = "Deadline \"NOC in Silicon Valley\" by "
+				+ formattedDate + " at 23:59";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (hours),
+		 * long-format in lower-case
+		 */
+		changedTime = baseTime.plusHours(2);
+		formattedDate = formatDate(changedTime);
+		formattedTime = formatTime(changedTime);
+		deadlineCommand = "add exam in two hours";
+		deadlineString = "Deadline \"exam\" by " + formattedDate + " at "
+				+ formattedTime;
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (hours),
+		 * long-format in mixed-case
+		 */
+		deadlineCommand = "add exam in Two Hours";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (hours),
+		 * short-format in lower-case
+		 */
+		deadlineCommand = "add exam in 2 hours";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (hours),
+		 * short-format in lower-case
+		 */
+		deadlineCommand = "add exam in 2 hrs";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (hours),
+		 * short-format in mixed-case
+		 */
+		deadlineCommand = "add exam in 2 Hours";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (hours),
+		 * short-format in mixed-case
+		 */
+		deadlineCommand = "add exam in 2 Hrs";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case title, relative time (hours),
+		 * long-format in lower-case
+		 */
+		changedTime = baseTime.plusHours(6);
+		formattedDate = formatDate(changedTime);
+		formattedTime = formatTime(changedTime);
+		deadlineCommand = "add CS2103T exam in SR1 in six hours";
+		deadlineString = "Deadline \"CS2103T exam in SR1\" by " + formattedDate
+				+ " at " + formattedTime;
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case title, relative time (hours),
+		 * long-format in mixed-case
+		 */
+		deadlineCommand = "add CS2103T exam in SR1 in Six Hours ";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case title, relative time (hours),
+		 * short-format in lower-case
+		 */
+		deadlineCommand = "add CS2103T exam in SR1 in 6 hours";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, lower-case title, relative time (hours),
+		 * short-format in lower-case
+		 */
+		deadlineCommand = "add CS2103T exam in SR1 in 6 hrs";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, lower-case title, relative time (hours),
+		 * short-format in mixed-case
+		 */
+		deadlineCommand = "add CS2103T exam in SR1 in 6 Hours";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, lower-case title, relative time (hours),
+		 * short-format in mixed-case
+		 */
+		deadlineCommand = "add CS2103T exam in SR1 in 6 Hrs";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (minutes),
+		 * long-format in lower-case
+		 */
+		changedTime = baseTime.plusMinutes(30);
+		formattedDate = formatDate(changedTime);
+		formattedTime = formatTime(changedTime);
+		deadlineCommand = "add lunch in thirty minutes";
+		deadlineString = "Deadline \"lunch\" by " + formattedDate + " at "
+				+ formattedTime;
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (minutes),
+		 * long-format in mixed-case
+		 */
+		deadlineCommand = "add lunch in Thirty Minutes";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (minutes),
+		 * short-format in lower-case
+		 */
+
+		deadlineCommand = "add lunch in 30 min";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (minutes),
+		 * short-format in lower-case
+		 */
+
+		deadlineCommand = "add lunch in 30 mins";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (minutes),
+		 * short-format in mixed-case
+		 */
+
+		deadlineCommand = "add lunch in 30 Min";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case title, relative time (minutes),
+		 * short-format in mixed-case
+		 */
+
+		deadlineCommand = "add lunch in 30 Mins";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case title, relative time
+		 * (minutes), long-format in lower-case
+		 */
+		deadlineCommand = "add lunch at McDonalds in 30 min";
+		deadlineString = "Deadline \"lunch at McDonalds\" by " + formattedDate
+				+ " at " + formattedTime;
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				deadlineString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(deadlineCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+	}
+
+	/*
+	 * Test adding of events
+	 */
+	@Test
+	public void testEvent() {
+		final DateTime baseTime = new DateTime();
+		DateTime changedTime;
+		String formattedDate;
+		String eventCommand;
+		String eventString;
+		Signal addSuccess;
+
+		/*
+		 * Absolute time
+		 */
+		/*
+		 * Test for a single-worded, lower-case event, long-format
+		 */
+		eventCommand = "add canoeing from 3pm to 4pm on six april";
+		eventString = "Event \"canoeing\" from Mon 06 Apr 2015 at 15:00 to Mon 06 Apr 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a single-worded, lower-case event within the same day, short
+		 * format
+		 */
+		eventCommand = "add canoeing from 3pm to 4pm on 6 apr";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event within the same day,
+		 * short format
+		 */
+
+		eventCommand = "add climb Mount Everest in Nepal from 3pm to 4pm on 12 Jun";
+		eventString = "Event \"climb Mount Everest in Nepal\" from Fri 12 Jun 2015 at 15:00 to Fri 12 Jun 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event straddling different
+		 * days, short format
+		 */
+
+		eventCommand = "add climb Mount Everest in Nepal from 5 jun 3pm to 20 jun 4pm";
+		eventString = "Event \"climb Mount Everest in Nepal\" from Fri 05 Jun 2015 at 15:00 to Sat 20 Jun 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event straddling different
+		 * days, short format
+		 */
+
+		eventCommand = "add climb Mount Everest in Nepal from 3pm on 5 jun to 4pm on 20 jun";
+		eventString = "Event \"climb Mount Everest in Nepal\" from Fri 05 Jun 2015 at 15:00 to Sat 20 Jun 2015 at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Relative time
+		 */
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (year)
+		 */
+		changedTime = baseTime.plusYears(3);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add travel the States from 2pm to 3pm in 3 years";
+		eventString = "Event \"travel the States\" from " + formattedDate
+				+ " at 14:00 to " + formattedDate + " at 15:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (year)
+		 */
+		changedTime = baseTime.plusYears(1);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add travel the States from 2pm to 3pm next year";
+		eventString = "Event \"travel the States\" from " + formattedDate
+				+ " at 14:00 to " + formattedDate + " at 15:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (month)
+		 */
+		changedTime = baseTime.plusMonths(3);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add visit the Dentist in 3 months from 2pm to 3pm";
+		eventString = "Event \"visit the Dentist\" from " + formattedDate
+				+ " at 14:00 to " + formattedDate + " at 15:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (week)
+		 */
+		changedTime = baseTime.plusMonths(1);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add visit the Dentist from 2pm to 3pm next month";
+		eventString = "Event \"visit the Dentist\" from " + formattedDate
+				+ " at 14:00 to " + formattedDate + " at 15:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (week)
+		 */
+		changedTime = baseTime.plusWeeks(1);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add CS2010 consultation in 1 week from 9am to 12pm";
+		eventString = "Event \"CS2010 consultation\" from " + formattedDate
+				+ " at 09:00 to " + formattedDate + " at 12:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (week)
+		 */
+		changedTime = baseTime.plusWeeks(2);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add CS2105 consultation in 2 weeks from 10am to 2pm";
+		eventString = "Event \"CS2105 consultation\" from " + formattedDate
+				+ " at 10:00 to " + formattedDate + " at 14:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (week)
+		 */
+		changedTime = baseTime.plusWeeks(1);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add CS2010 consultation in 1 week from 9am to 12pm";
+		eventString = "Event \"CS2010 consultation\" from " + formattedDate
+				+ " at 09:00 to " + formattedDate + " at 12:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (day)
+		 */
+		changedTime = baseTime.plusDays(3);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add CS2103T presentation in 3 days from 3pm to 4pm";
+		eventString = "Event \"CS2103T presentation\" from " + formattedDate
+				+ " at 15:00 to " + formattedDate + " at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event, within a day, relative
+		 * (day)
+		 */
+		changedTime = baseTime.plusDays(1);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add cycling at ECP from 6pm to 7pm tomorrow";
+		eventString = "Event \"cycling at ECP\" from " + formattedDate
+				+ " at 18:00 to " + formattedDate + " at 19:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+
+		/*
+		 * Test for a multiple-worded, mixed-case event within a day, relative
+		 * (week)
+		 */
+		changedTime = baseTime.plusDays(3);
+		formattedDate = formatDate(changedTime);
+		eventCommand = "add CS2103T presentation in 3 days from 3pm to 4pm";
+		eventString = "Event \"CS2103T presentation\" from " + formattedDate
+				+ " at 15:00 to " + formattedDate + " at 16:00";
+		// Mock Signal object
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT,
+				eventString), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(eventCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+	}
+	
+	@Test
+	public void testRecurringTasks(){
+		DateTime baseTime = new DateTime();
+		DateTime changedTime = baseTime.plusYears(1);
+		String formattedDate = formatDate(changedTime);
+		Signal addSuccess;
+		String recurrenceRule;
+		String recurrenceCommand;
+		
+		/*
+		 * Test for a single-worded recurring floating task (daily), no limit
+		 */
+		recurrenceCommand = "add swim every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring deadline (daily), no limit
+		 */
+		recurrenceCommand = "add swim by 3pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring deadline (daily), no limit
+		 */
+		recurrenceCommand = "add swim from 4pm to 5pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring deadline (daily), no limit
+		 */
+		recurrenceCommand = "add swim from 4pm to 5pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring floating task (daily), no limit
+		 */
+		recurrenceCommand = "add swim every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring deadline (daily), no limit
+		 */
+		recurrenceCommand = "add swim by 3pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring deadline (monthly), no limit
+		 */
+		recurrenceCommand = "add submit monthly report by 2300pm every month";
+		recurrenceRule = "Recurrence Rule: \"submit monthly report\" every 1 month(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring deadline (monthly), with limit
+		 */
+		recurrenceCommand = "add submit monthly report by 2300pm every month until 8 Dec";
+		recurrenceRule = "Recurrence Rule: \"submit monthly report\" every 1 month(s) until Tue 08 Dec 2015";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring deadline (yearly), no limit
+		 */
+		recurrenceCommand = "add celebrate New Year on 1 Jan every year";
+		recurrenceRule = "Recurrence Rule: \"celebrate New Year\" every 1 year(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a single-worded recurring event (daily), no limit
+		 */
+		recurrenceCommand = "add swim from 4pm to 5pm every day";
+		recurrenceRule = "Recurrence Rule: \"swim\" every 1 day(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event (daily), with limit
+		 */
+		recurrenceCommand = "add swim at Jurong Swimming Complex from 4pm to 5pm every day until 5 jun";
+		recurrenceRule = "Recurrence Rule: \"swim at Jurong Swimming Complex\" every 1 day(s) until Fri 05 Jun 2015";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event(weekly), no limit
+		 */
+		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every week";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 week(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event(weekly), with limit
+		 */
+		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every week until 8 jun";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 week(s) until Mon 08 Jun 2015";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event(month), no limit
+		 */
+		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every month";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 month(s) until " + formattedDate;
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+		/*
+		 * Test for a multiple-worded recurring event(month), with limit
+		 */
+		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every month until 10 dec";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 month(s) until Thu 10 Dec 2015";
+		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
+		try {
+			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e) {
+		}
+		
+	}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\AddCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\MarkCommand.java
+	 */
+
+/**
+ * This class handles all user input with "mark" as the first keyword with the
+ * format of mark <index>. It retrieves a Todo object from memory at the given
+ * index, marks the Todo as done and replaces the existing copy in memory.
+ */
+
+public class MarkCommand extends Command {
+
+	/**
+	 * Creates a MarkCommand object.
+	 * 
+	 * @param input
+	 *            the ParsedInput object containing the parameters.
+	 * @param memory
+	 *            the memory containing the Todos to which the changes should be
+	 *            committed.
+	 */
+	public MarkCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
+	/**
+	 * Retrieves the Todo object specified by index in ParsedInput from Memory
+	 * and marks it as done.
+	 * 
+	 * @return It returns a Signal object to indicate success or failure.
+	 */
+	@Override
+	public Signal execute() {
+		// Ensure that there is only one KeyParamPair in inputList
+		if (!input.containsOnlyCommand()) {
+			return new Signal(Signal.MARK_INVALID_PARAMS, false);
+		}
+
+		if (input.containsEmptyParams()) {
+			return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
+		}
+
+		try {
+			int index = Integer.parseInt(keyParamPairs.get(0).getParam());
+			Todo todoToMark = memory.getToModifyTodo(index);
+			todoToMark.setDone(true);
+			memory.saveToFile();
+			return new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT,
+					todoToMark), true);
+		} catch (NullTodoException e) {
+			return new Signal(e.getMessage(), false);
+		} catch (NumberFormatException e) {
+			return new Signal(String.format(Signal.MARK_INVALID_PARAMS), false);
+		}
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\MarkCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\MarkCommandTest.java
+	 */
+
+
+package com.equinox;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
+import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.ParsingFailureException;
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\MarkCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\MarkCommandTest.java
+	 */
+
+public class MarkCommandTest {
+	private Zeitgeist logic;
+	private static final String COMMAND_1 = "add floatingTask";
+	private static final String COMMAND_2 = "add deadline by 3pm on 5 jun";
+	private static final String COMMAND_3 = "add event from 4pm to 5pm on 7 jul";
+	
+	@Before
+	public void setUp(){
+		String fileDirectory = Zeitgeist.getStorageFileDirFromSettings();
+		logic = new Zeitgeist(fileDirectory);
+		logic.reloadMemory();
+			try{
+				logic.handleInput(COMMAND_1);
+				logic.handleInput(COMMAND_2);
+				logic.handleInput(COMMAND_3);
+			} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e){
+			}
+		}
+	
+	@After
+	public void tearDown(){
+		logic.deleteStorageFile();
+	}
+	
+	@Test
+	public void testMark(){
+		String markCommand;
+		String markString;
+		Signal markSuccess;
+		
+		/*
+		 * Test marking of Todo with index 0
+		 */
+		markCommand = "mark 0";
+		markString = "Floating task \"floatingTask\"";
+		markSuccess = new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT, markString), true);
+		try{
+			assertEquals(markSuccess, logic.handleInput(markCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e){
+		}
+		
+		/*
+		 * Test marking of Todo with index 1
+		 */
+		markCommand = "mark 1";
+		markString = "Deadline \"deadline\" by Fri 05 Jun 2015 at 15:00";
+		markSuccess = new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT, markString), true);
+		try{
+			assertEquals(markSuccess, logic.handleInput(markCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e){
+		}
+		
+		/*
+		 * Test marking of Todo with index 2
+		 */
+		markCommand = "mark 2";
+		markString = "Event \"event\" from Tue 07 Jul 2015 at 16:00 to Tue 07 Jul 2015 at 17:00";
+		markSuccess = new Signal(String.format(Signal.MARK_SUCCESS_SIGNAL_FORMAT, markString), true);
+		try{
+			assertEquals(markSuccess, logic.handleInput(markCommand));
+		} catch (InvalidRecurringException | InvalidTodoNameException | ParsingFailureException e){
+		}
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\MarkCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Memory.java
+	 */
+
+
+	/**
+	 * Saves this instance of memory to file by calling the storeMemoryToFile
+	 * method in the StorageHandler object.
+	 */
+	public void saveToFile() {
+		storage.storeMemoryToFile(this);
+	}
+
+	public void setStorageHandler(StorageHandler storage) {
+		this.storage = storage;
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Memory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\StorageHandler.java
+	 */
+
+
+/**
+ * Handles the storing of an instance of Memory into a file in JSON formatting,
+ * as well as the retrieving of an instance of Memory from a file in JSON
+ * formatting.
+ */
+
+public class StorageHandler {
+	private static final String MESSAGE_CORRUPT_FILE = "Storage file is unreadable or corrupt. Do you wish to : \n"
+			+ "\t1. Replace it with a blank file (R)\n"
+			+ "\t2. Exit (E)";
+	private static final String FILE_NAME = "storageFile.json";
+	
+	private static PrintWriter writer;
+	private static Scanner reader;
+	private static String filePath;
+	
+    private File storageFile;
+	
+	/**
+	 * Builder inner class for creating instances of StorageHandler with
+	 * the option of setting the filePath variable.
+	 */
+	public static class Builder{
+		 String fileDirectory;
+		 String filePath;
+		
+		/**
+		 * Set directory path with the given string.
+		 * 
+		 * @param fileDirectory
+		 * @return Builder
+		 */
+		public Builder setDirectoryPath(String fileDirectory){
+			this.fileDirectory = fileDirectory;
+			return this;
+		}
+		
+		/**
+		 * Set file path with the directory path and file name.
+		 * 
+		 * @return Builder
+		 */
+		public Builder setFilePath(){
+			this.filePath = fileDirectory + "/" + FILE_NAME;
+			return this;
+		}
+		
+		/**
+		 * Overloaded method: 
+		 * Set file path with the absolute path of the given file.
+		 * 
+		 * @param File 
+		 * @return Builder
+		 */
+		public Builder setFilePath(File file){
+			this.filePath = file.getAbsolutePath();
+			return this;
+		}
+		
+		/**
+		 * Returns a StorageHandler instance.
+		 * 
+		 * @return StorageHandler
+		 */
+		public StorageHandler build(){
+			return new StorageHandler(this);
+		}
+	}
+		
+	/**
+	 * Constructor for StorageHandler, which takes in a Builder object
+	 * to initialise variables. 
+	 * 
+	 * @param builder 
+	 */
+	private StorageHandler(Builder builder) {
+	    filePath = builder.filePath;
+		storageFile = new File(filePath);
+		createFileIfNonExistent(storageFile);
+		checkFileFormat();
+	}
+	
+	/**
+	 * Stores the memory object passed as a parameter into a file in JSON formatting
+	 * 
+	 * @param memoryToStore
+	 */
+	public void storeMemoryToFile(Memory memoryToStore) {
+		initialiseWriter(storageFile);
+		String jsonString = exportAsJson(memoryToStore);
+		writer.println(jsonString);
+		tearDownWriter();
+	}
+	
+	/**
+	 * Overloaded method:
+	 * Stores the memory object that is passed as a parameter into the file that 
+	 * is passed as the other parameter, in JSON formatting
+	 * 
+	 * @param memoryToStore
+	 * @param file
+	 */
+	public static void storeMemoryToFile(Memory memoryToStore, File file) {
+		initialiseWriter(file);
+		String jsonString = exportAsJson(memoryToStore);
+		writer.println(jsonString);
+		tearDownWriter();
+	}
+	
+	/**
+	 * Retrieves a Memory object from the JSON file.
+	 * 
+	 * @return Memory
+	 */
+	public Memory retrieveMemoryFromFile() throws JsonSyntaxException{
+		initialiseReader(storageFile);
+		StringBuilder builder = new StringBuilder();
+
+		while (reader.hasNextLine()) {
+			builder.append(reader.nextLine() + "\n");
+		}
+		String jsonString = builder.toString();
+		tearDownReader();
+		Memory retrievedMemory = null;
+		retrievedMemory = importFromJson(jsonString);
+
+		return retrievedMemory;
+	}
+	
+	/**
+	 * 
+	 * Checks that storageFile.json is readable. If it is not, 
+	 * the user will be asked to replace the file with a new blank
+	 * file, or to exit the program.
+	 * 
+	 */
+	private void checkFileFormat(){
+		if(!StorageUtils.isFileInJsonFormat(storageFile)){
+			String command;
+			Scanner scn = Zeitgeist.scn;
+			do{
+				System.out.println(MESSAGE_CORRUPT_FILE);
+				command = scn.nextLine().toUpperCase().trim();
+				if(command.equals("R")){
+					storageFile.delete();
+					createFileIfNonExistent(storageFile);
+				}
+				else if(command.equals("E")){
+					System.exit(0);
+				}
+				else{
+					System.out.println("Incorrect command given.");
+				}
+			}while(!command.equals("R")&&!command.equals("E"));
+		}
+	}
+	/**
+	 * Initialise the file reader.
+	 * 
+	 */
+	private static void initialiseReader(File file) {
+		try {
+			reader = new Scanner(file);
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Initialise the file writer.
+	 * 
+	 */
+	private static void initialiseWriter(File file) {
+		try {
+			writer = new PrintWriter(new BufferedWriter(new FileWriter(
+					file, false)));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Tear down the file reader.
+	 * 
+	 */
+	private static void tearDownReader() {
+		reader.close();
+	}
+	/**
+	 * Tear down the file writer.
+	 * 
+	 */
+	private static void tearDownWriter() {
+		writer.close();
+	}
+	
+	/**
+	 * Create file with the specified file path if it does not exist.
+	 * 
+	 */
+	public static void createFileIfNonExistent(File file) {
+		try {
+			if (!file.exists()) {
+				file.createNewFile();
+				//write a null Memory in JSON format to file
+                storeMemoryToFile(new Memory(), file);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Deletes testStorageFile for tearing-down in system tests.
+	 * 
+	 */
+	public static void deleteStorageFileIfExists(String fileDirectory){
+		String filePath = fileDirectory + "/" + FILE_NAME;
+		File file = new File(filePath);
+		if(file.exists()){
+			file.delete();
+		}
+	}
+
+	/**
+	 * Method to export the current memory into a JSON String for external
+	 * storage in a file
+	 * 
+	 * @return String json
+	 */
+	public static String exportAsJson(Memory mem) {
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(DateTime.class,
+				new DateTimeTypeConverter());
+		gsonBuilder.registerTypeAdapter(LocalDate.class,
+				new LocalDateTypeConverter());
+		gsonBuilder.registerTypeAdapter(LocalTime.class,
+				new LocalTimeTypeConverter());
+		Gson gson = gsonBuilder.setPrettyPrinting().create();
+		String jsonString = gson.toJson(mem);
+		return jsonString;
+	}
+
+	/**
+	 * Method to parse a json String representing an instance of memory into an
+	 * instance of Memory class
+	 * 
+	 * @param jsonString JSON representation of an instance of memory as String
+	 * @return an instance of Memory class
+	 */
+	public static Memory importFromJson(String jsonString) throws JsonSyntaxException {
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(DateTime.class,
+				new DateTimeTypeConverter());
+		gsonBuilder.registerTypeAdapter(LocalDate.class,
+				new LocalDateTypeConverter());
+		gsonBuilder.registerTypeAdapter(LocalTime.class,
+				new LocalTimeTypeConverter());
+		gsonBuilder.registerTypeAdapter(DurationFieldType.class, new DurationFieldTypeDeserialiser());
+		Gson gson = gsonBuilder.create();
+		
+		return gson.fromJson(jsonString, Memory.class);
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\StorageHandler.java
+	 */
+
+	/**
+	 * Converter to serialize and deserialize between org.joda.time.DateTime and
+	 * com.google.gson.JsonElement
+	 *
+	 * With reference to:
+	 * 
+	 * https://sites.google.com/site/gson/gson-user-guide
+	 */
+
+	private static class LocalDateTypeConverter implements
+			JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
+		@Override
+		public JsonElement serialize(LocalDate src, Type typeOfSrc,
+				JsonSerializationContext context) {
+			return new JsonPrimitive(src.toString());
+		}
+
+		@Override
+		public LocalDate deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			return new LocalDate(json.getAsJsonPrimitive().getAsString());
+		}
+
+	}
+
+	/**
+	 * Converter class to serialize and deserialize between
+	 * org.joda.time.LocalTime and com.google.gson.JsonElement
+	 * 
+	 * With reference to:
+	 * 
+	 * https://sites.google.com/site/gson/gson-user-guide
+	 *
+	 */
+	private static class LocalTimeTypeConverter implements
+			JsonSerializer<LocalTime>, JsonDeserializer<LocalTime> {
+		@Override
+		public JsonElement serialize(LocalTime src, Type typeOfSrc,
+				JsonSerializationContext context) {
+			return new JsonPrimitive(src.toString());
+		}
+
+		@Override
+		public LocalTime deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			return new LocalTime(json.getAsJsonPrimitive().getAsString());
+		}
+
+	}
+	
+	/**
+	 * Deserialiser for JodaTime's DurationFieldType for proper 
+	 * Json deserialisation
+	 */
+	private static class DurationFieldTypeDeserialiser implements JsonDeserializer<DurationFieldType> {
+
+		  @Override
+		  public DurationFieldType deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
+		      throws JsonParseException {
+		    final JsonObject jsonObject = json.getAsJsonObject();
+
+		    final String iName = jsonObject.get("iName").getAsString();
+		    
+		    switch(iName){
+		    
+		    case "years":
+		    return DurationFieldType.years();
+		    
+		    case "months":
+		    return DurationFieldType.months();
+		    
+		    case "weeks":
+		    return DurationFieldType.weeks();
+		    
+		    case "days":
+		    return DurationFieldType.days();
+		    
+		    case "hours":
+		    return DurationFieldType.hours();
+		    
+		    case "minutes":
+		    return DurationFieldType.minutes();
+		    
+		    case "seconds":
+		    return DurationFieldType.seconds();
+		    
+		    case "millis":
+		    return DurationFieldType.millis();
+		    
+		    // Should not be reached
+		    default:
+		    throw new JsonParseException("No suitable iName found.");
+		    }
+		    
+		  }
+		}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\StorageUtils.java
+	 */
+
+/**
+ * Processes the custom file directory path specified by user.
+ * 
+ * Since the storage file at the default location can also be corrupt or invalid,
+ * it is also checked in the StorageHandler class.
+ */
+public class StorageUtils {
+
+		private static final String SETTINGS_FILE_NAME = "settings.txt";
+		private static final String STORAGE_FILE_NAME = "storageFile.json";
+		
+		private static final String MESSAGE_INCORRECT_COMMAND = "Incorrect command is given.";
+		private static final String MESSAGE_INVALID_DIRECTORY = "User-specified directory for storage is invalid. Storage file location is reverted to the default : %1$s";
+		private static final String MESSAGE_COPIED_TO_LOCATION = "Storage file copied to specified location: %1$s";
+		private static final String MESSAGE_DIRECTORY_DEFAULT = "Storage file location is reverted to the default: %1$s";
+		private static final String MESSAGE_DIRECTORY_UPDATED = "Directory of the storage file is updated to: %1$s";
+		private static final String MESSAGE_CORRUPT_FILE = "An unreadable storage file exists at the user-specified location. \n"
+				+ "Do you wish to : \n"
+				+ "\t 1. Copy over an existing version from the default location (C) \n"
+				+ "\t 2. Overwrite the file with a blank file (O) \n"
+				+ "\t 3. Revert to the default location (R)\n"
+				+ "\t 4. Exit the program (E)";
+		
+		private static String defaultFileDirectory;
+		private static String fileDirectory;
+		private static String settingsFilePath;
+		private static File settingsFile;
+		
+	/**
+	 * Processes the user-specified path.
+	 * 
+	 * If the path is valid, and there exists a Storage file (storageFile.json)
+	 * at that user-specified path, the file will be checked if it is a valid
+	 * JSON file. If it is, it will be used automatically.
+	 * 
+	 * If the file at the user-specified path is corrupt or invalid, the user
+	 * will be asked to choose the following options, which would be executed accordingly.
+	 * 1. Copy the storage file from the default location 
+	 * 2. Create and use a new storage file at the user-specified path 
+	 * 3. Revert back to using the storage file at the default location 
+	 * 4. Exit
+	 * 
+	 * @param String customFileDirPath
+	 * @return String Path of storageFile.json after processing
+	 */
+		static String processStorageDirectory(String customFileDirPath) {
+			Scanner scn = Zeitgeist.scn;
+			// If valid: copy any existing storageFile from its current location to
+			// the
+			// new user-specified location. Change the settings file.
+			if (isValidDirPath(customFileDirPath)) {
+				// Check if there is a file at customFileDirPath and select
+				// overwrite option.
+				String customFilePath = customFileDirPath + "/" + STORAGE_FILE_NAME;
+				File newStorageFile = new File(customFilePath);
+
+				if (newStorageFile.exists()) {
+					// newStorageFile is not in Json format
+					if(!isFileInJsonFormat(newStorageFile)){
+						System.out
+						.println(MESSAGE_CORRUPT_FILE);
+						String command;
+						do{
+							command = scn.next().toUpperCase().trim();
+							switch(command){
+							case "C":
+								String storageFilePath = fileDirectory + "/"
+										+ STORAGE_FILE_NAME;
+								File currentStorageFile = new File(storageFilePath);
+								
+								if (currentStorageFile.exists()) {
+									copyStorageFile(storageFilePath, customFileDirPath);
+									System.out
+											.println("Storage file copied to specified location: "
+													+ customFileDirPath);
+								}
+								// No existing storageFile.json at the default location
+								// Create a blank storageFile.json at the user-specified location
+								else{
+									newStorageFile.delete();
+									try{
+										newStorageFile.createNewFile();
+									} catch(IOException e){
+										e.printStackTrace();
+									}
+									StorageHandler.createFileIfNonExistent(newStorageFile);
+									StorageHandler.storeMemoryToFile(new Memory(), newStorageFile);
+									
+								}
+								// Update settings file and file directory
+								modifySettingsFile(customFileDirPath);
+								fileDirectory = customFileDirPath;
+								System.out
+										.println(String.format(MESSAGE_DIRECTORY_UPDATED, customFileDirPath));
+								break;
+							case "O":
+								newStorageFile.delete();
+								try{
+									newStorageFile.createNewFile();
+								} catch(IOException e){
+									e.printStackTrace();
+								}
+								StorageHandler.createFileIfNonExistent(newStorageFile);
+								StorageHandler.storeMemoryToFile(new Memory(), newStorageFile);
+								
+								// Update settings file and file directory
+								modifySettingsFile(customFileDirPath);
+								fileDirectory = customFileDirPath;
+								System.out
+										.println(String.format(MESSAGE_DIRECTORY_UPDATED, customFileDirPath));
+								break;
+							case "R":
+								// Do nothing; fileDirectory is already default
+								System.out
+								.println(String.format(MESSAGE_DIRECTORY_DEFAULT, fileDirectory));
+								break;
+							case "E":
+								System.exit(0);
+							default:
+								System.out.println(MESSAGE_INCORRECT_COMMAND);
+							break;
+							}
+							scn.nextLine();
+						}while(!command.equals("C")&&!command.equals("O")&&!command.equals("R")&&!command.equals("E"));
+					}
+					// newStorageFile is in Json format
+					// Use the existing file at user-specified location automatically
+					else{
+					 modifySettingsFile(customFileDirPath);
+					 fileDirectory = customFileDirPath;
+					}
+				}
+				// newStorageFile does not exist.
+				else {
+					// If there exists a storageFile.json in the current directory
+					// as
+					// specified in the settings file, copy it to the custom
+					// directory
+					String storageFilePath = fileDirectory + "/"
+							+ STORAGE_FILE_NAME;
+					File currentStorageFile = new File(storageFilePath);
+					if (currentStorageFile.exists()) {
+						copyStorageFile(storageFilePath, customFileDirPath);
+						System.out
+								.println(String.format(MESSAGE_COPIED_TO_LOCATION, customFileDirPath));
+					}
+					// Update regardless of existence of storageFile.json
+					modifySettingsFile(customFileDirPath);
+					fileDirectory = customFileDirPath;
+					System.out
+							.println(String.format(MESSAGE_DIRECTORY_UPDATED, customFileDirPath));
+				}
+
+			}
+			// If customFileDirPath is invalid: revert back to default directory
+			else {
+				System.out
+						.println(String.format(MESSAGE_INVALID_DIRECTORY, fileDirectory));
+			}
+			return fileDirectory;
+		}
+		
+		/**
+		 * Checks if the file passed as parameter is in Json format.
+		 * 
+		 * @param File
+		 * @return Boolean
+		 */
+		static Boolean isFileInJsonFormat(File file){
+			try{
+				Scanner reader = new Scanner(file);
+				StringBuilder builder = new StringBuilder();
+
+				while (reader.hasNextLine()) {
+					builder.append(reader.nextLine() + "\n");
+				}
+				String jsonString = builder.toString();
+				StorageHandler.importFromJson(jsonString);
+				reader.close();
+			} catch(FileNotFoundException e){
+				e.printStackTrace();
+			} catch(JsonSyntaxException e){
+				return false;
+			}
+			return true;
+		}
+		/**
+		 * Copies storageFile.json from the storageFilePath to customFileDirPath 
+		 * 
+		 * @param String storageFilePath
+		 * @param String customFileDirPath
+		 */
+		static void copyStorageFile(String storageFilePath,
+				String customFileDirPath) {
+			String customFilePath = customFileDirPath + "/" + STORAGE_FILE_NAME;
+			try {
+				Files.copy(Paths.get(storageFilePath), Paths.get(customFilePath),
+						REPLACE_EXISTING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		/**
+		 * Modifies the Settings file (settings.txt) by overriding the file with
+		 * the path specified by customFileDirPath.
+		 * 
+		 * @param String customFileDirPath
+		 */
+		static void modifySettingsFile(String customFileDirPath) {
+			try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(
+						settingsFile, false));
+				writer.write(customFileDirPath);
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+		
+	
+		/**
+		 * Attempt to read settings.txt in the default directory.
+		 * 
+		 * If settings.txt does not exist, it will be created and the default
+		 * directory path string will be written into it.
+		 * 
+		 * If settings.txt exists, the directory for saving storageFile.json will be
+		 * read from the file. If the directory read is invalid, the directory of
+		 * storageFile.json will be reverted to the default.
+		 * 
+		 */
+		static String readSettingsFile() {
+			// Set default file directory
+			setDefaultFileDirectory();
+
+			// Build settings file path
+			settingsFilePath = defaultFileDirectory + "/" + SETTINGS_FILE_NAME;
+
+			// Check if settings file exists
+			settingsFile = new File(settingsFilePath);
+			BufferedWriter writer;
+			try {
+				if (!settingsFile.exists()) {
+					settingsFile.createNewFile();
+					// Write default storage file directory path to settings file
+					writer = new BufferedWriter(new FileWriter(settingsFile));
+					writer.write(defaultFileDirectory);
+					fileDirectory = defaultFileDirectory;
+					writer.close();
+				}
+				// Settings file exists. Read storage file directory path from file.
+				else {
+					BufferedReader reader = new BufferedReader(new FileReader(
+							settingsFile));
+					// Read storage directory file path
+					String fileDirectoryString = reader.readLine();
+
+					// If storage directory file path is invalid, overwrite settings
+					// file
+					// with default directory path and set the storage file
+					// directory path to default
+					if (!isValidDirPath(fileDirectoryString)) {
+						writer = new BufferedWriter(new FileWriter(settingsFile,
+								false));
+						writer.write(defaultFileDirectory);
+						writer.close();
+						fileDirectory = defaultFileDirectory;
+					}
+					// If storage file path is valid, set it as file directory
+					else {
+						fileDirectory = fileDirectoryString;
+					}
+
+					reader.close();
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return fileDirectory;
+		}
+
+		/**
+		 * Sets the default file directory where storageFile.json is saved as the
+		 * same directory the program is being run from.
+		 */
+		static void setDefaultFileDirectory() {
+			defaultFileDirectory = new File("").getAbsolutePath();
+		}
+
+		/**
+		 * Checks if the string is a valid file directory.
+		 * 
+		 * @param String fileDirectoryString
+		 * @return Boolean if string is a valid directory, false otherwise.
+		 */
+		static Boolean isValidDirPath(String fileDirectoryString) {
+			if (fileDirectoryString == null || fileDirectoryString == "") {
+				return false;
+			}
+
+			return new File(fileDirectoryString).isDirectory();
+
+		}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\StorageUtils.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+	 */
+
+	/**
+	 * Method to compare two DateTime objects at the minute resolution
+	 * @return -1 if the first object is smaller (earlier), 0 if the two objects
+	 *         are equal, 1 if the first object is larger(later).
+	 */
+	public int compareDateTime(DateTime first, DateTime second) {
+		DateTimeComparator comparator = DateTimeComparator
+				.getInstance(DateTimeFieldType.minuteOfDay());
+		return comparator.compare(first, second);
+	}
+
+	/**
+	 * Overriding the equals method. Compares the title, startTime, endTime and
+	 * isDone parameters between this Todo object and the other Todo object
+	 * being compared to.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final Todo other = (Todo) obj;
+
+		// Construct a DateTimeComparator comparing DateTime objects at the
+		// minute resolution.
+		// If the argument passed into the compare method is null, it will be
+		// treated as DateTime.now
+		// Thus null checks must be done beforehand
+		DateTimeComparator comparator = DateTimeComparator
+				.getInstance(DateTimeFieldType.minuteOfDay());
+
+		// Comparing startTime. If it is null in both objects, treat as equal.
+		if ((this.startTime == null) && (other.startTime != null)) {
+			return false;
+		} else if ((this.startTime != null) && (other.startTime == null)) {
+			return false;
+		} else if ((this.startTime != null) && (other.startTime != null)) {
+			if (comparator.compare(this.startTime, other.startTime) != 0) {
+				return false;
+			}
+		}
+
+		// Comparing endTime. If it is null in both objects, treat as equal.
+		if ((this.endTime == null) && (other.endTime != null)) {
+			return false;
+		} else if ((this.endTime != null) && (other.endTime == null)) {
+			return false;
+		} else if ((this.endTime != null) && (other.endTime != null)) {
+			if (comparator.compare(this.endTime, other.endTime) != 0) {
+				return false;
+			}
+		}
+
+		// Comparing title
+		if (!this.name.equals(other.name)) {
+			return false;
+		}
+
+		// Comparing isDone
+		if (this.isDone != other.isDone) {
+			return false;
+		}
+
+		return true;
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\UndoCommand.java
+	 */
+
+/**
+ * Restores the last stored state in memory.
+ */
+public class UndoCommand extends Command{
+	
+	/**
+	 * Creates an UndoCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */	
+	public UndoCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
+	/**
+	 * Reverses the last modifying operation.
+	 * 
+	 * @return a Signal object with a message denoting success or failure in
+	 *         processing.
+	 */
+	@Override
+	public Signal execute() {
+		//check if the number of parameters is correct
+		if(!(input.containsOnlyCommand() && input.containsEmptyParams())){
+            return new Signal(Signal.UNDO_INVALID_PARAMS, false);
+		}
+		
+		try{
+			memory.undo();
+			memory.saveToFile();
+		} catch (StateUndefinedException e) {
+            return new Signal(e.getMessage(), false);
+		}
+		
+        return new Signal(Signal.UNDO_SUCCESS, true);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\UndoCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Zeitgeist.java
+	 */
+
+	/**
+	 * Creates a Command object with the given ParsedInput and executes it.
+	 * 
+	 * @param userInput
+	 *            input from user, parsed by the Parser.
+	 * @return a Signal containing a message to be printed, denoting success or
+	 *         failure of the execution.
+	 */
+	private Signal execute(ParsedInput userInput) {
+		Signal processSignal;
+		Command c;
+
+		Keywords commandType = userInput.getType();
+		if (commandType == Keywords.ERROR) {
+			return new Signal(String.format(
+					Signal.GENERIC_INVALID_COMMAND_FORMAT, ""), false);
+		} else {
+
+			switch (commandType) {
+                case ADD :
+                    c = new AddCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
+
+                case DELETE :
+                    c = new DeleteCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
+
+                case MARK :
+                    c = new MarkCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
+
+                case REDO :
+                    c = new RedoCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
+
+                case UNDO :
+                    c = new UndoCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
+
+                case EDIT :
+                    c = new EditCommand(userInput, memory);
+                    processSignal = c.execute();
+                    DisplayCommand.displayDefault(memory);
+                    break;
+
+                case DISPLAY :
+                    c = new DisplayCommand(userInput, memory);
+                    processSignal = c.execute();
+                    break;
+
+                case SEARCH :
+                    c = new SearchCommand(userInput, memory);
+                    processSignal = c.execute();
+                    break;
+
+                case EXIT :
+                    c = new ExitCommand(userInput, memory);
+                    processSignal = c.execute();
+                    break;
+
+                default :
+                    // NOTE: This case should never happen
+                    processSignal = new Signal(Signal.GENERIC_FATAL_ERROR,
+                            false);
+                    System.exit(-1);
+                    break;
+			}
+
+			return processSignal;
+		}
+	}
+	
+	public void deleteStorageFile() {
+		StorageHandler.deleteStorageFileIfExists(fileDirectory);
+	}
+	
+	public void reloadMemory() {
+		memory = new Memory();
+		memory.setStorageHandler(storage);
+	}
+	
+	public static String getStorageFileDirFromSettings(){
+		return StorageUtils.readSettingsFile();
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Zeitgeist.java
+
+
+
+
+

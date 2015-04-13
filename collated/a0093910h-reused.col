@@ -1,0 +1,116 @@
+//@author: a0093910h-reused
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\DisplayCommand.java
+	 */
+
+    static class StringUtils {
+
+        public static String center(String s, int size) {
+            return center(s, size, " ");
+        }
+
+        public static String center(String s, int size, String pad) {
+            if (pad == null)
+                throw new NullPointerException("pad cannot be null");
+            if (pad.length() <= 0)
+                throw new IllegalArgumentException("pad cannot be empty");
+            if (s == null || size <= s.length())
+                return s;
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < (size - s.length()) / 2; i++) {
+                sb.append(pad);
+            }
+            sb.append(s);
+            while (sb.length() < size) {
+                sb.append(pad);
+            }
+            return sb.toString();
+        }
+    }
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\DisplayCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\StorageHandler.java
+	 */
+
+	/**
+	 * Converter to serialize and deserialize between org.joda.time.DateTime and
+	 * com.google.gson.JsonElement
+	 * 
+	 * With reference to:
+	 * 
+	 * https://sites.google.com/site/gson/gson-user-guide
+	 * 
+	 *
+	 */
+	private static class DateTimeTypeConverter implements
+			JsonSerializer<DateTime>, JsonDeserializer<DateTime> {
+		@Override
+		public JsonElement serialize(DateTime src, Type srcType,
+				JsonSerializationContext context) {
+			return new JsonPrimitive(src.toString());
+		}
+
+		@Override
+		public DateTime deserialize(JsonElement json, Type type,
+				JsonDeserializationContext context) throws JsonParseException {
+			try {
+				return new DateTime(json.getAsJsonPrimitive().getAsString());
+			} catch (IllegalArgumentException e) {
+				// Try parsing as java.util.Date instead
+				Date date = context.deserialize(json, Date.class);
+				return new DateTime(date);
+			}
+		}
+
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\StorageHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Zeitgeist.java
+	 */
+
+    /**
+     * Clears the user's console, OS-dependent implementation
+     */
+	public final static void clearConsole() {
+		try {
+			final String os = System.getProperty("os.name");
+
+			if (os.contains("Windows")) {
+				for (int i = 0; i < 105; i++) {
+					System.out.println();
+				}
+			} else {
+				final String ANSI_CLS = "\u001b[2J";
+				final String ANSI_HOME = "\u001b[H";
+				System.out.print(ANSI_CLS + ANSI_HOME);
+				System.out.flush();
+			}
+		} catch (final Exception e) {
+			System.out.println("error in clearing");
+		}
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Zeitgeist.java
+
+
+
+
+

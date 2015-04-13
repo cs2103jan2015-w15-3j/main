@@ -1,0 +1,3022 @@
+//@author: a0115983x
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Command.java
+	 */
+
+package com.equinox;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
+
+public abstract class Command {
+	
+	ParsedInput input;
+	Memory memory;
+	ArrayList<KeyParamPair> keyParamPairs;
+	List<DateTime> dateTimes;
+	
+	/**
+	 * Constructs a new Command object with the given parameters and reference
+	 * to the memory that stores the Todos.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
+	public Command(ParsedInput input, Memory memory) {
+		this.keyParamPairs = input.getParamPairs();
+		this.dateTimes = input.getDateTimes();
+		this.input = input;
+		this.memory = memory;
+	}
+
+	public abstract Signal execute();
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Command.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidDateException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class InvalidDateException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public InvalidDateException() {
+
+	}
+
+	public InvalidDateException(String message) {
+		super(message);
+	}
+}
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidDateException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidPeriodException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class InvalidPeriodException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public InvalidPeriodException() {
+	}
+
+	public InvalidPeriodException(String message) {
+		super(message);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidPeriodException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidRecurringException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class InvalidRecurringException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public InvalidRecurringException() {
+
+	}
+
+	public InvalidRecurringException(String message) {
+		super(message);
+	}
+}
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidRecurringException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidTodoNameException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class InvalidTodoNameException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public InvalidTodoNameException() {
+
+	}
+
+	public InvalidTodoNameException(String message) {
+		super(message);
+	}
+}
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidTodoNameException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\ParsingFailureException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class ParsingFailureException extends Exception {
+
+	private static final long serialVersionUID = 1L;
+
+	public ParsingFailureException() {
+	}
+
+	public ParsingFailureException(String message) {
+		super(message);
+	}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\ParsingFailureException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\InputStringKeywordTest.java
+	 */
+
+package com.equinox;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class InputStringKeywordTest {
+
+	@Test
+	public void testIsFlag() {
+		String s = "-y";
+		String s1 = "nonflag";
+		assertEquals(true, InputStringKeyword.isFlag(s));
+		assertEquals(false, InputStringKeyword.isFlag(s1));
+	}
+
+	@Test
+	public void testIsCommand() {
+		String s = "add";
+		String s1 = "noncommand";
+		assertEquals(true, InputStringKeyword.isCommand(s));
+		assertEquals(false, InputStringKeyword.isCommand(s1));
+	}
+
+	@Test
+	public void testIsKeyword() {
+		String s = "add";
+		String s1 = "nonkeyword";
+		assertEquals(true, InputStringKeyword.isKeyword(s));
+		assertEquals(false, InputStringKeyword.isKeyword(s1));
+	}
+
+	@Test
+	public void testGetFlag() {
+		String s = "-d";
+		String s2 = "nonflag";
+		assertEquals(Keywords.DAY, InputStringKeyword.getFlag(s));
+		assertEquals(Keywords.ERROR, InputStringKeyword.getFlag(s2));
+	}
+
+	@Test
+	public void testGetCommand() {
+		String s = "delete";
+		String s1 = "noncommand";
+		assertEquals(Keywords.DELETE, InputStringKeyword.getCommand(s));
+		assertEquals(Keywords.ERROR, InputStringKeyword.getCommand(s1));
+	}
+
+	@Test
+	public void testGetKeyword() {
+		String s = "on";
+		String s1 = "nonkeyword";
+		assertEquals(Keywords.ON, InputStringKeyword.getKeyword(s));
+		assertEquals(Keywords.ERROR, InputStringKeyword.getKeyword(s1));
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\InputStringKeywordTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\KeyParamPair.java
+	 */
+
+package com.equinox;
+
+/**
+ * This class stores a Keyword, its string and its parameter. 
+ */
+public class KeyParamPair {
+	private Keywords keyword;
+	private String keyString;
+	private String param;
+
+	/**
+	 * Constructs a KeyParamPair object with fields equal to the respective parameters.
+	 * @param inputKeyword
+	 * @param inputKeyString
+	 * @param inputParam
+	 */
+	KeyParamPair(Keywords inputKeyword, String inputKeyString, String inputParam) {
+		keyword = inputKeyword;
+		keyString = inputKeyString;
+		param = inputParam;
+	}
+
+	/**
+	 * Returns the keyword as a Keywords enum type
+	 * @return keyword of the pair
+	 */
+	public Keywords getKeyword() {
+		return keyword;
+	}
+
+	/**
+	 * Returns the parameters of the pair
+	 * @return parameters
+	 */
+	public String getParam() {
+		return param;
+	}
+
+	/**
+	 * Returns the keyword as its original String
+	 * @return keyword of the pair as String
+	 */
+	public String getKeyString() {
+		return keyString;
+	}
+
+	/**
+	 * Sets the parameters of the pair as param
+	 * @param param
+	 */
+	public void setParam(String param) {
+		this.param = param;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other.getClass() == this.getClass()) {
+			Keywords xKeyword = this.getKeyword();
+			Keywords yKeyword = ((KeyParamPair) other).getKeyword();
+			String xKeyString = this.getKeyString();
+			String yKeyString = ((KeyParamPair) other).getKeyString();
+			String xParam = this.getParam();
+			String yParam = ((KeyParamPair) other).getParam();
+			return xKeyword.equals(yKeyword) && xParam.equals(yParam)
+					&& xKeyString.equals(yKeyString);
+		} else {
+			return false;
+		}
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\KeyParamPair.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Memory.java
+	 */
+
+
+	/**
+	 * This class stores the mapping of various types of index to a list of Todo
+	 * ids for the purpose of the search command
+	 */
+	private class SearchMap {
+		private HashMap<String, ArrayList<Integer>> nameMap;
+		private HashMap<LocalDate, ArrayList<Integer>> dateMap;
+		private HashMap<LocalTime, ArrayList<Integer>> timeMap;
+		private HashMap<Integer, ArrayList<Integer>> monthMap;
+		private HashMap<Integer, ArrayList<Integer>> dayMap;
+		private HashMap<Integer, ArrayList<Integer>> yearMap;
+
+		SearchMap() {
+			this.nameMap = new HashMap<String, ArrayList<Integer>>();
+			this.dateMap = new HashMap<LocalDate, ArrayList<Integer>>();
+			this.timeMap = new HashMap<LocalTime, ArrayList<Integer>>();
+			this.monthMap = new HashMap<Integer, ArrayList<Integer>>();
+			this.dayMap = new HashMap<Integer, ArrayList<Integer>>();
+			this.yearMap = new HashMap<Integer, ArrayList<Integer>>();
+		}
+
+		/**
+		 * This operation adds the properties of todo into the different maps.
+		 * 
+		 * @param todo
+		 */
+		public void add(Todo todo) {
+			int id = todo.getId();
+
+			addToNameMap(todo.getName(), id);
+			Todo.TYPE type = todo.getType();
+			DateTime startDateTime = todo.getStartTime();
+			DateTime endDateTime = todo.getEndTime();
+
+			switch (type) {
+				case DEADLINE:
+					assert (endDateTime != null);
+					assert (startDateTime == null);
+					addToAllDateMaps(endDateTime, id);
+					break;
+				case EVENT:
+					assert (endDateTime != null);
+					assert (startDateTime != null);
+					if (!todo.isSameDayEvent()) {
+						ArrayList<Todo> shortTodos = todo.breakIntoShortEvents();
+						for (Todo shortTodo : shortTodos) {
+							addToAllDateMaps(shortTodo.getStartTime(), id);
+							addToAllDateMaps(shortTodo.getEndTime(), id);
+						}
+					} else {
+						addToAllDateMaps(startDateTime, id);
+						addToAllDateMaps(endDateTime, id);
+					}
+					break;
+				default:
+					assert (startDateTime == null);
+					assert (endDateTime == null);
+			}
+
+		}
+
+		
+		
+
+		/**
+		 * This operation adds the dateTime property of todo with the given id
+		 * into the various date related maps
+		 * 
+		 * @param dateTime
+		 * @param id
+		 */
+		private void addToAllDateMaps(DateTime dateTime, int id) {
+			// add id to dateMap
+			LocalDate date = dateTime.toLocalDate();
+			if (dateMap.containsKey(date)) {
+				if (!dateMap.get(date).contains(id)) {
+					dateMap.get(date).add(id);
+				}
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				dateMap.put(date, newIdList);
+			}
+
+			// add id to timeMap
+			LocalTime time = dateTime.toLocalTime();
+			if (timeMap.containsKey(time)) {
+				if (!timeMap.get(time).contains(id)) {
+					timeMap.get(time).add(id);
+				}
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				timeMap.put(time, newIdList);
+			}
+
+			// add id to dayMap
+			int day = dateTime.getDayOfWeek();
+			if (dayMap.containsKey(day)) {
+				if (!dayMap.get(day).contains(id)) {
+					dayMap.get(day).add(id);
+				}
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				dayMap.put(day, newIdList);
+			}
+
+			// add id to monthMap
+			int month = dateTime.getMonthOfYear();
+			if (monthMap.containsKey(month)) {
+				if (!monthMap.get(month).contains(id)) {
+					monthMap.get(month).add(id);
+				}
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				monthMap.put(month, newIdList);
+			}
+
+			// add id to yearMap
+			int year = dateTime.getYear();
+			if (yearMap.containsKey(year)) {
+				if (!yearMap.get(year).contains(id)) {
+					yearMap.get(year).add(id);
+				}
+			} else {
+				ArrayList<Integer> newIdList = new ArrayList<Integer>();
+				newIdList.add(id);
+				yearMap.put(year, newIdList);
+			}
+		}
+
+		/**
+		 * This operation removes the different properties of given todo from
+		 * the different maps.
+		 * 
+		 * @param todo
+		 */
+		public void remove(Todo todo) {
+			int id = todo.getId();
+			String name = todo.getName();
+			removeIdFromNames(name, id);
+
+			Todo.TYPE type = todo.getType();
+			DateTime startDateTime = todo.getStartTime();
+			DateTime endDateTime = todo.getEndTime();
+
+			switch (type) {
+				case DEADLINE:
+					assert (endDateTime != null);
+					assert (startDateTime == null);
+					removeIdFromAllDateMaps(endDateTime, id);
+					break;
+				case EVENT:
+					assert (endDateTime != null);
+					assert (startDateTime != null);
+					if (!todo.isSameDayEvent()) {
+						ArrayList<Todo> shortTodos = todo.breakIntoShortEvents();
+						for (Todo shortTodo: shortTodos) {
+							removeIdFromAllDateMaps(shortTodo.getStartTime(), id);
+							removeIdFromAllDateMaps(shortTodo.getEndTime(), id);
+						}
+					} else {
+						removeIdFromAllDateMaps(startDateTime, id);
+						removeIdFromAllDateMaps(endDateTime, id);
+					}
+					break;
+				default:
+					assert (startDateTime == null);
+					assert (endDateTime == null);
+			}
+
+		}
+
+		/**
+		 * This operation removes the DateTime property of todo with the given
+		 * id from the various date related maps
+		 * 
+		 * @param dateTime
+		 * @param id
+		 */
+		private void removeIdFromAllDateMaps(DateTime dateTime, int id) {
+			// remove id from dateMap
+			LocalDate date = dateTime.toLocalDate();
+			if(dateMap.containsKey(date) && dateMap.get(date).contains(id)) {
+				int todoIdDateIndex = dateMap.get(date).indexOf(id);
+				dateMap.get(date).remove(todoIdDateIndex);
+				if (dateMap.get(date).isEmpty()) {
+					dateMap.remove(date);
+				}
+			}
+			
+			// remove id from timeMap
+			LocalTime time = dateTime.toLocalTime();
+			if(timeMap.containsKey(time) && timeMap.get(time).contains(id)) {
+				int todoIdTimeIndex = timeMap.get(time).indexOf(id);
+				timeMap.get(time).remove(todoIdTimeIndex);
+				if (timeMap.get(time).isEmpty()) {
+					timeMap.remove(time);
+				}
+			}
+			
+			// remove id from dayMap
+			int day = dateTime.getDayOfWeek();
+			if(dayMap.containsKey(day) && dayMap.get(day).contains(id)) {
+				int todoIdDayIndex = dayMap.get(day).indexOf(id);
+				dayMap.get(day).remove(todoIdDayIndex);
+				if (dayMap.get(day).isEmpty()) {
+					dayMap.remove(day);
+				}
+			}
+			
+			// remove id from monthMap
+			int month = dateTime.getMonthOfYear();
+			if(monthMap.containsKey(month) && monthMap.get(month).contains(id)) {
+				int todoIdMonthIndex = monthMap.get(month).indexOf(id);
+				monthMap.get(month).remove(todoIdMonthIndex);
+				if (monthMap.get(month).isEmpty()) {
+					monthMap.remove(month);
+				}
+			}
+			
+			// remove id from yearMap
+			int year = dateTime.getYear();
+			if(yearMap.containsKey(year) && yearMap.get(year).contains(id)) {
+				int todoIdYearIndex = yearMap.get(year).indexOf(id);
+				yearMap.get(year).remove(todoIdYearIndex);
+				if (yearMap.get(year).isEmpty()) {
+					yearMap.remove(year);
+				}
+			}
+			
+		}
+
+		/**
+		 * This operation removes the name of the todo with the given id from
+		 * name map.
+		 * 
+		 * @param name
+		 * @param id
+		 */
+		private void removeIdFromNames(String name, int id) {
+			String[] nameArray = name.split(REGEX_SPACE);
+			for (String x : nameArray) {
+				if(nameMap.containsKey(x) && nameMap.get(x).contains(id)) {
+					int todoIdIndex = nameMap.get(x).indexOf(id);
+					nameMap.get(x).remove(todoIdIndex);
+					if (nameMap.get(x).isEmpty()) {
+						nameMap.remove(x);
+					}
+				}
+			}
+		}
+
+		/**
+		 * This operation adds the name property of the todo with the given id
+		 * into the name map.
+		 * 
+		 * @param name
+		 * @param id
+		 */
+		private void addToNameMap(String name, int id) {
+			String[] nameArray = name.split(REGEX_SPACE);
+			for (String x : nameArray) {
+				if (nameMap.containsKey(x)) {
+					nameMap.get(x).add(id);
+				} else {
+					ArrayList<Integer> newIdList = new ArrayList<Integer>();
+					newIdList.add(id);
+					nameMap.put(x, newIdList);
+				}
+			}
+		}
+
+		/**
+		 * This operation retrieves a result of todo ids when searching the
+		 * given searchKey within the given typeKey.
+		 * 
+		 * @param typeKey
+		 * @param searchKey
+		 * @return todoIds
+		 */
+		public ArrayList<Integer> getResult(Keywords typeKey, String searchKey) {
+			// searchKey can only be String if searchType is name
+			assert (typeKey == Keywords.NAME);
+			ArrayList<Integer> toDoIds = new ArrayList<Integer>();
+
+			if (nameMap.containsKey(searchKey)) {
+				toDoIds = nameMap.get(searchKey);
+			}
+			return toDoIds;
+		}
+
+		/**
+		 * This operation retrieves a result of todo ids when searching the
+		 * given datetime within the given typeKey.
+		 * 
+		 * @param typeKey
+		 * @param dateTime
+		 * @return todoIds
+		 */
+		public ArrayList<Integer> getResult(Keywords typeKey, DateTime dateTime)
+				throws InvalidParamException {
+			ArrayList<Integer> toDoIds = new ArrayList<Integer>();
+			switch (typeKey) {
+				case DATE:
+					LocalDate searchDate = dateTime.toLocalDate();
+					if (dateMap.containsKey(searchDate)) {
+						toDoIds = dateMap.get(searchDate);
+					} // else searchDate is not in dateMap, toDoIds is empty
+						// List
+					break;
+				case DAY:
+					int searchDay = dateTime.getDayOfWeek();
+					if (dayMap.containsKey(searchDay)) {
+						toDoIds = dayMap.get(searchDay);
+					}// else searchDay is not in dayMap, toDoIds is empty List
+					break;
+				case MONTH:
+					int searchMonth = dateTime.getMonthOfYear();
+					if (monthMap.containsKey(searchMonth)) {
+						toDoIds = monthMap.get(searchMonth);
+					}// else searchMonth is not in monthMap, toDoIds is empty
+						// List
+					break;
+				case TIME:
+					LocalTime searchTime = dateTime.toLocalTime();
+					if (timeMap.containsKey(searchTime)) {
+						toDoIds = timeMap.get(searchTime);
+					}// else searchTime is not in timeMap, toDoIds is empty List
+					break;
+				case YEAR:
+					int searchYear = dateTime.getYear();
+					if (yearMap.containsKey(searchYear)) {
+						toDoIds = yearMap.get(searchYear);
+					} // else searchYear is not in yearMap, todoIds is empty
+						// List
+					break;
+				default:
+					throw new InvalidParamException(
+							ExceptionMessages.INVALID_SEARCH_TYPE);
+			}
+
+			return toDoIds;
+		}
+
+		
+
+		public void update(int userIndex, String param, String originalParam) {
+			if(originalParam != null) {
+				removeIdFromNames(originalParam, userIndex);
+			}
+			if(param != null) {
+				addToNameMap(param, userIndex);
+			}	
+		}
+
+		public void update(int userIndex, DateTime param, DateTime originalParam) {
+			if (originalParam != null) {
+				removeIdFromAllDateMaps(originalParam, userIndex);
+			}
+			if (param != null) {
+				addToAllDateMaps(param, userIndex);	
+			}
+		}
+	}
+
+	/**
+	 * This operation retrieves a list of ids of todos that has the given
+	 * searchString in its property of given typeKey
+	 * 
+	 * @param typeKey
+	 * @param searchString
+	 * @return todoIds
+	 * @throws InvalidParamException
+	 */
+	public ArrayList<Integer> search(Keywords typeKey, String searchString)
+			throws InvalidParamException {
+		// search method with String type search key is only for search in Todo
+		// names
+		assert (typeKey == Keywords.NAME);
+
+		ArrayList<Integer> tempTodoIds;
+		ArrayList<Integer> todoIds = new ArrayList<Integer>();
+		String[] paramArray = searchString.split(REGEX_SPACE);
+		for (String searchKey : paramArray) {
+			tempTodoIds = searchMap.getResult(typeKey, searchKey);
+			todoIds.addAll(tempTodoIds);
+		}
+		return todoIds;
+	}
+
+	/**
+	 * This operation retrieves a list of ids of todos that has the given
+	 * dateTime in its property of given typeKey
+	 * 
+	 * @param typeKey
+	 * @param dateTime
+	 * @return todoIds
+	 */
+	public ArrayList<Integer> search(Keywords typeKey, DateTime dateTime)
+			throws InvalidParamException {
+		return searchMap.getResult(typeKey, dateTime);
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Memory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Memory.java
+	 */
+
+	public void updateMaps(int userIndex, String param, String originalParam) {
+		searchMap.update(userIndex, param, originalParam);
+
+	}
+
+	public void updateMaps(int userIndex, DateTime date, DateTime originalDate) {
+		searchMap.update(userIndex, date, originalDate);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Memory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\ParsedInput.java
+	 */
+
+package com.equinox;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+
+public class ParsedInput {
+
+	private Keywords type;
+	private ArrayList<KeyParamPair> keyParamPairs;
+	private List<DateTime> dateTimes;
+	private boolean isRecurring;
+	private Period period;
+	private boolean hasPeriod;
+	private boolean hasLimit;
+	private DateTime limit;
+
+	/**
+	 * Creates a ParsedInput object with the type of command, a list of
+	 * KeyParamPair objects and a list of DateTime objects derived from the user
+	 * input String.
+	 * 
+	 * @param type
+	 *            KEYWORDS specifying the type of the command.
+	 * @param keyParamPairs
+	 *            the list of KeyParamPair objects parsed from the input based
+	 *            on the command type
+	 * @param dateTimes
+	 *            dateTime objects for todo startDate and endDates
+	 * @param period
+	 *            the period for the recurring todo
+	 * @param isRecurring
+	 *            whether the todo is recurring
+	 * @param hasLimit
+	 *            whether user input has a limit identified for recurring todo
+	 * @param limit
+	 *            the dateTime object as limit for recurring todo
+	 */
+	public ParsedInput(Keywords type, ArrayList<KeyParamPair> keyParamPairs,
+			List<DateTime> dateTimes, Period period, boolean isRecurring,
+			boolean hasLimit, DateTime limit) {
+		this.type = type;
+		this.keyParamPairs = keyParamPairs;
+		this.dateTimes = dateTimes;
+		this.period = period;
+		this.hasPeriod = (period != null && !period.equals(new Period()));
+		this.isRecurring = isRecurring;
+		this.limit = limit;
+		this.hasLimit = hasLimit;
+	}
+
+	/**
+	 * Creates a ParsedInput object to represent an invalid command.
+	 */
+	private ParsedInput() {
+		this.type = Keywords.ERROR;
+	}
+
+	public static ParsedInput getPlaceholder() {
+		return new ParsedInput();
+	}
+
+	/**
+	 * Retrieves the type of command specified by the input.
+	 * 
+	 * @return KEYWORDS specifying the type of the command.
+	 */
+	public Keywords getType() {
+		return type;
+	}
+
+	/**
+	 * Retrieves the list of KeyParamPair objects parsed from the input if any.
+	 * 
+	 * @return the list of KeyParamPair objects parsed from the input.
+	 */
+	public ArrayList<KeyParamPair> getParamPairs() {
+		return keyParamPairs;
+	}
+
+	/**
+	 * Retrieves the list of DateTime objects parsed from the input if any.
+	 * 
+	 * @return the list of DateTime objects parsed from the input.
+	 */
+	public List<DateTime> getDateTimes() {
+		return dateTimes;
+	}
+
+	/**
+	 * Checks if only the command keyword and its parameter is present.
+	 * 
+	 * @return true if there only the command keyword and its parameter is
+	 *         present.
+	 */
+	public boolean containsOnlyCommand() {
+		if (keyParamPairs.size() == 1 && dateTimes.size() == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Iterates through the keyParamPair ArrayList and checks if any parameter
+	 * is an empty string.
+	 * 
+	 * @return boolean If there is at least one empty string parameter, return
+	 *         true. Else, return false.
+	 */
+	public boolean containsEmptyParams() {
+		for (KeyParamPair pair : keyParamPairs) {
+			if (pair.getParam().equals("")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Iterates through the keyParamPair ArrayList and checks if input contains
+	 * given flagKeyword
+	 * 
+	 * @param flagKeyword
+	 * @return if input contains given flagKeyword
+	 */
+	public boolean containsFlag(Keywords flagKeyword) {
+		for (KeyParamPair pair : keyParamPairs) {
+			if (pair.getKeyword() == flagKeyword
+					&& InputStringKeyword.isFlag(pair.getKeyString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if any dates are parsed.
+	 * 
+	 * @return true if at least one date has been parsed.
+	 */
+	public boolean containDates() {
+		if (dateTimes.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Checks if parsedInput is pertaining to recurring tasks.
+	 * 
+	 * @return true if parsedInput is pertaining to recurring tasks.
+	 */
+	public boolean isRecurring() {
+		return isRecurring;
+	}
+
+	/**
+	 * Returns the period in object
+	 * @return period of the object
+	 */
+	public Period getPeriod() {
+		return period;
+	}
+
+	/**
+	 * Checks if parsedInput has a period
+	 * @return true if parsedInput has a period
+	 */
+	public boolean hasPeriod() {
+		return hasPeriod;
+	}
+
+	/**
+	 * Checks if parsedInput has a limit
+	 * @return true if parsedInput has a limit
+	 */
+	public boolean hasLimit() {
+		return hasLimit;
+	}
+
+	/**
+	 * Retrieves the limit of the parsedInput object
+	 * @return limit as DateTime object
+	 */
+	public DateTime getLimit() {
+		return limit;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o.getClass().equals(this.getClass())) {
+			ParsedInput other = (ParsedInput) o;
+
+			return this.getType().equals(other.getType())
+					&& this.getParamPairs().equals(other.getParamPairs())
+					&& this.getDateTimes().equals(other.getDateTimes())
+					&& this.getPeriod().equals(other.getPeriod())
+					&& this.isRecurring() == other.isRecurring()
+					&& this.hasLimit() == other.hasLimit()
+					&& this.getLimit().equals(other.getLimit());
+		}
+		return false;
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\ParsedInput.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Parser.java
+	 */
+
+package com.equinox;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+
+import com.equinox.exceptions.InvalidDateException;
+import com.equinox.exceptions.InvalidPeriodException;
+import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.ParsingFailureException;
+import com.joestelmach.natty.DateGroup;
+
+public class Parser {
+	private static final String STRING_MARCH = "march ";
+	private static final String STRING_TO = "to";
+	private static final String INIT_STRING = "today";
+	private static final String STRING_DAY = "day";
+	private static final String STRING_WEEK = "week";
+	private static final String STRING_MONTH = "month";
+	private static final String STRING_YEAR = "year";
+	private static final char CHAR_SPACE = ' ';
+	private static final String REGEX_SPACE = "\\s";
+	private static final String STRING_MON = "mon";
+	private static final String STRING_TUE = "tue";
+	private static final String STRING_WED = "wed";
+	private static final String STRING_THU = "thu";
+	private static final String STRING_FRI = "fri";
+	private static final String STRING_SAT = "sat";
+	private static final String STRING_SUN = "sun";
+	private static final String STRING_MONDAY = "monday";
+	private static final String STRING_TUESDAY = "tuesday";
+	private static final String STRING_WEDNESDAY = "wednesday";
+	private static final String STRING_THURSDAY = "thursday";
+	private static final String STRING_FRIDAY = "friday";
+	private static final String STRING_SATURDAY = "saturday";
+	private static final String STRING_SUNDAY = "sunday";
+	private static final String EMPTY_STRING = "";
+
+	/**
+	 * Tries to parse the specified String into ParsedInput object for various
+	 * commands to work on. If the recurring todo which user is trying to add
+	 * does not include any time frame or deadline, throws an
+	 * InvalidRecurringException If the todo which user is trying to add has
+	 * flag keywords as parameters, throws an InvalidTodoNameException.
+	 * 
+	 * @param input
+	 *            the String read from the user.
+	 * @return a ParsedInput object containing the command type,
+	 *         keyword-parameter pairs and dates identified.
+	 * @throws InvalidRecurringException
+	 * @throws InvalidTodoNameException
+	 * @throws ParsingFailureException
+	 */
+	public static ParsedInput parseInput(String input)
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		boolean hasLimit = false;
+		boolean isRecurring = false;
+		Period period = new Period();
+		ArrayList<String> words = tokenize(input);
+		Keywords cType = getCommandType(words);
+
+		// if command type is error
+		if (cType == Keywords.ERROR) {
+			return ParsedInput.getPlaceholder();
+		}
+
+		ArrayList<Integer> dateIndexes = new ArrayList<Integer>();
+		DateTime limit = new DateTime(0);
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		ParsedInput returnInput;
+		ArrayList<KeyParamPair> keyParamPairs = extractParam(words);
+
+		if (cType == Keywords.ADD) {
+
+			// ignores thefirst pair as it is assumed to be the name of the todo
+			for (int i = 1; i < keyParamPairs.size(); i++) {
+				KeyParamPair currentPair = keyParamPairs.get(i);
+				Keywords key = currentPair.getKeyword();
+
+				if (InputStringKeyword.isFlag(currentPair.getKeyString())) {
+					throw new InvalidTodoNameException();
+				}
+				// assumes that 'every _ until _' is at the end of user input
+				if (key == Keywords.UNTIL) { // check if there is a recurring
+												// limit parsed in
+					if (isRecurring) {
+						List<DateTime> parsedLimits = interpretAsDate(
+								keyParamPairs, currentPair, true);
+
+						if (!parsedLimits.isEmpty()) { // if parsing is
+														// successful
+							limit = parsedLimits.get(0);
+							hasLimit = true;
+						}
+					} else {
+						interpretAsName(keyParamPairs, currentPair);
+					}
+				} else if (key == Keywords.EVERY) {
+					// tries to detect if there is a period in user input
+
+					// tries to parse param as period
+					period = interpretAsPeriod(period, keyParamPairs,
+							currentPair);
+					if (!period.equals(new Period())) { // if param is valid
+														// period
+						isRecurring = true;
+						if (period.equals(new Period().withDays(1))
+								&& dateTimes.isEmpty()) { // period = every day
+							dateTimes
+									.add(new DateTime().withTime(23, 59, 0, 0));
+						}
+					}
+					// tries to parse param as date to extract the date
+					// if (dateTimes.isEmpty()) {
+					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+							currentPair, false);
+					if (!parsedDate.isEmpty()) {
+						if (!isRecurring) {
+							period = period.withYears(1);
+							isRecurring = true;
+						}
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
+						// }
+					} else if (!isRecurring) {
+						interpretAsName(keyParamPairs, currentPair);
+					}
+
+				} else {
+					// tries to parse param as date
+					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
+							currentPair, true);
+
+					if (!parsedDates.isEmpty()) { // if parsing is successful
+						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
+								dateIndexes, i);
+					}
+
+				}
+			}
+			for (int i = keyParamPairs.size() - 1; i > 0; i--) {
+				keyParamPairs.remove(i);
+			}
+
+			// check parameters for recurring todos
+			if (isRecurring) {
+				if (!isValidRecurring(dateTimes)) {
+					throw new InvalidRecurringException();
+				}
+			}
+
+		} else if (cType == Keywords.EDIT) {
+			// Post-process EDIT command parameter
+
+			// ignores the first pair as it is assumed to be the name of the
+			// todo
+			for (int i = 1; i < keyParamPairs.size(); i++) {
+				KeyParamPair currentPair = keyParamPairs.get(i);
+				Keywords key = currentPair.getKeyword();
+
+				if (InputStringKeyword.isFlag(currentPair.getKeyString())
+						&& !InputStringKeyword.isRule(currentPair
+								.getKeyString())) {
+					throw new InvalidTodoNameException();
+				}
+
+				// assumes that 'every _ until _' is at the end of user input
+				// check if there is a recurring limit parsed
+				// in
+				if (key == Keywords.UNTIL) {
+					List<DateTime> parsedLimits = interpretAsDate(
+							keyParamPairs, currentPair, true);
+
+					if (!parsedLimits.isEmpty()) { // if parsing is
+													// successful
+						limit = parsedLimits.get(0);
+						hasLimit = true;
+						isRecurring = true;
+					} else {
+						interpretAsName(keyParamPairs, currentPair);
+					}
+				} else if (key == Keywords.EVERY) {
+					// tries to detect if there is a period in user input
+
+					// tries to parse param as period
+					period = interpretAsPeriod(period, keyParamPairs,
+							currentPair);
+					if (!period.equals(new Period())) { // if param is valid
+														// period
+						isRecurring = true;
+						if (period.equals(new Period().withDays(1))
+								&& dateTimes.isEmpty()) { // period = every day
+							dateTimes
+									.add(new DateTime().withTime(23, 59, 0, 0));
+						}
+					}
+					// tries to parse param as date to extract the date
+					// if (dateTimes.isEmpty()) {
+					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+							currentPair, false);
+					if (!parsedDate.isEmpty()) {
+						if (!isRecurring) {
+							period = period.withYears(1);
+							isRecurring = true;
+						}
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
+					} else if (!isRecurring) {
+						interpretAsName(keyParamPairs, currentPair);
+					}
+
+				} else if (key == Keywords.RULE) {
+					// appends the param for rule as the name
+					interpretAsName(keyParamPairs, currentPair);
+					keyParamPairs.get(i).setParam(EMPTY_STRING);
+				} else {
+					// tries to parse param as date
+					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
+							currentPair, true);
+
+					if (!parsedDates.isEmpty()) { // if parsing is successful
+						addToDateTimes(parsedDates, dateTimes, keyParamPairs,
+								dateIndexes, i);
+					}
+
+				}
+			}
+			int toIndex;
+			for (int i = 0; i < keyParamPairs.size(); i++) {
+				KeyParamPair currentPair = keyParamPairs.get(i);
+
+				String currentParam = currentPair.getParam();
+				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) {
+					String toString = currentParam.substring(toIndex,
+							currentParam.length());
+					if (toString.length() != 2) {
+						String afterTo = toString.substring(3,
+								toString.length());
+						currentPair.setParam(currentParam.substring(0,
+								toIndex - 1));
+						keyParamPairs.add(new KeyParamPair(Keywords.TO,
+								STRING_TO, afterTo));
+						if (i == 0) {
+							List<DateTime> parsedDates = interpretAsDate(
+									keyParamPairs,
+									keyParamPairs.get(keyParamPairs.size() - 1),
+									true);
+							dateTimes.addAll(parsedDates);
+						}
+					}
+				}
+
+			}
+		} else if (cType == Keywords.SEARCH) {
+			// Post-process SEARCH command parameters
+			for (KeyParamPair keyParamPair : keyParamPairs) {
+				Keywords key = keyParamPair.getKeyword();
+				if (!(key == Keywords.NAME || key == Keywords.SEARCH)) {
+					if (key == Keywords.YEAR) {
+						keyParamPair.setParam(STRING_MARCH.concat(keyParamPair
+								.getParam()));
+					}
+					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
+							keyParamPair, false);
+					if (!parsedDates.isEmpty()) {
+						dateTimes.add(parsedDates.get(0));
+					}
+				}
+			}
+		}
+
+		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
+				isRecurring, hasLimit, limit);
+		return returnInput;
+	}
+
+	private static void interpretAsName(ArrayList<KeyParamPair> keyParamPairs,
+			KeyParamPair currentPair) {
+		String newName;
+		int currentIndex = keyParamPairs.indexOf(currentPair);
+
+		newName = appendParameters(keyParamPairs, 0, currentIndex);
+
+		keyParamPairs.get(0).setParam(newName);
+	}
+
+	/**
+	 * This method tries to parse parameters at given index as a period. If
+	 * parsing is unsuccessful, method appends the parameters along with its
+	 * keyword at the back of the parameters at the nameIndex
+	 * 
+	 * @param period
+	 * @param keyParamPairs
+	 * @param currentPair
+	 * @return period stated in parameters if parsing is successful, original
+	 *         period in parameters if unsuccessful.
+	 * 
+	 */
+	private static Period interpretAsPeriod(Period period,
+			ArrayList<KeyParamPair> keyParamPairs, KeyParamPair currentPair) {
+		try {
+			// tries to parse as period
+			period = retrieveRecurringPeriod(currentPair.getParam()
+					.toLowerCase());
+
+		} catch (InvalidPeriodException e) { // no valid period
+
+		}
+		return period;
+	}
+
+	/**
+	 * This method tries to parse the parameters at the given index as a date.
+	 * If parsing as date is not successful and addToName is true, method
+	 * interprets the parameters as part of the name. When append is false,
+	 * method simply ignores the parameters.
+	 * 
+	 * @param keyParamPairs
+	 * @param currentPair
+	 * @param addToName
+	 * @return list of datetimes parsed. If parsing is unsuccessful, returns
+	 *         empty list.
+	 */
+	private static List<DateTime> interpretAsDate(
+			ArrayList<KeyParamPair> keyParamPairs, KeyParamPair currentPair,
+			boolean addToName) {
+		List<DateTime> parsedDate = new ArrayList<DateTime>();
+		try {
+			parsedDate = parseDates(combineKeyPair(currentPair.getKeyString(),
+					currentPair.getParam()));
+		} catch (InvalidDateException e) { // no valid date given
+			if (addToName) {
+				interpretAsName(keyParamPairs, currentPair);
+			}
+		}
+		return parsedDate;
+	}
+
+	private static String combineKeyPair(String keyString, String paramString) {
+		StringBuilder sBuilder = new StringBuilder(keyString);
+		sBuilder.append(CHAR_SPACE);
+		sBuilder.append(paramString);
+		return sBuilder.toString();
+	}
+
+	/**
+	 * Check if given dateTimes has enough elements for todo to be a valid
+	 * recurring todo
+	 * 
+	 * @param dateTimes
+	 * @return isValidRecurring
+	 */
+	private static boolean isValidRecurring(List<DateTime> dateTimes) {
+		return dateTimes.size() > 0;
+	}
+
+	/**
+	 * Adds parsedDate to dateTimes depending on number of elements in
+	 * dateTimes. If dateTimes already contains some elements, method tries to
+	 * combine the parameters and re-parse them as dates to check if resulting
+	 * dateTime is different
+	 * 
+	 * @param parsedDate
+	 * @param dateTimes
+	 * @param keyParamPairs
+	 * @param dateIndexes
+	 * @param currentIndex
+	 * @throws ParsingFailureException
+	 */
+	private static void addToDateTimes(List<DateTime> parsedDate,
+			List<DateTime> dateTimes, ArrayList<KeyParamPair> keyParamPairs,
+			ArrayList<Integer> dateIndexes, int currentIndex)
+			throws ParsingFailureException {
+
+		if (dateTimes.size() > 0) {
+			int appendedPairIndex = dateIndexes.get(0);
+			List<DateTime> newDateTimes = new ArrayList<DateTime>();
+
+			assert (dateTimes.size() < 3); // There should be at the most 2
+											// dates only
+			assert (dateIndexes.size() == 1); // There should be at the most 1
+												// date param
+
+			String newDateParam = appendParameters(keyParamPairs,
+					appendedPairIndex, currentIndex);
+			try {
+				newDateTimes = parseDates(combineKeyPair(
+						keyParamPairs.get(appendedPairIndex).getKeyString(),
+						newDateParam));
+
+			} catch (InvalidDateException e) {
+				// should never enter this catch block as old parameters
+				// were parse-able as dates
+			}
+
+			if (!newDateTimes.isEmpty() && newDateTimes.equals(dateTimes)) {
+
+				// natty could not parse in the first order, try appending the
+				// other way
+				appendedPairIndex = currentIndex;
+				currentIndex = dateIndexes.get(0);
+				newDateParam = appendParameters(keyParamPairs,
+						appendedPairIndex, currentIndex);
+				try {
+					newDateTimes = parseDates(combineKeyPair(
+							keyParamPairs.get(appendedPairIndex).getKeyString(),
+							newDateParam));
+
+					// new dateTime parsed from 'param y param x' is same as
+					// 'param y'
+					if (newDateTimes.get(0).toLocalDate()
+							.equals(parsedDate.get(0).toLocalDate())) {
+						if (newDateTimes.get(0).getHourOfDay() == parsedDate
+								.get(0).getHourOfDay()
+								&& newDateTimes.get(0).getMinuteOfHour() == parsedDate
+										.get(0).getMinuteOfHour()) {
+							if (newDateTimes.size() == 2) {
+								if (newDateTimes.get(1).getHourOfDay() == parsedDate
+										.get(1).getHourOfDay()
+										&& newDateTimes.get(1)
+												.getMinuteOfHour() == parsedDate
+												.get(1).getMinuteOfHour()) {
+									throw new ParsingFailureException();
+								}
+							} else {
+								throw new ParsingFailureException();
+							}
+
+						}
+					}
+				} catch (InvalidDateException e) {
+					// should never enter this catch block as old date
+					// parameters were parse-able
+				}
+			}
+
+			assert (!newDateTimes.isEmpty()); // shouldn't be empty because
+												// parameters should be
+												// parse-able
+			dateTimes.clear(); // removes all elements in dateTimes
+			dateTimes.addAll(newDateTimes);
+			keyParamPairs.get(appendedPairIndex).setParam(newDateParam);
+			dateIndexes.remove(0);
+			dateIndexes.add(appendedPairIndex);
+		} else {
+			dateTimes.addAll(parsedDate);
+			dateIndexes.add(currentIndex);
+		}
+	}
+
+	/**
+	 * Appends the keyword and parameter of the second keyParamPair to the
+	 * parameters of the first keyParamPair.
+	 * 
+	 * @param keyParamPairs
+	 * @param indexOfFirstPair
+	 * @param indexOfSecondPair
+	 * @return appended string
+	 */
+	private static String appendParameters(
+			ArrayList<KeyParamPair> keyParamPairs, int indexOfFirstPair,
+			int indexOfSecondPair) {
+		KeyParamPair firstPair = keyParamPairs.get(indexOfFirstPair);
+		KeyParamPair secondPair = keyParamPairs.get(indexOfSecondPair);
+		String key = secondPair.getKeyString();
+
+		StringBuilder sBuilder = new StringBuilder(firstPair.getParam());
+	
+		if (sBuilder.length() != 0){
+			if (!secondPair.getKeyword().equals(Keywords.RULE)) {
+				sBuilder.append(CHAR_SPACE);
+				sBuilder.append(key);
+			}
+		} else {
+			sBuilder.append(key);
+			
+		} 
+		if(!secondPair.getParam().isEmpty()) {
+			sBuilder.append(CHAR_SPACE);
+			sBuilder.append(secondPair.getParam());
+		}
+		
+		return sBuilder.toString();
+	}
+
+	/**
+	 * Retrieves period given string. Throws an InvalidPeriodException if
+	 * parameter given is not a valid period.
+	 * 
+	 * @param param
+	 * @return period for recurrence
+	 * @throws InvalidPeriodException
+	 */
+	private static Period retrieveRecurringPeriod(String param)
+			throws InvalidPeriodException {
+		param.toLowerCase();
+		Period period = new Period();
+		switch (param) {
+			case STRING_YEAR:
+				return period.withYears(1);
+			case STRING_MONTH:
+				return period.withMonths(1);
+			case STRING_WEEK:
+				return period.withWeeks(1);
+			case STRING_DAY:
+				return period.withDays(1);
+			case STRING_MON:
+				return period.withWeeks(1);
+			case STRING_TUE:
+				return period.withWeeks(1);
+			case STRING_WED:
+				return period.withWeeks(1);
+			case STRING_THU:
+				return period.withWeeks(1);
+			case STRING_FRI:
+				return period.withWeeks(1);
+			case STRING_SAT:
+				return period.withWeeks(1);
+			case STRING_SUN:
+				return period.withWeeks(1);
+			case STRING_MONDAY:
+				return period.withWeeks(1);
+			case STRING_TUESDAY:
+				return period.withWeeks(1);
+			case STRING_WEDNESDAY:
+				return period.withWeeks(1);
+			case STRING_THURSDAY:
+				return period.withWeeks(1);
+			case STRING_FRIDAY:
+				return period.withWeeks(1);
+			case STRING_SATURDAY:
+				return period.withWeeks(1);
+			case STRING_SUNDAY:
+				return period.withWeeks(1);
+			default:
+				throw new InvalidPeriodException();
+		}
+	}
+
+	/**
+	 * Takes in a user input string and puts individual words into elements in a
+	 * String ArrayList.
+	 *
+	 * @param input
+	 *            the String read from the user.
+	 * @return an ArrayList of words from the input String.
+	 */
+	private static ArrayList<String> tokenize(String input) {
+		input = input.trim();
+		String[] inputWords = input.split(REGEX_SPACE);
+		ArrayList<String> words = new ArrayList<String>();
+		for (int i = 0; i < inputWords.length; i++) {
+			words.add(inputWords[i]);
+		}
+		return words;
+	}
+
+	/**
+	 * Parses the tokenized input, wordList for keywords and their associated
+	 * parameters, stores them in KeyParamPair objects and adds all KeyParamPair
+	 * objects to an ArrayList which is returned. ASSUMPTION: The first word in
+	 * user input is a keyword.
+	 * 
+	 * @param words
+	 *            the ArrayList of words from the input String.
+	 * @return an ArrayList of KeyParamPair objects.
+	 */
+	private static ArrayList<KeyParamPair> extractParam(ArrayList<String> words) {
+		String key = words.get(0);
+		ArrayList<KeyParamPair> keyParamPairs = new ArrayList<KeyParamPair>();
+		Keywords keyword;
+		EnumSet<Keywords> keywordOccurrence = EnumSet.noneOf(Keywords.class);
+		StringBuilder paramBuilder = new StringBuilder();
+		for (int i = 1; i < words.size(); i++) {
+			String currentParam = words.get(i);
+
+			// wordList.get(i) is a keyword. Create a KeyParamPair with previous
+			// param
+			// and paramStringBuilder and add to ArrayList. Update key and
+			// paramBuilder.
+			// If currentParam is a keyword:
+			if (InputStringKeyword.isKeyword(currentParam)) {
+				keyword = InputStringKeyword.getKeyword(key);
+				// Ignore and append keyword if it has occurred before
+				if (!keywordOccurrence.contains(keyword)) {
+					keywordOccurrence.add(keyword);
+					keyParamPairs.add(new KeyParamPair(keyword, key,
+							paramBuilder.toString()));
+					key = currentParam;
+					paramBuilder = new StringBuilder();
+				} else { // wordList.get(i) is a repeated keyword; append to
+							// paramString
+					buildParam(paramBuilder, currentParam);
+
+				}
+			} else { // wordList.get(i) is not a keyword; append to paramString
+				buildParam(paramBuilder, currentParam);
+			}
+		}
+		// last KeyParamPair to be added to ArrayList
+		keyword = InputStringKeyword.getKeyword(key);
+		keyParamPairs.add(new KeyParamPair(keyword, key, paramBuilder
+				.toString()));
+		return keyParamPairs;
+	}
+
+	private static void buildParam(StringBuilder paramBuilder,
+			String currentParam) {
+		if (paramBuilder.length() != 0) {
+			paramBuilder.append(CHAR_SPACE);
+		}
+		paramBuilder.append(currentParam);
+	}
+
+	/**
+	 * This operation gets the type of command of the user input.
+	 * 
+	 * ASSUMPTION: the first word in user input is the command type keyword.
+	 * 
+	 * @param words
+	 *            the ArrayList of words from the input String.
+	 * @return an ArrayList of KeyParamPair objects.
+	 */
+	private static Keywords getCommandType(ArrayList<String> words) {
+		String typeString = words.get(0);
+		return determineCommandType(typeString);
+	}
+
+	/**
+	 * This operation checks if type string corresponds to the listed command
+	 * types.
+	 * 
+	 * @param typeString
+	 *            String specifying the type of command.
+	 * @return KEYWORDS specifying the type, null if typeString does not contain
+	 *         command.
+	 */
+	private static Keywords determineCommandType(String typeString) {
+		Keywords type = Keywords.ERROR;
+
+		if (InputStringKeyword.isCommand(typeString)) {
+			type = InputStringKeyword.getCommand(typeString);
+		}
+		return type;
+	}
+
+	/**
+	 * Parses a String with multiple dates provided to the DateParser, and
+	 * returns a DateTime ArrayList.
+	 * 
+	 * @param dateString
+	 *            String containing the date to be parsed
+	 * @return A list of all immutable DateTime objects representing dates
+	 *         processed in the string.
+	 * @throws InvalidDateException
+	 *             if dateString does not contain a valid date, is empty, or
+	 *             null
+	 * @throws InterruptedException
+	 */
+	public static List<DateTime> parseDates(String dateString)
+			throws InvalidDateException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		DateGroup parsedDate = null;
+		DateGroup dateNow = null;
+		DateTime currentDateTime = null;
+		try {
+			parsedDate = parser.parse(dateString).get(0);
+			Thread.sleep(1);
+			currentDateTime = new DateTime();
+			Thread.sleep(1);
+			// Parse the date again to detect dateString type
+			dateNow = parser.parse(dateString).get(0);
+		} catch (IndexOutOfBoundsException e) {
+			throw new InvalidDateException(
+					ExceptionMessages.DATE_UNDEFINED_EXCEPTION);
+		} catch (InterruptedException e) {
+
+		}
+
+		List<Date> dates = parsedDate.getDates();
+		List<Date> secondDates = dateNow.getDates();
+		for (int i = 0; i < dates.size(); i++) {
+			Date date = dates.get(i);
+			DateTime dateTime = new DateTime(date);
+			DateTime secondDateTime = new DateTime(secondDates.get(i));
+			// date does not include a time
+			if (dateTime.toLocalTime().isBefore(currentDateTime.toLocalTime())
+					&& currentDateTime.toLocalTime().isBefore(
+							secondDateTime.toLocalTime())) {
+				// sets the default time to be 2359h
+				dateTime = dateTime.withTime(23, 59, 0, 0);
+			}
+			dateTimes.add(dateTime);
+		}
+		return dateTimes;
+	}
+
+	/**
+	 * Initializes the natty parser by test parsing a string to reduce execution
+	 * time for future parsing
+	 */
+	public static void initialize() {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+		parser.parse(INIT_STRING);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Parser.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\ParserTest.java
+	 */
+
+package com.equinox;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.junit.Test;
+
+import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.ParsingFailureException;
+
+public class ParserTest {
+
+	@Test
+	public void testAddFloating() throws InvalidTodoNameException,
+			InvalidRecurringException, ParsingFailureException {
+
+		// floating task without any other keywords
+		String add1 = "add test 1";
+		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 1"))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+
+		assertEquals(parsed1, Parser.parseInput(add1));
+	}
+
+	public void testAddFloatingWithKeyword() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		// floating task with 'one keyword + non-datetime'
+		String add2 = "add study for test on algorithms";
+		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "study for test on algorithms"))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+
+		assertEquals(parsed2, Parser.parseInput(add2));
+	}
+
+	@Test
+	public void testAddDeadlineWithDateOnly() throws InvalidTodoNameException,
+			InvalidRecurringException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// deadline task with 'KEYWORD + <datetime>'
+		String add0 = "add test 0 by Friday";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(add0));
+	}
+
+	@Test
+	public void testAddDeadlineWithTime() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday 3pm
+		List<Date> dates0 = parser.parse("Friday 3pm").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+		}
+
+		// deadline task with 'KEYWORD + <datetime>'
+		String add0 = "add test 0 by Friday 3pm";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(add0));
+	}
+
+	@Test
+	public void testAddDeadlineWithNondateAndDate()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("at 3pm").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			// dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+		// deadline task 'KEYWORD <invalid datetime> + KEYWORD <datetime>'
+		String add5 = "add test 5 in sr1 at 3pm";
+		ParsedInput parsed5 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 5 in sr1"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed5, Parser.parseInput(add5));
+	}
+
+	@Test
+	public void testAddDeadlineWithDateAndNondate()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// deadline task 'KEYWORD <datetime> + KEYWORD <invalid datetime>'
+		String add6 = "add test 6 by Friday at Computing";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6 at Computing"))),
+				dateTimes0, new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddDeadlineWithTimeAndDate()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 2359 on 15 March
+		List<Date> dates0 = parser.parse("2359 on 15 March").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// deadline task 'KEYWORD <datetime> + KEYWORD <invalid datetime>'
+		String add6 = "add test 6 by 2359 on 15 March";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddDeadlineWithNonPeriod()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// deadline task 'KEYWORD <datetime> + EVERY <invalid period>'
+		String add6 = "add test 6 by Friday every body";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6 every body"))),
+				dateTimes0, new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddDeadlineWithLimit() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// deadline task 'KEYWORD <datetime> + UNTIL <datetime>'
+		String add6 = "add test 6 by Friday until 1 June";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6 until 1 June"))),
+				dateTimes0, new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddDeadlineWithNonPeriodAndLimit()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// deadline task 'KEYWORD <datetime> + EVERY <invalid period> + UNTIL
+		// <datetime>'
+		String add6 = "add test 6 by Friday every one until 1 June";
+		ParsedInput parsed6 = new ParsedInput(
+				Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6 every one until 1 June"))),
+				dateTimes0, new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	public void testAddDeadlineWithNonPeriodAndNonLimit()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// deadline task 'KEYWORD <datetime> + EVERY <invalid period> + UNTIL
+		// <invalid datetime>'
+		String add6 = "add test 6 by Friday every one until we die";
+		ParsedInput parsed6 = new ParsedInput(
+				Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6 every one until we die"))),
+				dateTimes0, new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddEventWithTwoTimes() throws InvalidTodoNameException,
+			InvalidRecurringException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// dates: 3pm to 4pm
+		List<Date> dates0 = parser.parse("3pm to 4pm").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+		}
+
+		// event task default 'one keyword + 2 datetime'
+		String add0 = "add test 0 from 3pm to 4pm";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(add0));
+	}
+
+	@Test
+	public void testAddEventWithDateAndTwoTimes()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// dates: 3pm to 4pm on Sunday
+		List<Date> dates1 = parser.parse("3pm to 4pm on Sunday").get(0)
+				.getDates();
+		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates1.size(); i++) {
+			Date date = dates1.get(i);
+			dateTimes1.add(new DateTime(date));
+		}
+		// event task default 'keyword + day + keyword + 2 datetime'
+		String add1 = "add test 1 on Sunday from 3pm to 4pm";
+		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 1"))), dateTimes1,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed1, Parser.parseInput(add1));
+	}
+
+	@Test
+	public void testAddEventWithTwoTimesAndDate()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// dates: 3pm to 4pm on Sunday
+		List<Date> dates1 = parser.parse("3pm to 4pm on Sunday").get(0)
+				.getDates();
+		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates1.size(); i++) {
+			Date date = dates1.get(i);
+			dateTimes1.add(new DateTime(date));
+		}
+		// event task default '+ keyword + 2 datetime + keyword + day'
+		String add1 = "add test 1 from 3pm to 4pm on Sunday";
+		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 1"))), dateTimes1,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed1, Parser.parseInput(add1));
+	}
+
+	@Test
+	public void testAddEventWithTwoDateAndTime()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// dates: 3pm to 4pm on Sunday
+		List<Date> dates2 = parser.parse("3 March at 10am to 3 March at 12pm")
+				.get(0).getDates();
+		List<DateTime> dateTimes2 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates2.size(); i++) {
+			Date date = dates2.get(i);
+			dateTimes2.add(new DateTime(date));
+		}
+
+		String add2 = "add CIP event from 3 March at 10am to 3 March at 12pm";
+		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "CIP event"))), dateTimes2,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed2, Parser.parseInput(add2));
+	}
+
+	@Test
+	public void testAddEventWithTwoDates() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// dates: 3pm to 4pm on Sunday
+		List<Date> dates2 = parser.parse("Sunday to Monday").get(0).getDates();
+		List<DateTime> dateTimes2 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates2.size(); i++) {
+			Date date = dates2.get(i);
+			dateTimes2.add(new DateTime(date));
+			dateTimes2.set(i, dateTimes2.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String add0 = "add test 0 from Sunday to Monday";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 0"))), dateTimes2,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(add0));
+	}
+
+	@Test
+	public void testStringProcessing() throws InvalidTodoNameException,
+			InvalidRecurringException, ParsingFailureException {
+		String add0 = "       add";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", ""))), new ArrayList<DateTime>(),
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(add0));
+
+		String add1 = "add         ";
+		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", ""))), new ArrayList<DateTime>(),
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed1, Parser.parseInput(add1));
+
+		String add2 = "add         something";
+		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "something"))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+
+		assertEquals(parsed2, Parser.parseInput(add2));
+
+	}
+
+	@Test
+	public void testAddRecurringDeadlineWithDate()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring deadline task 'KEYWORD <valid date> + EVERY <valid period>
+		String add0 = "add test 0 on Friday every week";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
+				new Period().withWeeks(1), true, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(add0));
+
+	}
+
+	@Test
+	public void testAddRecurringDeadlineWithDayOfWeek()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring deadline task 'EVERY <valid day of week>'
+		String add6 = "add test 6 every Friday";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6"))), dateTimes0,
+				new Period().withWeeks(1), true, false, new DateTime(0));
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddRecurringDeadlineWithTimeEveryDayOfWeek()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+		// date: Friday
+		List<Date> dates0 = parser.parse("3pm on Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+		}
+
+		// recurring deadline task 'EVERY <valid day of week>'
+		String add6 = "add test 6 at 3pm every Friday";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6"))), dateTimes0,
+				new Period().withWeeks(1), true, false, new DateTime(0));
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddRecurringDeadlineEveryDay()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("today").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring deadline task 'EVERY day'
+		String add6 = "add test 6 every day";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6"))), dateTimes0,
+				new Period().withDays(1), true, false, new DateTime(0));
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddRecurringEvent() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// dates: Friday to Sunday
+		List<Date> dates1 = parser.parse("Friday to Sunday").get(0).getDates();
+		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates1.size(); i++) {
+			Date date = dates1.get(i);
+			dateTimes1.add(new DateTime(date));
+			dateTimes1.set(i, dateTimes1.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring event task
+		String add1 = "add test 1 from Friday to Sunday every month";
+		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 1"))), dateTimes1,
+				new Period().withMonths(1), true, false, new DateTime(0));
+
+		assertEquals(parsed1, Parser.parseInput(add1));
+	}
+
+	@Test
+	public void testAddRecurringDeadlineWithLimit()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		List<Date> dates2 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes2 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates2.size(); i++) {
+			Date date = dates2.get(i);
+			dateTimes2.add(new DateTime(date));
+			dateTimes2.set(i, dateTimes2.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring deadline task with limit
+		String add3 = "add test 3 on Friday every week until 4 Dec 2015";
+		ParsedInput parsed3 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 3"))), dateTimes0,
+				new Period().withWeeks(1), true, true, dateTimes2.get(0));
+		assertEquals(parsed3, Parser.parseInput(add3));
+	}
+
+	@Test
+	public void testAddRecurringDeadlineWithNonLimit()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring deadline task 'KEYWORD <valid date> + EVERY <valid period>
+		// + UNTIL <invalid limit>'
+		String add0 = "add test 0 on Friday every week until forever";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 0 until forever"))),
+				dateTimes0, new Period().withWeeks(1), true, false,
+				new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(add0));
+	}
+
+	@Test
+	public void testAddRecurringEventWithLimit()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// dates: Friday to Sunday
+		List<Date> dates1 = parser.parse("Friday to Sunday").get(0).getDates();
+		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates1.size(); i++) {
+			Date date = dates1.get(i);
+			dateTimes1.add(new DateTime(date));
+			dateTimes1.set(i, dateTimes1.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// dates: limit 4 December 2015
+		List<Date> dates2 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes2 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates2.size(); i++) {
+			Date date = dates2.get(i);
+			dateTimes2.add(new DateTime(date));
+			dateTimes2.set(i, dateTimes2.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring event task with limit
+		String add4 = "add test 4 from Friday to Sunday every month until 4 Dec 2015";
+		ParsedInput parsed4 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 4"))), dateTimes1,
+				new Period().withMonths(1), true, true, dateTimes2.get(0));
+
+		assertEquals(parsed4, Parser.parseInput(add4));
+	}
+
+	@Test
+	public void testAddRecurringDeadlineEveryDate()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: Friday
+		List<Date> dates0 = parser.parse("4 Jan").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// recurring deadline task 'KEYWORD <valid date> + EVERY <valid period>
+		String add0 = "add test 0 every 4 Jan";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 0"))), dateTimes0,
+				new Period().withYears(1), true, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(add0));
+	}
+
+	@Test(expected = InvalidRecurringException.class)
+	public void testAddInvalidRecurring() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 4 Dec 2015
+		List<Date> dates0 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+		// invalid recurring command: name + every <valid period> + <valid
+		// limit>
+		String add0 = "add test 5 every month until 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 5"))),
+				new ArrayList<DateTime>(), new Period().withMonths(1), false,
+				true, dateTimes0.get(0));
+		assertEquals(parsed0, Parser.parseInput(add0));
+	}
+
+	@Test(expected = ParsingFailureException.class)
+	public void testAddTaskWithMoreThanTwoDateTimes()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		String add0 = "add event from 1 Jan to 2 Jan in 2 days";
+		Parser.parseInput(add0);
+	}
+
+	@Test
+	public void testEditName() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+
+		String edit0 = "edit 1 change name";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1 change name"))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test(expected = InvalidTodoNameException.class)
+	public void testEditInvalidName() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		String edit0 = "edit 1 -n";
+		Parser.parseInput(edit0);
+	}
+
+	@Test(expected = ParsingFailureException.class)
+	public void testEditMoreThanTwoDateTimes()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		String edit0 = "edit 4 from 5 June to 6 June on 8 June";
+		Parser.parseInput(edit0);
+	}
+
+	@Test
+	public void testEditTo() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 4 Dec 2015
+		List<Date> dates0 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 to 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.TO, "to", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditStart() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 4 Dec 2015
+		List<Date> dates0 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 from 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.FROM, "from", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditEnd() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 4 Dec 2015
+		List<Date> dates0 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 on 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.ON, "on", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditStartAndEnd() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 3 Dec 2015 and 4 Dec 2015
+		List<Date> dates0 = parser.parse("3 Dec 2015 to 4 Dec 2015").get(0)
+				.getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 from 3 Dec 2015 to 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.FROM, "from", "3 Dec 2015"), new KeyParamPair(
+						Keywords.TO, "to", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditRecurringName() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		String edit0 = "edit 1 -r change name";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1 change name"),
+						new KeyParamPair(Keywords.RULE, "-r", ""))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditRecurringStartAndEnd()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 3 Dec 2015 and 4 Dec 2015
+		List<Date> dates0 = parser.parse("3 Dec 2015 to 4 Dec 2015").get(0)
+				.getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 -r from 3 Dec 2015 to 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.RULE, "-r", ""), new KeyParamPair(
+						Keywords.FROM, "from", "3 Dec 2015"), new KeyParamPair(
+						Keywords.TO, "to", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditRecurringPeriod() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		String edit0 = "edit 1 -r every week";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.RULE, "-r", ""), new KeyParamPair(
+						Keywords.EVERY, "every", "week"))),
+				new ArrayList<DateTime>(), new Period().withWeeks(1), true,
+				false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditRecurringLimit() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 1 jan 2016
+		List<Date> dates1 = parser.parse("1 jan 2016").get(0).getDates();
+		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates1.size(); i++) {
+			Date date = dates1.get(i);
+			dateTimes1.add(new DateTime(date));
+			dateTimes1.set(i, dateTimes1.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 -r until 1 jan 2016";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.RULE, "-r", ""), new KeyParamPair(
+						Keywords.UNTIL, "until", "1 jan 2016"))),
+				new ArrayList<DateTime>(), new Period(), true, true,
+				dateTimes1.get(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditRecurringStartAndEndWithLimit()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: from 3 Dec 2015 to 4 Dec 2015
+		List<Date> dates0 = parser.parse("3 Dec 2015 to 4 Dec 2015").get(0)
+				.getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		// date: 1 jan 2016
+		List<Date> dates1 = parser.parse("1 jan 2016").get(0).getDates();
+		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates1.size(); i++) {
+			Date date = dates1.get(i);
+			dateTimes1.add(new DateTime(date));
+			dateTimes1.set(i, dateTimes1.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 0 -r from 3 Dec 2015 to 4 Dec 2015 until 1 jan 2016";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "0"), new KeyParamPair(
+						Keywords.RULE, "-r", ""), new KeyParamPair(
+						Keywords.FROM, "from", "3 Dec 2015"), new KeyParamPair(
+						Keywords.UNTIL, "until", "1 jan 2016"),
+						new KeyParamPair(Keywords.TO, "to", "4 Dec 2015"))),
+				dateTimes0, new Period(), true, true, dateTimes1.get(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditRecurringNameWithLimit()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 1 jan 2016
+		List<Date> dates1 = parser.parse("1 jan 2016").get(0).getDates();
+		List<DateTime> dateTimes1 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates1.size(); i++) {
+			Date date = dates1.get(i);
+			dateTimes1.add(new DateTime(date));
+			dateTimes1.set(i, dateTimes1.get(i).withTime(23, 59, 0, 0));
+		}
+		String edit0 = "edit 0 -r new name until 1 jan 2016";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "0 new name"), new KeyParamPair(
+						Keywords.RULE, "-r", ""), new KeyParamPair(
+						Keywords.UNTIL, "until", "1 jan 2016"))),
+				new ArrayList<DateTime>(), new Period(), true, true,
+				dateTimes1.get(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditRecurringWithNonPeriod()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		String edit0 = "edit 1 -r every one";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1 every one"),
+						new KeyParamPair(Keywords.RULE, "-r", ""),
+						new KeyParamPair(Keywords.EVERY, "every", "one"))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testSearchFlagName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		String search0 = "search -n name";
+		ParsedInput parsed0 = new ParsedInput(Keywords.SEARCH,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.SEARCH, "search", ""), new KeyParamPair(
+						Keywords.NAME, "-n", "name"))), new ArrayList<DateTime>(),
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(search0));
+	}
+	
+	@Test
+	public void testSearchName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		String search0 = "search name";
+		ParsedInput parsed0 = new ParsedInput(Keywords.SEARCH,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.SEARCH, "search", "name"))), new ArrayList<DateTime>(),
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(search0));
+	}
+	
+	@Test
+	public void testSearchYear() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 2016
+		List<Date> dates0 = parser.parse("march 2016").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String search0 = "search -y 2016";
+		ParsedInput parsed0 = new ParsedInput(Keywords.SEARCH,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.SEARCH, "search", ""), new KeyParamPair(
+						Keywords.YEAR, "-y", "march 2016"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed0, Parser.parseInput(search0));
+
+	}
+
+	@Test(expected = InvalidTodoNameException.class)
+	public void testAddFlagName() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+
+		String add0 = "add -y";
+		Parser.parseInput(add0);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\ParserTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\SearchCommand.java
+	 */
+
+package com.equinox;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.joda.time.DateTime;
+
+import com.equinox.exceptions.InvalidDateException;
+import com.equinox.exceptions.InvalidParamException;
+import com.equinox.exceptions.NullTodoException;
+
+/**
+ * The SearchCommand class handles user input with search commands.
+ * 
+ */
+public class SearchCommand extends Command {
+
+	private static final String REGEX_SPACE = "\\s";
+
+	/**
+	 * Creates a SearchCommand object.
+	 * 
+	 * @param input
+	 *            the ParsedInput object containing the parameters.
+	 * @param memory
+	 *            the memory containing the Todos to which the changes should be
+	 *            committed.
+	 */
+	public SearchCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
+
+	/**
+	 * Searches keywords given in parsedInput in the memory. 
+	 */
+	@Override
+	public Signal execute() {
+		ArrayList<KeyParamPair> inputList = input.getParamPairs();
+		ArrayList<Todo> todos = new ArrayList<Todo>();
+		KeyParamPair pair;
+		Keywords typeKey;
+		String param;
+		List<DateTime> dateTimes = input.getDateTimes();
+
+		// Iterates through every KeyParamPair
+		for (int i = 0; i < inputList.size(); i++) {
+			pair = inputList.get(i);
+			typeKey = pair.getKeyword();
+			param = pair.getParam();
+
+			// assumes that if no flag input, assume that user is searching in
+			// Todo name
+			if (i == 0) {
+				typeKey = Keywords.NAME;
+			}
+
+			// checks if param behind a flag is an empty string
+			if (i != 0 && param.isEmpty()) {
+				return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
+			}
+
+			try {
+				searchIndex(todos, typeKey, param, dateTimes);
+			} catch (InvalidParamException e) {
+				return new Signal(Signal.SEARCH_INVALID_PARAMS, false);
+			}
+
+		}
+
+		// checks if resultSet is empty
+		if (todos.isEmpty()) {
+			return new Signal(Signal.SEARCH_EMPTY_SIGNAL, false);
+		}
+
+		// displays the list of todos that were found
+		String displayString = DisplayCommand.getDisplayChrono(todos, 2);
+		System.out.println(displayString);
+
+		return new Signal(Signal.SEARCH_SUCCESS_SIGNAL, true);
+	}
+
+	/**
+	 * Operation generates Collection of Todo Objects based on their ids and
+	 * search date and type
+	 * 
+	 * @param typeKey
+	 * @param searchDate
+	 * @param todoIds
+	 * @return Collection of Todo
+	 * @throws InvalidParamException
+	 */
+	private Collection<Todo> getTodos(Keywords typeKey, DateTime searchDate,
+			ArrayList<Integer> todoIds) throws InvalidParamException {
+		if (typeKey != Keywords.NAME && searchDate == null) {
+			throw new InvalidParamException(
+					ExceptionMessages.INVALID_SEARCH_TYPE);
+		}
+		ArrayList<Todo> todos = new ArrayList<Todo>();
+		Todo current;
+
+		for (int x : todoIds) {
+			try {
+				current = memory.getTodo(x);
+				if (current != null) {
+					if (current.isEvent() && !current.isSameDayEvent()) {
+						for (Todo shortTodo : current.breakIntoShortEvents()) {
+							switch (typeKey) {
+								case YEAR:
+									if (shortTodo.getEndTime().getYear() == searchDate
+											.getYear()) {
+										todos.add(shortTodo);
+									}
+									break;
+								case MONTH:
+									if (shortTodo.getEndTime().getMonthOfYear() == searchDate
+											.getMonthOfYear()) {
+										todos.add(shortTodo);
+									}
+									break;
+								case DAY:
+									if (shortTodo.getEndTime().getDayOfWeek() == searchDate
+											.getDayOfWeek()) {
+										todos.add(shortTodo);
+									}
+									break;
+								case TIME:
+									if (shortTodo.getEndTime().toLocalTime()
+											.equals(searchDate.toLocalTime())
+											|| shortTodo
+													.getStartTime()
+													.toLocalTime()
+													.equals(searchDate
+															.toLocalTime())) {
+										todos.add(shortTodo);
+									}
+									break;
+								case DATE:
+									if(shortTodo.getEndTime().toLocalDate().equals(searchDate.toLocalDate())) {
+										todos.add(shortTodo);
+									}
+									break;
+								default:
+									
+							}
+						}
+
+					} else {
+						todos.add(current);
+					}
+				}
+			} catch (NullTodoException e) {
+				
+			}
+		}
+		return todos;
+	}
+
+	/**
+	 * Search memory for each string in param array based on the typeKey and
+	 * updates the resultSet with the ids of the Todos found
+	 * 
+	 * @param resultSet
+	 * @param key
+	 * @param paramArray
+	 * @throws InvalidDateException
+	 * @throws InvalidParamException
+	 */
+	private void searchIndex(ArrayList<Todo> resultTodos, Keywords typeKey,
+			String param, List<DateTime> dateTimes)
+			throws InvalidParamException {
+		ArrayList<Integer> todoIds;
+		DateTime searchDate;
+		if (typeKey == Keywords.NAME) {
+			String[] paramArray = param.split(REGEX_SPACE);
+			for (String searchKey : paramArray) {
+				todoIds = memory.search(typeKey, searchKey);
+				addUniqueTodos(resultTodos, getTodos(todoIds));
+			}
+		} else { // assumes if typeKey != NAME, user wants to search for
+					// dateTime
+			try {
+				searchDate = dateTimes.remove(0);
+				todoIds = memory.search(typeKey, searchDate);
+				addUniqueTodos(resultTodos, getTodos(typeKey, searchDate, todoIds));
+			} catch (IndexOutOfBoundsException e) {
+				throw new InvalidParamException();
+			}
+
+		}
+
+	}
+
+	/**
+	 * Adds todos into resultTodos without repetition
+	 * @param resultTodos
+	 * @param todos
+	 */
+	private void addUniqueTodos(ArrayList<Todo> resultTodos,
+			Collection<Todo> todos) {
+		for (Todo todo: todos) {
+			if(!resultTodos.contains(todo)) {
+				resultTodos.add(todo);
+			}
+		}
+		
+	}
+
+
+	/**
+	 * Retrieves a Collection of Todo objects based on their todoIds
+	 * 
+	 * @param todoIds
+	 * @return Collection of Todos
+	 */
+	private Collection<Todo> getTodos(ArrayList<Integer> todoIds) {
+		ArrayList<Todo> todos = new ArrayList<Todo>();
+		Todo todo;
+		for (int id : todoIds) {
+			try {
+				todo = memory.getTodo(id);
+				todos.add(todo);
+			} catch (NullTodoException e) {
+
+			}
+		}
+		return todos;
+	}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\SearchCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+	 */
+
+	/**
+	 * Returns if todo is a same day event.
+	 * 
+	 * @return true if todo is a same day event false otherwise
+	 */
+	public boolean isSameDayEvent() {
+
+		return isSameDay(getStartTime(), getEndTime());
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+
+
+
+
+

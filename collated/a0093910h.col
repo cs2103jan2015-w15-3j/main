@@ -1,0 +1,1334 @@
+//@author: a0093910h
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\DisplayCommand.java
+	 */
+
+public class DisplayCommand extends Command {
+
+    private static Logger logger = LoggerFactory
+            .getLogger(DisplayCommand.class);
+
+    private static final boolean LOGGING = false;
+
+	// Parameters allowed for display command
+    private static final String PARAM_ALL_1 = "all";
+    private static final String PARAM_ALL_2 = "a";
+    private static final String PARAM_COMPLETE_1 = "completed";
+    private static final String PARAM_COMPLETE_2 = "complete";
+    private static final String PARAM_COMPLETE_3 = "c";
+    private static final String PARAM_RULE = "rule";
+
+	// Signals for whether to display pending or completed todos
+	private static final int showPending = 0;
+	private static final int showCompleted = 1;
+	private static final int showAll = 2;
+
+    // Messages for different categories of todos or recurring rule
+    private static final String MESSAGE_PENDING = "Showing pending todos:";
+    private static final String MESSAGE_COMPLETED = "Showing completed todos:";
+    private static final String MESSAGE_ALL = "Showing all todos:";
+    private static final String MESSAGE_RULES = "Showing recurring rules:";
+
+    // Section headings for dates and floating tasks
+    private static final String FLOATING_TASK_HEADING = "Anytime";
+    private static final Object HEADING_PREFIX = System.lineSeparator();
+
+	// Max length for the title of todo to be displayed
+    private static final int MAX_CHAR = 30;
+    private static final int TOTAL_LENGTH = 20;
+
+    // Headings for columns
+    private static final String HEADING_ID = "ID";
+    private static final String HEADING_NAME = "Name";
+    private static final String HEADING_TIME = "Time";
+
+    // Decoration for date section heading
+    private static final String DATE_DECO = ".";
+
+    // Empty field text
+    private static final String EMPTY_FIELD = "NIL";
+
+    // String formats
+    private static final String eventFormat = "%1$-2s | %2$-30s | %3$s - %4$s";
+    private static final String deadLineFormat = "%1$-2s | %2$-30s | %3$s";
+    private static final String floatingFormat = "%1$-2s | %2$-30s | %3$s";
+
+    private static final String headingFormat = "%1$-2s | %2$-30s | %3$s";
+
+    private static DateTime inOneDay = new DateTime().plusDays(1);
+
+	private static final DateTimeFormatter DateFormatter = DateTimeFormat
+            .forPattern("EEE dd MMM yyyy");
+	private static final DateTimeFormatter TimeFormatter = DateTimeFormat
+			.forPattern("HH:mm");
+
+    private static final String RELATIVE_PERIOD_PREFIX = " in ";
+
+    // Relative timing format
+    private static PeriodFormatter formatter = new PeriodFormatterBuilder()
+            .appendHours().appendSuffix("h ")
+            .printZeroNever().appendMinutes().appendSuffix("min ")
+            .printZeroNever().toFormatter();
+
+	/**
+     * Creates a DisplayCommand object.
+     * 
+     * @param input the ParsedInput object containing the parameters.
+     * @param memory the memory containing the Todos to which the changes should
+     *            be committed.
+     */
+    public DisplayCommand(ParsedInput input, Memory memory) {
+    	super(input, memory);
+    }
+
+    @Override
+	public Signal execute() {
+		String displayString;
+		Collection<Todo> todos = memory.getAllTodos();
+		if (todos.size() == 0) {
+            return new Signal(Signal.DISPLAY_EMPTY_TODO_SIGNAL, true);
+		}
+
+        // Check that display command only have one key param pair
+        if (keyParamPairs.size() > 1) {
+            String param = keyParamPairs.get(1).getParam();
+            return new Signal(
+                    String.format(Signal.DISPLAY_INVALID_PARAM, param), false);
+        }
+
+		String param = keyParamPairs.get(0).getParam();
+        if (param.isEmpty()) {
+            // By default we show pending tasks, in chronological order
+            displayDefault();
+        } else if (param.equals(PARAM_COMPLETE_1) || param.equals(PARAM_COMPLETE_2)
+				|| param.equals(PARAM_COMPLETE_3)) {
+            displayString = getDisplayChrono(showCompleted);
+			System.out.println(displayString);
+		} else if (param.equals(PARAM_ALL_1) || param.equals(PARAM_ALL_2)) {
+            displayString = getDisplayChrono(showAll);
+			System.out.println(displayString);
+        } else if (param.equals(PARAM_RULE)) {
+            Collection<RecurringTodoRule> rules = memory.getAllRules();
+            // Display message if there are no rules
+            if (rules.isEmpty()) {
+                return new Signal(Signal.DISPLAY_EMPTY_RULE_SIGNAL, true);
+            }
+            displayString = getDisplayForRules(rules);
+            System.out.println(displayString);
+        } else {
+            // Try to parse the param as the id of a specific todo to show
+            // the detail of the todo
+
+            try {
+                int id = Integer.parseInt(param);
+                Todo todo = memory.getTodo(id);
+                displayString = todo.toString();
+                System.out.println(displayString);
+            } catch (NullTodoException e) {
+                return new Signal(String.format(Signal.DISPLAY_ID_NOT_FOUND,
+                        param), false);
+            } catch (NumberFormatException e) {
+                return new Signal(String.format(Signal.DISPLAY_INVALID_PARAM,
+                        param), false);
+            }
+
+        }
+        return new Signal(Signal.DISPLAY_SUCCESS_SIGNAL, true);
+	}
+
+    private String getDisplayForRules(Collection<RecurringTodoRule> rules) {
+        StringBuilder sBuilder = new StringBuilder();
+        sBuilder.append(MESSAGE_RULES + System.lineSeparator());
+
+        Iterator<RecurringTodoRule> iterator = rules.iterator();
+        while (iterator.hasNext()) {
+            sBuilder.append(System.lineSeparator());
+            RecurringTodoRule recurringTodoRule = (RecurringTodoRule) iterator
+                    .next();
+            sBuilder.append(recurringTodoRule.getDisplayString());
+
+        }
+        return sBuilder.toString();
+    }
+
+    public void displayDefault() {
+        displayDefault(memory);
+    }
+
+    public static void displayDefault(Memory memory) {
+        String displayString;
+        displayString = getDisplayChrono(memory, showPending);
+        System.out.println(displayString);
+    }
+
+    public static String getDisplayChrono(Memory memory, int signal) {
+        Collection<Todo> todos = memory.getAllTodos();
+        ArrayList<Todo> clonedTodos = cloneTodos(todos);
+        // By default, we order the todos in chronological order
+        Collections.sort(clonedTodos, new ChronoComparator());
+        return getDisplayString(clonedTodos, signal);
+    }
+
+    public static String getDisplayChrono(ArrayList<Todo> todos, int signal) {
+        ArrayList<Todo> clonedTodos = cloneTodos(todos);
+        // By default, we order the todos in chronological order
+        Collections.sort(clonedTodos, new ChronoComparator());
+        return getDisplayString(clonedTodos, signal);
+    }
+
+    public String getDisplayChrono(int signal) {
+        Collection<Todo> todos = memory.getAllTodos();
+        ArrayList<Todo> clonedTodos = cloneTodos(todos);
+        // By default, we order the todos in chronological order
+        Collections.sort(clonedTodos, new ChronoComparator());
+		return getDisplayString(clonedTodos, signal);
+	}
+
+	private static ArrayList<Todo> cloneTodos(Collection<Todo> todos) {
+		ArrayList<Todo> clonedTodos = new ArrayList<Todo>(todos.size());
+		for (Todo todo : todos) {
+			clonedTodos.add(todo.copy());
+		}
+		return clonedTodos;
+	}
+
+    public static String getDisplayString(Collection<Todo> todos, int signal) {
+        // Break down the events that spans across several days
+        todos = breakDownLongEvents(todos);
+
+		Iterator<Todo> iterator = todos.iterator();
+		StringBuilder sBuilder = new StringBuilder();
+        DateTime currentDate = new DateTime(0);
+		appendHeading(signal, sBuilder);
+
+		while (iterator.hasNext()) {
+			Todo todo = iterator.next();
+            if (LOGGING) {
+                logger.info("adding todo {} into display", todo.getName());
+            }
+
+            // Show pending, skip the completed tasks
+            if (signal == showPending && todo.isDone()) {
+                continue;
+            }
+            // Show completed, skip the pending tasks
+            if (signal == showCompleted && !todo.isDone()) {
+                continue;
+            }
+            DateTime todoDateTime = todo.getDateTime();
+            currentDate = appendDateIfNew(sBuilder, currentDate, todoDateTime);
+            appendTodo(sBuilder, todo);
+		}
+		return sBuilder.toString();
+	}
+
+    /**
+     * This method handles the events that spans over a few days and break them
+     * down into smaller todos within one day for display purposes
+     * 
+     * @param todos
+     *            todos to be broken down
+     * @return todos with long events broken down into shorter ones which are
+     *         within a single day
+     */
+    private static Collection<Todo> breakDownLongEvents(Collection<Todo> todos) {
+        ArrayList<Todo> shortTodos = new ArrayList<Todo>();
+        for (Todo todo : todos) {
+            if (todo.isEvent()
+                    && !todo.isSameDayEvent()) {
+                shortTodos.addAll(todo.breakIntoShortEvents());
+            } else {
+                shortTodos.add(todo);
+            }
+        }
+        Collections.sort(shortTodos, new ChronoComparator());
+        return shortTodos;
+    }
+
+
+    /**
+     * Append the date if the date is a new one and has not been displayed yet
+     * 
+     * @param sBuilder
+     * @param currentDate
+     * @param todoDateTime
+     * @return the updated current date
+     */
+    private static DateTime appendDateIfNew(StringBuilder sBuilder,
+            DateTime currentDate, DateTime todoDateTime) {
+        if (!dateAlreadyDisplayed(currentDate, todoDateTime)) {
+            // Date not displayed yet, update currentDate and display the
+            // date
+            currentDate = todoDateTime;
+            appendDate(sBuilder, todoDateTime);
+        }
+        return currentDate;
+    }
+
+    /**
+     * Check if the date is already displayed
+     * 
+     * currentDate will be set to null for the first floating task, and a
+     * heading for floating task will be displayed.
+     * 
+     * Subsequent floating tasks will not have the heading displayed when the
+     * currentDate is null.
+     * 
+     * @param currentDate
+     * @param dateTime
+     * @return	true if date has already been displayed, false otherwise.
+     */
+    private static boolean dateAlreadyDisplayed(DateTime currentDate,
+            DateTime dateTime) {
+        if (currentDate == null) {
+            // null currentDate indicates that floating task heading has
+            // already been displayed, no other headings will be displayed
+            return true;
+        }
+        if (dateTime == null) {
+            // null dateTime indicates that this is a floating task
+            return false;
+        }
+        if (isSameDay(currentDate, dateTime)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isSameDay(DateTime date1, DateTime date2) {
+        if (date1 == null || date2 == null) {
+            return false;
+        }
+        return (date1.getDayOfYear() == date2.getDayOfYear() && date1
+                .getYear() == date2.getYear());
+    }
+
+    /**
+     * Append the date before the task details if the date is not already
+     * appended.
+     * 
+     * Each date will be displayed only once for all tasks on that date.
+     * 
+     * Floating tasks will have a heading in place of the date.
+     * 
+     * @param sBuilder
+     * @param todo
+     */
+    private static void appendDate(StringBuilder sBuilder, DateTime dateTime) {
+        // Add empty spaces in front
+        sBuilder.append(HEADING_PREFIX);
+        if (dateTime == null) {
+            // Floating task, add heading
+            sBuilder.append(addDecoForDate(FLOATING_TASK_HEADING)
+                    + System.lineSeparator());
+        } else {
+            sBuilder.append(addDecoForDate(formatDateForDisplay(dateTime))
+                    + System.lineSeparator());
+        }
+    }
+
+    private static String addDecoForDate(String s) {
+        return StringUtils.center(s, TOTAL_LENGTH, DATE_DECO);
+    }
+
+    private static void appendHeading(int signal, StringBuilder sBuilder) {
+        if (signal == showAll) {
+			sBuilder.append(MESSAGE_ALL + System.lineSeparator());
+		} else if (signal == showCompleted) {
+			sBuilder.append(MESSAGE_COMPLETED + System.lineSeparator());
+		} else if (signal == showPending) {
+			sBuilder.append(MESSAGE_PENDING + System.lineSeparator());
+		}
+        sBuilder.append(String.format(headingFormat, HEADING_ID,
+                HEADING_NAME, HEADING_TIME)
+                + System.lineSeparator());
+    }
+
+    private static void appendTodo(StringBuilder sBuilder, Todo todo) {
+		if (todo.getStartTime() != null && todo.getEndTime() != null) {
+			sBuilder.append(formatEvent(todo));
+		} else if (todo.getEndTime() != null) {
+			sBuilder.append(formatDeadline(todo));
+		} else if (todo.getStartTime() == null && todo.getEndTime() == null) {
+			sBuilder.append(formatFloatingTask(todo));
+		}
+	}
+
+	private static String formatFloatingTask(Todo todo) {
+		String title = todo.getName();
+        title = shortenTitle(title);
+		String id = String.valueOf(todo.getId());
+        return String.format(floatingFormat, id, title, EMPTY_FIELD)
+				+ System.lineSeparator();
+	}
+
+	private static String formatDeadline(Todo todo) {
+		String title = todo.getName();
+        title = shortenTitle(title);
+		String id = String.valueOf(todo.getId());
+		DateTime endTime = todo.getEndTime();
+        String endTimeString = formatTimeForDisplay(endTime);
+        return String.format(deadLineFormat, id, title,
+				endTimeString) + System.lineSeparator();
+	}
+
+	private static String formatEvent(Todo todo) {
+		String title = todo.getName();
+        title = shortenTitle(title);
+		String id = String.valueOf(todo.getId());
+		DateTime startTime = todo.getStartTime();
+		DateTime endTime = todo.getEndTime();
+        String startTimeString = formatTimeForDisplay(startTime);
+        String endTimeString = formatTimeForDisplay(endTime);
+        return String.format(eventFormat, id, title,
+				startTimeString, endTimeString) + System.lineSeparator();
+	}
+
+	static class ChronoComparator implements Comparator<Todo> {
+
+		@Override
+		public int compare(Todo o1, Todo o2) {
+			// Floating tasks with no time will be sorted in lexicographical
+			// order
+			if (o1.getDateTime() == null && o2.getDateTime() == null) {
+				return o1.getName().compareTo(o2.getName());
+			}
+			// If only one todo has time, the other with no time will be sorted
+			// to the back
+			if (o1.getDateTime() == null) {
+				return 1;
+			} else if (o2.getDateTime() == null) {
+				return -1;
+			} else {
+				// Both have time, compare directly
+				return o1.getDateTime().compareTo(o2.getDateTime());
+			}
+		}
+	}
+
+	private static String shortenTitle(String title) {
+		int maxLength = (title.length() < MAX_CHAR) ? title.length() : MAX_CHAR;
+		title = title.substring(0, maxLength);
+		return title;
+	}
+
+    private static String formatTimeForDisplay(DateTime time) {
+        DateTime now = new DateTime();
+        String periodString = "";
+        if (time.isAfter(now) && time.isBefore(inOneDay)) {
+            Period period = new Period(now, time);
+            periodString = RELATIVE_PERIOD_PREFIX + formatter.print(period);
+        }
+
+        String timeString = TimeFormatter.print(time).concat(periodString);
+        return timeString;
+    }
+
+    private static String formatDateForDisplay(DateTime time) {
+        String dateString = DateFormatter.print(time);
+        return dateString;
+    }
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\DisplayCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\DisplayCommandTest.java
+	 */
+
+public class DisplayCommandTest {
+
+    Collection<Todo> todos;
+
+    Zeitgeist logic;
+
+    @After
+    public void tearDown() {
+        logic.deleteStorageFile();
+    }
+
+    @Before
+    public void setUp() throws Exception {
+
+        String fileDirectory = Zeitgeist.getStorageFileDirFromSettings();
+        logic = new Zeitgeist(fileDirectory);
+        logic.reloadMemory();
+
+        // try {
+        logic.handleInput("add floating task");
+
+        logic.handleInput("add CS3230 deadline on 9 March 9pm");
+
+        logic.handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
+
+        logic.handleInput("add new year from 1 January at 10am to 1 January at 11am");
+
+        logic.handleInput("add CS1010 deadline by 3 Feb at 10pm");
+
+        logic.handleInput("add read floating books");
+
+        logic.handleInput("add CS3243 project deadline by 7 March at 9am");
+
+        logic.handleInput("add CS3333 project 2 on 7 Apr 10am");
+
+        logic.handleInput("add meet june from malaysia from 9pm on 9 march to 10pm on 10 march");
+
+        logic.handleInput("mark 0");
+
+        logic.handleInput("mark 2");
+
+        todos = Zeitgeist.memory.getAllTodos();
+    }
+
+    @Test
+    public void testDisplayChronoPending() {
+        String expected = "Showing pending todos:\nID | Name                           | "
+                + "Time\n\n..Thu 01 Jan 2015...\n3  | new year                       | "
+                + "10:00 - 11:00\n\n..Tue 03 Feb 2015...\n4  | CS1010 deadline                | "
+                + "22:00\n\n..Sat 07 Mar 2015...\n6  | CS3243 project deadline        | "
+                + "09:00\n\n..Mon 09 Mar 2015...\n1  | CS3230 deadline                | "
+                + "21:00\n8  | meet june from malaysia        | "
+                + "21:00 - 23:59\n\n..Tue 10 Mar 2015...\n8  | meet june from malaysia        | "
+                + "00:00 - 22:00\n\n..Tue 07 Apr 2015...\n7  | CS3333 project 2               | "
+                + "10:00\n\n......Anytime.......\n5  | read floating books            | NIL\n";
+        assertEquals(expected, DisplayCommand.getDisplayChrono(Zeitgeist.memory, 0));
+    }
+
+    @Test
+    public void testDisplayChronoCompleted() {
+        String expected = "Showing completed todos:\nID | Name                           "
+                + "| Time\n\n..Tue 03 Mar 2015...\n2  | CIP event                      "
+                + "| 10:00 - 12:00\n\n......Anytime.......\n0  | floating task                  "
+                + "| NIL\n";
+        assertEquals(expected, DisplayCommand.getDisplayChrono(Zeitgeist.memory, 1));
+    }
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\DisplayCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\ExitCommand.java
+	 */
+
+	/**
+	 * Creates an ExitCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
+	public ExitCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
+	@Override
+    public Signal execute() {
+        String param = keyParamPairs.get(0).getParam();
+        if (!param.isEmpty()) {
+            return new Signal(Signal.EXIT_INVALLID_PARAMS, false);
+        }
+        
+        memory.onDestroy();
+        memory.saveToFile();
+        return new Signal(Signal.EXIT_SUCCESS, true);
+    }
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\ExitCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\RecurringTodoRule.java
+	 */
+
+/**
+ * The RecurringTodoRule class contains the rules and methods for creating and
+ * storing individual Todos
+ *
+ */
+public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
+
+    private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
+
+    protected Period recurringInterval;
+    protected int recurringId;
+    private DateTime recurrenceLimit;
+
+    private String name;
+    private String originalName;
+
+    private List<DateTime> dateTimes;
+
+    private ArrayList<Todo> recurringTodos = new ArrayList<Todo>();
+
+    private String RECURRING_TODO_PREIX = "(Recurring) ";
+
+    protected static final String recurringFormat = "Recurrence Rule: \"%1$s\" every %2$s until %3$s";
+    protected static final String recurringDisplayFormat = "Recurrence Rule: "
+            + "%1$s" + System.lineSeparator() + "Every %2$s until %3$s"
+            + System.lineSeparator();
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("EEE dd MMM yyyy");
+    private static final PeriodFormatter PERIOD_FORMATTER;
+    static {
+    	PeriodFormatterBuilder pfb = new PeriodFormatterBuilder();
+    	PERIOD_FORMATTER = pfb
+    			.printZeroNever().appendYears().appendSuffix(" year(s)")
+    			.printZeroNever().appendMonths().appendSuffix(" month(s)")
+    			.printZeroNever().appendWeeks().appendSuffix(" week(s)")
+    			.printZeroNever().appendDays().appendSuffix(" day(s)")
+    			.toFormatter();
+    }
+    
+
+    /**
+     * Constructor for the RecurringTodoRule without specifying limit
+     * 
+     * @param id
+     * @param recurringId
+     * @param name
+     * @param dateTimes
+     * @param period
+     */
+    public RecurringTodoRule(int recurringId, String name,
+            List<DateTime> dateTimes, Period period) {
+        super();
+        this.originalName = name;
+        this.name = RECURRING_TODO_PREIX + name;
+        this.dateTimes = dateTimes;
+        this.recurringInterval = period;
+        this.recurringId = recurringId;
+        this.recurrenceLimit = new DateTime()
+                .plus(DEFAULT_RECURRENCE_LIMIT_PERIOD);
+    }
+
+    /**
+     * Constructor for the RecurringTodoRule with limit
+     * 
+     * @param id
+     * @param recurringId
+     * @param name
+     * @param dateTimes
+     * @param period
+     * @param limit
+     */
+    public RecurringTodoRule(int recurringId, String name,
+            List<DateTime> dateTimes, Period period, DateTime limit) {
+        super();
+        this.originalName = name;
+        this.name = RECURRING_TODO_PREIX + name;
+        this.dateTimes = dateTimes;
+        this.recurringInterval = period;
+        this.recurringId = recurringId;
+        this.recurrenceLimit = limit;
+    }
+    
+    /**
+     * Create a copy of a rule. For use in EditCommand.
+     * 
+     * @param rule
+     */
+    private RecurringTodoRule(RecurringTodoRule rule) {
+    	this.originalName = rule.originalName;
+        this.name = rule.name;
+    	this.dateTimes = rule.dateTimes;
+    	this.recurringInterval = rule.recurringInterval;
+    	this.recurringId = rule.recurringId;
+    	this.recurrenceLimit = rule.recurrenceLimit;
+    }
+    
+    private RecurringTodoRule(int recurringId) {
+    	this.recurringId = recurringId;
+    }
+    
+    public RecurringTodoRule copy() {
+    	return new RecurringTodoRule(this);
+    }
+    
+    public RecurringTodoRule getPlaceholder() {
+    	return new RecurringTodoRule(recurringId);
+    }
+    
+    public boolean isPlaceholder() {
+    	return recurringInterval == null;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<DateTime> getDateTimes() {
+        return dateTimes;
+    }
+
+    public ArrayList<Todo> getRecurringTodos() {
+        return recurringTodos;
+    }
+
+    public Period getRecurringInterval() {
+        return recurringInterval;
+    }
+
+    public int getId() {
+        return recurringId;
+    }
+
+    public DateTime getRecurrenceLimit() {
+        return recurrenceLimit;
+    }
+
+    /**
+     * Update the list of Todos stored in the rule
+     * 
+     * @return the number of new Todos created due to the update
+     */
+    public int updateTodoList(Memory memory) {
+        int currentID;
+        int newTodoCount = 0;
+        if (recurringTodos.isEmpty()) {
+            currentID = memory.obtainFreshId();
+            Todo newTodo = new Todo(currentID, name, dateTimes, recurringId);
+            addFirstRecurringTodo(memory, newTodo);
+            newTodoCount++;
+            updateDateTime();
+        }
+
+        DateTime now = new DateTime();
+        DateTime nextOccurrence = now.plus(getRecurringInterval());
+        // Update until next occurrence or the limit, whichever is earlier
+        DateTime updateLimit = nextOccurrence;
+        if (nextOccurrence.compareTo(getRecurrenceLimit()) > 0) {
+            updateLimit = getRecurrenceLimit();
+        }
+
+        while (getDateTime().compareTo(updateLimit) <= 0) {
+            currentID = memory.obtainFreshId();
+            Todo newTodo = new Todo(currentID, name, dateTimes, recurringId);
+            addRecurringTodo(memory, newTodo);
+            newTodoCount++;
+            updateDateTime();
+        }
+
+        return newTodoCount;
+    }
+
+    public void setRecurrenceLimit(DateTime recurrenceLimit)
+            throws InvalidParamException {
+        if (recurrenceLimit == null) {
+            throw new InvalidParamException(
+                    "Recurring limit of recurring rule cannot be empty");
+        } else {
+            this.recurrenceLimit = recurrenceLimit;
+        }
+    }
+
+    public void setOriginalName(String originalName) {
+        this.originalName = originalName;
+        this.name = RECURRING_TODO_PREIX + originalName;
+    }
+
+    public void setRecurringInterval(Period recurringInterval)
+            throws InvalidParamException {
+        if (recurringInterval == null) {
+            throw new InvalidParamException(
+                    "Recurring interval cannot be empty");
+        } else {
+            this.recurringInterval = recurringInterval;
+        }
+    }
+
+    public void setDateTimes(List<DateTime> dateTimes)
+            throws InvalidParamException {
+        if (dateTimes == null || dateTimes.size() == 0) {
+            throw new InvalidParamException(
+                    "DateTime field of recurring rule cannot be empty");
+        } else {
+            this.dateTimes = dateTimes;
+        }
+    }
+
+    /**
+     * Add the first occurrence of the rule
+     * 
+     * This is considered to be added together with the rule by the user
+     * 
+     * @param memory
+     * @param newTodo
+     */
+    private void addFirstRecurringTodo(Memory memory, Todo newTodo) {
+        recurringTodos.add(newTodo);
+        memory.userAdd(newTodo);
+    }
+
+    /**
+     * Add the subsequent occurrences of the rule
+     * 
+     * This is considered to be added automatically by the system, not the user
+     * 
+     * @param memory
+     * @param newTodo
+     */
+    private void addRecurringTodo(Memory memory, Todo newTodo) {
+        recurringTodos.add(newTodo);
+        memory.systemAdd(newTodo);
+    }
+
+    private void updateDateTime() {
+        for (int i = 0; i < dateTimes.size(); i++) {
+            if (dateTimes.get(i) != null) {
+                dateTimes.set(i, dateTimes.get(i).plus(recurringInterval));
+            }
+        }
+    }
+
+    public String getDisplayString() {
+        // Use the todo occurrence's toString result as part of the
+        // display string
+        Todo todoOccurrnece = new Todo(0, name, dateTimes, recurringId);
+        return String.format(recurringDisplayFormat, todoOccurrnece.toString(),
+                recurringInterval.toString(PERIOD_FORMATTER),
+                recurrenceLimit.toString(DATE_TIME_FORMATTER));
+
+    }
+
+    public String toString() {
+        return String.format(recurringFormat, originalName,
+                recurringInterval.toString(PERIOD_FORMATTER),
+                recurrenceLimit.toString(DATE_TIME_FORMATTER));
+    }
+
+    /**
+     * Method to return a DateTime of the Recurring rule's last occurrence. The
+     * order of preference: start time > end time > null
+     * 
+     * 
+     * @return start time for events; end time for deadlines; null for tasks.
+     */
+    public DateTime getDateTime() {
+        if (dateTimes.get(0) != null) {
+            return dateTimes.get(0);
+        } else if (dateTimes.get(1) != null) {
+            return dateTimes.get(1);
+        } else {
+            return null;
+        }
+    }
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\RecurringTodoRule.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\RecurringTodoRuleTest.java
+	 */
+
+public class RecurringTodoRuleTest {
+
+    @Test
+    public void testUpdateTodoList() throws InvalidDateException {
+        Period periodWeek = new Period().withWeeks(1);
+        Period periodMonth = new Period().withMonths(1);
+        List<DateTime> pastArrayList;
+        DateTime past;
+
+        // Test the case where the limit is in the past and is before the
+        // initial date, the recurrence does not happen, only the initial todo
+        // is added
+        pastArrayList = Parser.parseDates("4 March 4pm");
+        past = pastArrayList.get(0);
+        DateTime pastLimitBefore = past.minus(2);
+        RecurringTodoRule ruleBefore = new RecurringTodoRule(0,
+                "past deadline", pastArrayList, periodWeek, pastLimitBefore);
+        assertEquals(1, ruleBefore.updateTodoList(new Memory()));
+
+        // Test the case where the limit is in the past and is immediately after
+        // the initial date, the todo does not recur no new todos should be
+        // added except the initial one
+        pastArrayList = Parser.parseDates("4 March 4pm");
+        past = pastArrayList.get(0);
+        DateTime pastLimitImmediate = past.plus(2);
+        RecurringTodoRule ruleImmediate = new RecurringTodoRule(0,
+                "past deadline", pastArrayList, periodWeek, pastLimitImmediate);
+        assertEquals(1, ruleImmediate.updateTodoList(new Memory()));
+        
+        // Test the case where the limit is in the past and is after the initial
+        // date, the rule recurs once, 2 new todos should be added
+        pastArrayList = Parser.parseDates("4 March 4pm");
+        past = pastArrayList.get(0);
+        DateTime pastLimitOneWeek = past.plus(periodWeek).plus(2);
+        RecurringTodoRule ruleOneWeek = new RecurringTodoRule(0,
+                "past deadline", pastArrayList, periodWeek, pastLimitOneWeek);
+        assertEquals(2, ruleOneWeek.updateTodoList(new Memory()));
+
+        // Test the case where the limit is in distant future, initial todo is
+        // in near past, add 2 new todos until the next occurrence in the future
+        past = new DateTime().minus(2);
+        pastArrayList = new ArrayList<DateTime>();
+        pastArrayList.add(past);
+        DateTime futureLimitOneMonth = past.plus(periodMonth).plus(2);
+        RecurringTodoRule ruleFuture = new RecurringTodoRule(0,
+                "past deadline", pastArrayList, periodWeek, futureLimitOneMonth);
+        assertEquals(2, ruleFuture.updateTodoList(new Memory()));
+
+        // Test the case where the limit is in distant future, initial todo is
+        // in distance past, add 4 new todos until the next occurrence in the
+        // future
+        past = new DateTime().minus(periodWeek).minus(periodWeek).minus(2);
+        pastArrayList = new ArrayList<DateTime>();
+        pastArrayList.add(past);
+        RecurringTodoRule ruleFuture2 = new RecurringTodoRule(0,
+                "past deadline", pastArrayList, periodWeek, futureLimitOneMonth);
+        assertEquals(4, ruleFuture2.updateTodoList(new Memory()));
+
+    }
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\RecurringTodoRuleTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Signal.java
+	 */
+
+	/**
+	 * Welcome Signal
+	 */
+	public static final String WELCOME_SIGNAL = "Welcome to Zeitgeist!";
+
+	/**
+	 * Add Command Signals
+	 */
+	public static final String ADD_SUCCESS_SIGNAL_FORMAT = "%1$s successfully added.";
+	public static final String ADD_UNKNOWN_ERROR = "Unknown add error";
+	public static final String ADD_END_BEFORE_START_ERROR = "The start time is after the end time.";
+	public static final String ADD_INVALID_RECURRING_ERROR = "No date or time given for recurring todo.";
+	public static final String ADD_INVALID_TODO_NAME_ERROR = "Flags in todo names are not supported."
+			+ System.lineSeparator() + "Flags: -d, -dt, -m, -r, -t, -y";
+	public static final String ADD_INVALID_PARAMS = "The number of parameters is invalid."
+			+ System.lineSeparator()
+			+ "\t Supported formats:"
+			+ System.lineSeparator()
+			+ "\t Floating tasks: add <name>"
+			+ System.lineSeparator()
+			+ "\t Deadlines: add <name> by/on/at <date>"
+			+ System.lineSeparator()
+			+ "\t Events: add <name> from <time> on <date> to <time> on <date>"
+			+ System.lineSeparator() + "\t\t add <name> from <date> to <date>";
+
+	/**
+	 * Delete Command Signals
+	 */
+	public static final String DELETE_SUCCESS_FORMAT = "%1$s successfully deleted.";
+	public static final String DELETE_INVALID_PARAMS = "The number of parameters is invalid."
+			+ System.lineSeparator()
+			+ "\t Supported format:"
+			+ System.lineSeparator() + "\t delete <indexNumber>";
+
+	/**
+	 * Display Command Signals
+	 */
+	public static final String DISPLAY_SUCCESS_SIGNAL = "";
+    public static final String DISPLAY_EMPTY_TODO_SIGNAL = "The list of todos is empty.";
+    public static final String DISPLAY_EMPTY_RULE_SIGNAL = "The list of recurring rules is empty.";
+	public static final String DISPLAY_ID_NOT_FOUND = "The specified todo with ID %1$s does not exist";
+	public static final String DISPLAY_INVALID_PARAM = "The parameter %1$s is not recognized."
+			+ System.lineSeparator()
+            + "The display command only supports only following additional parameters: "
+            + "c, completed, a, all, rule, [ID]. "
+			+ System.lineSeparator()
+			+ "Pending todos will be displayed by default, when no paramters are supplied. ";
+
+	/**
+	 * Edit Command Signals
+	 */
+	public static final String EDIT_SUCCESS_FORMAT = "%1$s successfully modified to %2$s";
+	public static final String EDIT_RULE_SUCCESS_FORMAT = "Rule %1$s successfuly modified to %2$s.";
+	public static final String EDIT_END_BEFORE_START = "The start time must be before the end time.";
+	public static final String EDIT_INVALID_DATE = "Date(s) specified is/are invalid";
+	public static final String EDIT_NO_LONGER_RECURS = "Recurring Todo rule specified no longer exists.";
+	public static final String EDIT_LIMIT_BEFORE_NOW = "Limit specified must not be before current time and date.";
+	public static final String EDIT_INVALID_PARAMS = "The number or format of parameters is invalid."
+			+ System.lineSeparator()
+			+ "\t Supported format:"
+			+ System.lineSeparator()
+			+ "\t edit <id> [<newName>] [from <newStartTime>] [to <newEndTime>] [by; on; at <newDeadline>] [every <interval>] [until <limit>]"
+			+ System.lineSeparator()
+			+ "\t modifications of the recurrence interval requires specification of event period or deadline.";
+
+	/**
+	 * Exit Command Signals
+	 */
+	public static final String EXIT_SUCCESS = "Exit successfully.";
+	public static final String EXIT_INVALLID_PARAMS = "Exit command should not be accompanied by additional paramters.";
+
+	/**
+	 * Mark Command Signals
+	 */
+	public static final String MARK_SUCCESS_SIGNAL_FORMAT = "%1$s successfully marked as done.";
+	public static final String MARK_UNKNOWN_ERROR = "Unknown mark error.";
+	public static final String MARK_INVALID_PARAMS = "The number of parameters is invalid."
+			+ System.lineSeparator()
+			+ "\t Supported format:"
+			+ System.lineSeparator() + "\t mark <indexNumber>";
+
+	/**
+	 * Undo Command Signals
+	 */
+	public static final String UNDO_SUCCESS = "Undo operation successful.";
+	public static final String UNDO_INVALID_PARAMS = "The number of parameters is invalid."
+			+ System.lineSeparator()
+			+ "\t Supported format:"
+			+ System.lineSeparator() + "\t undo";
+
+	/**
+	 * Redo Command Signals
+	 */
+	public static final String REDO_SUCCESS = "Redo operation successful.";
+	public static final String REDO_INVALID_PARAMS = "The number of parameters is invalid"
+			+ System.lineSeparator()
+			+ "\t Supported format:"
+			+ System.lineSeparator() + "\t redo";
+
+	/**
+	 * Search Command Signals
+	 */
+
+	public static final String SEARCH_SUCCESS_SIGNAL = "";
+	public static final String SEARCH_EMPTY_SIGNAL = "No result found.";
+	public static final String SEARCH_INVALID_PARAMS = "The type of parameters is invalid"
+			+ System.lineSeparator()
+			+ "\t Supported format:"
+			+ System.lineSeparator()
+			+ "\t search [<keyword>] [ -n <keyword> ] [ -dt <dateKeyword> ] [ -d <dayKeyword] [-t <timeKeyword>] [-m <monthKeyword>]";
+
+	/**
+	 * Generic Signals
+	 */
+	public static final String GENERIC_EMPTY_PARAM = "At least one parameter is unspecified.";
+	public static final String GENERIC_INVALID_COMMAND_FORMAT = "%1$s command is invalid!"
+			+ System.lineSeparator()
+			+ "Supported commands: add, mark, delete, edit, undo, etc...";
+	public static final String GENERIC_FATAL_ERROR = "Fatal error.";
+
+	public static final String ERROR_PREFIX = "Error: ";
+
+	public static final String DATE_PARSING_ERROR = "Unable to parse dates: Try rephrasing your dates ";
+
+	private String message;
+
+	/**
+	 * Constructor for Signal
+	 * 
+	 * @param signal
+	 */
+	public Signal(String signal, boolean isSuccessful) {
+		this.message = signal;
+		if (!isSuccessful) {
+			this.message = ERROR_PREFIX.concat(this.message);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return message;
+	}
+
+	public static boolean areParamsEqual(String[] params1, String[] params2) {
+		// check if params1 and params2 are null
+		if (params1 == null && params2 == null) {
+			return true;
+		} else if (params1 == null && params2 != null) {
+			return false;
+		} else if (params1 != null && params2 == null) {
+			return false;
+		}
+
+		// Neither params1 nor params2 are null.
+		// Check for equal length
+		if (params1.length != params2.length) {
+			return false;
+		}
+		// Every string in params1 is equal to every corresponding string in
+		// params2
+		int index = 0;
+		for (String str : params1) {
+			if (!str.equals(params2[index])) {
+				return false;
+			}
+			index++;
+		}
+		return true;
+	}
+
+	@Override
+	// for unit testing purposes
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		final Signal other = (Signal) obj;
+
+		if (!(this.message.equals(other.message))) {
+			return false;
+		}
+		return true;
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Signal.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\SignalHandler.java
+	 */
+
+    private static final String PREFIX = "Zeitgeist: ";
+    private static final String COMMAND_PREFIX = "Command: ";
+
+    public static void printSignal(Signal signal) {
+        assert (signal != null);
+        String message = signal.toString();
+        if (message.equals(Signal.EXIT_SUCCESS)) {
+            System.out.println(PREFIX + message);
+            System.exit(0);
+        }
+        if (!message.isEmpty()) {
+            System.out.println(PREFIX + message);
+        }
+	}
+
+    public static void printCommandPrefix() {
+        System.out.print(COMMAND_PREFIX);
+    }
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\SignalHandler.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+	 */
+
+	/**
+	 * Method to return a DateTime of the Todo for ordering them chronologically
+	 * The order of preference: start time > end time > null
+	 * 
+	 * 
+	 * @return start time for events; end time for deadlines; null for tasks.
+	 */
+	public DateTime getDateTime() {
+		if (this.startTime != null) {
+			return this.startTime;
+		} else if (this.endTime != null) {
+			return this.endTime;
+		} else {
+			return null;
+		}
+	}
+
+	public boolean isEvent() {
+		if (this.startTime != null && this.endTime != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+	 */
+
+	/**
+	 * This method handles the events that spans over a few days and break them
+	 * down into smaller todos within one day for display purposes
+	 * 
+	 * @return todos which are within a single day. If todo is originally not a
+	 *         long event, returns an ArrayList with a single Todo
+	 */
+	public ArrayList<Todo> breakIntoShortEvents() {
+		ArrayList<Todo> shortTodos = new ArrayList<Todo>();
+		DateTime currentStartTime = getStartTime();
+		DateTime endTime = getEndTime();
+		Todo shortTodo;
+        // Prevent the case where start time is after end time, causing infinite
+        // loop
+        if (currentStartTime.isAfter(endTime)) {
+            shortTodos.add(this);
+            return shortTodos;
+        }
+		while (!isSameDay(currentStartTime, endTime)) {
+			shortTodo = new Todo(this);
+			shortTodo.setStartTime(currentStartTime);
+			// Set the end time of intermediate days to 2359
+			shortTodo.setEndTime(currentStartTime.withHourOfDay(23)
+					.withMinuteOfHour(59));
+			shortTodos.add(shortTodo);
+			// Move the start time to beginning of the next day
+			currentStartTime = currentStartTime.plusDays(1).withMillisOfDay(0);
+		}
+		// Add the last day of event
+		shortTodo = new Todo(this);
+		shortTodo.setStartTime(currentStartTime);
+		shortTodos.add(shortTodo);
+		return shortTodos;
+	}
+
+    /**
+     * This method checks if the two DateTime objects are the same day
+     * 
+     * @param date1
+     * @param date2
+     * @return result of check in boolean
+     */
+	private boolean isSameDay(DateTime date1, DateTime date2) {
+		if (date1 == null || date2 == null) {
+			return false;
+		}
+		return (date1.getDayOfYear() == date2.getDayOfYear() && date1.getYear() == date2
+				.getYear());
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Zeitgeist.java
+	 */
+
+public class Zeitgeist {
+	private static Zeitgeist logic;
+	private static String fileDirectory;
+	
+	public static Scanner scn = new Scanner(System.in);
+	public static StorageHandler storage;
+	public static Memory memory;
+	
+	public Zeitgeist() {
+		storage = new StorageHandler.Builder().setDirectoryPath(fileDirectory)
+				.setFilePath().build();
+		memory = storage.retrieveMemoryFromFile();
+		memory.setStorageHandler(storage);
+		memory.onCreate();
+		Parser.initialize();
+	}
+	
+	public Zeitgeist(String fileDir) {
+		fileDirectory = fileDir;
+		storage = new StorageHandler.Builder().setDirectoryPath(fileDirectory)
+				.setFilePath().build();
+		memory = storage.retrieveMemoryFromFile();
+		memory.setStorageHandler(storage);
+		Parser.initialize();
+	}
+	
+	public static Zeitgeist getInstance() {
+		if (logic == null) {
+			logic = new Zeitgeist();
+		}
+		return logic;
+	}
+	
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Zeitgeist.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Zeitgeist.java
+	 */
+
+	/**
+	 * The main logic unit of Zeitgeist. Reads the input from Zeitgeist and
+	 * passes it to the Parser, the first element in the flow of component calls
+	 * present in all operations.
+	 * 
+	 * @param args
+	 *            contains arguments from the command line at launch. (Not used)
+	 */
+	public static void main(String[] args) {
+
+		fileDirectory = getStorageFileDirFromSettings();
+		// Check if a file directory path is passed in through argument
+		if (args.length == 1) {
+			// Check if file directory path is valid
+			String customFileDirPath = args[0];
+			fileDirectory = StorageUtils.processStorageDirectory(customFileDirPath);
+		}
+
+		String input;
+		Zeitgeist logic = getInstance();
+		SignalHandler.printSignal(new Signal(Signal.WELCOME_SIGNAL, true));
+		while (true) {
+			SignalHandler.printCommandPrefix();
+			input = scn.nextLine();
+			clearConsole();
+			Signal signal;
+			try {
+				signal = logic.handleInput(input);
+			} catch (InvalidRecurringException e) {
+				signal = new Signal(Signal.ADD_INVALID_RECURRING_ERROR, false);
+			} catch(InvalidTodoNameException e) {
+				signal = new Signal(Signal.ADD_INVALID_TODO_NAME_ERROR, false);
+			} catch (ParsingFailureException e) {
+				signal = new Signal(Signal.DATE_PARSING_ERROR, false);
+			}
+			SignalHandler.printSignal(signal);
+		}
+	}
+
+	public Signal handleInput(String input) throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		ParsedInput c = Parser.parseInput(input);
+		return execute(c);
+	}
+
+	
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Zeitgeist.java
+
+
+
+
+

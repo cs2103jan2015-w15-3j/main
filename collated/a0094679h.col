@@ -1,0 +1,2375 @@
+//@author: a0094679h
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\DeleteCommand.java
+	 */
+
+
+package com.equinox;
+
+import com.equinox.exceptions.NotRecurringException;
+import com.equinox.exceptions.NullRuleException;
+import com.equinox.exceptions.NullTodoException;
+
+/**
+ * Houses a method which processes the delete request from the user. 
+ */
+public class DeleteCommand extends Command {
+
+	/**
+	 * Creates a DeleteCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
+	public DeleteCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
+	/**
+	 * Processes a ParsedInput object containing the delete command and its
+	 * accompanying parameters and commits those changes to the memory.
+	 * 
+	 * @return a Signal object with a message denoting success or failure in
+	 *         processing.
+	 */
+	@Override
+	public Signal execute() {
+		boolean isRecurringRule = false;
+		
+		// Check 2nd Keyword for -r flag
+		if (keyParamPairs.size() == 2) {
+			if (keyParamPairs.get(1).getKeyword() == Keywords.RULE) {
+				keyParamPairs.remove(1);
+				isRecurringRule = true;
+			}
+		}
+		
+		// Ensure that there is only one KeyParamPair in inputList
+		if (!input.containsOnlyCommand()) {
+			return new Signal(Signal.DELETE_INVALID_PARAMS, false);
+		}
+		
+		if(input.containsEmptyParams()) {
+            return new Signal(Signal.GENERIC_EMPTY_PARAM, false);
+		}
+    	
+    	int deleteIndex;
+    	Signal returnSignal;
+    	Todo deleted;
+    	RecurringTodoRule deletedRule;
+		try {
+			deleteIndex = Integer.parseInt(keyParamPairs.get(0).getParam());
+			if(isRecurringRule) {
+				int recurringId = memory.getTodo(deleteIndex).getRecurringId();
+				deletedRule = memory.removeRule(recurringId);
+				returnSignal = new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deletedRule), true);
+			} else {
+				deleted = memory.removeTodo(deleteIndex);
+				returnSignal = new Signal(String.format(Signal.DELETE_SUCCESS_FORMAT, deleted),
+		                true);
+			}
+			memory.saveToFile();
+		} catch (NumberFormatException e) {
+            return new Signal(Signal.DELETE_INVALID_PARAMS, false);
+		} catch (NullTodoException e) {
+            return new Signal(e.getMessage(), false);
+		} catch (NullRuleException e) {
+			return new Signal(e.getMessage(), false);
+		} catch (NotRecurringException e) {
+			return new Signal(e.getMessage(), false);
+		}
+		
+        return returnSignal;
+	}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\DeleteCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\EditCommand.java
+	 */
+
+
+package com.equinox;
+
+import java.util.ArrayList;
+
+import org.joda.time.DateTime;
+
+import com.equinox.exceptions.InvalidParamException;
+import com.equinox.exceptions.NotRecurringException;
+import com.equinox.exceptions.NullRuleException;
+import com.equinox.exceptions.NullTodoException;
+
+/**
+ * Houses a method which processes the edit request from the user.
+ */
+public class EditCommand extends Command {
+
+	/**
+	 * Creates an EditCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
+	public EditCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
+	/**
+	 * Processes a ParsedInput object containing the edit command and its
+	 * accompanying parameters and commits those changes to the memory.
+	 * 
+	 * Reverts the Todo to its original state if the changes are invalid.
+	 * 
+	 * @return a Signal object with a message denoting success or failure in
+	 *         processing.
+	 */
+	@Override
+	public Signal execute() {
+		try {
+			int id;
+			boolean containsNewName = false;
+			boolean hasRuleFlag = false;
+			String title = new String(); // Stub initialization
+			
+			// Check if first param has any text appended to it intended as Todo name
+			String[] firstKeywordParams = keyParamPairs.get(0).getParam().trim().split("\\s", 2);
+			if (firstKeywordParams.length > 1) {
+				// Try to parse first sub-param as int. If fail send invalidParams Signal.
+				id = Integer.parseInt(firstKeywordParams[0].trim());
+				title = firstKeywordParams[1];
+				containsNewName = true;
+			} else {
+				// Check if input contains only 1 keyword (keyParamPairs.size() == 1)
+				if (input.containsOnlyCommand()) {
+					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+				}
+				id = Integer.parseInt(keyParamPairs.get(0).getParam().trim());
+			}
+
+			// Check for presence of -r flag
+			hasRuleFlag = input.containsFlag(Keywords.RULE);
+			
+			if (input.isRecurring() || hasRuleFlag) {
+				Todo stubTodo = memory.getTodo(id).copy();
+				
+				// Parameter loading and validation
+				DateTime startTime = stubTodo.getStartTime();
+				DateTime endTime = stubTodo.getEndTime();
+				ArrayList<DateTime> newDateTimes = new ArrayList<DateTime>();
+                boolean startTimeEdited = false;
+				
+				// Date checks
+				if(!dateTimes.isEmpty()) { // Keywords will always exist if dateTimes 
+
+                    if (dateTimes.size() == 2) {
+                        startTime = dateTimes.remove(0);
+                        endTime = dateTimes.remove(0);
+                    } else {
+                        for (int i = 1; i < keyParamPairs.size(); i++) {
+                            Keywords keyword = keyParamPairs.get(i)
+                                    .getKeyword();
+
+                            switch (keyword) {
+                                case FROM :
+                                    startTime = dateTimes.remove(0);
+                                    startTimeEdited = true;
+                                    break;
+                                case BY :
+                                case ON :
+                                case AT :
+                                    if (!dateTimes.isEmpty()) {
+                                        // Prevent overwriting of edit by FROM
+                                        // keyword
+                                        if (!startTimeEdited) {
+                                            startTime = null;
+                                        }
+                                        endTime = dateTimes.remove(0);
+                                    }
+                                    break;
+                                case TO :
+                                    if (!dateTimes.isEmpty()) {
+                                        endTime = dateTimes.remove(0);
+                                    }
+                                    break;
+                                case RULE :
+                                case UNTIL :
+                                case EVERY :
+                                    // Ignore
+                                    break;
+                                default :
+                                    return new Signal(
+                                            Signal.EDIT_INVALID_PARAMS, false);
+                            }
+                        }
+                    }
+					
+					if(startTime != null && endTime != null) {
+						if(startTime.isAfter(endTime)) {
+							return new Signal(Signal.EDIT_END_BEFORE_START, false);
+						}
+						newDateTimes.add(startTime);
+						newDateTimes.add(endTime);
+					} else if(startTime != null) {
+						newDateTimes.add(startTime);
+					} else if(endTime != null) {
+						newDateTimes.add(endTime);
+					}
+				}
+				
+				// Limit checks
+				if(input.hasLimit()) {
+					if(input.getLimit().isBeforeNow()) {
+						return new Signal(Signal.EDIT_LIMIT_BEFORE_NOW, false);
+					}
+				}
+				
+				// End parameter loading and validation
+				
+				// Commit edited fields
+				RecurringTodoRule rule = memory.getToModifyRule(memory.getTodo(id).getRecurringId());
+				RecurringTodoRule ruleOld = rule.copy();
+				
+				// If input contains new title
+				if(containsNewName) {
+					rule.setOriginalName(title);
+				}
+				
+				// If input has a limit
+				if (input.hasLimit()) {
+					rule.setRecurrenceLimit(input.getLimit());
+				}
+				
+				// If input has a period
+				if (input.hasPeriod()) {
+					rule.setRecurringInterval(input.getPeriod());
+				}
+				
+				if(!newDateTimes.isEmpty()) {
+					rule.setDateTimes(newDateTimes);
+				}
+				
+				// End commit
+				
+				memory.saveToFile();
+				return new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, ruleOld, rule), true);	
+			} else {
+				
+				// Parameter loading and validation
+				Todo stubTodo = memory.getTodo(id).copy();
+				DateTime startTime = stubTodo.getStartTime();
+				DateTime endTime = stubTodo.getEndTime();
+                boolean startTimeEdited = false;
+				
+				if(!dateTimes.isEmpty()) {
+                    if (dateTimes.size() == 2) {
+                        startTime = dateTimes.remove(0);
+                        endTime = dateTimes.remove(0);
+                    } else {
+                        for (int i = 1; i < keyParamPairs.size(); i++) {
+                            Keywords keyword = keyParamPairs.get(i)
+                                    .getKeyword();
+
+                            switch (keyword) {
+                                case FROM :
+                                    startTime = dateTimes.remove(0);
+                                    startTimeEdited = true;
+                                    break;
+                                case BY :
+                                case ON :
+                                case AT :
+                                    if (!dateTimes.isEmpty()) {
+                                        // Prevent overwriting of edit by FROM
+                                        // keyword
+                                        if (!startTimeEdited) {
+                                            startTime = null;
+                                        }
+                                        endTime = dateTimes.remove(0);
+                                    }
+                                    break;
+                                case TO :
+                                    if (!dateTimes.isEmpty()) {
+                                        endTime = dateTimes.remove(0);
+                                    }
+                                    break;
+                                default :
+                                    return new Signal(
+                                            Signal.EDIT_INVALID_PARAMS, false);
+                            }
+                        }
+                    }
+
+					if(startTime != null && endTime != null) {
+						if(startTime.isAfter(endTime)) {
+							return new Signal(Signal.EDIT_END_BEFORE_START, false);
+						}
+					}
+				}
+				
+				// Commit edited fields
+				Todo todo = memory.getToModifyTodo(id);
+				Todo oldTodo = todo.copy();
+				
+				// If input contains new title
+				if(containsNewName) {
+					memory.updateMaps(id, title, todo.getName());
+					todo.setName(title);
+				}
+				
+				memory.updateMaps(id, startTime, todo.getStartTime());
+				memory.updateMaps(id, endTime, todo.getEndTime());
+				todo.setStartTime(startTime);
+				todo.setEndTime(endTime);
+				todo.updateType();
+
+				memory.saveToFile();
+				return new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, oldTodo, todo), true);
+			}
+		} catch (NullTodoException e) {
+			return new Signal(e.getMessage(), false);
+		} catch (NumberFormatException e) {
+			return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+		} catch (NullRuleException e) {
+			return new Signal(Signal.EDIT_NO_LONGER_RECURS, false);
+		} catch (NotRecurringException e) {
+			return new Signal(e.getMessage(), false);
+        } catch (InvalidParamException e) {
+            return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+        }
+	}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\EditCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\EditCommandTest.java
+	 */
+
+
+package com.equinox;
+
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.equinox.exceptions.InvalidRecurringException;
+import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.NullTodoException;
+import com.equinox.exceptions.ParsingFailureException;
+
+public class EditCommandTest {
+
+	Zeitgeist logic;
+	String nameFloating1 = " Arrange meetup";
+	String nameFloating2 = " Meetup with friends";
+	String nameDeadline1 = " Report submission";
+	String nameDeadline2 = " Reflection submission";
+	String nameEvent1 = " Dinner with Family";
+	String nameEvent2 = " Dinner with extended family";
+	String nameRecurring1 = " Read news";
+	String nameRecurring2 = " Go to church";
+	
+	String date1 = " 18 May";
+	int date1Day = 18;
+	int date1Month = 5;
+	
+	String date2 = " 20 August";
+	int date2Day = 20;
+	int date2Month = 8;
+	
+	String time1 = " 2.30pm";
+	int time1Hour = 14;
+	int time1Min = 30;
+	
+	String time2 = " 4pm";
+	int time2Hour = 16;
+	int time2Min = 0;
+	
+	int year = new DateTime().getYear();
+	
+	String period1 = " day";
+	Period period1P = new Period().withDays(1);
+	String period2 = " week";
+	Period period2P = new Period().withWeeks(1);
+	
+	String limit = " 30 December";
+	int limitDay = 30;
+	int limitMonth = 12;
+	
+	String add = "add";
+	String edit = "edit";
+	
+	String by = " by";
+	String from = " from";
+	String to = " to";
+	String on = " on";
+	String every = " every";
+	String until = " until";
+	String rFlag = " -r";
+	
+	String idStringFloat = " 0";
+	int idFloat = 0;
+	String idStringDeadline = " 1";
+	int idDeadline = 1;
+	String idStringEvent = " 2";
+	int idEvent = 2;
+	String idStringRecurringTodo = " 3";
+	int idRecurringTodo = 3;
+	
+	int idRecurring = 0;
+	
+	Todo floating;
+	Todo deadline;
+	Todo event;
+	RecurringTodoRule rule;
+	
+	@Before
+	public void setUp() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		String fileDirectory = Zeitgeist.getStorageFileDirFromSettings();
+		logic = new Zeitgeist(fileDirectory);
+		logic.reloadMemory();
+		
+		logic.handleInput(add + nameFloating1);
+		logic.handleInput(add + nameDeadline1 + by + date1 + time1);
+		logic.handleInput(add + nameEvent1 + from + date1 + time1 + to + date1 + time2);
+		logic.handleInput(add + nameRecurring1 + every + period1);
+		
+		floating = new Todo(idFloat, nameFloating1.trim());
+		
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate1);
+		deadline = new Todo(idDeadline, nameDeadline1.trim(), dateTimes);
+		
+		DateTime newDate2 = new DateTime(year, date1Month, date1Day, time2Hour, time2Min);
+		dateTimes.add(newDate2);
+		event = new Todo(idEvent, nameEvent1.trim(), dateTimes);
+		
+		List<DateTime> dateTimeRecurring = new ArrayList<DateTime>();
+		dateTimeRecurring.add(newDate1);
+		rule = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimeRecurring, period1P);
+	}
+	
+	@After
+	public void tearDown() {
+		logic.reloadMemory();
+	}
+
+	@Test
+	public void testEditFloatingName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException, NumberFormatException, NullTodoException {
+		Todo floatingEdited = new Todo(idFloat, nameFloating2.trim());
+		Signal signal = logic.handleInput(edit + idStringFloat + nameFloating2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, floating, floatingEdited), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditFloatingToDeadline() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate);
+		Todo deadline = new Todo(idFloat, nameFloating1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringFloat + by + date1 + time1);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, floating, deadline), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test 
+	public void testEditFloatingToEvent() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date1Month, date1Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event = new Todo(idFloat, nameFloating1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringFloat + from + date1 + time1 + to + date1 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, floating, event), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditDeadlineName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate1);
+		Todo deadline2 = new Todo(idDeadline, nameDeadline2.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringDeadline + nameDeadline2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, deadline, deadline2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditDeadlineTime() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate);
+		Todo deadline2 = new Todo(idDeadline, nameDeadline1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringDeadline + by + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, deadline, deadline2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditDeadlineToEvent() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date1Month, date1Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event = new Todo(idDeadline, nameDeadline1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringDeadline + from + date1 + time1 + to + date1 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, deadline, event), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditEventName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date1Month, date1Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event2 = new Todo(idEvent, nameEvent2.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringEvent + nameEvent2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, event, event2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditEventTime() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event2 = new Todo(idEvent, nameEvent1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringEvent + from + date2 + time1 + to + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, event, event2), true);
+		assertEquals(expected, signal);
+		
+		
+	}
+	
+	@Test
+	public void testEditEventOnDateFromTimeToTime() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event2 = new Todo(idEvent, nameEvent1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringEvent + on + date2 + from + time1 + to + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, event, event2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditEventToDeadline() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		Todo deadline2 = new Todo(idEvent, nameEvent1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringEvent + by + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, event, deadline2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRuleName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate1);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring2.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + nameRecurring2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRulePeriod() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate1);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period2P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + every + period2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRuleLimit() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate1);
+		DateTime limitDateTime = new DateTime(year, limitMonth, limitDay, 23, 59, 00, 00);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P, limitDateTime);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + until + limit);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRuleDeadlineTime() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + by + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRuleDeadlineToEvent() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + from + date2 + time1 + to + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRuleDeadlineOnFromToEvent() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + on + date2 + from + time1 + to + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRuleEventToDeadline() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		logic.handleInput(edit + idStringRecurringTodo + rFlag + from + date1 + time1 + to + date1 + time2);
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + by + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\EditCommandTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\ExceptionMessages.java
+	 */
+
+
+package com.equinox;
+
+final class ExceptionMessages {
+	/**
+	 * Exception messages. Used to construct new exceptions.
+	 */
+	static final String NULL_TODO_EXCEPTION = "Specified Todo does not exist.";
+	static final String NULL_RULE_EXCEPTION = "Specified Recurring Todo rule does not exist.";
+	static final String NOT_RECURRING_EXCEPTION = "Todo specified is not a recurring Todo.";
+	static final String NO_HISTORY_STATES = "No undoable states exist";
+	static final String NO_FUTURE_STATES = "No redoable states exist";
+	static final String DATE_UNDEFINED_EXCEPTION = "Date String is empty or does not contain dates.";
+	static final String INVALID_SEARCH_TYPE = "Specified search type does not exist.";
+}
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\ExceptionMessages.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidParamException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class InvalidParamException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public InvalidParamException() {
+	}
+	
+	public InvalidParamException(String message) {
+		super(message);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\InvalidParamException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\NotRecurringException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class NotRecurringException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public NotRecurringException() {
+		
+	}
+	
+	public NotRecurringException(String message) {
+		super(message);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\NotRecurringException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\NullRuleException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class NullRuleException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public NullRuleException(String message) {
+		super(message);
+	}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\NullRuleException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\NullTodoException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class NullTodoException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public NullTodoException () {
+		super();
+	}
+	
+	public NullTodoException (String message) {
+		super(message);
+	}
+
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\NullTodoException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\StateUndefinedException.java
+	 */
+
+package com.equinox.exceptions;
+
+public class StateUndefinedException extends Exception {
+
+	private static final long serialVersionUID = 1L;
+
+	public StateUndefinedException() {
+	}
+
+	public StateUndefinedException(String message) {
+		super(message);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\exceptions\StateUndefinedException.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\IDBuffer.java
+	 */
+
+
+package com.equinox;
+
+import java.util.HashMap;
+import java.util.TreeSet;
+
+/**
+ * Serves as a buffer of fixed size for new Todos to draw their ID from.
+ * 
+ * @param <E>
+ */
+class IDBuffer<E> {
+	// Constants
+	private static final int ID_INITIAL = 0;
+	private static final int ID_BUFFER_INITIAL_SIZE = 5;
+	private static final int ID_BUFFER_MAX_SIZE = 2 * ID_BUFFER_INITIAL_SIZE;
+
+	private TreeSet<Integer> buffer;
+	private int minFreeId;
+	private HashMap<Integer, E> memory;
+
+	IDBuffer(HashMap<Integer, E> memory) {
+		this.buffer = new TreeSet<Integer>();
+		this.minFreeId = ID_INITIAL;
+		for (int i = ID_INITIAL; i < ID_INITIAL + ID_BUFFER_INITIAL_SIZE; i++) {
+			buffer.add(i);
+		}
+		this.memory = memory;
+	}
+	
+	void setMemory(HashMap<Integer, E> memory) {
+		this.memory = memory; 
+	}
+
+	int get() {
+		if (buffer.size() == 1) {
+			loadToSize();
+		}
+		int returnId = buffer.pollFirst();
+		minFreeId = buffer.first();
+		return returnId;
+	}
+
+	void put(int id) {
+		if (id < minFreeId) {
+			minFreeId = id;
+		}
+		buffer.add(id);
+		if (buffer.size() > ID_BUFFER_MAX_SIZE) {
+			unloadToSize();
+		}
+	}
+
+	private void loadToSize() {
+		int minUnloadedId = minFreeId + 1;
+		int i = minUnloadedId;
+
+		while (i < minUnloadedId + ID_BUFFER_INITIAL_SIZE) {
+			if (memory.containsKey(i)) { // TODO: DEPENDENCY
+				minUnloadedId++;
+			} else {
+				buffer.add(i);
+				i++;
+			}
+		}
+	}
+
+	private void unloadToSize() {
+		for (int i = 0; i < ID_BUFFER_INITIAL_SIZE; i++) {
+			buffer.pollLast();
+		}
+	}
+}
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\IDBuffer.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\InputStringKeyword.java
+	 */
+
+
+package com.equinox;
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class InputStringKeyword {
+	
+	private static final String KEY_ADD = "add";
+	private static final String KEY_MARK = "mark";
+	private static final String KEY_DELETE = "delete";
+	private static final String KEY_SEARCH = "search";
+	private static final String KEY_EDIT = "edit";
+	private static final String KEY_DISPLAY = "display";
+	private static final String KEY_UNDO = "undo";
+	private static final String KEY_REDO = "redo";
+	private static final String KEY_BY = "by";
+	private static final String KEY_FROM = "from";
+	private static final String KEY_ON = "on";
+	private static final String KEY_AT = "at";
+	private static final String KEY_IN = "in";
+	private static final String KEY_EVERY = "every";
+	private static final String KEY_UNTIL = "until";
+	private static final String KEY_EXIT = "exit";
+	private static final String KEY_RULE_ABV = "-r";
+	private static final String KEY_NAME_ABV = "-n";
+	private static final String KEY_DATE_ABV = "-dt";
+	private static final String KEY_TIME_ABV = "-t";
+	private static final String KEY_DAY_ABV = "-d";
+	private static final String KEY_MONTH_ABV = "-m";
+	private static final String KEY_YEAR_ABV = "-y";
+
+	
+    private static Map<String, Keywords> keywords;
+    private static Map<String, Keywords> commands;
+    private static Map<String, Keywords> flags;
+
+    static {
+    	commands = new HashMap<String, Keywords>();
+    	commands.put(KEY_ADD, Keywords.ADD);
+        commands.put(KEY_MARK, Keywords.MARK);
+        commands.put(KEY_DELETE, Keywords.DELETE);
+        commands.put(KEY_SEARCH, Keywords.SEARCH);
+        commands.put(KEY_EDIT, Keywords.EDIT);
+        commands.put(KEY_DISPLAY, Keywords.DISPLAY);
+        commands.put(KEY_UNDO, Keywords.UNDO);
+        commands.put(KEY_REDO, Keywords.REDO);
+        commands.put(KEY_EXIT, Keywords.EXIT);
+        
+        flags = new HashMap<String, Keywords>();
+        flags.put(KEY_NAME_ABV, Keywords.NAME);
+        flags.put(KEY_DATE_ABV, Keywords.DATE);
+        flags.put(KEY_TIME_ABV, Keywords.TIME);
+        flags.put(KEY_DAY_ABV, Keywords.DAY);
+        flags.put(KEY_MONTH_ABV, Keywords.MONTH);
+        flags.put(KEY_YEAR_ABV,  Keywords.YEAR);
+        flags.put(KEY_RULE_ABV,  Keywords.RULE);
+        
+        keywords = new HashMap<String, Keywords>(commands);
+        keywords.putAll(flags);
+        keywords.put(KEY_BY, Keywords.BY);
+        keywords.put(KEY_FROM, Keywords.FROM);
+        keywords.put(KEY_ON, Keywords.ON);
+        keywords.put(KEY_AT, Keywords.AT);
+        keywords.put(KEY_IN, Keywords.IN);
+        keywords.put(KEY_EVERY, Keywords.EVERY);
+        keywords.put(KEY_UNTIL, Keywords.UNTIL);
+        
+    }
+
+    /**
+     * Checks if the String encodes a keyword
+     * 
+     * @param s String to be checked
+     * @return 
+     */
+    public static boolean isKeyword(String s) {
+        return keywords.containsKey(s.toLowerCase());
+    }
+
+    /**
+     * Retrieves the enum constant that represents the keyword encoded in the String.
+     * 
+     * @param s String containing the keyword.
+     * @return the enum constant representing the command.
+     * 		enum error if string is not a keyword
+     */
+    public static Keywords getKeyword(String s) {
+    	Keywords keyword = keywords.get(s.toLowerCase());
+    	if(keyword == null) {
+    		return Keywords.ERROR;
+    	}
+    	return keyword;
+    }
+    
+    /**
+     * Checks if the String encodes a command.
+     * 
+     * @param s
+     * @return
+     */
+    public static boolean isCommand(String s) {
+    	return commands.containsKey(s.toLowerCase());
+    }
+    
+    /**
+     * Retrieves the enum constant that represents the command encoded in the String.
+     * 
+     * @param s String containing the keyword.
+     * @return the enum constant representing the command.
+     * 		enum error if string is not a command
+     */
+    public static Keywords getCommand(String s) {
+    	Keywords command = commands.get(s.toLowerCase());
+    	if(command == null) {
+    		return Keywords.ERROR;
+    	}
+    	return command;
+    }
+    
+    /**
+     * Checks if the String encodes a flag.
+     * 
+     * @param s
+     * @return
+     */
+    public static boolean isFlag(String s) {
+    	return flags.containsKey(s.toLowerCase());
+    }
+    
+    /**
+     * Retrieves the enum constant that represents the flag encoded in the String.
+     * 
+     * @param s String containing the keyword.
+     * @return the enum constant representing the flag.
+     * 		enum error if string is not a flag
+     */
+    public static Keywords getFlag(String s) {
+    	Keywords flag = flags.get(s.toLowerCase());
+    	if(flag == null) {
+    		return Keywords.ERROR;
+    	}
+    	return flag;
+    }
+
+	/**
+	 * Checks if the String encodes a rule flag.
+	 * @param keyString
+	 * @return
+	 */
+	public static boolean isRule(String keyString) {
+		return keyString.toLowerCase().equals(KEY_RULE_ABV);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\InputStringKeyword.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Keywords.java
+	 */
+
+
+package com.equinox;
+
+public enum Keywords {
+	// Commands
+	ADD,
+	MARK,
+	DELETE,
+	SEARCH,
+	EDIT,
+	DISPLAY, 
+	UNDO,
+	REDO,
+	EXIT,
+	
+	// Keywords for parameters in ADD command
+	BY,
+	FROM,
+	ON,
+	AT,
+	EVERY,
+	UNTIL,
+	IN,
+	
+	// Keywords for parameters in EDIT command, not in InputStringKeyword maps
+	TO,
+	
+	// Keywords for DELETE command for RecurringTodoRules
+	RULE,
+	
+	//Keywords for parameters in SEARCH command
+	NAME,
+	DATE,
+	TIME,
+	DAY,
+	MONTH,
+	YEAR,
+	
+	// Keyword for error
+	ERROR;
+}
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Keywords.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Memory.java
+	 */
+
+
+package com.equinox;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
+import com.equinox.exceptions.InvalidParamException;
+import com.equinox.exceptions.NullRuleException;
+import com.equinox.exceptions.NullTodoException;
+import com.equinox.exceptions.StateUndefinedException;
+
+/**
+ * Stores all Todos and keeps state information allowing Undo and Redo
+ * operations. Maximum number of states that can be stored by Memory is
+ * {@value #STATE_STACK_MAX_SIZE}.
+ */
+public class Memory {
+	// Constants
+	private static final String REGEX_SPACE = "\\s";
+
+	// Primary memory
+	private HashMap<Integer, Todo> allTodos;
+	private HashMap<Integer, RecurringTodoRule> recurringRules;
+
+	// Auxiliary memory for ID maintenance
+	private final IDBuffer<Todo> idBuffer;
+	private final IDBuffer<RecurringTodoRule> recurringIdBuffer;
+
+	// Volatile memory for undo/redo
+	private VolatileMemory vMem;
+	
+	// Indexes for search
+	private SearchMap searchMap;
+
+	// Handler for writing to file
+	private StorageHandler storage;
+
+	/**
+	 * Constructs an empty Memory object.
+	 */
+	public Memory() {
+		this.allTodos = new HashMap<Integer, Todo>();
+		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
+		this.idBuffer = new IDBuffer<Todo>(allTodos);
+		this.recurringIdBuffer = new IDBuffer<RecurringTodoRule>(recurringRules);
+		this.searchMap = new SearchMap();
+		this.vMem = new VolatileMemory(allTodos, idBuffer, recurringRules, recurringIdBuffer);
+	}
+	
+	void onCreate() {
+		vMem = new VolatileMemory(allTodos, idBuffer, recurringRules, recurringIdBuffer);
+		idBuffer.setMemory(allTodos);
+		recurringIdBuffer.setMemory(recurringRules);
+	}
+	
+	void onDestroy() {
+		vMem.flushStacks(); //Recycles all IDs
+		vMem = null;
+	}
+
+	/**
+	 * Adds the specified Todo to memory. The current state is saved prior to
+	 * any operation. Since add is a memory modifying command, the redoStack is
+	 * flushed.
+	 * <p>
+	 * This operation also adds all parameters of the Todo specified into the
+	 * SearchMap for indexing.
+	 * 
+	 * @param todo the Todo to be added.
+	 */
+	public void userAdd(Todo todo) {
+		// Save to stacks
+		vMem.save(todo.getPlaceholder());
+		// Save to memory
+		allTodos.put(todo.getId(), todo);
+		// Save to indexes
+		searchMap.add(todo);
+	}
+	
+	void systemAdd(Todo todo) {
+		// Does not save to stacks
+		// Save to memory
+		allTodos.put(todo.getId(), todo);
+		// Save to indexes
+		searchMap.add(todo);
+	}
+
+	/**
+	 * Handle adding of recurring tasks as rules
+	 * 
+	 * @param rule
+	 */
+	public void add(RecurringTodoRule rule) {
+		// Save to stacks
+		vMem.save(rule.getPlaceholder());
+		// Save to memory
+		recurringRules.put(rule.getId(), rule);
+		updateRecurringRules();
+		// TODO Add to searchmap
+	}
+
+	private void updateRecurringRules() {
+		Collection<RecurringTodoRule> rules = recurringRules.values();
+		for (Iterator<RecurringTodoRule> iterator = rules.iterator(); iterator
+				.hasNext();) {
+			RecurringTodoRule rule = (RecurringTodoRule) iterator.next();
+			rule.updateTodoList(this);
+		}
+	}
+
+	/**
+	 * Retrieves the Todo identified by the specified ID from the memory.
+	 * 
+	 * @param id the ID of the Todo to be retrieved.
+	 * @return the Todo object identified by the specified ID.
+	 * @throws NullTodoException if the Todo identified by the specified ID does
+	 *             not exist.
+	 */
+	public Todo getTodo(int id) throws NullTodoException {
+		Todo returnTodo = allTodos.get(id);
+		if (returnTodo == null) {
+			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
+		}
+		return returnTodo;
+	}
+
+	/**
+	 * Retrieves the Todo identified by the specified ID from the memory for
+	 * editing. The current state is saved prior to any operation.
+	 * 
+	 * @param id the ID of the Todo to be retrieved.
+	 * @return the Todo object identified by the specified ID.
+	 * @throws NullTodoException if the Todo identified by the specified ID does
+	 *             not exist.
+	 */
+	public Todo getToModifyTodo(int id) throws NullTodoException {
+		Todo returnTodo = allTodos.get(id);
+		if (returnTodo == null) {
+			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
+		}
+		// Save to stacks
+		vMem.save(returnTodo);
+		return returnTodo;
+	}
+	
+	public RecurringTodoRule getRule(int recurringId) throws NullRuleException {
+		RecurringTodoRule returnRule = recurringRules.get(recurringId);
+		if (returnRule == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		return returnRule;
+	}
+
+    public Collection<RecurringTodoRule> getAllRules() {
+        return recurringRules.values();
+    }
+
+	/**
+	 * Retrieves the RecurringTodoRule identified by the specified ID from the memory for
+	 * editing. The current state is saved prior to any operation.
+	 * 
+	 * @param recurringId the ID of the RecurringTodoRule to be retrieved.
+	 * @return the RecurringTodoRule object identified by the specified ID.
+	 * @throws NullRuleException if the RecurringTodoRule identified by the specified ID does
+	 *             not exist.
+	 */
+	public RecurringTodoRule getToModifyRule(int recurringId) throws NullRuleException {
+		RecurringTodoRule returnRule = recurringRules.get(recurringId);
+		if (returnRule == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		// Save to stacks
+		vMem.save(returnRule);
+		return returnRule;
+	}
+
+	/**
+	 * Removes the Todo identified by the specified id from the memory. The
+	 * current state is saved prior to any operation.
+	 * 
+	 * @param id the ID of the Todo to be removed.
+	 * @throws NullTodoException if the Todo identified by the specified ID does
+	 *             not exist.
+	 */
+	public Todo removeTodo(int id) throws NullTodoException {
+		Todo returnTodo = allTodos.get(id);
+		if (returnTodo == null) {
+			throw new NullTodoException(ExceptionMessages.NULL_TODO_EXCEPTION);
+		}
+		// Save to stacks
+		vMem.save(returnTodo);
+		allTodos.remove(id);
+		searchMap.remove(returnTodo);
+		return returnTodo;
+	}
+
+	
+	public RecurringTodoRule removeRule(int recurringId) throws NullRuleException {
+		RecurringTodoRule returnRule = recurringRules.get(recurringId);
+		if (returnRule == null) {
+			throw new NullRuleException(ExceptionMessages.NULL_RULE_EXCEPTION);
+		}
+		// Save to stacks
+		vMem.save(returnRule);
+		recurringRules.remove(recurringId);
+		// TODO Remove from search map
+		return returnRule;
+	}
+	
+	public void undo() throws StateUndefinedException {
+		vMem.undo();
+	}
+	
+	public void redo() throws StateUndefinedException {
+		vMem.redo();
+	}
+
+	/**
+	 * Method to get all the Todos for displaying purposes.
+	 * 
+	 * @return all Todos as Collection
+	 */
+	public Collection<Todo> getAllTodos() {
+		updateRecurringRules();
+		return allTodos.values();
+	}
+
+	/**
+	 * Obtains an ID number from the pool of available ID numbers.
+	 * 
+	 * @return the ID obtained.
+	 */
+	public int obtainFreshId() {
+		return idBuffer.get();
+	}
+
+	public int obtainFreshRecurringId() {
+		return recurringIdBuffer.get();
+	}
+
+	/**
+	 * Releases the specified ID number to the pool of available ID numbers for
+	 * future use by new Todos.
+	 * 
+	 * @param id the ID to be released.
+	 */
+	public void releaseId(int id) {
+		idBuffer.put(id);
+	}
+
+	public void releaseRecurringId(int recurringId) {
+		recurringIdBuffer.put(recurringId);
+	}	
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Memory.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\MemoryTest.java
+	 */
+
+
+package com.equinox;
+
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+import com.equinox.exceptions.InvalidDateException;
+import com.equinox.exceptions.NullTodoException;
+import com.equinox.exceptions.StateUndefinedException;
+
+public class MemoryTest {
+
+	private static final String TASK_1 = "Read book";
+	private static final String TASK_2 = "Do laundry";
+	private static final String TASK_3 = "Do homework";
+	Memory memory;
+	Todo todo1, todo2, todo3;
+
+	@Before
+	public void setUp() throws InvalidDateException {
+		memory = new Memory();
+		todo1 = new Todo(0, TASK_1);
+		memory.userAdd(todo1);
+		todo2 = new Todo(1, TASK_2);
+		memory.userAdd(todo2);
+		todo3 = new Todo(2, TASK_3);
+		memory.userAdd(todo3);
+	}
+
+	@Test
+	public void testAddGet() throws NullTodoException {
+		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
+		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
+		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
+	}
+
+	@Test
+	public void testSetterGetUndo() throws StateUndefinedException,
+			NullTodoException {
+		memory.getToModifyTodo(todo1.getId());
+		Todo todo1Copy = todo1.copy();
+		todo1.setDone(true);
+		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
+		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
+		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
+		memory.undo();
+		assertEquals("Todo1 Undo Mark", todo1Copy, memory.getTodo(todo1.getId()));
+	}
+
+	@Test
+	public void testSetterGetUndoRedo() throws StateUndefinedException,
+			NullTodoException {
+		memory.getToModifyTodo(todo1.getId());
+		Todo todo1Copy = todo1.copy();
+		todo1.setDone(true);
+		Todo todo1MarkCopy = todo1.copy();
+		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
+		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
+		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
+		memory.undo();
+		assertEquals("Todo1 Undo Mark", todo1Copy, memory.getTodo(todo1.getId()));
+		memory.redo();
+		assertEquals("Todo1 Redo Mark", todo1MarkCopy,
+				memory.getTodo(todo1.getId()));
+	}
+
+	@Test(expected = NullTodoException.class)
+	public void testRemoveUndo() throws StateUndefinedException,
+			NullTodoException {
+		memory.removeTodo(todo2.getId());
+		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
+		memory.getTodo(todo2.getId()); // Exception
+		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
+		memory.undo();
+		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
+	}
+
+	@Test
+	public void testRemoveUndoRedo() throws StateUndefinedException,
+			NullTodoException {
+		memory.removeTodo(todo2.getId());
+		memory.removeTodo(todo1.getId());
+		memory.undo();
+		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
+		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
+		memory.redo();
+		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
+	}
+
+	@Test(expected = NullTodoException.class)
+	public void testAddUndo() throws StateUndefinedException, NullTodoException {
+		memory.undo();
+		memory.getTodo(todo3.getId()); // Exception
+	}
+
+	@Test
+	public void testAddUndoRedo() throws StateUndefinedException,
+			NullTodoException {
+		memory.undo();
+		assertEquals("Todo1", todo1, memory.getTodo(todo1.getId()));
+		assertEquals("Todo2", todo2, memory.getTodo(todo2.getId()));
+		memory.redo();
+		assertEquals("Todo3", todo3, memory.getTodo(todo3.getId()));
+	}
+	/*
+	 * @Test public void testExternalStorage() throws NullTodoException { String
+	 * jsonString = memory.exportAsJson(); Memory importedMemory =
+	 * Memory.importFromJson(jsonString); Todo[] originalArray = (Todo[])
+	 * memory.getAllTodos().toArray( new Todo[0]); Todo[] importedArray =
+	 * (Todo[]) importedMemory.getAllTodos().toArray( new Todo[0]);
+	 * assertArrayEquals(originalArray, importedArray); }
+	 */
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\MemoryTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\RedoCommand.java
+	 */
+
+
+package com.equinox;
+
+import com.equinox.exceptions.StateUndefinedException;
+
+/**
+ * Houses a method which processes the redo request from the user. 
+ *
+ */
+public class RedoCommand extends Command {
+
+	/**
+	 * Creates a RedoCommand object.
+	 * 
+	 * @param input the ParsedInput object containing the parameters.
+	 * @param memory the memory containing the Todos to which the changes should
+	 *            be committed.
+	 */
+	public RedoCommand(ParsedInput input, Memory memory) {
+		super(input, memory);
+	}
+
+	/**
+	 * Reverses the last undo operation.
+	 * 
+	 * @return a Signal object with a message denoting success or failure in
+	 *         processing.
+	 */
+	@Override
+	public Signal execute() {	
+		if(!(input.containsOnlyCommand() && input.containsEmptyParams())){
+            return new Signal(Signal.REDO_INVALID_PARAMS, false);
+		}
+		
+		try{
+			memory.redo();
+			memory.saveToFile();
+		} catch (StateUndefinedException e) {
+            return new Signal(e.getMessage(), false);
+		}
+		
+        return new Signal(Signal.REDO_SUCCESS, true);
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\RedoCommand.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+	 */
+
+
+package com.equinox;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import com.equinox.exceptions.NotRecurringException;
+
+/**
+ * Stores parameters of a Todo using org.joda.time.DateTime objects. A Todo can
+ * be subdivided into 3 different subtypes namely Task, Deadline, or Event,
+ * which is uniquely determined at construction by the availability of
+ * parameters. Todos are uniquely specified identifier known as ID until their
+ * deletion, upon which the ID may be recycled.
+ *
+ */
+
+public class Todo implements UndoableRedoable<Todo> {
+
+	public enum TYPE {
+		TASK, DEADLINE, EVENT;
+	}
+
+	protected int id;
+	protected String name;
+	protected DateTime createdOn;
+	protected DateTime modifiedOn, startTime, endTime;
+	protected boolean isDone;
+	protected TYPE type;
+	protected Integer recurringId;
+
+	protected static final DateTimeFormatter DateFormatter = DateTimeFormat
+			.forPattern("EEE dd MMM yyyy");
+	protected static final DateTimeFormatter TimeFormatter = DateTimeFormat
+			.forPattern("HH:mm");
+	protected static final String DateTimeStringFormat = "%1$s at %2$s";
+
+	protected static final String EventStringFormat = "Event \"%1$s\" from %2$s to %3$s";
+
+	protected static final String DeadlineStringFormat = "Deadline \"%1$s\" by %2$s";
+
+	protected static final String FloatingTaskStringFormat = "Floating task \"%1$s\"";
+
+	/**
+	 * Constructs a Todo of type: TASK.
+	 * 
+	 * @param id
+	 *            the ID of the Todo.
+	 * @param name
+	 *            name of the task.
+	 */
+	public Todo(int id, String name) {
+		this.id = id;
+		this.name = name;
+		this.createdOn = new DateTime();
+		this.modifiedOn = this.createdOn;
+		this.startTime = null;
+		this.endTime = null;
+		this.isDone = false;
+		this.type = TYPE.TASK;
+		this.recurringId = null;
+	}
+
+	/**
+	 * Constructs a Todo of type: DEADLINE or EVENT.
+	 * 
+	 * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
+	 * dates.
+	 * 
+	 * @param id
+	 *            the ID of the Todo.
+	 * @param name
+	 *            name of the task.
+	 * @param dateTimes
+	 *            a List of DateTimes specifying the end and/or start times.
+	 */
+	public Todo(int id, String name, List<DateTime> dateTimes) {
+		this.id = id;
+		this.name = name;
+		this.createdOn = new DateTime();
+		this.modifiedOn = this.createdOn;
+		this.isDone = false;
+		if (dateTimes.size() == 1) {
+			this.startTime = null;
+			this.endTime = dateTimes.get(0);
+			this.type = TYPE.DEADLINE;
+		} else if (dateTimes.size() == 2) {
+			this.startTime = dateTimes.get(0);
+			this.endTime = dateTimes.get(1);
+			this.type = TYPE.EVENT;
+		}
+		this.recurringId = null;
+	}
+
+	/**
+	 * Constructs a Recurring Todo of type: DEADLINE or EVENT.
+	 * 
+	 * ASSUMPTION: dateTimeList is not empty or null and has only either 1 or 2
+	 * dates.
+	 * 
+	 * @param id
+	 *            the ID of the Todo.
+	 * @param name
+	 *            name of the task.
+	 * @param dateTimes
+	 *            a List of DateTimes specifying the end and/or start times.
+	 * @param recurringId
+	 *            the ID for the recurring rule
+	 */
+	public Todo(int id, String name, List<DateTime> dateTimes, int recurringId) {
+		this.id = id;
+		this.name = name;
+		this.createdOn = new DateTime();
+		this.modifiedOn = this.createdOn;
+		this.isDone = false;
+		if (dateTimes.size() == 1) {
+			this.startTime = null;
+			this.endTime = dateTimes.get(0);
+			this.type = TYPE.DEADLINE;
+		} else if (dateTimes.size() == 2) {
+			this.startTime = dateTimes.get(0);
+			this.endTime = dateTimes.get(1);
+			this.type = TYPE.EVENT;
+		}
+		this.recurringId = recurringId;
+
+	}
+
+	/**
+	 * Makes an exact copy of another Todo.
+	 * 
+	 * @param todo
+	 *            the Todo to be copied.
+	 */
+	private Todo(Todo todo) {
+		this.id = todo.id;
+		this.name = todo.name;
+		this.createdOn = todo.createdOn;
+		this.modifiedOn = todo.modifiedOn;
+		this.startTime = todo.startTime;
+		this.endTime = todo.endTime;
+		this.isDone = todo.isDone;
+		this.type = todo.type;
+		this.recurringId = todo.recurringId;
+	}
+
+	/**
+	 * Constructs a placeholder Todo with null fields except the ID. To be used
+	 * by Memory class in its stacks for undo/redo operations.
+	 * 
+	 * @param id
+	 *            the ID of the Todo that was removed from Memory.
+	 */
+	private Todo(int id, Integer recurringId) {
+		this.id = id;
+		this.recurringId = recurringId;
+	}
+	
+	public Todo copy() {
+		return new Todo(this);
+	}
+	
+	/**
+	 * Returns the placeholder Todo constructed from the ID of this Todo. For
+	 * use in Undo and Redo stacks in Memory.
+	 */
+	public Todo getPlaceholder() {
+		return new Todo(id, recurringId);
+	}
+	
+	public boolean isPlaceholder() {
+		return createdOn == null;
+	}
+
+	/**
+	 * Returns the ID of the Todo.
+	 * 
+	 * @return the ID of the Todo.
+	 */
+	public int getId() {
+		return id;
+	}
+
+	/**
+	 * Returns the name of the Todo.
+	 * 
+	 * @return the name of the Todo.
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Replaces the title with the specified String and updates the last
+	 * modified time.
+	 * 
+	 * @param title
+	 *            the new title of the Todo.
+	 */
+	public void setName(String title) {
+		this.name = title;
+		modifiedOn = new DateTime();
+	}
+
+	/**
+	 * Returns the start time of the Todo.
+	 * 
+	 * @return the start time of the Todo.
+	 */
+	public DateTime getStartTime() {
+		return startTime;
+	}
+
+	/**
+	 * Replaces the start time with the date encoded in the specified
+	 * startTimeString and updates the last modified time.
+	 * 
+	 * @param startTime
+	 *            DateTime of the new startTime
+	 */
+	public void setStartTime(DateTime startTime) {
+		this.startTime = startTime;
+		modifiedOn = new DateTime();
+	}
+
+	/**
+	 * Returns the end time of the Todo.
+	 * 
+	 * @return the end time of the Todo.
+	 */
+	public DateTime getEndTime() {
+		return endTime;
+	}
+
+	/**
+	 * Replaces the end time with the specified DateTime and updates the last
+	 * modified field of the Todo.
+	 * 
+	 * @param endTime
+	 *            String containing the new end time of the Todo.
+	 */
+	public void setEndTime(DateTime endTime) {
+		this.endTime = endTime;
+		modifiedOn = new DateTime();
+	}
+
+	/**
+	 * Checks if the Todo is marked as done.
+	 * 
+	 * @return true if the Todo has been marked as done, false otherwise.
+	 */
+	public boolean isDone() {
+		return isDone;
+	}
+
+	/**
+	 * Marks the Todo as done or undone and updates the last modified time.
+	 * 
+	 * @param isDone
+	 *            the new status of the Todo.
+	 */
+	public void setDone(boolean isDone) {
+		this.isDone = isDone;
+		modifiedOn = new DateTime();
+	}
+
+	/**
+	 * Returns the time at which the Todo was created.
+	 * 
+	 * @return the time at which the Todo was created.
+	 */
+	public DateTime getCreatedOn() {
+		return createdOn;
+	}
+
+	/**
+	 * Returns the time at which the Todo was last modified.
+	 * 
+	 * @return the time at which the Todo was last modified.
+	 */
+	public DateTime getModifiedOn() {
+		return modifiedOn;
+	}
+
+	/**
+	 * Returns the type of the Todo as specified by Todo.TYPE.
+	 * 
+	 * @return returns the type of the Todo.
+	 */
+	public TYPE getType() {
+		return type;
+	}
+
+	public Integer getRecurringId() throws NotRecurringException {
+		if (recurringId == null) {
+			throw new NotRecurringException(
+					ExceptionMessages.NOT_RECURRING_EXCEPTION);
+		}
+		return recurringId;
+	}
+
+	public boolean isRecurring() {
+		if (recurringId == null) {
+			return false;
+		}
+		return true;
+	}
+
+
+	public void updateType() {
+		if (startTime != null && endTime != null) {
+			type = TYPE.EVENT;
+		} else if (startTime != null && endTime == null) {
+			endTime = startTime;
+			startTime = null;
+			type = TYPE.DEADLINE;
+		} else if (startTime == null && endTime != null) {
+			type = TYPE.DEADLINE;
+		} else if (startTime == null && endTime == null) {
+			type = TYPE.TASK;
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		String endDateTimeString = formatDateTime(endTime);
+		String startDateTimeString = formatDateTime(startTime);
+
+		switch (type) {
+			case TASK:
+				return String.format(FloatingTaskStringFormat, name);
+			case DEADLINE:
+				return String.format(DeadlineStringFormat, name,
+						endDateTimeString);
+			case EVENT:
+				return String.format(EventStringFormat, name,
+						startDateTimeString, endDateTimeString);
+			default:
+				return "";
+		}
+	}
+
+	private String formatDateTime(DateTime dateTime) {
+		if (dateTime == null) {
+			return "";
+		}
+		String dateString = DateFormatter.print(dateTime);
+		String timeString = TimeFormatter.print(dateTime);
+		return String.format(DateTimeStringFormat, dateString, timeString);
+	}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\Todo.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\TodoTest.java
+	 */
+
+
+package com.equinox;
+
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
+
+public class TodoTest {
+	
+	String name;
+	DateTime deadlineTime, startDate, endDate;
+	ArrayList<DateTime> deadlineDateTimes, eventDateTimes;
+	
+	@Before
+	public void setup() {
+		name = "Todo One";
+		deadlineTime = new DateTime(2015, 8, 26, 12, 59, 0);
+		startDate = new DateTime(2015, 9, 29, 00, 00, 0);
+		endDate = new DateTime(2015, 11, 10, 18, 59, 0);
+		eventDateTimes = new ArrayList<DateTime>();
+		eventDateTimes.add(startDate);
+		eventDateTimes.add(endDate);
+		deadlineDateTimes = new ArrayList<DateTime>();
+		deadlineDateTimes.add(deadlineTime);
+	}
+	
+	@Test
+	public void testTask() {
+		Todo task = new Todo(0, name);
+		assertEquals("Start time", null, task.getStartTime());
+		assertEquals("End time", null, task.getEndTime());
+		assertEquals("Type ", Todo.TYPE.TASK, task.getType());
+	}
+	
+	@Test
+	public void testDeadline() {
+		Todo deadline = new Todo(0, name, deadlineDateTimes);
+		assertEquals("Start time", null, deadline.getStartTime());
+		assertEquals("End time", deadlineTime, deadline.getEndTime());
+		assertEquals("Type ", Todo.TYPE.DEADLINE, deadline.getType());
+	}
+	
+	@Test
+	public void testEvent() {
+		Todo event = new Todo(0, name, eventDateTimes);
+		assertEquals("Start time", startDate, event.getStartTime());
+		assertEquals("End time", endDate, event.getEndTime());
+		assertEquals("Type ", Todo.TYPE.EVENT, event.getType());
+	}
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\TodoTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\UndoableRedoable.java
+	 */
+
+
+package com.equinox;
+
+/**
+ * Allows the object to be used in UndoRedoStacks.
+ *
+ * @param <T> the object type that can be saved into Undo and Redo stacks
+ */
+public interface UndoableRedoable<T extends UndoableRedoable<T>> {
+	
+	public int getId();
+	public T getPlaceholder();
+	public boolean isPlaceholder();
+	public T copy();
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\UndoableRedoable.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\UndoRedoStack.java
+	 */
+
+
+package com.equinox;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
+import com.equinox.exceptions.StateUndefinedException;
+
+/**
+ * Provides the functionality of remembering past states of objects that implement the UndoableRedoable interface. 
+ *
+ * @param <T>
+ */
+public class UndoRedoStack<T extends UndoableRedoable<T>> {
+	private LinkedList<T> undoStack;
+	private LinkedList<T> redoStack;
+	private HashMap<Integer, T> memory;
+	private IDBuffer<T> idBuffer;
+	private int maxStates;
+	
+	public UndoRedoStack(HashMap<Integer, T> memory, IDBuffer<T> idBuffer, int maxStates) {
+		this.undoStack = new LinkedList<T>();
+		this.redoStack = new LinkedList<T>();
+		this.memory = memory;
+		this.idBuffer = idBuffer;
+		this.maxStates = maxStates;
+	}
+		
+	/**
+	 * Saves the a copy of the state of an object into the undo stack. If the object
+	 * specified is null, a placeholder is used instead.
+	 * <p>
+	 * The stack never contains null values. <br>
+	 * If the maximum stack size is reached, the earliest state is discarded. <br>
+	 * If the stack and memory no longer contains a particular object, its ID is
+	 * returned to the pool of available IDs.
+	 * 
+	 * @param toBeSaved the object to be saved.
+	 */
+	public void save(T toBeSaved) {
+		T toBeSavedCopy = toBeSaved.copy();
+		undoStack.add(toBeSavedCopy);
+		
+		// If undo stack has exceeded max size, discard earliest state.
+		if (undoStack.size() > maxStates) {
+			int id = undoStack.removeFirst().getId();
+			if (!memory.containsKey(id)) {
+				idBuffer.put(id);
+			}
+		}
+	}
+	
+	/**
+	 * Restores the latest future state of the object.
+	 * 
+	 * @throws StateUndefinedException if there are no future states to restore
+	 *             to.
+	 */
+	public T restoreFutureState() throws StateUndefinedException {
+		T fromStack;
+		try {
+			fromStack = redoStack.removeLast();
+		} catch (NoSuchElementException e) {
+			throw new StateUndefinedException(
+					ExceptionMessages.NO_FUTURE_STATES);
+		}
+
+		int id = fromStack.getId();
+		T inMemory = memory.get(id);
+
+		// If Todo does not exist in memory, use placeholder.
+		if (inMemory == null) {
+			inMemory = fromStack.getPlaceholder();
+		}
+
+		save(inMemory);
+
+		// If Todo from stack is a placeholder, delete Todo indicated by its
+		// ID in the memory.
+		if (fromStack.isPlaceholder()) {
+			memory.remove(id);
+		} else {
+			memory.put(id, fromStack);
+		}
+		return fromStack;
+	}
+	
+	/**
+	 * Restores the latest history state of the object.
+	 * 
+	 * @throws StateUndefinedException if there are no history states to restore
+	 *             to.
+	 */
+	public T restoreHistoryState() throws StateUndefinedException {
+		T fromStack;
+		try {
+			fromStack = undoStack.removeLast();
+		} catch (NoSuchElementException e) {
+			throw new StateUndefinedException(
+					ExceptionMessages.NO_HISTORY_STATES);
+		}
+
+		int id = fromStack.getId();
+		T inMemory = memory.get(id);
+
+		// If Todo does not exist in memory, use placeholder.
+		if (inMemory == null) {
+			inMemory = fromStack.getPlaceholder();
+		}
+
+		// Redo stack will not exceed maximum size.
+		redoStack.add(inMemory);
+
+		// If Todo from stack is a placeholder, delete Todo indicated by its
+		// ID in the memory.
+		if (fromStack.isPlaceholder()) {
+			memory.remove(id);
+		} else {
+			memory.put(id, fromStack);
+		}
+		return fromStack;
+	}
+	
+	
+	/**
+	 * Returns the first object from the stack of history state.
+	 * 
+	 * @return the first object from the stack of history state.
+	 */
+	public T peekHistoryState() {
+		return undoStack.peekLast();
+	}
+	
+	/**
+	 * Returns the first object from the stack of future states.
+	 * 
+	 * @return the first object from the stack of future states.
+	 */
+	public T peekFutureState() {
+		return redoStack.peekLast();
+	}
+	
+
+	/**
+	 * Flushes both undo and redo stacks to release all reserved IDs back to the
+	 * pool of available IDs.
+	 */
+	public void flushStacks() {
+		flushRedoStack();
+		flushUndoStack();
+	}
+
+	/**
+	 * Flushes the undoStack of all states of objects.
+	 */
+	private void flushUndoStack() {
+		while (!undoStack.isEmpty()) {
+			int id = undoStack.pollLast().getId();
+			if (!memory.containsKey(id)) {
+				idBuffer.put(id);
+			}
+		}
+	}
+
+	/**
+	 * Flushes the redoStack of all states of objects.
+	 */
+	public void flushRedoStack() {
+		while (!redoStack.isEmpty()) {
+			int id = redoStack.pollLast().getId();
+			if (!memory.containsKey(id)) {
+				idBuffer.put(id);
+			}
+		}
+	}
+}
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\UndoRedoStack.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\VolatileMemory.java
+	 */
+
+
+package com.equinox;
+
+import java.util.EmptyStackException;
+import java.util.HashMap;
+import java.util.Stack;
+
+import com.equinox.exceptions.NotRecurringException;
+import com.equinox.exceptions.StateUndefinedException;
+
+/**
+ * Functions as an auxiliary memory that supports the main memory by providing
+ * the functionality of remembering the states of Todos and RecurringTodoRules,
+ * and allows the undo and redo operation to track and restore the last modified
+ * object.
+ * <p>
+ * The VolatileMemory object should be flushed by calling the flushStacks()
+ * before the main Memory is serialized and saved so that UndoRedo states that
+ * are brought out of context on the next load does not persist.
+ */
+public class VolatileMemory {
+	private Stack<Boolean> undoIsRule;
+	private Stack<Boolean> redoIsRule;
+	private UndoRedoStack<Todo> todoStacks;
+	private UndoRedoStack<RecurringTodoRule> ruleStacks;
+	private static final int STATE_STACK_MAX_SIZE = 5;
+
+	public VolatileMemory(HashMap<Integer, Todo> allTodos, IDBuffer<Todo> idBuffer, HashMap<Integer, RecurringTodoRule> recurringRules, IDBuffer<RecurringTodoRule> recurringIdBuffer) {
+		this.undoIsRule = new Stack<Boolean>();
+		this.redoIsRule = new Stack<Boolean>();
+		this.todoStacks = new UndoRedoStack<Todo>(allTodos, idBuffer, STATE_STACK_MAX_SIZE);
+		this.ruleStacks = new UndoRedoStack<RecurringTodoRule>(recurringRules, recurringIdBuffer, STATE_STACK_MAX_SIZE);
+	}
+	
+	/**
+	 * Saves the state of a Todo.
+	 * 
+	 * @param todo the original Todo to be saved.
+	 */
+	public void save(Todo todo) {
+		todoStacks.save(todo);
+		undoIsRule.push(false);
+		flushRedoStacks();
+	}
+	
+	/**
+	 * Saves the state of a RecurringTodoRule.
+	 * 
+	 * @param rule the original RecurringTodoRule to be saved.
+	 */
+	public void save(RecurringTodoRule rule) {
+		ruleStacks.save(rule);
+		undoIsRule.push(true);
+		flushRedoStacks();
+	}
+
+	/**
+	 * Reverts the last change depending on the object type that was modified by the last command.
+	 * 
+	 * @throws StateUndefinedException if there are no states to revert to.
+	 */
+	public void undo() throws StateUndefinedException {
+		RecurringTodoRule rule;
+		Todo todo;
+		
+		try {
+			boolean isRule = undoIsRule.pop();
+			redoIsRule.push(isRule);
+			if(isRule) {
+				ruleStacks.restoreHistoryState();
+			} else {
+				todo = todoStacks.restoreHistoryState();
+				if(todo.isRecurring() && undoIsRule.peek()) {
+					rule = ruleStacks.peekHistoryState();
+					if(rule.getId() == todo.getRecurringId()) {
+						undo();
+					}
+				}
+			}
+		} catch (EmptyStackException e) {
+			throw new StateUndefinedException(ExceptionMessages.NO_HISTORY_STATES);
+		} catch (NotRecurringException e) {
+			// Ignore
+		}
+	}
+	
+
+	/**
+	 * Reverts the last reversion depending on the object type that was modified by the reversion.
+	 * 
+	 * @throws StateUndefinedException if there are no states to revert to.
+	 */
+	public void redo() throws StateUndefinedException {
+		RecurringTodoRule rule;
+		Todo todo;
+		
+		try {
+			boolean isRule = redoIsRule.pop();
+			undoIsRule.push(isRule);
+			if (isRule) {
+				rule = ruleStacks.restoreFutureState();
+				if(!redoIsRule.peek()) {
+					todo = todoStacks.peekFutureState();
+					if(todo.isRecurring() && rule.getId() == todo.getRecurringId()) {
+						redo();
+					}
+				}
+			} else {
+				todoStacks.restoreFutureState();
+			}
+		} catch (EmptyStackException e) {
+			throw new StateUndefinedException(ExceptionMessages.NO_FUTURE_STATES);
+		} catch (NotRecurringException e) {
+			// Ignore
+		}
+	}
+	
+	/**
+	 * Flushes both rule and todo stacks to release the IDs reserved by the Todo or RecurringTodoRule objects in the stacks.
+	 */
+	public void flushStacks() {
+		todoStacks.flushStacks();
+		ruleStacks.flushStacks();
+	}
+	
+	/**
+	 * Flushes the redo stack to release the IDs reserved by the Todo or Recurring Todo objects in the redo stacks.
+	 */
+	private void flushRedoStacks() {
+		todoStacks.flushRedoStack();
+		ruleStacks.flushRedoStack();
+		redoIsRule.clear();
+	}
+	
+}
+
+	// End of segment: C:\Users\Ikarus\Documents\workspace\Zeitgeist\src\com\equinox\VolatileMemory.java
+
+
+
+
+
