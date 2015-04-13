@@ -52,29 +52,4 @@ public class TodoTest {
 		assertEquals("End time", endDate, event.getEndTime());
 		assertEquals("Type ", Todo.TYPE.EVENT, event.getType());
 	}
-	
-	@Test
-	public void testIsValid() {
-		Todo event = new Todo(0, name, eventDateTimes);
-		assertEquals("isValid()", true, event.isValid());
-		assertEquals("Type ", Todo.TYPE.EVENT, event.getType());
-		
-		event.setStartTime(null);
-		assertEquals("isValid()", true, event.isValid());
-		assertEquals("Type ", Todo.TYPE.DEADLINE, event.getType());
-		
-		event.setEndTime(null);
-		assertEquals("isValid()", true, event.isValid());
-		assertEquals("Type ", Todo.TYPE.TASK, event.getType());
-		
-		event.setStartTime(deadlineTime);
-		assertEquals("isValid()", true, event.isValid());
-		assertEquals("Start time", null, event.getStartTime());
-		assertEquals("End time", deadlineTime, event.getEndTime());
-		assertEquals("Type ", Todo.TYPE.DEADLINE, event.getType());
-		
-		event.setStartTime(endDate);
-		event.setEndTime(startDate);
-		assertEquals("isValid()", false, event.isValid());
-	}
 }

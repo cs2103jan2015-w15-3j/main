@@ -147,14 +147,14 @@ public class EditCommand extends Command {
 					rule.setOriginalName(title);
 				}
 				
-				// If recurrence rule has a limit
+				// If input has a limit
 				if (input.hasLimit()) {
 					rule.setRecurrenceLimit(input.getLimit());
 				}
 				
+				// If input has a period
 				if (input.hasPeriod()) {
 					rule.setRecurringInterval(input.getPeriod());
-					rule.setDateTimes(dateTimes);
 				}
 				
 				if(!newDateTimes.isEmpty()) {
