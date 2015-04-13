@@ -20,8 +20,6 @@ import com.google.gson.JsonSyntaxException;
  * 
  * Since the storage file at the default location can also be corrupt or invalid,
  * it is also checked in the StorageHandler class.
- * 
- * @param customFileDirPath
  */
 public class StorageUtils {
 
@@ -59,7 +57,7 @@ public class StorageUtils {
 	 * 3. Revert back to using the storage file at the default location 
 	 * 4. Exit
 	 * 
-	 * @param customFileDirPath
+	 * @param String customFileDirPath
 	 * @return String Path of storageFile.json after processing
 	 */
 		static String processStorageDirectory(String customFileDirPath) {
@@ -179,7 +177,13 @@ public class StorageUtils {
 			return fileDirectory;
 		}
 		
-		static boolean isFileInJsonFormat(File file){
+		/**
+		 * Checks if the file passed as parameter is in Json format.
+		 * 
+		 * @param File
+		 * @return Boolean
+		 */
+		static Boolean isFileInJsonFormat(File file){
 			try{
 				Scanner reader = new Scanner(file);
 				StringBuilder builder = new StringBuilder();
@@ -200,8 +204,8 @@ public class StorageUtils {
 		/**
 		 * Copies storageFile.json from the storageFilePath to customFileDirPath 
 		 * 
-		 * @param storageFilePath
-		 * @param customFileDirPath
+		 * @param String storageFilePath
+		 * @param String customFileDirPath
 		 */
 		static void copyStorageFile(String storageFilePath,
 				String customFileDirPath) {
@@ -218,7 +222,7 @@ public class StorageUtils {
 		 * Modifies the Settings file (settings.txt) by overriding the file with
 		 * the path specified by customFileDirPath.
 		 * 
-		 * @param customFileDirPath
+		 * @param String customFileDirPath
 		 */
 		static void modifySettingsFile(String customFileDirPath) {
 			try {
@@ -306,8 +310,8 @@ public class StorageUtils {
 		/**
 		 * Checks if the string is a valid file directory.
 		 * 
-		 * @param fileDirectoryString
-		 * @return True if string is a valid directory, false otherwise.
+		 * @param String fileDirectoryString
+		 * @return Boolean if string is a valid directory, false otherwise.
 		 */
 		static Boolean isValidDirPath(String fileDirectoryString) {
 			if (fileDirectoryString == null || fileDirectoryString == "") {
