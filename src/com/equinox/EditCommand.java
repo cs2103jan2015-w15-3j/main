@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.joda.time.DateTime;
 
+import com.equinox.exceptions.InvalidParamException;
 import com.equinox.exceptions.NotRecurringException;
 import com.equinox.exceptions.NullRuleException;
 import com.equinox.exceptions.NullTodoException;
@@ -230,7 +231,9 @@ public class EditCommand extends Command {
 			return new Signal(Signal.EDIT_NO_LONGER_RECURS, false);
 		} catch (NotRecurringException e) {
 			return new Signal(e.getMessage(), false);
-		}
+        } catch (InvalidParamException e) {
+            return new Signal(Signal.EDIT_INVALID_PARAMS, false);
+        }
 	}
 
 }

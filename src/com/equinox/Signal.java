@@ -48,11 +48,13 @@ public class Signal {
 	 * Display Command Signals
 	 */
 	public static final String DISPLAY_SUCCESS_SIGNAL = "";
-	public static final String DISPLAY_EMPTY_SIGNAL = "The list is empty";
+    public static final String DISPLAY_EMPTY_TODO_SIGNAL = "The list of todos is empty.";
+    public static final String DISPLAY_EMPTY_RULE_SIGNAL = "The list of recurring rules is empty.";
 	public static final String DISPLAY_ID_NOT_FOUND = "The specified todo with ID %1$s does not exist";
 	public static final String DISPLAY_INVALID_PARAM = "The parameter %1$s is not recognized."
 			+ System.lineSeparator()
-			+ "The display command only supports only following additional parameters: c, completed, a, all, [ID]. "
+            + "The display command only supports only following additional parameters: "
+            + "c, completed, a, all, rule, [ID]. "
 			+ System.lineSeparator()
 			+ "Pending todos will be displayed by default, when no paramters are supplied. ";
 

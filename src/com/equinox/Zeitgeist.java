@@ -18,7 +18,6 @@ public class Zeitgeist {
 		storage = new StorageHandler.Builder().setDirectoryPath(fileDirectory)
 				.setFilePath().build();
 		memory = storage.retrieveMemoryFromFile();
-		memory = new Memory();
 		memory.setStorageHandler(storage);
 		memory.onCreate();
 		Parser.initialize();
@@ -28,7 +27,6 @@ public class Zeitgeist {
 		fileDirectory = fileDir;
 		storage = new StorageHandler.Builder().setDirectoryPath(fileDirectory)
 				.setFilePath().build();
-		memory = new Memory();
 		memory = storage.retrieveMemoryFromFile();
 		memory.setStorageHandler(storage);
 		Parser.initialize();

@@ -158,6 +158,10 @@ public class Memory {
 		return returnRule;
 	}
 
+    public Collection<RecurringTodoRule> getAllRules() {
+        return recurringRules.values();
+    }
+
 	/**
 	 * Retrieves the RecurringTodoRule identified by the specified ID from the memory for
 	 * editing. The current state is saved prior to any operation.

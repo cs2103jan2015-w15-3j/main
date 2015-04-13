@@ -5,43 +5,207 @@ package com.equinox;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
 import com.equinox.exceptions.NullTodoException;
+import com.equinox.exceptions.ParsingFailureException;
 
 public class EditCommandTest {
-	Memory memory = new Memory();
 
-	String startTime = "midnight 29 Sep 2015 ";
-	String endTime = "1859h 10 Nov 2015 ";
-	String title = "Meet parents for dinner ";
-	String editedStart = "7pm 6 May ";
-	String editedEnd = "2100h 6 May ";
-
-	DateTime newStartDate = new DateTime(2015, 5, 6, 19, 00, 0);
-	DateTime newEndDate = new DateTime(2015, 5, 6, 21, 00, 0);
-	ArrayList<DateTime> dateTimes = new ArrayList<DateTime>();
 	Zeitgeist logic;
-
+	String nameFloating1 = " Arrange meetup";
+	String nameFloating2 = " Meetup with friends";
+	String nameDeadline1 = " Report submission";
+	String nameDeadline2 = " Reflection submission";
+	String nameEvent1 = " Dinner with Family";
+	String nameEvent2 = " Dinner with extended family";
+	String date1 = " 18 May";
+	int date1Day = 18;
+	int date1Month = 5;
+	
+	String date2 = " 20 August";
+	int date2Day = 20;
+	int date2Month = 8;
+	
+	String time1 = " 2.30pm";
+	int time1Hour = 14;
+	int time1Min = 30;
+	
+	String time2 = " 4pm";
+	int time2Hour = 16;
+	int time2Min = 0;
+	
+	int year = new DateTime().getYear();
+	
+	String add = "add";
+	String edit = "edit";
+	
+	String by = " by";
+	String from = " from";
+	String to = " to";
+	String on = " on";
+	
+	String idStringFloat = " 0";
+	int idFloat = 0;
+	String idStringDeadline = " 1";
+	int idDeadline = 1;
+	String idStringEvent = " 2";
+	int idEvent = 2;
+	
+	Todo floating;
+	Todo deadline;
+	Todo event;
+	
 	@Before
-	public void setup() {
-		dateTimes.add(newStartDate);
-		dateTimes.add(newEndDate);
-		logic = Zeitgeist.getInstance();
+	public void setUp() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		String fileDirectory = Zeitgeist.getStorageFileDirFromSettings();
+		logic = new Zeitgeist(fileDirectory);
+		logic.reloadMemory();
+		
+		logic.handleInput(add + nameFloating1);
+		logic.handleInput(add + nameDeadline1 + by + date1 + time1);
+		logic.handleInput(add + nameEvent1 + from + date1 + time1 + to + date1 + time2);
+		
+		floating = new Todo(idFloat, nameFloating1.trim());
+		
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate1);
+		deadline = new Todo(idDeadline, nameDeadline1.trim(), dateTimes);
+		
+		DateTime newDate2 = new DateTime(year, date1Month, date1Day, time2Hour, time2Min);
+		dateTimes.add(newDate2);
+		event = new Todo(idEvent, nameEvent1.trim(), dateTimes);
+	}
+	
+	@After
+	public void tearDown() {
+		logic.reloadMemory();
 	}
 
 	@Test
-	public void test() throws NullTodoException, InvalidRecurringException, InvalidTodoNameException {
-		logic.handleInput("add " + title + "from " + startTime + "to "
-				+ endTime);
-		System.out.println(logic.handleInput("edit " + "0 " + "start "
-				+ editedStart + "end " + editedEnd));
-		assertEquals(new Todo(0, title.toLowerCase().trim(), dateTimes),
-				logic.memory.getTodo(0));
+	public void testEditFloatingName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException, NumberFormatException, NullTodoException {
+		Todo floatingEdited = new Todo(idFloat, nameFloating2.trim());
+		Signal signal = logic.handleInput(edit + idStringFloat + nameFloating2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, floating, floatingEdited), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditFloatingToDeadline() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate);
+		Todo deadline = new Todo(idFloat, nameFloating1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringFloat + by + date1 + time1);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, floating, deadline), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test 
+	public void testEditFloatingToEvent() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date1Month, date1Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event = new Todo(idFloat, nameFloating1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringFloat + from + date1 + time1 + to + date1 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, floating, event), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditDeadlineName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		dateTimes.add(newDate1);
+		Todo deadline2 = new Todo(idDeadline, nameDeadline2.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringDeadline + nameDeadline2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, deadline, deadline2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditDeadlineTime() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate);
+		Todo deadline2 = new Todo(idDeadline, nameDeadline1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringDeadline + by + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, deadline, deadline2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditDeadlineToEvent() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date1Month, date1Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event = new Todo(idDeadline, nameDeadline1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringDeadline + from + date1 + time1 + to + date1 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, deadline, event), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditEventName() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date1Month, date1Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date1Month, date1Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event2 = new Todo(idEvent, nameEvent2.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringEvent + nameEvent2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, event, event2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditEventTime() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event2 = new Todo(idEvent, nameEvent1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringEvent + from + date2 + time1 + to + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, event, event2), true);
+		assertEquals(expected, signal);
+		
+		
+	}
+	
+	@Test
+	public void testEditEventOnDateFromTimeToTime() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		Todo event2 = new Todo(idEvent, nameEvent1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringEvent + on + date2 + from + time1 + to + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, event, event2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditEventToDeadline() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		Todo deadline2 = new Todo(idEvent, nameEvent1.trim(), dateTimes);
+		Signal signal = logic.handleInput(edit + idStringEvent + by + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_SUCCESS_FORMAT, event, deadline2), true);
+		assertEquals(expected, signal);
 	}
 }
