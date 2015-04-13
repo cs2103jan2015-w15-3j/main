@@ -10,6 +10,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
+import com.equinox.exceptions.InvalidParamException;
+
 // @author A0093910H
 /**
  * The RecurringTodoRule class contains the rules and methods for creating and
@@ -183,9 +185,10 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
         return newTodoCount;
     }
 
-    public void setRecurrenceLimit(DateTime recurrenceLimit) {
+    public void setRecurrenceLimit(DateTime recurrenceLimit)
+            throws InvalidParamException {
         if (recurrenceLimit == null) {
-            throw new IllegalArgumentException(
+            throw new InvalidParamException(
                     "Recurring limit of recurring rule cannot be empty");
         } else {
             this.recurrenceLimit = recurrenceLimit;
@@ -197,9 +200,10 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
         this.name = RECURRING_TODO_PREIX + originalName;
     }
 
-    public void setRecurringInterval(Period recurringInterval) {
+    public void setRecurringInterval(Period recurringInterval)
+            throws InvalidParamException {
         if (recurringInterval == null) {
-            throw new IllegalArgumentException(
+            throw new InvalidParamException(
                     "Recurring interval cannot be empty");
         } else {
             this.recurringInterval = recurringInterval;
@@ -207,9 +211,9 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
     }
 
     public void setDateTimes(List<DateTime> dateTimes)
-            throws IllegalArgumentException {
+            throws InvalidParamException {
         if (dateTimes == null || dateTimes.size() == 0) {
-            throw new IllegalArgumentException(
+            throw new InvalidParamException(
                     "DateTime field of recurring rule cannot be empty");
         } else {
             this.dateTimes = dateTimes;
