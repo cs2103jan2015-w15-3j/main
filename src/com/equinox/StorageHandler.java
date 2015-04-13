@@ -39,14 +39,12 @@ public class StorageHandler {
 			+ "\t1. Replace it with a blank file (R)\n"
 			+ "\t2. Exit (E)";
 	private static final String FILE_NAME = "storageFile.json";
-	private static final String TEST_FILE_NAME = "testStorageFile.json";
 	
-    private static File storageFile;
-    private File storageTestFile;
-
 	private static PrintWriter writer;
 	private static Scanner reader;
 	private static String filePath;
+	
+    private File storageFile;
 	
 	/**
 	 * Builder inner class for creating instances of StorageHandler with
@@ -114,12 +112,13 @@ public class StorageHandler {
 	 * file, or to exit the program.
 	 * 
 	 */
-	private static void checkFileFormat(){
+	private void checkFileFormat(){
 		if(!StorageUtils.isFileInJsonFormat(storageFile)){
 			String command;
+			Scanner scn = Zeitgeist.scn;
 			do{
 				System.out.println(MESSAGE_CORRUPT_FILE);
-				command = Zeitgeist.scn.nextLine().toUpperCase().trim();
+				command = scn.nextLine().toUpperCase().trim();
 				if(command.equals("R")){
 					storageFile.delete();
 					createFileIfNonExistent(storageFile);
@@ -184,7 +183,7 @@ public class StorageHandler {
 			if (!file.exists()) {
 				file.createNewFile();
 				//write a null Memory in JSON format to file
-                storeMemoryToFile(Memory.getInstance(), file);
+                storeMemoryToFile(new Memory(), file);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -197,26 +196,9 @@ public class StorageHandler {
 	 */
 	public static void deleteStorageFileIfExists(String fileDirectory){
 		String filePath = fileDirectory + "/" + FILE_NAME;
-		storageFile = new File(filePath);
-		if(storageFile.exists()){
-			storageFile.delete();
-		}
-	}
-	
-	/**
-	 * Creates testStorageFile for use in system tests.
-	 * 
-	 */
-	public void createTestFile(){
-		try{
-			storageTestFile = new File(TEST_FILE_NAME);
-			if(!storageTestFile.exists()){
-				storageTestFile.createNewFile();
-				//write a null Memory in JSON format to file
-                storeMemoryToFile(Memory.getInstance(), storageTestFile);
-			}
-		} catch(IOException e){
-			e.printStackTrace();
+		File file = new File(filePath);
+		if(file.exists()){
+			file.delete();
 		}
 	}
 
@@ -225,7 +207,7 @@ public class StorageHandler {
 	 * 
 	 * @param memoryToStore
 	 */
-	public static void storeMemoryToFile(Memory memoryToStore) {
+	public void storeMemoryToFile(Memory memoryToStore) {
 		initialiseWriter(storageFile);
 		String jsonString = exportAsJson(memoryToStore);
 		writer.println(jsonString);

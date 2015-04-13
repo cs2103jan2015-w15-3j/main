@@ -174,14 +174,14 @@ public class SearchCommand extends Command {
 			String[] paramArray = param.split(REGEX_SPACE);
 			for (String searchKey : paramArray) {
 				todoIds = memory.search(typeKey, searchKey);
-				resultTodos.addAll(getTodos(todoIds));
+				addUniqueTodos(resultTodos, getTodos(todoIds));
 			}
 		} else { // assumes if typeKey != NAME, user wants to search for
 					// dateTime
 			try {
 				searchDate = dateTimes.remove(0);
 				todoIds = memory.search(typeKey, searchDate);
-				resultTodos.addAll(getTodos(typeKey, searchDate, todoIds));
+				addUniqueTodos(resultTodos, getTodos(typeKey, searchDate, todoIds));
 			} catch (IndexOutOfBoundsException e) {
 				throw new InvalidParamException();
 			}
@@ -189,6 +189,22 @@ public class SearchCommand extends Command {
 		}
 
 	}
+
+	/**
+	 * Adds todos into resultTodos without repetition
+	 * @param resultTodos
+	 * @param todos
+	 */
+	private void addUniqueTodos(ArrayList<Todo> resultTodos,
+			Collection<Todo> todos) {
+		for (Todo todo: todos) {
+			if(!resultTodos.contains(todo)) {
+				resultTodos.add(todo);
+			}
+		}
+		
+	}
+
 
 	/**
 	 * Retrieves a Collection of Todo objects based on their todoIds

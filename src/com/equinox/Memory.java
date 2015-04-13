@@ -22,9 +22,6 @@ import com.equinox.exceptions.StateUndefinedException;
  * {@value #STATE_STACK_MAX_SIZE}.
  */
 public class Memory {
-	// Field for Memory singleton pattern
-	private static Memory instance;
-
 	// Constants
 	private static final String REGEX_SPACE = "\\s";
 
@@ -692,20 +689,5 @@ public class Memory {
 
 	public void updateMaps(int userIndex, DateTime date, DateTime originalDate) {
 		searchMap.update(userIndex, date, originalDate);
-	}
-
-	// @author ? TODO: add author tag
-	/*
-	 * Method for Memory singleton pattern
-	 * 
-	 * Create an instance of memory if it is not present
-	 * 
-	 * @return instance of memory
-	 */
-	public static Memory getInstance() {
-		if (instance == null) {
-			instance = new Memory();
-		}
-		return instance;
 	}
 }
