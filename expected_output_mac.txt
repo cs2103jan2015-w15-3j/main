@@ -42,7 +42,7 @@ ID | Name                           | Time
 ..Fri 01 Jan 2016...
 4  | (Recurring) new year           | 23:59
 
-Zeitgeist: Recurrence Rule: "new year" every 1 year(s) until 13 Apr 2016 successfully added.
+Zeitgeist: Recurrence Rule: "new year" every 1 year(s) until Wed 13 Apr 2016 successfully added.
 Command: [2J[HShowing pending todos:
 ID | Name                           | Time
 
@@ -179,7 +179,7 @@ ID | Name                           | Time
 ......Anytime.......
 6  | read floating books            | NIL
 
-Zeitgeist: Recurrence Rule: "go to NUS hackers" every 1 week(s) until 13 Apr 2016 successfully added.
+Zeitgeist: Recurrence Rule: "go to NUS hackers" every 1 week(s) until Wed 13 Apr 2016 successfully added.
 Command: [2J[HShowing pending todos:
 ID | Name                           | Time
 
@@ -208,7 +208,7 @@ ID | Name                           | Time
 ......Anytime.......
 6  | read floating books            | NIL
 
-Zeitgeist: Recurrence Rule: "learn something" every 1 week(s) until 13 Apr 2016 successfully added.
+Zeitgeist: Recurrence Rule: "learn something" every 1 week(s) until Wed 13 Apr 2016 successfully added.
 Command: [2J[HShowing pending todos:
 ID | Name                           | Time
 
@@ -299,7 +299,7 @@ ID | Name                           | Time
 ......Anytime.......
 6  | read floating books            | NIL
 
-Zeitgeist: Rule Recurrence Rule: "learn something" every 1 week(s) until 13 Apr 2016 successfuly modified to Recurrence Rule: "learning new things" every 1 week(s) until 01 May 2015.
+Zeitgeist: Rule Recurrence Rule: "learn something" every 1 week(s) until Wed 13 Apr 2016 successfuly modified to Recurrence Rule: "learning new things" every 1 week(s) until Fri 01 May 2015.
 Command: [2J[HShowing pending todos:
 ID | Name                           | Time
 
