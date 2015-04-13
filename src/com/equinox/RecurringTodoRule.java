@@ -35,8 +35,10 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
 
     private String RECURRING_TODO_PREIX = "(Recurring) ";
 
-    protected static final String recurringTodoWithLimitStringFormat = "Recurrence Rule: \"%1$s\" every %2$s until %3$s";
-    protected static final String recurringTodoStringFormat = "Recurrence Rule: \"%1$s\" every %2$s";
+    protected static final String recurringFormat = "Recurrence Rule: \"%1$s\" every %2$s until %3$s";
+    protected static final String recurringDisplayFormat = "Recurrence Rule: "
+            + "%1$s" + System.lineSeparator() + "Every %2$s until %3$s"
+            + System.lineSeparator();
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("dd MMM yyyy");
     private static final PeriodFormatter PERIOD_FORMATTER;
     static {
@@ -48,7 +50,6 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
     			.printZeroNever().appendDays().appendSuffix(" day(s)")
     			.toFormatter();
     }
-    private boolean hasLimit = false;
     
 
     /**
@@ -91,7 +92,6 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
         this.recurringInterval = period;
         this.recurringId = recurringId;
         this.recurrenceLimit = limit;
-        this.hasLimit = true;
     }
     
     /**
@@ -189,7 +189,6 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
                     "Recurring limit of recurring rule cannot be empty");
         } else {
             this.recurrenceLimit = recurrenceLimit;
-            this.hasLimit = true;
         }
     }
 
@@ -251,13 +250,20 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
         }
     }
 
+    public String getDisplayString() {
+        // Use the todo occurrence's toString result as part of the
+        // display string
+        Todo todoOccurrnece = new Todo(0, name, dateTimes, recurringId);
+        return String.format(recurringDisplayFormat, todoOccurrnece.toString(),
+                recurringInterval.toString(PERIOD_FORMATTER),
+                recurrenceLimit.toString(DATE_TIME_FORMATTER));
+
+    }
+
     public String toString() {
-    	if(hasLimit) {
-    		return String.format(recurringTodoWithLimitStringFormat, originalName, recurringInterval.toString(PERIOD_FORMATTER), recurrenceLimit.toString(DATE_TIME_FORMATTER));
-    	} else {
-    		return String.format(recurringTodoStringFormat, originalName, recurringInterval.toString(PERIOD_FORMATTER));
-    	}
-        
+        return String.format(recurringFormat, originalName,
+                recurringInterval.toString(PERIOD_FORMATTER),
+                recurrenceLimit.toString(DATE_TIME_FORMATTER));
     }
 
     /**
