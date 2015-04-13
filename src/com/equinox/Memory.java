@@ -22,9 +22,6 @@ import com.equinox.exceptions.StateUndefinedException;
  * {@value #STATE_STACK_MAX_SIZE}.
  */
 public class Memory {
-	// Field for Memory singleton pattern
-	private static Memory instance;
-
 	// Constants
 	private static final String REGEX_SPACE = "\\s";
 
@@ -48,7 +45,7 @@ public class Memory {
 	/**
 	 * Constructs an empty Memory object.
 	 */
-	private Memory() {
+	public Memory() {
 		this.allTodos = new HashMap<Integer, Todo>();
 		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
 		this.idBuffer = new IDBuffer<Todo>(allTodos);
@@ -66,17 +63,6 @@ public class Memory {
 	void onDestroy() {
 		vMem.flushStacks(); //Recycles all IDs
 		vMem = null;
-	}
-	
-	public static Memory getInstance() {
-		if (instance == null) {
-			instance = new Memory();
-		}
-		return instance;
-	}
-	
-	void clearInstance() {
-		instance = null;
 	}
 
 	/**
