@@ -118,17 +118,17 @@ public class Parser {
 						}
 					}
 					// tries to parse param as date to extract the date
-//					if (dateTimes.isEmpty()) {
-						List<DateTime> parsedDate = interpretAsDate(
-								keyParamPairs, currentPair, false);
-						if (!parsedDate.isEmpty()) {
-							if (!isRecurring) {
-								period = period.withYears(1);
-								isRecurring = true;
-							}
-							addToDateTimes(parsedDate, dateTimes,
-									keyParamPairs, dateIndexes, i);
-//						}
+					// if (dateTimes.isEmpty()) {
+					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+							currentPair, false);
+					if (!parsedDate.isEmpty()) {
+						if (!isRecurring) {
+							period = period.withYears(1);
+							isRecurring = true;
+						}
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
+						// }
 					} else if (!isRecurring) {
 						interpretAsName(keyParamPairs, currentPair);
 					}
@@ -148,11 +148,16 @@ public class Parser {
 			for (int i = keyParamPairs.size() - 1; i > 0; i--) {
 				keyParamPairs.remove(i);
 			}
-		}
 
-		// Post-process EDIT command parameters
-		if (cType == Keywords.EDIT) {
+			// check parameters for recurring todos
+			if (isRecurring) {
+				if (!isValidRecurring(dateTimes)) {
+					throw new InvalidRecurringException();
+				}
+			}
 
+		} else if (cType == Keywords.EDIT) {
+			// Post-process EDIT command parameters
 			int toIndex;
 			for (int i = 0; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
@@ -238,10 +243,8 @@ public class Parser {
 
 				}
 			}
-		}
-
-		// Post-process SEARCH command parameters
-		if (cType == Keywords.SEARCH) {
+		} else if (cType == Keywords.SEARCH) {
+			// Post-process SEARCH command parameters
 			for (KeyParamPair keyParamPair : keyParamPairs) {
 				Keywords key = keyParamPair.getKeyword();
 				if (!(key == Keywords.NAME || key == Keywords.SEARCH)) {
@@ -258,17 +261,8 @@ public class Parser {
 			}
 		}
 
-		if (cType == Keywords.ADD) {
-			// check parameters for recurring todos
-			if (isRecurring) {
-				if (!isValidRecurring(dateTimes)) {
-					throw new InvalidRecurringException();
-				}
-			}
-		}
 		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
 				isRecurring, hasLimit, limit);
-		// System.out.println(returnInput.getParamPairs().get(0).getParam());
 		return returnInput;
 	}
 
