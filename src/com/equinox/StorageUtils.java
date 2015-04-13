@@ -200,8 +200,6 @@ public class StorageUtils {
 		/**
 		 * Copies storageFile.json from the storageFilePath to customFileDirPath 
 		 * 
-		 * @author Jonathan Lim Siu Chi || ign3sc3nc3
-		 * 
 		 * @param storageFilePath
 		 * @param customFileDirPath
 		 */
@@ -245,7 +243,6 @@ public class StorageUtils {
 		 * read from the file. If the directory read is invalid, the directory of
 		 * storageFile.json will be reverted to the default.
 		 * 
-		 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 		 */
 		static String readSettingsFile() {
 			// Set default file directory
@@ -301,9 +298,6 @@ public class StorageUtils {
 		/**
 		 * Sets the default file directory where storageFile.json is saved as the
 		 * same directory the program is being run from.
-		 * 
-		 * @author Jonathan Lim Siu Chi || ign3sc3nc3
-		 * 
 		 */
 		static void setDefaultFileDirectory() {
 			defaultFileDirectory = new File("").getAbsolutePath();
@@ -311,8 +305,6 @@ public class StorageUtils {
 
 		/**
 		 * Checks if the string is a valid file directory.
-		 * 
-		 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 		 * 
 		 * @param fileDirectoryString
 		 * @return True if string is a valid directory, false otherwise.
