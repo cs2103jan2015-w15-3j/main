@@ -41,7 +41,7 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
     protected static final String recurringDisplayFormat = "Recurrence Rule: "
             + "%1$s" + System.lineSeparator() + "Every %2$s until %3$s"
             + System.lineSeparator();
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("dd MMM yyyy");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("EEE dd MMM yyyy");
     private static final PeriodFormatter PERIOD_FORMATTER;
     static {
     	PeriodFormatterBuilder pfb = new PeriodFormatterBuilder();
