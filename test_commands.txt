@@ -11,9 +11,10 @@ mark 2
 search read
 add go to NUS hackers every friday
 add learn something every sunday
-search learn
 undo
 redo
+search learn
+edit 10 -r learning new things by sun 9pm until 1 may
 mark 1
 undo
 mark 3
