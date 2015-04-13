@@ -50,7 +50,7 @@ public class DisplayCommandTest {
 
         logic.handleInput("mark 2");
 
-        todos = logic.memory.getAllTodos();
+        todos = Zeitgeist.memory.getAllTodos();
     }
 
     @Test
@@ -64,7 +64,7 @@ public class DisplayCommandTest {
                 + "21:00 - 23:59\n\n..Tue 10 Mar 2015...\n8  | meet june from malaysia        | "
                 + "00:00 - 22:00\n\n..Tue 07 Apr 2015...\n7  | CS3333 project 2               | "
                 + "10:00\n\n......Anytime.......\n5  | read floating books            | NIL\n";
-        assertEquals(expected, DisplayCommand.getDisplayChrono(logic.memory, 0));
+        assertEquals(expected, DisplayCommand.getDisplayChrono(Zeitgeist.memory, 0));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class DisplayCommandTest {
                 + "| Time\n\n..Tue 03 Mar 2015...\n2  | CIP event                      "
                 + "| 10:00 - 12:00\n\n......Anytime.......\n0  | floating task                  "
                 + "| NIL\n";
-        assertEquals(expected, DisplayCommand.getDisplayChrono(logic.memory, 1));
+        assertEquals(expected, DisplayCommand.getDisplayChrono(Zeitgeist.memory, 1));
     }
 
 }

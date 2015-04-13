@@ -383,7 +383,6 @@ public class DisplayCommand extends Command {
         title = shortenTitle(title);
 		String id = String.valueOf(todo.getId());
 		DateTime endTime = todo.getEndTime();
-        String endDateString = formatDateForDisplay(endTime);
         String endTimeString = formatTimeForDisplay(endTime);
         return String.format(deadLineFormat, id, title,
 				endTimeString) + System.lineSeparator();
@@ -395,7 +394,6 @@ public class DisplayCommand extends Command {
 		String id = String.valueOf(todo.getId());
 		DateTime startTime = todo.getStartTime();
 		DateTime endTime = todo.getEndTime();
-        String startDateString = formatDateForDisplay(startTime);
         String startTimeString = formatTimeForDisplay(startTime);
         String endTimeString = formatTimeForDisplay(endTime);
         return String.format(eventFormat, id, title,

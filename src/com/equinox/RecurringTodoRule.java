@@ -22,8 +22,6 @@ public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
 
     private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
 
-    private int MAX_FUTURE_OCCURRENCE = 1;
-
     protected Period recurringInterval;
     protected int recurringId;
     private DateTime recurrenceLimit;

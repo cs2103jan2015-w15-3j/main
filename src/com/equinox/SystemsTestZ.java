@@ -90,7 +90,7 @@ public class SystemsTestZ {
 
         logic.handleInput("display");
 
-        todos = logic.memory.getAllTodos();
+        todos = Zeitgeist.memory.getAllTodos();
 
         String expected = "Showing pending todos:\n"
                 + "ID | Name                           | Time\n\n"
