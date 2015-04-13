@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.equinox.exceptions.NullTodoException;
 
-// @author A0093910H
+//@author A0093910H
 public class DisplayCommand extends Command {
 
     private static Logger logger = LoggerFactory
@@ -447,7 +447,7 @@ public class DisplayCommand extends Command {
         return dateString;
     }
 
-    // @author A0093910H-reused
+    //@author A0093910H-reused
     static class StringUtils {
 
         public static String center(String s, int size) {

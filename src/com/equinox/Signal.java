@@ -9,7 +9,7 @@ package com.equinox;
  *
  */
 public class Signal {
-	// @author A0093910H
+	//@author A0093910H
 	/**
 	 * Welcome Signal
 	 */
