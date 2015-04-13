@@ -209,12 +209,6 @@ ID | Name                           | Time
 6  | read floating books            | NIL
 
 Zeitgeist: Recurrence Rule: "learn something" every 1 week(s) successfully added.
-Command: [2J[HShowing all todos:
-ID | Name                           | Time
-
-..Sun 19 Apr 2015...
-10 | (Recurring) learn something    | 23:59
-
 Command: [2J[HShowing pending todos:
 ID | Name                           | Time
 
@@ -270,6 +264,42 @@ ID | Name                           | Time
 6  | read floating books            | NIL
 
 Zeitgeist: Redo operation successful.
+Command: [2J[HShowing all todos:
+ID | Name                           | Time
+
+..Sun 19 Apr 2015...
+10 | (Recurring) learn something    | 23:59
+
+Command: [2J[HShowing pending todos:
+ID | Name                           | Time
+
+..Thu 01 Jan 2015...
+3  | (Recurring) new year           | 23:59
+
+..Tue 03 Mar 2015...
+5  | CS1010 deadline                | 22:00
+
+..Mon 09 Mar 2015...
+7  | CS3243 project deadline        | 09:00
+1  | CS3230 deadline                | 21:00
+
+..Tue 07 Apr 2015...
+8  | CS3333 project 2               | 10:00
+
+..Fri 17 Apr 2015...
+9  | (Recurring) go to NUS hackers  | 23:59
+
+..Sun 19 Apr 2015...
+11 | (Recurring) learning new thing | 21:00
+10 | (Recurring) learn something    | 23:59
+
+..Fri 01 Jan 2016...
+4  | (Recurring) new year           | 23:59
+
+......Anytime.......
+6  | read floating books            | NIL
+
+Zeitgeist: Rule Recurrence Rule: "learn something" every 1 week(s)successfuly modified to Recurrence Rule: "learning new things" every 1 week(s) until 01 May 2015.
 Command: [2J[HShowing pending todos:
 ID | Name                           | Time
 
@@ -289,6 +319,7 @@ ID | Name                           | Time
 9  | (Recurring) go to NUS hackers  | 23:59
 
 ..Sun 19 Apr 2015...
+11 | (Recurring) learning new thing | 21:00
 10 | (Recurring) learn something    | 23:59
 
 ..Fri 01 Jan 2016...
@@ -318,6 +349,7 @@ ID | Name                           | Time
 9  | (Recurring) go to NUS hackers  | 23:59
 
 ..Sun 19 Apr 2015...
+11 | (Recurring) learning new thing | 21:00
 10 | (Recurring) learn something    | 23:59
 
 ..Fri 01 Jan 2016...
@@ -344,6 +376,7 @@ ID | Name                           | Time
 9  | (Recurring) go to NUS hackers  | 23:59
 
 ..Sun 19 Apr 2015...
+11 | (Recurring) learning new thing | 21:00
 10 | (Recurring) learn something    | 23:59
 
 ..Fri 01 Jan 2016...
@@ -359,6 +392,9 @@ ID | Name                           | Time
 ..Thu 01 Jan 2015...
 3  | (Recurring) new year           | 23:59
 
+..Sun 19 Apr 2015...
+11 | (Recurring) learning new thing | 21:00
+
 ..Fri 01 Jan 2016...
 4  | (Recurring) new year           | 23:59
 
@@ -385,6 +421,7 @@ ID | Name                           | Time
 9  | (Recurring) go to NUS hackers  | 23:59
 
 ..Sun 19 Apr 2015...
+11 | (Recurring) learning new thing | 21:00
 10 | (Recurring) learn something    | 23:59
 
 ..Fri 01 Jan 2016...
@@ -400,6 +437,9 @@ ID | Name                           | Time
 ..Thu 01 Jan 2015...
 3  | last new year                  | 23:59
 
+..Sun 19 Apr 2015...
+11 | (Recurring) learning new thing | 21:00
+
 ..Fri 01 Jan 2016...
 4  | (Recurring) new year           | 23:59
 
@@ -420,6 +460,7 @@ ID | Name                           | Time
 9  | (Recurring) go to NUS hackers  | 23:59
 
 ..Sun 19 Apr 2015...
+11 | (Recurring) learning new thing | 21:00
 10 | (Recurring) learn something    | 23:59
 
 ..Fri 01 Jan 2016...
