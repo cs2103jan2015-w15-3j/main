@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.equinox.exceptions.InvalidDateException;
 
-// @author A0093910H
+//@author A0093910H
 public class RecurringTodoRuleTest {
 
     @Test

@@ -360,7 +360,7 @@ public class Todo implements UndoableRedoable<Todo> {
 		return String.format(DateTimeStringFormat, dateString, timeString);
 	}
 
-    // @author A0093910H
+    //@author A0093910H
 	/**
 	 * Method to return a DateTime of the Todo for ordering them chronologically
 	 * The order of preference: start time > end time > null
@@ -470,7 +470,7 @@ public class Todo implements UndoableRedoable<Todo> {
 		return isSameDay(getStartTime(), getEndTime());
 	}
 
-	// @author A0093910H
+	//@author A0093910H
 	/**
 	 * This method handles the events that spans over a few days and break them
 	 * down into smaller todos within one day for display purposes
