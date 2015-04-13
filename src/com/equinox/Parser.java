@@ -473,12 +473,16 @@ public class Parser {
 		String key = secondPair.getKeyString();
 
 		StringBuilder sBuilder = new StringBuilder(firstPair.getParam());
-		sBuilder.append(CHAR_SPACE);
-		if (!secondPair.getKeyword().equals(Keywords.RULE)) {
-			sBuilder.append(key);
+	
+		if (sBuilder.length() != 0 && !secondPair.getKeyword().equals(Keywords.RULE)) {
 			sBuilder.append(CHAR_SPACE);
+			sBuilder.append(key);
 		}
-		sBuilder.append(secondPair.getParam());
+		if(!secondPair.getParam().isEmpty()) {
+			sBuilder.append(CHAR_SPACE);
+			sBuilder.append(secondPair.getParam());
+		}
+		
 		return sBuilder.toString();
 	}
 
