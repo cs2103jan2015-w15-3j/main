@@ -67,6 +67,17 @@ public class Memory {
 		vMem.flushStacks(); //Recycles all IDs
 		vMem = null;
 	}
+	
+	public static Memory getInstance() {
+		if (instance == null) {
+			instance = new Memory();
+		}
+		return instance;
+	}
+	
+	void clearInstance() {
+		instance = null;
+	}
 
 	/**
 	 * Adds the specified Todo to memory. The current state is saved prior to
@@ -688,20 +699,5 @@ public class Memory {
 
 	public void updateMaps(int userIndex, DateTime date, DateTime originalDate) {
 		searchMap.update(userIndex, date, originalDate);
-	}
-
-	// @author ? TODO: add author tag
-	/*
-	 * Method for Memory singleton pattern
-	 * 
-	 * Create an instance of memory if it is not present
-	 * 
-	 * @return instance of memory
-	 */
-	public static Memory getInstance() {
-		if (instance == null) {
-			instance = new Memory();
-		}
-		return instance;
 	}
 }

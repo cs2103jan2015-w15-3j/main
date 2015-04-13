@@ -12,6 +12,7 @@ import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
 import com.equinox.exceptions.ParsingFailureException;
 
+//@author A0110839H
 public class MarkCommandTest {
 	private Zeitgeist logic;
 	private static final String COMMAND_1 = "add floatingTask";

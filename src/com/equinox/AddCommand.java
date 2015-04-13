@@ -44,15 +44,6 @@ public class AddCommand extends Command {
 		int numberOfParams = keyParamPairs.size() + dateTimes.size();
 		// Check if Todo to be created is a recurring task
 		// Recurring Deadline
-		// Example:
-		// KeyParamPair 0: add <task>, KeyParamPair 1: by <date>
-		// KeyParamPair 2: every <date>, KeyParamPair 3: until <date>
-
-		// Event
-		// Example:
-		// KeyParamPair 0: add <event>, KeyParamPair 1: from <startDate to
-		// endDate>
-		// KeyParamPair 2: every <date>, KeyParamPair 3: until <date>
 
 		if (input.isRecurring()) {
 			// Check for valid number of keywords
@@ -93,26 +84,14 @@ public class AddCommand extends Command {
 			
 			
 			switch (numberOfDates) {
-			
-			// Floating task
-			// Example:
-			// KeyParamPair 0: add <task>
+			// No dates = floating task
 			case 0:
 				Todo floatingTask = new Todo(memory.obtainFreshId(), todoName);
 				memory.userAdd(floatingTask);
 				memory.saveToFile();
 				return new Signal(String.format(
 						Signal.ADD_SUCCESS_SIGNAL_FORMAT, floatingTask), true);
-
-				// Deadline
-				// Example:
-				// KeyParamPair 0: add <task>, KeyParamPair 1: by <date>
-
-				// Event
-				// Example:
-				// KeyParamPair 0: add <event>, KeyParamPair 1: from
-				// <startDate to endDate>
-
+			// 1 date = deadline
 			case 1:
 				Todo timedTodo = new Todo(memory.obtainFreshId(), todoName,
 						dateTimes);
@@ -120,6 +99,7 @@ public class AddCommand extends Command {
 				memory.saveToFile();
 				return new Signal(String.format(
 						Signal.ADD_SUCCESS_SIGNAL_FORMAT, timedTodo), true);
+			// 2 dates = event
 			case 2:
 				timedTodo = new Todo(memory.obtainFreshId(), todoName,
 						dateTimes);
