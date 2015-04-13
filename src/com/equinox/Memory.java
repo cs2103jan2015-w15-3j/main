@@ -75,7 +75,7 @@ public class Memory {
 		return instance;
 	}
 	
-	void clear() {
+	void clearInstance() {
 		instance = null;
 	}
 
