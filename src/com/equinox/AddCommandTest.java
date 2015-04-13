@@ -951,7 +951,7 @@ public class AddCommandTest {
 		 * Test for a multiple-worded recurring deadline (monthly), with limit
 		 */
 		recurrenceCommand = "add submit monthly report by 2300pm every month until 8 Dec";
-		recurrenceRule = "Recurrence Rule: \"submit monthly report\" every 1 month(s) until 08 Dec 2015";
+		recurrenceRule = "Recurrence Rule: \"submit monthly report\" every 1 month(s) until Tue 08 Dec 2015";
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
@@ -984,7 +984,7 @@ public class AddCommandTest {
 		 * Test for a multiple-worded recurring event (daily), with limit
 		 */
 		recurrenceCommand = "add swim at Jurong Swimming Complex from 4pm to 5pm every day until 5 jun";
-		recurrenceRule = "Recurrence Rule: \"swim at Jurong Swimming Complex\" every 1 day(s) until 05 Jun 2015";
+		recurrenceRule = "Recurrence Rule: \"swim at Jurong Swimming Complex\" every 1 day(s) until Fri 05 Jun 2015";
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
@@ -1006,7 +1006,7 @@ public class AddCommandTest {
 		 * Test for a multiple-worded recurring event(weekly), with limit
 		 */
 		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every week until 8 jun";
-		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 week(s) until 08 Jun 2015";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 week(s) until Mon 08 Jun 2015";
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
@@ -1028,7 +1028,7 @@ public class AddCommandTest {
 		 * Test for a multiple-worded recurring event(month), with limit
 		 */
 		recurrenceCommand = "add hiking at BTH from 4pm to 5pm every month until 10 dec";
-		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 month(s) until 10 Dec 2015";
+		recurrenceRule = "Recurrence Rule: \"hiking at BTH\" every 1 month(s) until Thu 10 Dec 2015";
 		addSuccess = new Signal(String.format(Signal.ADD_SUCCESS_SIGNAL_FORMAT, recurrenceRule), true);
 		try {
 			assertEquals(addSuccess, logic.handleInput(recurrenceCommand));
