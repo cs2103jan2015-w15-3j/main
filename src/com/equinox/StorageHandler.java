@@ -105,6 +105,45 @@ public class StorageHandler {
 		createFileIfNonExistent(storageFile);
 		checkFileFormat();
 	}
+	
+	/**
+	 * Stores the memory object that is passed in into a file in JSON formatting
+	 * 
+	 * @param memoryToStore
+	 */
+	public void storeMemoryToFile(Memory memoryToStore) {
+		initialiseWriter(storageFile);
+		String jsonString = exportAsJson(memoryToStore);
+		writer.println(jsonString);
+		tearDownWriter();
+	}
+	
+	public static void storeMemoryToFile(Memory memoryToStore, File file) {
+		initialiseWriter(file);
+		String jsonString = exportAsJson(memoryToStore);
+		writer.println(jsonString);
+		tearDownWriter();
+	}
+	
+	/**
+	 * Retrieves a Memory object from the JSON file.
+	 * 
+	 */
+	public Memory retrieveMemoryFromFile() throws JsonSyntaxException{
+		initialiseReader(storageFile);
+		StringBuilder builder = new StringBuilder();
+
+		while (reader.hasNextLine()) {
+			builder.append(reader.nextLine() + "\n");
+		}
+		String jsonString = builder.toString();
+		tearDownReader();
+		Memory retrievedMemory = null;
+		retrievedMemory = importFromJson(jsonString);
+
+		return retrievedMemory;
+	}
+	
 	/**
 	 * 
 	 * Checks that storageFile.json is readable. If it is not, 
@@ -202,44 +241,6 @@ public class StorageHandler {
 		}
 	}
 
-	/**
-	 * Stores the memory object that is passed in into a file in JSON formatting
-	 * 
-	 * @param memoryToStore
-	 */
-	public void storeMemoryToFile(Memory memoryToStore) {
-		initialiseWriter(storageFile);
-		String jsonString = exportAsJson(memoryToStore);
-		writer.println(jsonString);
-		tearDownWriter();
-	}
-	
-	public static void storeMemoryToFile(Memory memoryToStore, File file) {
-		initialiseWriter(file);
-		String jsonString = exportAsJson(memoryToStore);
-		writer.println(jsonString);
-		tearDownWriter();
-	}
-	
-	/**
-	 * Retrieves a Memory object from the JSON file.
-	 * 
-	 */
-	public Memory retrieveMemoryFromFile() throws JsonSyntaxException{
-		initialiseReader(storageFile);
-		StringBuilder builder = new StringBuilder();
-
-		while (reader.hasNextLine()) {
-			builder.append(reader.nextLine() + "\n");
-		}
-		String jsonString = builder.toString();
-		tearDownReader();
-		Memory retrievedMemory = null;
-		retrievedMemory = importFromJson(jsonString);
-
-		return retrievedMemory;
-	}
-	
 	/**
 	 * Method to export the current memory into a JSON String for external
 	 * storage in a file
