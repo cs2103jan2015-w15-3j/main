@@ -258,7 +258,7 @@ public class StorageHandler {
 	 * Method to export the current memory into a JSON String for external
 	 * storage in a file
 	 * 
-	 * @return JSON String
+	 * @return String json
 	 */
 	public static String exportAsJson(Memory mem) {
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -377,7 +377,7 @@ public class StorageHandler {
 		}
 
 	}
-
+	
 	/**
 	 * Deserialiser for JodaTime's DurationFieldType for proper 
 	 * Json deserialisation
