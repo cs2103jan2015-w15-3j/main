@@ -75,6 +75,13 @@ public class StorageHandler {
 			return this;
 		}
 		
+		/**
+		 * Overloaded method: 
+		 * Set file path with the absolute path of the given file.
+		 * 
+		 * @param File 
+		 * @return Builder
+		 */
 		public Builder setFilePath(File file){
 			this.filePath = file.getAbsolutePath();
 			return this;
@@ -94,7 +101,7 @@ public class StorageHandler {
 	 * Constructor for StorageHandler, which takes in a Builder object
 	 * to initialise variables. 
 	 * 
-	 * @param builder
+	 * @param builder 
 	 */
 	private StorageHandler(Builder builder) {
 	    filePath = builder.filePath;
@@ -104,7 +111,7 @@ public class StorageHandler {
 	}
 	
 	/**
-	 * Stores the memory object that is passed in into a file in JSON formatting
+	 * Stores the memory object passed as a parameter into a file in JSON formatting
 	 * 
 	 * @param memoryToStore
 	 */
@@ -115,6 +122,14 @@ public class StorageHandler {
 		tearDownWriter();
 	}
 	
+	/**
+	 * Overloaded method:
+	 * Stores the memory object that is passed as a parameter into the file that 
+	 * is passed as the other parameter, in JSON formatting
+	 * 
+	 * @param memoryToStore
+	 * @param file
+	 */
 	public static void storeMemoryToFile(Memory memoryToStore, File file) {
 		initialiseWriter(file);
 		String jsonString = exportAsJson(memoryToStore);
@@ -125,6 +140,7 @@ public class StorageHandler {
 	/**
 	 * Retrieves a Memory object from the JSON file.
 	 * 
+	 * @return Memory
 	 */
 	public Memory retrieveMemoryFromFile() throws JsonSyntaxException{
 		initialiseReader(storageFile);
