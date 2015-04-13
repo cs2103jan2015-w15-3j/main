@@ -48,11 +48,13 @@ public class Signal {
 	 * Display Command Signals
 	 */
 	public static final String DISPLAY_SUCCESS_SIGNAL = "";
-	public static final String DISPLAY_EMPTY_SIGNAL = "The list is empty";
+    public static final String DISPLAY_EMPTY_TODO_SIGNAL = "The list of todos is empty.";
+    public static final String DISPLAY_EMPTY_RULE_SIGNAL = "The list of recurring rules is empty.";
 	public static final String DISPLAY_ID_NOT_FOUND = "The specified todo with ID %1$s does not exist";
 	public static final String DISPLAY_INVALID_PARAM = "The parameter %1$s is not recognized."
 			+ System.lineSeparator()
-			+ "The display command only supports only following additional parameters: c, completed, a, all, [ID]. "
+            + "The display command only supports only following additional parameters: "
+            + "c, completed, a, all, rule, [ID]. "
 			+ System.lineSeparator()
 			+ "Pending todos will be displayed by default, when no paramters are supplied. ";
 
@@ -60,7 +62,7 @@ public class Signal {
 	 * Edit Command Signals
 	 */
 	public static final String EDIT_SUCCESS_FORMAT = "%1$s successfully modified to %2$s";
-	public static final String EDIT_RULE_SUCCESS_FORMAT = "Rule %1$ssuccessfuly modified to %2$s.";
+	public static final String EDIT_RULE_SUCCESS_FORMAT = "Rule %1$s successfuly modified to %2$s.";
 	public static final String EDIT_END_BEFORE_START = "The start time must be before the end time.";
 	public static final String EDIT_INVALID_DATE = "Date(s) specified is/are invalid";
 	public static final String EDIT_NO_LONGER_RECURS = "Recurring Todo rule specified no longer exists.";

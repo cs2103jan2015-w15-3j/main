@@ -31,16 +31,18 @@ public class DisplayCommand extends Command {
     private static final String PARAM_COMPLETE_1 = "completed";
     private static final String PARAM_COMPLETE_2 = "complete";
     private static final String PARAM_COMPLETE_3 = "c";
+    private static final String PARAM_RULE = "rule";
 
 	// Signals for whether to display pending or completed todos
 	private static final int showPending = 0;
 	private static final int showCompleted = 1;
 	private static final int showAll = 2;
 
-	// Messages for different categories based on completeness
+    // Messages for different categories of todos or recurring rule
     private static final String MESSAGE_PENDING = "Showing pending todos:";
     private static final String MESSAGE_COMPLETED = "Showing completed todos:";
     private static final String MESSAGE_ALL = "Showing all todos:";
+    private static final String MESSAGE_RULES = "Showing recurring rules:";
 
     // Section headings for dates and floating tasks
     private static final String FLOATING_TASK_HEADING = "Anytime";
@@ -99,7 +101,7 @@ public class DisplayCommand extends Command {
 		String displayString;
 		Collection<Todo> todos = memory.getAllTodos();
 		if (todos.size() == 0) {
-            return new Signal(Signal.DISPLAY_EMPTY_SIGNAL, true);
+            return new Signal(Signal.DISPLAY_EMPTY_TODO_SIGNAL, true);
 		}
 
         // Check that display command only have one key param pair
@@ -120,6 +122,14 @@ public class DisplayCommand extends Command {
 		} else if (param.equals(PARAM_ALL_1) || param.equals(PARAM_ALL_2)) {
             displayString = getDisplayChrono(showAll);
 			System.out.println(displayString);
+        } else if (param.equals(PARAM_RULE)) {
+            Collection<RecurringTodoRule> rules = memory.getAllRules();
+            // Display message if there are no rules
+            if (rules.isEmpty()) {
+                return new Signal(Signal.DISPLAY_EMPTY_RULE_SIGNAL, true);
+            }
+            displayString = getDisplayForRules(rules);
+            System.out.println(displayString);
         } else {
             // Try to parse the param as the id of a specific todo to show
             // the detail of the todo
@@ -140,6 +150,21 @@ public class DisplayCommand extends Command {
         }
         return new Signal(Signal.DISPLAY_SUCCESS_SIGNAL, true);
 	}
+
+    private String getDisplayForRules(Collection<RecurringTodoRule> rules) {
+        StringBuilder sBuilder = new StringBuilder();
+        sBuilder.append(MESSAGE_RULES + System.lineSeparator());
+
+        Iterator<RecurringTodoRule> iterator = rules.iterator();
+        while (iterator.hasNext()) {
+            sBuilder.append(System.lineSeparator());
+            RecurringTodoRule recurringTodoRule = (RecurringTodoRule) iterator
+                    .next();
+            sBuilder.append(recurringTodoRule.getDisplayString());
+
+        }
+        return sBuilder.toString();
+    }
 
     public void displayDefault() {
         displayDefault(memory);

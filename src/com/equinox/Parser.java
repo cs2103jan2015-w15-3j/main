@@ -474,10 +474,15 @@ public class Parser {
 
 		StringBuilder sBuilder = new StringBuilder(firstPair.getParam());
 	
-		if (sBuilder.length() != 0 && !secondPair.getKeyword().equals(Keywords.RULE)) {
-			sBuilder.append(CHAR_SPACE);
+		if (sBuilder.length() != 0){
+			if (!secondPair.getKeyword().equals(Keywords.RULE)) {
+				sBuilder.append(CHAR_SPACE);
+				sBuilder.append(key);
+			}
+		} else {
 			sBuilder.append(key);
-		}
+			
+		} 
 		if(!secondPair.getParam().isEmpty()) {
 			sBuilder.append(CHAR_SPACE);
 			sBuilder.append(secondPair.getParam());
