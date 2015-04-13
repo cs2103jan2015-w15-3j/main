@@ -118,7 +118,7 @@ public class Parser {
 						}
 					}
 					// tries to parse param as date to extract the date
-					if (dateTimes.isEmpty()) {
+//					if (dateTimes.isEmpty()) {
 						List<DateTime> parsedDate = interpretAsDate(
 								keyParamPairs, currentPair, false);
 						if (!parsedDate.isEmpty()) {
@@ -128,7 +128,7 @@ public class Parser {
 							}
 							addToDateTimes(parsedDate, dateTimes,
 									keyParamPairs, dateIndexes, i);
-						}
+//						}
 					} else if (!isRecurring) {
 						interpretAsName(keyParamPairs, currentPair);
 					}
@@ -157,11 +157,7 @@ public class Parser {
 			for (int i = 0; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				String currentParam = currentPair.getParam();
-				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) { // TODO:
-																			// Does
-																			// not
-																			// ignore
-																			// case
+				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) {
 					String toString = currentParam.substring(toIndex,
 							currentParam.length());
 					if (toString.length() != 2) {
@@ -176,7 +172,8 @@ public class Parser {
 
 			}
 
-			// ignores thefirst pair as it is assumed to be the name of the todo
+			// ignores the first pair as it is assumed to be the name of the
+			// todo
 			for (int i = 1; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				Keywords key = currentPair.getKeyword();
@@ -212,17 +209,16 @@ public class Parser {
 						}
 					}
 					// tries to parse param as date to extract the date
-					if (dateTimes.isEmpty()) {
-						List<DateTime> parsedDate = interpretAsDate(
-								keyParamPairs, currentPair, false);
-						if (!parsedDate.isEmpty()) {
-							if (!isRecurring) {
-								period = period.withYears(1);
-								isRecurring = true;
-							}
-							addToDateTimes(parsedDate, dateTimes,
-									keyParamPairs, dateIndexes, i);
+					// if (dateTimes.isEmpty()) {
+					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+							currentPair, false);
+					if (!parsedDate.isEmpty()) {
+						if (!isRecurring) {
+							period = period.withYears(1);
+							isRecurring = true;
 						}
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
 					} else if (!isRecurring) {
 						interpretAsName(keyParamPairs, currentPair);
 					}
@@ -405,13 +401,6 @@ public class Parser {
 							keyParamPairs.get(appendedPairIndex).getKeyString(),
 							newDateParam));
 
-					System.out.println(newDateTimes.get(0).toLocalDate()
-							.equals(parsedDate.get(0).toLocalDate()));
-					System.out
-							.println(newDateTimes.get(0).getHourOfDay() == parsedDate
-									.get(0).getHourOfDay());
-					System.out.println(newDateTimes.get(0).getHourOfDay());
-					System.out.println(parsedDate.get(0).minuteOfDay());
 					// new dateTime parsed from 'param y param x' is same as
 					// 'param y'
 					if (newDateTimes.get(0).toLocalDate()
@@ -423,7 +412,8 @@ public class Parser {
 							if (newDateTimes.size() == 2) {
 								if (newDateTimes.get(1).getHourOfDay() == parsedDate
 										.get(1).getHourOfDay()
-										&& newDateTimes.get(1).getMinuteOfHour() == parsedDate
+										&& newDateTimes.get(1)
+												.getMinuteOfHour() == parsedDate
 												.get(1).getMinuteOfHour()) {
 									throw new ParsingFailureException();
 								}

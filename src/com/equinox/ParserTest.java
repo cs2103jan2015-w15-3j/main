@@ -401,15 +401,32 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testEndCases() throws InvalidTodoNameException,
+	public void testStringProcessing() throws InvalidTodoNameException,
 			InvalidRecurringException, ParsingFailureException {
-		String add0 = "add";
+		String add0 = "       add";
 		ParsedInput parsed0 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "add", ""))), new ArrayList<DateTime>(),
 				new Period(), false, false, new DateTime(0));
 
 		assertEquals(parsed0, Parser.parseInput(add0));
+
+		String add1 = "add         ";
+		ParsedInput parsed1 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", ""))), new ArrayList<DateTime>(),
+				new Period(), false, false, new DateTime(0));
+
+		assertEquals(parsed1, Parser.parseInput(add1));
+
+		String add2 = "add         something";
+		ParsedInput parsed2 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "something"))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+
+		assertEquals(parsed2, Parser.parseInput(add2));
 
 	}
 
@@ -458,6 +475,27 @@ public class ParserTest {
 
 		// recurring deadline task 'EVERY <valid day of week>'
 		String add6 = "add test 6 every Friday";
+		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.ADD, "add", "test 6"))), dateTimes0,
+				new Period().withWeeks(1), true, false, new DateTime(0));
+		assertEquals(parsed6, Parser.parseInput(add6));
+	}
+
+	@Test
+	public void testAddRecurringDeadlineWithTimeEveryDayOfWeek() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+		// date: Friday
+		List<Date> dates0 = parser.parse("3pm on Friday").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+		}
+
+		// recurring deadline task 'EVERY <valid day of week>'
+		String add6 = "add test 6 at 3pm every Friday";
 		ParsedInput parsed6 = new ParsedInput(Keywords.ADD,
 				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
 						Keywords.ADD, "add", "test 6"))), dateTimes0,
@@ -692,7 +730,6 @@ public class ParserTest {
 						Keywords.TO, "to", "4 Dec 2015"))), dateTimes0,
 				new Period(), false, false, new DateTime(0));
 		assertEquals(parsed0, Parser.parseInput(edit0));
-		System.out.println(parsed0.containsOnlyCommand());
 	}
 
 	@Test
