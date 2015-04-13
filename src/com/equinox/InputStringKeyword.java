@@ -143,4 +143,8 @@ public class InputStringKeyword {
     	}
     	return flag;
     }
+
+	public static boolean isRule(String keyString) {
+		return keyString.toLowerCase().equals(KEY_RULE_ABV);
+	}
 }

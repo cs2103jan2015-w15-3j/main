@@ -483,7 +483,9 @@ public class ParserTest {
 	}
 
 	@Test
-	public void testAddRecurringDeadlineWithTimeEveryDayOfWeek() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+	public void testAddRecurringDeadlineWithTimeEveryDayOfWeek()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
 				TimeZone.getDefault());
 		// date: Friday
@@ -709,6 +711,34 @@ public class ParserTest {
 	}
 
 	@Test
+	public void testEditName() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+
+		String edit0 = "edit 1 change name";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1 change name"))),
+				new ArrayList<DateTime>(), new Period(), false, false,
+				new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test(expected = InvalidTodoNameException.class)
+	public void testEditInvalidName() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		String edit0 = "edit 1 -n";
+		Parser.parseInput(edit0);
+	}
+
+	@Test(expected = ParsingFailureException.class)
+	public void testEditMoreThanTwoDateTimes()
+			throws InvalidRecurringException, InvalidTodoNameException,
+			ParsingFailureException {
+		String edit0 = "edit 4 from 5 June to 6 June on 8 June";
+		Parser.parseInput(edit0);
+	}
+
+	@Test
 	public void testEditTo() throws InvalidRecurringException,
 			InvalidTodoNameException, ParsingFailureException {
 		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
@@ -729,6 +759,94 @@ public class ParserTest {
 						Keywords.EDIT, "edit", "1"), new KeyParamPair(
 						Keywords.TO, "to", "4 Dec 2015"))), dateTimes0,
 				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditStart() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 4 Dec 2015
+		List<Date> dates0 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 from 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.FROM, "from", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditEnd() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 4 Dec 2015
+		List<Date> dates0 = parser.parse("4 Dec 2015").get(0).getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 on 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.ON, "on", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditStartAndEnd() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		com.joestelmach.natty.Parser parser = new com.joestelmach.natty.Parser(
+				TimeZone.getDefault());
+
+		// date: 3 Dec 2015 and 4 Dec 2015
+		List<Date> dates0 = parser.parse("3 Dec 2015 to 4 Dec 2015").get(0)
+				.getDates();
+		List<DateTime> dateTimes0 = new ArrayList<DateTime>();
+		for (int i = 0; i < dates0.size(); i++) {
+			Date date = dates0.get(i);
+			dateTimes0.add(new DateTime(date));
+			dateTimes0.set(i, dateTimes0.get(i).withTime(23, 59, 0, 0));
+		}
+
+		String edit0 = "edit 1 from 3 Dec 2015 to 4 Dec 2015";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.FROM, "from", "3 Dec 2015"), new KeyParamPair(
+						Keywords.TO, "to", "4 Dec 2015"))), dateTimes0,
+				new Period(), false, false, new DateTime(0));
+		assertEquals(parsed0, Parser.parseInput(edit0));
+	}
+
+	@Test
+	public void testEditRecurringName() throws InvalidRecurringException,
+			InvalidTodoNameException, ParsingFailureException {
+		String edit0 = "edit 1 -r change name";
+		ParsedInput parsed0 = new ParsedInput(Keywords.EDIT,
+				new ArrayList<KeyParamPair>(Arrays.asList(new KeyParamPair(
+						Keywords.EDIT, "edit", "1"), new KeyParamPair(
+						Keywords.RULE, "-r", "change name"))),
+				new ArrayList<DateTime>(), new Period(), true, false,
+				new DateTime(0));
+		System.out.println(Parser.parseInput(edit0).isRecurring());
 		assertEquals(parsed0, Parser.parseInput(edit0));
 	}
 

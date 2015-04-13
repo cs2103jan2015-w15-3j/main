@@ -157,31 +157,19 @@ public class Parser {
 			}
 
 		} else if (cType == Keywords.EDIT) {
-			// Post-process EDIT command parameters
-			int toIndex;
-			for (int i = 0; i < keyParamPairs.size(); i++) {
-				KeyParamPair currentPair = keyParamPairs.get(i);
-				String currentParam = currentPair.getParam();
-				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) {
-					String toString = currentParam.substring(toIndex,
-							currentParam.length());
-					if (toString.length() != 2) {
-						String afterTo = toString.substring(3,
-								toString.length());
-						currentPair.setParam(currentParam.substring(0,
-								toIndex - 1));
-						keyParamPairs.add(new KeyParamPair(Keywords.TO,
-								STRING_TO, afterTo));
-					}
-				}
-
-			}
+			// Post-process EDIT command parameter
 
 			// ignores the first pair as it is assumed to be the name of the
 			// todo
 			for (int i = 1; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				Keywords key = currentPair.getKeyword();
+
+				if (InputStringKeyword.isFlag(currentPair.getKeyString())
+						&& !InputStringKeyword.isRule(currentPair
+								.getKeyString())) {
+					throw new InvalidTodoNameException();
+				}
 
 				// assumes that 'every _ until _' is at the end of user input
 				// check if there is a recurring limit parsed
@@ -231,6 +219,7 @@ public class Parser {
 				} else if (key == Keywords.RULE) {
 					// leaves keyParamPair for rule as it is.
 					// does not parse as date or append to name
+					isRecurring = true;
 				} else {
 					// tries to parse param as date
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
@@ -242,6 +231,32 @@ public class Parser {
 					}
 
 				}
+			}
+			int toIndex;
+			for (int i = 0; i < keyParamPairs.size(); i++) {
+				KeyParamPair currentPair = keyParamPairs.get(i);
+
+				String currentParam = currentPair.getParam();
+				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) {
+					String toString = currentParam.substring(toIndex,
+							currentParam.length());
+					if (toString.length() != 2) {
+						String afterTo = toString.substring(3,
+								toString.length());
+						currentPair.setParam(currentParam.substring(0,
+								toIndex - 1));
+						keyParamPairs.add(new KeyParamPair(Keywords.TO,
+								STRING_TO, afterTo));
+						if (i == 0) {
+							List<DateTime> parsedDates = interpretAsDate(
+									keyParamPairs,
+									keyParamPairs.get(keyParamPairs.size() - 1),
+									true);
+							dateTimes.addAll(parsedDates);
+						}
+					}
+				}
+
 			}
 		} else if (cType == Keywords.SEARCH) {
 			// Post-process SEARCH command parameters
