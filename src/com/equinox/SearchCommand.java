@@ -33,6 +33,9 @@ public class SearchCommand extends Command {
 	}
 
 
+	/**
+	 * Searches keywords given in parsedInput in the memory. 
+	 */
 	@Override
 	public Signal execute() {
 		ArrayList<KeyParamPair> inputList = input.getParamPairs();
