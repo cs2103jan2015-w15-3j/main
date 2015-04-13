@@ -667,7 +667,7 @@ public class Memory {
 		return searchMap.getResult(typeKey, dateTime);
 	}
 
-	// @author JON! TODO: Add author tag
+	//@author A0110839H
 
 	/**
 	 * Saves this instance of memory to file by calling the storeMemoryToFile
@@ -681,7 +681,7 @@ public class Memory {
 		this.storage = storage;
 	}
 
-	// @author A0115983X
+	//@author A0115983X
 	public void updateMaps(int userIndex, String param, String originalParam) {
 		searchMap.update(userIndex, param, originalParam);
 
