@@ -49,9 +49,6 @@ public class StorageHandler {
 	/**
 	 * Builder inner class for creating instances of StorageHandler with
 	 * the option of setting the filePath variable.
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
-	 *
 	 */
 	public static class Builder{
 		 String fileDirectory;
@@ -314,6 +311,7 @@ public class StorageHandler {
 
 	}
 
+	//@author A0110839H
 	/**
 	 * Converter to serialize and deserialize between org.joda.time.DateTime and
 	 * com.google.gson.JsonElement
@@ -321,9 +319,6 @@ public class StorageHandler {
 	 * With reference to:
 	 * 
 	 * https://sites.google.com/site/gson/gson-user-guide
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
-	 *
 	 */
 
 	private static class LocalDateTypeConverter implements
@@ -349,8 +344,6 @@ public class StorageHandler {
 	 * With reference to:
 	 * 
 	 * https://sites.google.com/site/gson/gson-user-guide
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 	 *
 	 */
 	private static class LocalTimeTypeConverter implements
@@ -370,12 +363,8 @@ public class StorageHandler {
 	}
 
 	/**
-	 * 
 	 * Deserialiser for JodaTime's DurationFieldType for proper 
 	 * Json deserialisation
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
-	 *
 	 */
 	private static class DurationFieldTypeDeserialiser implements JsonDeserializer<DurationFieldType> {
 

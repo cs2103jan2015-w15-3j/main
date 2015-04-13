@@ -386,12 +386,9 @@ public class Todo implements UndoableRedoable<Todo> {
 		}
 	}
 
-	// @author A0110839H
+	//@author A0110839H
 	/**
 	 * Method to compare two DateTime objects at the minute resolution
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
-	 * 
 	 * @return -1 if the first object is smaller (earlier), 0 if the two objects
 	 *         are equal, 1 if the first object is larger(later).
 	 */
@@ -405,8 +402,6 @@ public class Todo implements UndoableRedoable<Todo> {
 	 * Overriding the equals method. Compares the title, startTime, endTime and
 	 * isDone parameters between this Todo object and the other Todo object
 	 * being compared to.
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 	 */
 	@Override
 	public boolean equals(Object obj) {
