@@ -48,7 +48,7 @@ public class Memory {
 	/**
 	 * Constructs an empty Memory object.
 	 */
-	private Memory() {
+	public Memory() {
 		this.allTodos = new HashMap<Integer, Todo>();
 		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
 		this.idBuffer = new IDBuffer<Todo>(allTodos);
