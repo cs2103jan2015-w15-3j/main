@@ -144,6 +144,11 @@ public class InputStringKeyword {
     	return flag;
     }
 
+	/**
+	 * Checks if the String encodes a rule flag.
+	 * @param keyString
+	 * @return
+	 */
 	public static boolean isRule(String keyString) {
 		return keyString.toLowerCase().equals(KEY_RULE_ABV);
 	}

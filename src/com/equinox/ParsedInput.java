@@ -35,9 +35,9 @@ public class ParsedInput {
 	 * @param isRecurring
 	 *            whether the todo is recurring
 	 * @param hasLimit
-	 * 			whether user input has a limit identified for recurring todo
+	 *            whether user input has a limit identified for recurring todo
 	 * @param limit
-	 * 			the dateTime object as limit for recurring todo
+	 *            the dateTime object as limit for recurring todo
 	 */
 	public ParsedInput(Keywords type, ArrayList<KeyParamPair> keyParamPairs,
 			List<DateTime> dateTimes, Period period, boolean isRecurring,
@@ -119,6 +119,13 @@ public class ParsedInput {
 		return false;
 	}
 
+	/**
+	 * Iterates through the keyParamPair ArrayList and checks if input contains
+	 * given flagKeyword
+	 * 
+	 * @param flagKeyword
+	 * @return if input contains given flagKeyword
+	 */
 	public boolean containsFlag(Keywords flagKeyword) {
 		for (KeyParamPair pair : keyParamPairs) {
 			if (pair.getKeyword() == flagKeyword
@@ -141,22 +148,43 @@ public class ParsedInput {
 		return true;
 	}
 
+	/**
+	 * Checks if parsedInput is pertaining to recurring tasks.
+	 * 
+	 * @return true if parsedInput is pertaining to recurring tasks.
+	 */
 	public boolean isRecurring() {
 		return isRecurring;
 	}
 
+	/**
+	 * Returns the period in object
+	 * @return period of the object
+	 */
 	public Period getPeriod() {
 		return period;
 	}
 
+	/**
+	 * Checks if parsedInput has a period
+	 * @return true if parsedInput has a period
+	 */
 	public boolean hasPeriod() {
 		return hasPeriod;
 	}
 
+	/**
+	 * Checks if parsedInput has a limit
+	 * @return true if parsedInput has a limit
+	 */
 	public boolean hasLimit() {
 		return hasLimit;
 	}
 
+	/**
+	 * Retrieves the limit of the parsedInput object
+	 * @return limit as DateTime object
+	 */
 	public DateTime getLimit() {
 		return limit;
 	}
