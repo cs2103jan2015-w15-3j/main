@@ -299,7 +299,7 @@ ID | Name                           | Time
 ......Anytime.......
 6  | read floating books            | NIL
 
-Zeitgeist: Rule Recurrence Rule: "learn something" every 1 week(s) until 13 Apr 2016successfuly modified to Recurrence Rule: "learning new things" every 1 week(s) until 01 May 2015.
+Zeitgeist: Rule Recurrence Rule: "learn something" every 1 week(s) until 13 Apr 2016 successfuly modified to Recurrence Rule: "learning new things" every 1 week(s) until 01 May 2015.
 Command: [2J[HShowing pending todos:
 ID | Name                           | Time
 
