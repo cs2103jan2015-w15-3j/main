@@ -103,7 +103,7 @@ public class StorageUtils {
 										e.printStackTrace();
 									}
 									StorageHandler.createFileIfNonExistent(newStorageFile);
-									StorageHandler.storeMemoryToFile(Memory.getInstance(), newStorageFile);
+									StorageHandler.storeMemoryToFile(new Memory(), newStorageFile);
 									
 								}
 								// Update settings file and file directory
@@ -120,7 +120,7 @@ public class StorageUtils {
 									e.printStackTrace();
 								}
 								StorageHandler.createFileIfNonExistent(newStorageFile);
-								StorageHandler.storeMemoryToFile(Memory.getInstance(), newStorageFile);
+								StorageHandler.storeMemoryToFile(new Memory(), newStorageFile);
 								
 								// Update settings file and file directory
 								modifySettingsFile(customFileDirPath);
