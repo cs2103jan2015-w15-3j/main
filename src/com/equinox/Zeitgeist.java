@@ -39,7 +39,10 @@ public class Zeitgeist {
 		return logic;
 	}
 	
-    // @author A0093910H
+    // @author A0093910H-reused
+    /**
+     * Clears the user's console, OS-dependent implementation
+     */
 	public final static void clearConsole() {
 		try {
 			final String os = System.getProperty("os.name");
@@ -59,6 +62,7 @@ public class Zeitgeist {
 		}
 	}
 
+    // @author A0093910H
 	/**
 	 * The main logic unit of Zeitgeist. Reads the input from Zeitgeist and
 	 * passes it to the Parser, the first element in the flow of component calls
@@ -190,7 +194,8 @@ public class Zeitgeist {
 	}
 	
 	public void reloadMemory() {
-		memory = new Memory();
+		memory.clearInstance();
+		memory = Memory.getInstance();
 		memory.setStorageHandler(storage);
 	}
 	

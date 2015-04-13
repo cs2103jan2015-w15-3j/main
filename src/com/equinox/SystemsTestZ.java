@@ -10,7 +10,12 @@ import org.junit.Test;
 
 import com.equinox.exceptions.InvalidRecurringException;
 import com.equinox.exceptions.InvalidTodoNameException;
+import com.equinox.exceptions.ParsingFailureException;
 
+// @author A0093910H-unused
+// We decided to do system testing with a text file containing commands 
+// and compare output with expected output.
+// For example: java -jar 048.jar < test_commands.txt > output.txt
 public class SystemsTestZ {
 
     Collection<Todo> todos;
@@ -30,15 +35,14 @@ public class SystemsTestZ {
     }
 
     @Test
-    public void testAll() throws InvalidRecurringException, InvalidTodoNameException {
+    public void testAll() throws InvalidRecurringException,
+            InvalidTodoNameException, ParsingFailureException {
 
         logic.handleInput("add floating task");
 
         logic.handleInput("add CS3230 deadline on 9 March 9pm");
 
         logic.handleInput("add CIP event from 3 March at 10am to 3 March at 12pm");
-
-        // logic.handleInput("add new year from 1 January at 10am to 1 January at 11am every year");
 
         logic.handleInput("add new year on 1 January every year");
 
@@ -88,7 +92,15 @@ public class SystemsTestZ {
 
         todos = logic.memory.getAllTodos();
 
-        String expected = "Showing pending todos:\nID | Name                           | Time\n\n..Mon 09 Mar 2015...\n1  | CS3230 deadline                | 21:00\n\n..Thu 01 Jan 2015...\n3  | last new year                  | 23:59\n\n..Fri 01 Jan 2016...\n4  | (Recurring) new year           | 23:59\n\n..Tue 03 Feb 2015...\n5  | CS1010 deadline                | 22:00\n\n..Sat 07 Mar 2015...\n7  | CS3243 project deadline        | 09:00\n\n..Tue 07 Apr 2015...\n8  | CS3333 project 2               | 10:00\n\n..Fri 03 Apr 2015...\n9  | (Recurring) go to NUS hackers  | 23:59\n";
+        String expected = "Showing pending todos:\n"
+                + "ID | Name                           | Time\n\n"
+                + "..Thu 01 Jan 2015...\n3  | last new year                  | 23:59\n\n"
+                + "..Tue 03 Feb 2015...\n5  | CS1010 deadline                | 22:00\n\n"
+                + "..Sat 07 Mar 2015...\n7  | CS3243 project deadline        | 09:00\n\n"
+                + "..Mon 09 Mar 2015...\n1  | CS3230 deadline                | 21:00\n\n"
+                + "..Fri 03 Apr 2015...\n9  | (Recurring) go to NUS hackers  | 23:59\n\n"
+                + "..Tue 07 Apr 2015...\n8  | CS3333 project 2               | 10:00\n\n"
+                + "..Fri 01 Jan 2016...\n4  | (Recurring) new year           | 23:59\n";
         assertEquals(expected, DisplayCommand.getDisplayString(todos, 0));
 
     }

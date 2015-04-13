@@ -1,3 +1,4 @@
+//@author A0115983X
 package com.equinox;
 
 import java.util.ArrayList;
@@ -6,7 +7,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 
 public abstract class Command {
-	//@author A0115983X
+	
 	ParsedInput input;
 	Memory memory;
 	ArrayList<KeyParamPair> keyParamPairs;

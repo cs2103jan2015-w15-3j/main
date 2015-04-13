@@ -12,9 +12,6 @@ import com.equinox.exceptions.NullTodoException;
 
 /**
  * Houses a method which processes the edit request from the user.
- * 
- * @author Ikarus
- *
  */
 public class EditCommand extends Command {
 
@@ -58,7 +55,7 @@ public class EditCommand extends Command {
 				if (input.containsOnlyCommand()) {
 					return new Signal(Signal.EDIT_INVALID_PARAMS, false);
 				}
-				id = Integer.parseInt(keyParamPairs.get(0).getParam());
+				id = Integer.parseInt(keyParamPairs.get(0).getParam().trim());
 			}
 
 			// Check for presence of -r flag

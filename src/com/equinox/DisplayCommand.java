@@ -17,10 +17,9 @@ import org.slf4j.LoggerFactory;
 
 import com.equinox.exceptions.NullTodoException;
 
+// @author A0093910H
 public class DisplayCommand extends Command {
 
-
-    // @author A0093910H
     private static Logger logger = LoggerFactory
             .getLogger(DisplayCommand.class);
 

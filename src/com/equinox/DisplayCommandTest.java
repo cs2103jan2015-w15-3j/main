@@ -8,8 +8,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+// @author A0093910H
 public class DisplayCommandTest {
-    // @author A0093910H
+
     Collection<Todo> todos;
 
     Zeitgeist logic;

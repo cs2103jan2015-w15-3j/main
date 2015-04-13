@@ -1,7 +1,5 @@
 /**
  * Unit test class for AddCommand.
- * 
- * @author Jonathan Lim Siu Chi || ign3sc3nc3
  */
 
 package com.equinox;

@@ -1,3 +1,5 @@
+//@author A0094679H
+
 package com.equinox;
 
 public interface UndoableRedoable<T extends UndoableRedoable<T>> {

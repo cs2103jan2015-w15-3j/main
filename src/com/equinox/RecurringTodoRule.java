@@ -10,14 +10,14 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
-
+// @author A0093910H
 /**
  * The RecurringTodoRule class contains the rules and methods for creating and
  * storing individual Todos
  *
  */
 public class RecurringTodoRule implements UndoableRedoable<RecurringTodoRule> {
-    // @author A0093910H
+
     private Period DEFAULT_RECURRENCE_LIMIT_PERIOD = new Period(0).withYears(1);
 
     private int MAX_FUTURE_OCCURRENCE = 1;

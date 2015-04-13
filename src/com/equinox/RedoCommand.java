@@ -6,8 +6,6 @@ import com.equinox.exceptions.StateUndefinedException;
 
 /**
  * Houses a method which processes the redo request from the user. 
- * 
- * @author Ho Wei Li || IkarusWill
  *
  */
 public class RedoCommand extends Command {

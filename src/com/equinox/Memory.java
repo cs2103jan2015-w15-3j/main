@@ -20,9 +20,6 @@ import com.equinox.exceptions.StateUndefinedException;
  * Stores all Todos and keeps state information allowing Undo and Redo
  * operations. Maximum number of states that can be stored by Memory is
  * {@value #STATE_STACK_MAX_SIZE}.
- * 
- * @author Ho Wei Li || IkarusWill
- *
  */
 public class Memory {
 	// Field for Memory singleton pattern
@@ -51,7 +48,7 @@ public class Memory {
 	/**
 	 * Constructs an empty Memory object.
 	 */
-	public Memory() {
+	private Memory() {
 		this.allTodos = new HashMap<Integer, Todo>();
 		this.recurringRules = new HashMap<Integer, RecurringTodoRule>();
 		this.idBuffer = new IDBuffer<Todo>(allTodos);
@@ -69,6 +66,17 @@ public class Memory {
 	void onDestroy() {
 		vMem.flushStacks(); //Recycles all IDs
 		vMem = null;
+	}
+	
+	public static Memory getInstance() {
+		if (instance == null) {
+			instance = new Memory();
+		}
+		return instance;
+	}
+	
+	void clearInstance() {
+		instance = null;
 	}
 
 	/**
@@ -266,9 +274,6 @@ public class Memory {
 	/**
 	 * This class stores the mapping of various types of index to a list of Todo
 	 * ids for the purpose of the search command
-	 * 
-	 * @author peanut11
-	 *
 	 */
 	private class SearchMap {
 		private HashMap<String, ArrayList<Integer>> nameMap;
@@ -677,8 +682,6 @@ public class Memory {
 	/**
 	 * Saves this instance of memory to file by calling the storeMemoryToFile
 	 * method in the StorageHandler object.
-	 * 
-	 * @author Jonathan Lim Siu Chi || ign3sc3nc3
 	 */
 	public void saveToFile() {
 		storage.storeMemoryToFile(this);
@@ -696,20 +699,5 @@ public class Memory {
 
 	public void updateMaps(int userIndex, DateTime date, DateTime originalDate) {
 		searchMap.update(userIndex, date, originalDate);
-	}
-
-	// @author ? TODO: add author tag
-	/*
-	 * Method for Memory singleton pattern
-	 * 
-	 * Create an instance of memory if it is not present
-	 * 
-	 * @return instance of memory
-	 */
-	public static Memory getInstance() {
-		if (instance == null) {
-			instance = new Memory();
-		}
-		return instance;
 	}
 }

@@ -64,7 +64,6 @@ public class Signal {
 	public static final String EDIT_END_BEFORE_START = "The start time must be before the end time.";
 	public static final String EDIT_INVALID_DATE = "Date(s) specified is/are invalid";
 	public static final String EDIT_NO_LONGER_RECURS = "Recurring Todo rule specified no longer exists.";
-	//public static final String EDIT_NO_RECURRING_TIME = "A time must be specified to edit a recurrence interval.";
 	public static final String EDIT_LIMIT_BEFORE_NOW = "Limit specified must not be before current time and date.";
 	public static final String EDIT_INVALID_PARAMS = "The number or format of parameters is invalid."
 			+ System.lineSeparator()

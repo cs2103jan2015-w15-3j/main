@@ -1,3 +1,4 @@
+//@author A0115983X
 package com.equinox.exceptions;
 
 public class ParsingFailureException extends Exception {

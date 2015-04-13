@@ -19,8 +19,6 @@ import com.equinox.exceptions.NotRecurringException;
  * which is uniquely determined at construction by the availability of
  * parameters. Todos are uniquely specified identifier known as ID until their
  * deletion, upon which the ID may be recycled.
- * 
- * @author Ikarus
  *
  */
 
@@ -160,8 +158,9 @@ public class Todo implements UndoableRedoable<Todo> {
 	 * @param id
 	 *            the ID of the Todo that was removed from Memory.
 	 */
-	private Todo(int id) {
+	private Todo(int id, Integer recurringId) {
 		this.id = id;
+		this.recurringId = recurringId;
 	}
 	
 	public Todo copy() {
@@ -173,7 +172,7 @@ public class Todo implements UndoableRedoable<Todo> {
 	 * use in Undo and Redo stacks in Memory.
 	 */
 	public Todo getPlaceholder() {
-		return new Todo(id);
+		return new Todo(id, recurringId);
 	}
 	
 	public boolean isPlaceholder() {
@@ -361,11 +360,11 @@ public class Todo implements UndoableRedoable<Todo> {
 		return String.format(DateTimeStringFormat, dateString, timeString);
 	}
 
+    // @author A0093910H
 	/**
 	 * Method to return a DateTime of the Todo for ordering them chronologically
 	 * The order of preference: start time > end time > null
 	 * 
-	 * @author paradite
 	 * 
 	 * @return start time for events; end time for deadlines; null for tasks.
 	 */
@@ -379,7 +378,6 @@ public class Todo implements UndoableRedoable<Todo> {
 		}
 	}
 
-	// @author A0093910H
 	public boolean isEvent() {
 		if (this.startTime != null && this.endTime != null) {
 			return true;
@@ -513,11 +511,13 @@ public class Todo implements UndoableRedoable<Todo> {
 		return shortTodos;
 	}
 
-	/**
-	 * @param date1
-	 * @param date2
-	 * @return
-	 */
+    /**
+     * This method checks if the two DateTime objects are the same day
+     * 
+     * @param date1
+     * @param date2
+     * @return result of check in boolean
+     */
 	private boolean isSameDay(DateTime date1, DateTime date2) {
 		if (date1 == null || date2 == null) {
 			return false;

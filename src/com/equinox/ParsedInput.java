@@ -1,3 +1,4 @@
+//@author A0115983X
 package com.equinox;
 
 import java.util.ArrayList;
@@ -7,9 +8,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 
 public class ParsedInput {
-	
-	//@author A0115983X
-	
+
 	private Keywords type;
 	private ArrayList<KeyParamPair> keyParamPairs;
 	private List<DateTime> dateTimes;
@@ -27,16 +26,22 @@ public class ParsedInput {
 	 * @param type
 	 *            KEYWORDS specifying the type of the command.
 	 * @param keyParamPairs
-	 *            the list of KeyParamPair objects parsed from the input.
+	 *            the list of KeyParamPair objects parsed from the input based
+	 *            on the command type
 	 * @param dateTimes
-	 *            the list of DateTime objects parsed from the input.
-	 * @param isRecurring
-	 *            whether the todo is recurring
+	 *            dateTime objects for todo startDate and endDates
 	 * @param period
 	 *            the period for the recurring todo
+	 * @param isRecurring
+	 *            whether the todo is recurring
+	 * @param hasLimit
+	 * 			whether user input has a limit identified for recurring todo
+	 * @param limit
+	 * 			the dateTime object as limit for recurring todo
 	 */
 	public ParsedInput(Keywords type, ArrayList<KeyParamPair> keyParamPairs,
-			List<DateTime> dateTimes, Period period, boolean isRecurring, boolean hasLimit, DateTime limit) {
+			List<DateTime> dateTimes, Period period, boolean isRecurring,
+			boolean hasLimit, DateTime limit) {
 		this.type = type;
 		this.keyParamPairs = keyParamPairs;
 		this.dateTimes = dateTimes;
@@ -46,14 +51,14 @@ public class ParsedInput {
 		this.limit = limit;
 		this.hasLimit = hasLimit;
 	}
-	
+
 	/**
 	 * Creates a ParsedInput object to represent an invalid command.
 	 */
 	private ParsedInput() {
 		this.type = Keywords.ERROR;
 	}
-	
+
 	public static ParsedInput getPlaceholder() {
 		return new ParsedInput();
 	}
@@ -113,16 +118,17 @@ public class ParsedInput {
 		}
 		return false;
 	}
-	
+
 	public boolean containsFlag(Keywords flagKeyword) {
-		for(KeyParamPair pair : keyParamPairs) {
-			if(pair.getKeyword() == flagKeyword && InputStringKeyword.isFlag(pair.getKeyString())) {
+		for (KeyParamPair pair : keyParamPairs) {
+			if (pair.getKeyword() == flagKeyword
+					&& InputStringKeyword.isFlag(pair.getKeyString())) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Checks if any dates are parsed.
 	 * 
@@ -142,7 +148,7 @@ public class ParsedInput {
 	public Period getPeriod() {
 		return period;
 	}
-	
+
 	public boolean hasPeriod() {
 		return hasPeriod;
 	}
@@ -155,11 +161,6 @@ public class ParsedInput {
 		return limit;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object o) {
 		if (o.getClass().equals(this.getClass())) {

@@ -1,3 +1,5 @@
+//@author A0094679H
+
 package com.equinox;
 
 import java.util.HashMap;
@@ -6,9 +8,7 @@ import java.util.TreeSet;
 /**
  * Serves as a buffer of fixed size for new Todos to draw their ID from.
  * 
- * @author Ikarus
  * @param <E>
- *
  */
 class IDBuffer<E> {
 	// Constants

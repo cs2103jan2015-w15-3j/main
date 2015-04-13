@@ -1,3 +1,5 @@
+//@author A0094679H
+
 package com.equinox;
 import java.util.HashMap;
 import java.util.Map;
@@ -141,4 +143,8 @@ public class InputStringKeyword {
     	}
     	return flag;
     }
+
+	public static boolean isRule(String keyString) {
+		return keyString.toLowerCase().equals(KEY_RULE_ABV);
+	}
 }

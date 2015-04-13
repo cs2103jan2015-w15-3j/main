@@ -41,6 +41,7 @@ public class Parser {
 	private static final String STRING_FRIDAY = "friday";
 	private static final String STRING_SATURDAY = "saturday";
 	private static final String STRING_SUNDAY = "sunday";
+	private static final String EMPTY_STRING = "";
 
 	/**
 	 * Tries to parse the specified String into ParsedInput object for various
@@ -118,17 +119,17 @@ public class Parser {
 						}
 					}
 					// tries to parse param as date to extract the date
-					if (dateTimes.isEmpty()) {
-						List<DateTime> parsedDate = interpretAsDate(
-								keyParamPairs, currentPair, false);
-						if (!parsedDate.isEmpty()) {
-							if (!isRecurring) {
-								period = period.withYears(1);
-								isRecurring = true;
-							}
-							addToDateTimes(parsedDate, dateTimes,
-									keyParamPairs, dateIndexes, i);
+					// if (dateTimes.isEmpty()) {
+					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+							currentPair, false);
+					if (!parsedDate.isEmpty()) {
+						if (!isRecurring) {
+							period = period.withYears(1);
+							isRecurring = true;
 						}
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
+						// }
 					} else if (!isRecurring) {
 						interpretAsName(keyParamPairs, currentPair);
 					}
@@ -148,38 +149,28 @@ public class Parser {
 			for (int i = keyParamPairs.size() - 1; i > 0; i--) {
 				keyParamPairs.remove(i);
 			}
-		}
 
-		// Post-process EDIT command parameters
-		if (cType == Keywords.EDIT) {
-
-			int toIndex;
-			for (int i = 0; i < keyParamPairs.size(); i++) {
-				KeyParamPair currentPair = keyParamPairs.get(i);
-				String currentParam = currentPair.getParam();
-				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) { // TODO:
-																			// Does
-																			// not
-																			// ignore
-																			// case
-					String toString = currentParam.substring(toIndex,
-							currentParam.length());
-					if (toString.length() != 2) {
-						String afterTo = toString.substring(3,
-								toString.length());
-						currentPair.setParam(currentParam.substring(0,
-								toIndex - 1));
-						keyParamPairs.add(new KeyParamPair(Keywords.TO,
-								STRING_TO, afterTo));
-					}
+			// check parameters for recurring todos
+			if (isRecurring) {
+				if (!isValidRecurring(dateTimes)) {
+					throw new InvalidRecurringException();
 				}
-
 			}
 
-			// ignores thefirst pair as it is assumed to be the name of the todo
+		} else if (cType == Keywords.EDIT) {
+			// Post-process EDIT command parameter
+
+			// ignores the first pair as it is assumed to be the name of the
+			// todo
 			for (int i = 1; i < keyParamPairs.size(); i++) {
 				KeyParamPair currentPair = keyParamPairs.get(i);
 				Keywords key = currentPair.getKeyword();
+
+				if (InputStringKeyword.isFlag(currentPair.getKeyString())
+						&& !InputStringKeyword.isRule(currentPair
+								.getKeyString())) {
+					throw new InvalidTodoNameException();
+				}
 
 				// assumes that 'every _ until _' is at the end of user input
 				// check if there is a recurring limit parsed
@@ -212,24 +203,24 @@ public class Parser {
 						}
 					}
 					// tries to parse param as date to extract the date
-					if (dateTimes.isEmpty()) {
-						List<DateTime> parsedDate = interpretAsDate(
-								keyParamPairs, currentPair, false);
-						if (!parsedDate.isEmpty()) {
-							if (!isRecurring) {
-								period = period.withYears(1);
-								isRecurring = true;
-							}
-							addToDateTimes(parsedDate, dateTimes,
-									keyParamPairs, dateIndexes, i);
+					// if (dateTimes.isEmpty()) {
+					List<DateTime> parsedDate = interpretAsDate(keyParamPairs,
+							currentPair, false);
+					if (!parsedDate.isEmpty()) {
+						if (!isRecurring) {
+							period = period.withYears(1);
+							isRecurring = true;
 						}
+						addToDateTimes(parsedDate, dateTimes, keyParamPairs,
+								dateIndexes, i);
 					} else if (!isRecurring) {
 						interpretAsName(keyParamPairs, currentPair);
 					}
 
 				} else if (key == Keywords.RULE) {
-					// leaves keyParamPair for rule as it is.
-					// does not parse as date or append to name
+					// appends the param for rule as the name
+					interpretAsName(keyParamPairs, currentPair);
+					keyParamPairs.get(i).setParam(EMPTY_STRING);
 				} else {
 					// tries to parse param as date
 					List<DateTime> parsedDates = interpretAsDate(keyParamPairs,
@@ -242,10 +233,34 @@ public class Parser {
 
 				}
 			}
-		}
+			int toIndex;
+			for (int i = 0; i < keyParamPairs.size(); i++) {
+				KeyParamPair currentPair = keyParamPairs.get(i);
 
-		// Post-process SEARCH command parameters
-		if (cType == Keywords.SEARCH) {
+				String currentParam = currentPair.getParam();
+				if ((toIndex = currentParam.indexOf(STRING_TO)) != -1) {
+					String toString = currentParam.substring(toIndex,
+							currentParam.length());
+					if (toString.length() != 2) {
+						String afterTo = toString.substring(3,
+								toString.length());
+						currentPair.setParam(currentParam.substring(0,
+								toIndex - 1));
+						keyParamPairs.add(new KeyParamPair(Keywords.TO,
+								STRING_TO, afterTo));
+						if (i == 0) {
+							List<DateTime> parsedDates = interpretAsDate(
+									keyParamPairs,
+									keyParamPairs.get(keyParamPairs.size() - 1),
+									true);
+							dateTimes.addAll(parsedDates);
+						}
+					}
+				}
+
+			}
+		} else if (cType == Keywords.SEARCH) {
+			// Post-process SEARCH command parameters
 			for (KeyParamPair keyParamPair : keyParamPairs) {
 				Keywords key = keyParamPair.getKeyword();
 				if (!(key == Keywords.NAME || key == Keywords.SEARCH)) {
@@ -262,24 +277,18 @@ public class Parser {
 			}
 		}
 
-		if (cType == Keywords.ADD) {
-			// check parameters for recurring todos
-			if (isRecurring) {
-				if (!isValidRecurring(dateTimes)) {
-					throw new InvalidRecurringException();
-				}
-			}
-		}
 		returnInput = new ParsedInput(cType, keyParamPairs, dateTimes, period,
 				isRecurring, hasLimit, limit);
-		// System.out.println(returnInput.getParamPairs().get(0).getParam());
 		return returnInput;
 	}
 
 	private static void interpretAsName(ArrayList<KeyParamPair> keyParamPairs,
 			KeyParamPair currentPair) {
+		String newName;
 		int currentIndex = keyParamPairs.indexOf(currentPair);
-		String newName = appendParameters(keyParamPairs, 0, currentIndex);
+
+		newName = appendParameters(keyParamPairs, 0, currentIndex);
+
 		keyParamPairs.get(0).setParam(newName);
 	}
 
@@ -405,13 +414,6 @@ public class Parser {
 							keyParamPairs.get(appendedPairIndex).getKeyString(),
 							newDateParam));
 
-					System.out.println(newDateTimes.get(0).toLocalDate()
-							.equals(parsedDate.get(0).toLocalDate()));
-					System.out
-							.println(newDateTimes.get(0).getHourOfDay() == parsedDate
-									.get(0).getHourOfDay());
-					System.out.println(newDateTimes.get(0).getHourOfDay());
-					System.out.println(parsedDate.get(0).minuteOfDay());
 					// new dateTime parsed from 'param y param x' is same as
 					// 'param y'
 					if (newDateTimes.get(0).toLocalDate()
@@ -423,7 +425,8 @@ public class Parser {
 							if (newDateTimes.size() == 2) {
 								if (newDateTimes.get(1).getHourOfDay() == parsedDate
 										.get(1).getHourOfDay()
-										&& newDateTimes.get(1).getMinuteOfHour() == parsedDate
+										&& newDateTimes.get(1)
+												.getMinuteOfHour() == parsedDate
 												.get(1).getMinuteOfHour()) {
 									throw new ParsingFailureException();
 								}
@@ -470,10 +473,16 @@ public class Parser {
 		String key = secondPair.getKeyString();
 
 		StringBuilder sBuilder = new StringBuilder(firstPair.getParam());
-		sBuilder.append(CHAR_SPACE);
-		sBuilder.append(key);
-		sBuilder.append(CHAR_SPACE);
-		sBuilder.append(secondPair.getParam());
+	
+		if (sBuilder.length() != 0 && !secondPair.getKeyword().equals(Keywords.RULE)) {
+			sBuilder.append(CHAR_SPACE);
+			sBuilder.append(key);
+		}
+		if(!secondPair.getParam().isEmpty()) {
+			sBuilder.append(CHAR_SPACE);
+			sBuilder.append(secondPair.getParam());
+		}
+		
 		return sBuilder.toString();
 	}
 

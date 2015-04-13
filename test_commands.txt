@@ -1,0 +1,26 @@
+add floating task
+mark 0
+add CS3230 deadline on 9 mar 9pm
+add CIP event from 3 March at 10am to 3 March at 12pm
+add new year on 1 January every year
+add CS1010 deadline by 3 mar at 10pm
+add read floating books
+add CS3243 project deadline by 9 March at 9am
+add CS3333 project 2 on 7 Apr 10am
+mark 2
+search read
+add go to NUS hackers every friday
+add learn something every sunday
+undo
+redo
+search learn
+edit 10 -r learning new things by sun 9pm until 1 may
+mark 1
+undo
+mark 3
+search new
+search NUS
+edit 3 last new year
+search new
+display
+exit

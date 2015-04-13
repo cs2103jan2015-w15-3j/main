@@ -14,8 +14,6 @@ import com.equinox.exceptions.NullTodoException;
 /**
  * The SearchCommand class handles user input with search commands.
  * 
- * @author peanut11
- *
  */
 public class SearchCommand extends Command {
 
@@ -34,11 +32,7 @@ public class SearchCommand extends Command {
 		super(input, memory);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.equinox.Command#execute()
-	 */
+
 	@Override
 	public Signal execute() {
 		ArrayList<KeyParamPair> inputList = input.getParamPairs();

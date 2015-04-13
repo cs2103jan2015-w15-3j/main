@@ -21,8 +21,6 @@ import com.google.gson.JsonSyntaxException;
  * Since the storage file at the default location can also be corrupt or invalid,
  * it is also checked in the StorageHandler class.
  * 
- * @author Jonathan Lim Siu Chi || ign3sc3nc3
- * 
  * @param customFileDirPath
  */
 public class StorageUtils {

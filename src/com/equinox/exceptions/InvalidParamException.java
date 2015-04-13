@@ -1,3 +1,4 @@
+//@author A0094679H
 package com.equinox.exceptions;
 
 public class InvalidParamException extends Exception {
