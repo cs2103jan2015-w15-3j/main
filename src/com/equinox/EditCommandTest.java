@@ -269,5 +269,54 @@ public class EditCommandTest {
 		assertEquals(expected, signal);
 	}
 	
+	@Test
+	public void testEditRuleDeadlineTime() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + by + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
 	
+	@Test
+	public void testEditRuleDeadlineToEvent() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + from + date2 + time1 + to + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRuleDeadlineOnFromToEvent() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + on + date2 + from + time1 + to + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
+	
+	@Test
+	public void testEditRuleEventToDeadline() throws InvalidRecurringException, InvalidTodoNameException, ParsingFailureException {
+		logic.handleInput(edit + idStringRecurringTodo + rFlag + from + date1 + time1 + to + date1 + time2);
+		List<DateTime> dateTimes = new ArrayList<DateTime>();
+		DateTime newDate1 = new DateTime(year, date2Month, date2Day, time1Hour, time1Min);
+		DateTime newDate2 = new DateTime(year, date2Month, date2Day, time2Hour, time2Min);
+		dateTimes.add(newDate1);
+		dateTimes.add(newDate2);
+		RecurringTodoRule rule2 = new RecurringTodoRule(idRecurring, nameRecurring1.trim(), dateTimes, period1P);
+		Signal signal = logic.handleInput(edit + idStringRecurringTodo + rFlag + by + date2 + time2);
+		Signal expected = new Signal(String.format(Signal.EDIT_RULE_SUCCESS_FORMAT, rule, rule2), true);
+		assertEquals(expected, signal);
+	}
 }
